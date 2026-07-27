@@ -179,9 +179,9 @@ task.spawn(function()
         end
     end
 end)
+-- THREAD 1: Standalone Noobs, Oof, & Pharaoh Engine
 task.spawn(function()
-    while true do
-        task.wait(0.5) 
+    while true do task.wait(0.4)
         if _G.AutoUpgradeStarter then NetRemote:FireServer("UpgradeNoobMax", "Starter") end
         if _G.AutoUpgradeCooker then NetRemote:FireServer("UpgradeNoobMax", "Cooker") end
         if _G.AutoUpgradeExplorer then NetRemote:FireServer("UpgradeNoobMax", "Explorer") end
@@ -191,20 +191,38 @@ task.spawn(function()
         if _G.AutoUpgradeMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Oof", "MoreOof") end
         if _G.AutoUpgradeFasterNoobs then NetRemote:FireServer("UpgradeUpgradeMax", "Oof", "FasterNoobs") end
         if _G.AutoUpgradePharaoh then NetRemote:FireServer("UpgradeNoobMax", "Pharaoh") end
-        
+    end
+end)
+
+-- THREAD 2: Standalone Rebirth Upgrades Multipliers
+task.spawn(function()
+    while true do task.wait(0.4)
         if _G.AutoRebirthMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreOof") end
         if _G.AutoRebirthMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreRebirth") end
         if _G.AutoRebirthMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreFire") end
-        
-        if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "More Fire") end
-        if _G.AutoFireMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end
-        if _G.AutoFireMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "More Rebirth") end
-        if _G.AutoFireMoreBulk then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "More Bulk") end
+    end
+end)
 
+-- THREAD 3: INDEPENDENT FIRE SYSTEM MOTOR (Matches your remote spy log exactly)
+task.spawn(function()
+    while true do task.wait(0.4)
+        if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end
+        if _G.AutoFireMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end
+        if _G.AutoFireMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end
+        if _G.AutoFireMoreBulk then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end
+        if _G.AutoPrestige then NetRemote:FireServer("Prestige") end
+    end
+end)
+
+-- THREAD 4: Standalone Blaze Converter & Multipliers Engine
+task.spawn(function()
+    while true do task.wait(0.4)
         if _G.AutoConvertBlaze then NetRemote:FireServer("Blaze") end
         if _G.AutoBlazeMoreBlaze then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end
         if _G.AutoBlazeMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end
         if _G.AutoBlazeMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end
+    end
+end)
         
         if _G.AutoPrestige then NetRemote:FireServer("Prestige") end
     end
