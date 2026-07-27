@@ -15,7 +15,7 @@ player.Idled:Connect(function()
     end
 end)
 
-local sg = Instance.new("ScreenGui") sg.Name = "DominateScripts" sg.Parent = player:WaitForChild("PlayerGui") sg.ResetOnSpawn = false
+local sg = Instance.new("ScreenGui") sg.Name = "LukesBrosweHubMirror" sg.Parent = player:WaitForChild("PlayerGui") sg.ResetOnSpawn = false
 local mainFrame = Instance.new("Frame") mainFrame.Size = UDim2.new(0, 460, 0, 360) mainFrame.Position = UDim2.new(0.5, -230, 0.5, -180) mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(1, -20, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Broswe Hub | Noob Incremental" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
@@ -179,9 +179,9 @@ task.spawn(function()
         end
     end
 end)
--- THREAD 1: Standalone Noobs, Oof, & Pharaoh Engine
+-- THE MASTER DETACHED ASYNCHRONOUS TRANSACTION CHANNELS
 task.spawn(function()
-    while true do task.wait(0.4)
+    while true do task.wait(0.5) 
         if _G.AutoUpgradeStarter then NetRemote:FireServer("UpgradeNoobMax", "Starter") end
         if _G.AutoUpgradeCooker then NetRemote:FireServer("UpgradeNoobMax", "Cooker") end
         if _G.AutoUpgradeExplorer then NetRemote:FireServer("UpgradeNoobMax", "Explorer") end
@@ -194,18 +194,17 @@ task.spawn(function()
     end
 end)
 
--- THREAD 2: Standalone Rebirth Upgrades Multipliers
 task.spawn(function()
-    while true do task.wait(0.4)
+    while true do task.wait(0.5) 
         if _G.AutoRebirthMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreOof") end
         if _G.AutoRebirthMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreRebirth") end
         if _G.AutoRebirthMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreFire") end
     end
 end)
 
--- THREAD 3: INDEPENDENT FIRE SYSTEM MOTOR (Matches your remote spy log exactly)
+-- ISOLATED FAST-LANE SYSTEM FOR FIRE UPGRADES (Matches Spy Log, Bypasses Blockages)
 task.spawn(function()
-    while true do task.wait(0.4)
+    while true do task.wait(0.4) 
         if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end
         if _G.AutoFireMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end
         if _G.AutoFireMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end
@@ -214,42 +213,18 @@ task.spawn(function()
     end
 end)
 
--- THREAD 4: Standalone Blaze Converter & Multipliers Engine
+-- ISOLATED FAST-LANE SYSTEM FOR BLAZE UPGRADES
 task.spawn(function()
-    while true do task.wait(0.4)
+    while true do task.wait(0.5) 
         if _G.AutoConvertBlaze then NetRemote:FireServer("Blaze") end
         if _G.AutoBlazeMoreBlaze then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end
         if _G.AutoBlazeMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end
         if _G.AutoBlazeMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end
     end
 end)
-        
-        if _G.AutoPrestige then NetRemote:FireServer("Prestige") end
-    end
-end)
 
-task.spawn(function()
-    while true do
-        task.wait(1)
-        if _G.AutoRebirthTimer then
-            pcall(function() NetRemote:FireServer("Rebirth") end)
-            task.wait(600)
-        end
-    end
-end)
-
-task.spawn(function()
-    while true do
-        task.wait(0.2)
-        if _G.AutoRuneBasic and not InsideTrail then
-            pcall(function()
-                local c = player.Character local hrp = c and c:FindFirstChild("HumanoidRootPart")
-                if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end
-            end)
-        end
-    end
-end)
-
+task.spawn(function() while true do task.wait(1) if _G.AutoRebirthTimer then pcall(function() NetRemote:FireServer("Rebirth") end) task.wait(600) end end end)
+task.spawn(function() while true do task.wait(0.2) if _G.AutoRuneBasic and not InsideTrail then pcall(function() local c = player.Character local hrp = c and c:FindFirstChild("HumanoidRootPart") if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end end) end end end)
 task.spawn(function() while true do task.wait(0.12) if _G.AutoCapsule and not InsideTrail then local args = { "ToggleMinionAutoOpen", "Ancient" } NetRemote:FireServer(unpack(args)) end end end)
 local function route(b1, b2, b3, b4, b5, s1, s2, s3, s4, s5) s1.Visible, s2.Visible, s3.Visible, s4.Visible, s5.Visible = true, false, false, false, false; b1.BackgroundColor3, b1.TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15) b2.BackgroundColor3, b2.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b3.BackgroundColor3, b3.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b4.BackgroundColor3, b4.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b5.BackgroundColor3, b5.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
 subBtnNoobs.MouseButton1Click:Connect(function() route(subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
