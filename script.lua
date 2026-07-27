@@ -197,7 +197,7 @@ task.spawn(function()
         if _G.AutoRebirthMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreFire") end
         
         if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "More Fire") end
-        if _G.AutoFireMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "More Oof") end
+        if _G.AutoFireMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end
         if _G.AutoFireMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "More Rebirth") end
         if _G.AutoFireMoreBulk then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "More Bulk") end
 
