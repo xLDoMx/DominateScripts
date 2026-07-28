@@ -10,7 +10,7 @@ _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoConvertBlaze, _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof = false, false, false, false
 
 player.Idled:Connect(function()
-    if _G.AntiAFK and (_G.AutoEasyTrails or _G.AutoMediumTrails or _G.AutoHardTrails or _G.AutoCapsule or _G.AutoUpgradePharaoh or _G.AutoUpgradeStarter or _G.AutoUpgradeCooker or _G.AutoUpgradeExplorer or _G.AutoUpgradeMagician or _G.AutoUpgradeArcher or _G.AutoUpgradeSoldier or _G.AutoUpgradeMoreOof or _G.AutoUpgradeFasterNoobs or _G.AutoPrestige or _G.AutoRebirthMoreOof or _G.AutoRebirthMoreRebirth or _G.AutoRebirthMoreFire or _G.AutoFireMoreFire or _G.AutoFireMoreOof or _G.AutoFireMoreRebirth or _G.AutoFireMoreBulk or _G.AutoRebirthTimer or _G.AutoRuneBasic or _G.AutoConvertBlaze or _G.AutoBlazeMoreBlaze or _G.AutoBlazeMoreFire or _G.AutoBlazeMoreOof) then
+    if _G.AntiAFK then
         vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame) task.wait(1) vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
     end
 end)
@@ -201,7 +201,7 @@ task.spawn(function()
     end
 end)
 
--- SEPARATED FIRE AUTOMATION TASK SPONS (Eliminates wait bottlenecks and locks completely)
+-- INDEPENDENT DEDICATED FIRE CORE TASKS (Wiped clean of wait blocks or overlap issues)
 task.spawn(function()
     while true do task.wait(0.4) 
         if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end
@@ -236,15 +236,15 @@ task.spawn(function()
     end
 end)
 
+task.spawn(function() while true do task.wait(1) if _G.AutoRebirthTimer then pcall(function() NetRemote:FireServer("Rebirth") end) task.wait(600) end end end)
+task.spawn(function() while true do task.wait(0.2) if _G.AutoRuneBasic and not InsideTrail then pcall(function() local c = player.Character local hrp = c and c:FindFirstChild("HumanoidRootPart") if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end end) end end end)
+task.spawn(function() while true do task.wait(0.12) if _G.AutoCapsule and not InsideTrail then local args = { "ToggleMinionAutoOpen", "Ancient" } NetRemote:FireServer(unpack(args)) end end end)
 local function route(b1, b2, b3, b4, b5, s1, s2, s3, s4, s5) s1.Visible, s2.Visible, s3.Visible, s4.Visible, s5.Visible = true, false, false, false, false; b1.BackgroundColor3, b1.TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15) b2.BackgroundColor3, b2.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b3.BackgroundColor3, b3.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b4.BackgroundColor3, b4.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b5.BackgroundColor3, b5.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
 subBtnNoobs.MouseButton1Click:Connect(function() route(subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
 subBtnOof.MouseButton1Click:Connect(function() route(subBtnOof, subBtnNoobs, subBtnRebirth, subBtnFire, subBtnBlaze, realm1UpgradeScroll, realm1NoobScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
-subBtnRebirth.MouseButton1Click:Connect(function() route(subBtnRebirth, subBtnNoobs, subBtnOof, subBtnFire, subBtnBlaze, realm1RebirthScroll, realm1NoobScroll, realm1UpgradeScroll, realm1FireScroll, realm1BlazeScroll) end)
-
--- FIXED TRACKING TARGET: Changed subObjOof back to the valid subBtnOof object reference
+subBtnRebirth.MouseButton1Click:Connect(function() route(subBtnRebirth, subBtnNoobs, subObjOof, subBtnFire, subBtnBlaze, realm1RebirthScroll, realm1NoobScroll, realm1UpgradeScroll, realm1FireScroll, realm1BlazeScroll) end)
 subBtnFire.MouseButton1Click:Connect(function() route(subBtnFire, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnBlaze, realm1FireScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1BlazeScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(subBtnBlaze, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, realm1BlazeScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll) end)
-
 
 local function mainRoute(pOpen, bActive) trialPage.Visible, capsulePage.Visible, realm1MasterPage.Visible, realm3Page.Visible, settingsPage.Visible, runesPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; tabTrial.BackgroundColor3, tabTrial.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) tabCapsules.BackgroundColor3, tabCapsules.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) tabRealm1.BackgroundColor3, tabRealm1.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) tabRealm3.BackgroundColor3, tabRealm3.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) tabSettings.BackgroundColor3, tabSettings.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) tabRunes.BackgroundColor3, tabRunes.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170); bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) end
 tabTrial.MouseButton1Click:Connect(function() mainRoute(trialPage, tabTrial) end) tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulePage, tabCapsules) end) tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
@@ -255,14 +255,13 @@ toggleEasy.MouseButton1Click:Connect(function() tState(toggleEasy, "AutoEasyTrai
 toggleStarter.MouseButton1Click:Connect(function() tState(toggleStarter, "AutoUpgradeStarter") end) toggleCooker.MouseButton1Click:Connect(function() tState(toggleCooker, "AutoUpgradeCooker") end) toggleExplorer.MouseButton1Click:Connect(function() tState(toggleExplorer, "AutoUpgradeExplorer") end) toggleMagician.MouseButton1Click:Connect(function() tState(toggleMagician, "AutoUpgradeMagician") end) toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgradeArcher") end) toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) toggleMoreOof.MouseButton1Click:Connect(function() tState(toggleMoreOof, "AutoUpgradeMoreOof") end) toggleFasterNoobs.MouseButton1Click:Connect(function() tState(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
 toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) toggleRebirthRebirth.MouseButton1Click:Connect(function() tState(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) toggleRebirthFire.MouseButton1Click:Connect(function() tState(toggleRebirthFire, "AutoRebirthMoreFire") end)
 
--- HARDFIX MAPPINGS: Syncing Fire toggle actions directly to your isolated fast-lane thread variables
 toggleFireFire.MouseButton1Click:Connect(function() tState(toggleFireFire, "AutoFireMoreFire") end)
 toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth, "AutoFireMoreRebirth") end)
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
 
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) toggleRuneBasic.MouseButton1Click:Connect(function() tState(toggleRuneBasic, "AutoRuneBasic") end)
-toggleConvertBlaze.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoConvertBlaze") end) toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
+toggleConvertBlaze.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoConvertBlaze") end) toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoBlazeMoreFire") end) toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
 
 toggleKillSwitch.MouseButton1Click:Connect(function()
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
