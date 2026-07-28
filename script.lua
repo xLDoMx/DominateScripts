@@ -228,7 +228,6 @@ task.spawn(function()
     end
 end)
 
-
 task.spawn(function()
     while true do task.wait(0.5) 
         if _G.AutoConvertBlaze then NetRemote:FireServer("Blaze") end
