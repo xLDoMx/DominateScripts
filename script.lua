@@ -667,11 +667,46 @@ task.spawn(function()
         if _G.AutoPrestige then
             pcall(function()
                 NetRemote:FireServer("Prestige")
+
+                        task.spawn(function()
+    while true do
+        task.wait(0.2)
+
+        if _G.AutoBlazeMoreBlaze then
+            pcall(function()
+                NetRemote:FireServer(
+                    "UpgradeUpgradeMax",
+                    "Blaze",
+                    "MoreBlaze"
+                )
             end)
+            task.wait(0.25)
+        end
+
+        if _G.AutoBlazeMoreFire then
+            pcall(function()
+                NetRemote:FireServer(
+                    "UpgradeUpgradeMax",
+                    "Blaze",
+                    "MoreFire"
+                )
+            end)
+            task.wait(0.25)
+        end
+
+        if _G.AutoBlazeMoreOof then
+            pcall(function()
+                NetRemote:FireServer(
+                    "UpgradeUpgradeMax",
+                    "Blaze",
+                    "MoreOof"
+                )
+            end)
+            task.wait(0.25)
         end
     end
 end)
-
+                        
 task.spawn(function() while true do task.wait(1) if _G.AutoRebirthTimer then pcall(function() NetRemote:FireServer("Rebirth") end) task.wait(600) end end end)
 task.spawn(function() while true do task.wait(0.2) if _G.AutoRuneBasic and not InsideTrail then pcall(function() local c = player.Character local hrp = c and c:FindFirstChild("HumanoidRootPart") if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end end) end end end)
 task.spawn(function() while true do task.wait(0.12) if _G.AutoCapsule and not InsideTrail then local args = { "ToggleMinionAutoOpen", "Ancient" } NetRemote:FireServer(unpack(args)) end end end)
@@ -715,7 +750,7 @@ toggleBuildFire.MouseButton1Click:Connect(function()
 end)
 
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) toggleRuneBasic.MouseButton1Click:Connect(function() tState(toggleRuneBasic, "AutoRuneBasic") end)
-toggleConvertBlaze.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoConvertBlaze") end) toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoBlazeMoreFire") end) toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
+toggleConvertBlaze.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoConvertBlaze") end) toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
 
 toggleKillSwitch.MouseButton1Click:Connect(function()
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
