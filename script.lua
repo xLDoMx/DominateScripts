@@ -195,9 +195,17 @@ end)
 
 task.spawn(function()
     while true do task.wait(0.5) 
-        if _G.AutoRebirthMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreOof") end
-        if _G.AutoRebirthMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreRebirth") end
-        if _G.AutoRebirthMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreFire") end
+        if _G.AutoRebirthMoreOof then 
+            NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreOof") 
+        end
+
+        if _G.AutoRebirthMoreRebirth then 
+            NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreRebirth") 
+        end
+
+        if _G.AutoRebirthMoreFire then 
+            NetRemote:FireServer("UpgradeUpgradeMax", "Rebirth", "MoreFire") 
+        end
     end
 end)
 
