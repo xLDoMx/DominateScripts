@@ -672,36 +672,18 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait(0.2)
+        task.wait(1)
 
         if _G.AutoBlazeMoreBlaze then
-            pcall(function()
-                NetRemote:FireServer(
-                    "UpgradeUpgradeMax",
-                    "Blaze",
-                    "MoreBlaze"
-                )
-            end)
+            print("Blaze MoreBlaze")
         end
 
         if _G.AutoBlazeMoreFire then
-            pcall(function()
-                NetRemote:FireServer(
-                    "UpgradeUpgradeMax",
-                    "Blaze",
-                    "MoreFire"
-                )
-            end)
+            print("Blaze MoreFire")
         end
 
         if _G.AutoBlazeMoreOof then
-            pcall(function()
-                NetRemote:FireServer(
-                    "UpgradeUpgradeMax",
-                    "Blaze",
-                    "MoreOof"
-                )
-            end)
+            print("Blaze MoreOof")
         end
     end
 end)
