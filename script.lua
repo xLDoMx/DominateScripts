@@ -206,22 +206,30 @@ task.spawn(function()
         task.wait(0.2)
 
         if _G.AutoFireMoreFire then
-            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire")
+            pcall(function()
+                NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire")
+            end)
             task.wait(0.25)
         end
 
         if _G.AutoFireMoreOof then
-            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof")
+            pcall(function()
+                NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof")
+            end)
             task.wait(0.25)
         end
 
         if _G.AutoFireMoreRebirth then
-            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth")
+            pcall(function()
+                NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth")
+            end)
             task.wait(0.25)
         end
 
         if _G.AutoFireMoreBulk then
-            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk")
+            pcall(function()
+                NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk")
+            end)
             task.wait(0.25)
         end
     end
@@ -232,7 +240,9 @@ task.spawn(function()
         task.wait(0.5)
 
         if _G.AutoPrestige then
-            NetRemote:FireServer("Prestige")
+            pcall(function()
+                NetRemote:FireServer("Prestige")
+            end)
         end
     end
 end)
