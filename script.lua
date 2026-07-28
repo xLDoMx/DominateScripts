@@ -172,55 +172,340 @@ local function FindNearestEnemy(hrp)
 end
 
 
-task.spawn(function()
-    while true do
-        task.wait(0.25)
+--==================================================
+-- REALM 3 TRAIL + CAPSULE COMBINED CONTROLLER
+--==================================================
 
-        local hrp = GetCharacterRoot()
+local TrailState = "Capsule"
 
-        if not hrp then
-            continue
-        end
+local CastlePosition = Vector3.new(
+    879.0405,
+    12.3479,
+    13443.0859
+)
 
-
-        -- Capsule
-        if _G.AutoCapsule and not InsideTrail then
-            MoveToPosition(TrialSettings.CapsulePosition)
-        end
-
-
-        -- Trials
-        if _G.AutoEasyTrails
-        or _G.AutoMediumTrails
-        or _G.AutoHardTrails then
+local CapsulePosition = Vector3.new(
+    712.6,
+    5.7,
+    7814.0
+)
 
 
-            local distance =
-                (hrp.Position - TrialSettings.ArenaPosition).Magnitude
+local function GetRoot()
+    local char = player.Character
+    return char and char:FindFirstChild("HumanoidRootPart")
+end
 
 
-            InsideTrail = distance < 250
+local function MovePlayer(pos)
+
+    local hrp = GetRoot()
+
+    if hrp then
+        hrp.CFrame = CFrame.new(pos)
+    end
+
+end
 
 
-            if InsideTrail then
 
-                local enemy = FindNearestEnemy(hrp)
+local function GetChosenTrail()
 
-                if enemy then
-                    hrp.CFrame =
-                        CFrame.new(
-                            enemy.Position +
-                            (enemy.CFrame.LookVector * 1.5),
-                            enemy.Position
-                        )
-                end
+    if _G.AutoHardTrails then
+        return "Hard"
+    end
 
-            end
-        else
-            InsideTrail = false
+    if _G.AutoMediumTrails then
+        return "Medium"
+    end
+
+    if _G.AutoEasyTrails then
+        return "Easy"
+    end
+
+    return nil
+
+end
+
+
+
+local function GetGate(name)
+
+    local world3 =
+        workspace:FindFirstChild("__GAME_CONTENT")
+        and workspace.__GAME_CONTENT:FindFirstChild("Contents")
+        and workspace.__GAME_CONTENT.Contents:FindFirstChild(
+            "WORLD - 3.AncientBossModel"
+        )
+
+    if world3 then
+        return world3:FindFirstChild(
+            name .. "Gate",
+            true
+        )
+    end
+
+end
+
+
+
+local function GateOpen(gate)
+
+    if not gate then
+        return false
+    end
+
+
+    local gui =
+        gate:FindFirstChildWhichIsA(
+            "SurfaceGui",
+            true
+        )
+
+
+    if gui then
+
+        local label =
+            gui:FindFirstChildWhichIsA(
+                "TextLabel",
+                true
+            )
+
+
+        if label then
+
+            return
+            label.Text:lower()
+            :find("open") ~= nil
+
         end
 
     end
+
+
+    return false
+
+end
+
+
+
+local function FindEnemy()
+
+    local hrp = GetRoot()
+
+    if not hrp then
+        return nil
+    end
+
+
+    local closest
+    local distance = math.huge
+
+
+    for _,obj in ipairs(workspace:GetDescendants()) do
+
+        if obj:IsA("Model")
+        and obj ~= player.Character then
+
+
+            local hum =
+                obj:FindFirstChildOfClass(
+                    "Humanoid"
+                )
+
+            local root =
+                obj:FindFirstChild(
+                    "HumanoidRootPart"
+                )
+
+
+            if hum
+            and root
+            and hum.Health > 0
+            and not game.Players:GetPlayerFromCharacter(obj)
+            then
+
+                local d =
+                    (hrp.Position-root.Position)
+                    .Magnitude
+
+
+                if d < distance then
+
+                    distance = d
+                    closest = root
+
+                end
+
+            end
+        end
+    end
+
+
+    return closest
+
+end
+
+
+
+
+task.spawn(function()
+
+while true do
+
+    task.wait(0.25)
+
+
+
+    local selected =
+        GetChosenTrail()
+
+
+
+    ------------------------------------------------
+    -- CAPSULE PHASE
+    ------------------------------------------------
+
+    if TrailState == "Capsule" then
+
+
+        if _G.AutoCapsule then
+
+
+            InsideTrail = false
+
+            MovePlayer(
+                CapsulePosition
+            )
+
+
+            NetRemote:FireServer(
+                "ToggleMinionAutoOpen",
+                "Ancient"
+            )
+
+
+        end
+
+
+
+        if selected then
+
+            local gate =
+                GetGate(selected)
+
+
+            if GateOpen(gate) then
+
+                TrailState =
+                    "EnteringTrail"
+
+            end
+
+        end
+
+
+
+    ------------------------------------------------
+    -- ENTER TRAIL
+    ------------------------------------------------
+
+    elseif TrailState == "EnteringTrail" then
+
+
+        MovePlayer(
+            CastlePosition
+        )
+
+
+        task.wait(1)
+
+
+        local gate =
+            GetGate(selected)
+
+
+        if gate then
+
+            hrp =
+                GetRoot()
+
+            if hrp then
+
+                hrp.CFrame =
+                    gate.CFrame
+                    *
+                    CFrame.new(
+                        0,
+                        0,
+                        -5
+                    )
+
+            end
+
+        end
+
+
+        task.wait(2)
+
+
+        InsideTrail = true
+
+        TrailState =
+            "Fighting"
+
+
+
+    ------------------------------------------------
+    -- FIGHTING
+    ------------------------------------------------
+
+    elseif TrailState == "Fighting" then
+
+
+        local enemy =
+            FindEnemy()
+
+
+        if enemy then
+
+            local hrp =
+                GetRoot()
+
+
+            if hrp then
+
+                hrp.CFrame =
+                    CFrame.new(
+                        enemy.Position
+                        +
+                        enemy.CFrame.LookVector
+                        *
+                        2,
+                        enemy.Position
+                    )
+
+            end
+
+
+        end
+
+
+
+        -- Game teleports you out after completion
+
+        if not InsideTrail then
+
+            TrailState =
+                "Capsule"
+
+        end
+
+
+    end
+
+end
+
 end)
 task.spawn(function()
     while true do
