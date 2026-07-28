@@ -201,38 +201,39 @@ task.spawn(function()
     end
 end)
 
--- INDEPENDENT DEDICATED FIRE CORE TASKS (Wiped clean of wait blocks or overlap issues)
 task.spawn(function()
-    while true do task.wait(0.4) 
-        if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end
+    while true do
+        task.wait(0.2)
+
+        if _G.AutoFireMoreFire then
+            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire")
+            task.wait(0.25)
+        end
+
+        if _G.AutoFireMoreOof then
+            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof")
+            task.wait(0.25)
+        end
+
+        if _G.AutoFireMoreRebirth then
+            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth")
+            task.wait(0.25)
+        end
+
+        if _G.AutoFireMoreBulk then
+            NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk")
+            task.wait(0.25)
+        end
     end
 end)
 
 task.spawn(function()
-    while true do task.wait(0.4) 
-        if _G.AutoFireMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end
-    end
-end)
+    while true do
+        task.wait(0.5)
 
-task.spawn(function()
-    while true do task.wait(0.4) 
-        if _G.AutoFireMoreRebirth then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end
-    end
-end)
-
-task.spawn(function()
-    while true do task.wait(0.4) 
-        if _G.AutoFireMoreBulk then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end
-        if _G.AutoPrestige then NetRemote:FireServer("Prestige") end
-    end
-end)
-
-task.spawn(function()
-    while true do task.wait(0.5) 
-        if _G.AutoConvertBlaze then NetRemote:FireServer("Blaze") end
-        if _G.AutoBlazeMoreBlaze then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end
-        if _G.AutoBlazeMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end
-        if _G.AutoBlazeMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end
+        if _G.AutoPrestige then
+            NetRemote:FireServer("Prestige")
+        end
     end
 end)
 
