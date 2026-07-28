@@ -655,12 +655,7 @@ task.spawn(function()
                 NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk")
             end)
             task.wait(0.25)
-
-                local toggleBuildFire = makeSubRow(
-    "Auto Build Fire",
-    5,
-    realm1FireScroll
-)
+                
         end
     end
 end)
@@ -683,7 +678,20 @@ task.spawn(function() while true do task.wait(0.12) if _G.AutoCapsule and not In
 local function route(b1, b2, b3, b4, b5, s1, s2, s3, s4, s5) s1.Visible, s2.Visible, s3.Visible, s4.Visible, s5.Visible = true, false, false, false, false; b1.BackgroundColor3, b1.TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15) b2.BackgroundColor3, b2.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b3.BackgroundColor3, b3.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b4.BackgroundColor3, b4.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b5.BackgroundColor3, b5.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
 subBtnNoobs.MouseButton1Click:Connect(function() route(subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
 subBtnOof.MouseButton1Click:Connect(function() route(subBtnOof, subBtnNoobs, subBtnRebirth, subBtnFire, subBtnBlaze, realm1UpgradeScroll, realm1NoobScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
-subBtnRebirth.MouseButton1Click:Connect(function() route(subBtnRebirth, subBtnNoobs, subObjOof, subBtnFire, subBtnBlaze, realm1RebirthScroll, realm1NoobScroll, realm1UpgradeScroll, realm1FireScroll, realm1BlazeScroll) end)
+subBtnRebirth.MouseButton1Click:Connect(function()
+    route(
+        subBtnRebirth,
+        subBtnNoobs,
+        subBtnOof,
+        subBtnFire,
+        subBtnBlaze,
+        realm1RebirthScroll,
+        realm1NoobScroll,
+        realm1UpgradeScroll,
+        realm1FireScroll,
+        realm1BlazeScroll
+    )
+end)
 subBtnFire.MouseButton1Click:Connect(function() route(subBtnFire, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnBlaze, realm1FireScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1BlazeScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(subBtnBlaze, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, realm1BlazeScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll) end)
 
