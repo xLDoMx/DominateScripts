@@ -124,59 +124,102 @@ local function ForceWalkThroughGate(gatePart)
     end
 end
 
+-- TRIAL + CAPSULE MANAGER
+
+local TrialSettings = {
+    ArenaPosition = Vector3.new(767.4, 11.5, 13766.8),
+    CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
+}
+
+local function GetCharacterRoot()
+    local character = player.Character
+    if not character then return nil end
+
+    return character:FindFirstChild("HumanoidRootPart")
+end
+
+
+local function MoveToPosition(position)
+    local hrp = GetCharacterRoot()
+
+    if hrp then
+        hrp.CFrame = CFrame.new(position)
+    end
+end
+
+
+local function FindNearestEnemy(hrp)
+    local closest
+    local distance = math.huge
+
+    for _,obj in ipairs(workspace:GetChildren()) do
+        if obj:IsA("Model")
+        and obj:FindFirstChild("HumanoidRootPart")
+        and obj:FindFirstChild("Humanoid")
+        and obj.Humanoid.Health > 0
+        and obj.Name ~= player.Name then
+
+            local d = (hrp.Position - obj.HumanoidRootPart.Position).Magnitude
+
+            if d < distance then
+                distance = d
+                closest = obj.HumanoidRootPart
+            end
+        end
+    end
+
+    return closest
+end
+
+
 task.spawn(function()
     while true do
-        task.wait(0.2)
-        if _G.AutoEasyTrails or _G.AutoMediumTrails or _G.AutoHardTrails or _G.AutoCapsule then
-            pcall(function()
-                local character = player.Character or player.CharacterAdded:Wait()
-                local hrp = character:WaitForChild("HumanoidRootPart", 5) if not hrp then return end
-                local distanceToArena = (hrp.Position - Vector3.new(767.4, 11.5, 13766.8)).Magnitude
-                local distanceToCastle = (hrp.Position - CastleCenterPosition).Magnitude
-                if distanceToArena < 250 then
-                    InsideTrail = true 
-                    if (_G.AutoEasyTrails or _G.AutoMediumTrails or _G.AutoHardTrails) and not PrepTimerActive then
-                        PrepTimerActive = true
-                        task.spawn(function()
-                            task.wait(60) 
-                            while InsideTrail and (_G.AutoEasyTrails or _G.AutoMediumTrails or _G.AutoHardTrails) do
-                                task.wait(0.1)
-                                pcall(function()
-                                    local targetEnemyRoot, shortestDistance = nil, math.huge
-                                    for _, object in pairs(workspace:GetDescendants()) do
-                                        if object:IsA("Model") and object:FindFirstChild("HumanoidRootPart") and object:FindFirstChild("Humanoid") then
-                                            if object.Name ~= player.Name and not game.Players:GetPlayerFromCharacter(object) and object.Humanoid.Health > 0 then
-                                                local dist = (hrp.Position - object.HumanoidRootPart.Position).Magnitude
-                                                if dist < shortestDistance then shortestDistance = dist; targetEnemyRoot = object.HumanoidRootPart end
-                                            end
-                                        end
-                                    end
-                                    if targetEnemyRoot then hrp.CFrame = CFrame.new(targetEnemyRoot.Position + (targetEnemyRoot.CFrame.LookVector * 1.5), targetEnemyRoot.Position) end
-                                end)
-                            end
-                        end)
-                    end
-                else
-                    InsideTrail, PrepTimerActive = false, false
-                    if (_G.AutoEasyTrails or _G.AutoMediumTrails or _G.AutoHardTrails) and (tick() - LastCameraScout > 10) and distanceToCastle > 50 then
-                        LastCameraScout = tick() local cam = workspace.CurrentCamera
-                        if cam then local originalType, originalCFrame = cam.CameraType, cam.CFrame; cam.CameraType = Enum.CameraType.Scriptable; cam.CFrame = CFrame.new(CastleCenterPosition + Vector3.new(0, 5, 10), CastleCenterPosition) task.wait(0.1) cam.CameraType, cam.CFrame = originalType, originalCFrame end
-                    end
-                    local EasyText = GFolder and GFolder:FindFirstChild("WORLD - 1.WorldModel", true) and GFolder["WORLD - 1.WorldModel"].MainPart.SurfaceGUI.Desc
-                    local MedText  = GFolder and GFolder:FindFirstChild("WORLD - 2.DesertModel", true) and GFolder["WORLD - 2.DesertModel"].MainPart.SurfaceGUI.Desc
-                    local HardText = GFolder and GFolder:FindFirstChild("WORLD - 3.AncientBossModel", true) and GFolder["WORLD - 3.AncientBossModel"].MainPart.SurfaceGUI.Desc
-                    if _G.AutoEasyTrails and EasyText and EasyText.Text:lower():match("is open") then
-                        local gateObj = EasyText:FindFirstAncestorOfClass("Part") or EasyText:FindFirstAncestorOfClass("MeshPart") if gateObj then ForceWalkThroughGate(gateObj) end
-                    elseif _G.AutoMediumTrails and MedText and MedText.Text:lower():match("is open") then
-                        local gateObj = MedText:FindFirstAncestorOfClass("Part") or MedText:FindFirstAncestorOfClass("MeshPart") if gateObj then ForceWalkThroughGate(gateObj) end
-                    elseif _G.AutoHardTrails and HardText and HardText.Text:lower():match("is open") then
-                        local gateObj = HardText:FindFirstAncestorOfClass("Part") or HardText:FindFirstAncestorOfClass("MeshPart") if gateObj then ForceWalkThroughGate(gateObj) end
-                    else
-                        if _G.AutoCapsule then hrp.CFrame = CFrame.new(712.6, 5.7, 7814.0) end
-                    end
-                end
-            end)
+        task.wait(0.25)
+
+        local hrp = GetCharacterRoot()
+
+        if not hrp then
+            continue
         end
+
+
+        -- Capsule
+        if _G.AutoCapsule and not InsideTrail then
+            MoveToPosition(TrialSettings.CapsulePosition)
+        end
+
+
+        -- Trials
+        if _G.AutoEasyTrails
+        or _G.AutoMediumTrails
+        or _G.AutoHardTrails then
+
+
+            local distance =
+                (hrp.Position - TrialSettings.ArenaPosition).Magnitude
+
+
+            InsideTrail = distance < 250
+
+
+            if InsideTrail then
+
+                local enemy = FindNearestEnemy(hrp)
+
+                if enemy then
+                    hrp.CFrame =
+                        CFrame.new(
+                            enemy.Position +
+                            (enemy.CFrame.LookVector * 1.5),
+                            enemy.Position
+                        )
+                end
+
+            end
+        else
+            InsideTrail = false
+        end
+
     end
 end)
 task.spawn(function()
