@@ -276,9 +276,7 @@ local function GateOpen(gate)
 
         if label then
 
-            return
-            label.Text:lower()
-            :find("open") ~= nil
+            return label.Text:lower():find("open") ~= nil
 
         end
 
@@ -429,8 +427,7 @@ while true do
 
         if gate then
 
-            hrp =
-                GetRoot()
+            local hrp = GetRoot()
 
             if hrp then
 
