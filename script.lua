@@ -687,6 +687,18 @@ task.spawn(function()
         end
     end
 end)
+
+task.spawn(function()
+    while true do
+        task.wait(0.5)
+
+        if _G.AutoConvertBlaze then
+            pcall(function()
+                NetRemote:FireServer("ConvertBlaze")
+            end)
+        end
+    end
+end)
                         
 task.spawn(function() while true do task.wait(1) if _G.AutoRebirthTimer then pcall(function() NetRemote:FireServer("Rebirth") end) task.wait(600) end end end)
 task.spawn(function() while true do task.wait(0.2) if _G.AutoRuneBasic and not InsideTrail then pcall(function() local c = player.Character local hrp = c and c:FindFirstChild("HumanoidRootPart") if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end end) end end end)
