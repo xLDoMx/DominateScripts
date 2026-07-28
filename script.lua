@@ -179,7 +179,6 @@ task.spawn(function()
         end
     end
 end)
--- THE MASTER DETACHED ASYNCHRONOUS TRANSACTION CHANNELS
 task.spawn(function()
     while true do task.wait(0.5) 
         if _G.AutoUpgradeStarter then NetRemote:FireServer("UpgradeNoobMax", "Starter") end
@@ -202,7 +201,7 @@ task.spawn(function()
     end
 end)
 
--- FULLY SEPARATED FIRE AUTOMATION MOTORS (Prevents Max-Level Thread Starvation)
+-- SEPARATED FIRE AUTOMATION TASK SPONS (Eliminates wait bottlenecks and locks completely)
 task.spawn(function()
     while true do task.wait(0.4) 
         if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end
@@ -237,10 +236,9 @@ task.spawn(function()
     end
 end)
 
--- COMPILING DETACHED TIME CLOCKS
 task.spawn(function() while true do task.wait(1) if _G.AutoRebirthTimer then pcall(function() NetRemote:FireServer("Rebirth") end) task.wait(600) end end end)
-task.spawn(function() while true do task.wait(0.2) if _G.AutoRuneBasic and (not InsideTrail) then pcall(function() local c = player.Character local hrp = c and c:FindFirstChild("HumanoidRootPart") if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end end) end end end)
-task.spawn(function() while true do task.wait(0.12) if _G.AutoCapsule and (not InsideTrail) then local args = { "ToggleMinionAutoOpen", "Ancient" } NetRemote:FireServer(unpack(args)) end end end)
+task.spawn(function() while true do task.wait(0.2) if _G.AutoRuneBasic and not InsideTrail then pcall(function() local c = player.Character local hrp = c and c:FindFirstChild("HumanoidRootPart") if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end end) end end end)
+task.spawn(function() while true do task.wait(0.12) if _G.AutoCapsule and not InsideTrail then local args = { "ToggleMinionAutoOpen", "Ancient" } NetRemote:FireServer(unpack(args)) end end end)
 local function route(b1, b2, b3, b4, b5, s1, s2, s3, s4, s5) s1.Visible, s2.Visible, s3.Visible, s4.Visible, s5.Visible = true, false, false, false, false; b1.BackgroundColor3, b1.TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15) b2.BackgroundColor3, b2.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b3.BackgroundColor3, b3.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b4.BackgroundColor3, b4.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) b5.BackgroundColor3, b5.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
 subBtnNoobs.MouseButton1Click:Connect(function() route(subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
 subBtnOof.MouseButton1Click:Connect(function() route(subBtnOof, subBtnNoobs, subBtnRebirth, subBtnFire, subBtnBlaze, realm1UpgradeScroll, realm1NoobScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
