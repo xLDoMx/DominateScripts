@@ -667,8 +667,13 @@ task.spawn(function()
         if _G.AutoPrestige then
             pcall(function()
                 NetRemote:FireServer("Prestige")
+            end)
+        end
+    end
+end)
 
-                        task.spawn(function()
+
+task.spawn(function()
     while true do
         task.wait(0.2)
 
@@ -680,7 +685,6 @@ task.spawn(function()
                     "MoreBlaze"
                 )
             end)
-            task.wait(0.25)
         end
 
         if _G.AutoBlazeMoreFire then
@@ -691,7 +695,6 @@ task.spawn(function()
                     "MoreFire"
                 )
             end)
-            task.wait(0.25)
         end
 
         if _G.AutoBlazeMoreOof then
@@ -702,7 +705,6 @@ task.spawn(function()
                     "MoreOof"
                 )
             end)
-            task.wait(0.25)
         end
     end
 end)
