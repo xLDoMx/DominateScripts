@@ -180,16 +180,53 @@ task.spawn(function()
     end
 end)
 task.spawn(function()
-    while true do task.wait(0.5) 
-        if _G.AutoUpgradeStarter then NetRemote:FireServer("UpgradeNoobMax", "Starter") end
-        if _G.AutoUpgradeCooker then NetRemote:FireServer("UpgradeNoobMax", "Cooker") end
-        if _G.AutoUpgradeExplorer then NetRemote:FireServer("UpgradeNoobMax", "Explorer") end
-        if _G.AutoUpgradeMagician then NetRemote:FireServer("UpgradeNoobMax", "Magician") end
-        if _G.AutoUpgradeArcher then NetRemote:FireServer("UpgradeNoobMax", "Archer") end
-        if _G.AutoUpgradeSoldier then NetRemote:FireServer("UpgradeNoobMax", "Soldier") end
-        if _G.AutoUpgradeMoreOof then NetRemote:FireServer("UpgradeUpgradeMax", "Oof", "MoreOof") end
-        if _G.AutoUpgradeFasterNoobs then NetRemote:FireServer("UpgradeUpgradeMax", "Oof", "FasterNoobs") end
-        if _G.AutoUpgradePharaoh then NetRemote:FireServer("UpgradeNoobMax", "Pharaoh") end
+    while true do
+        task.wait(0.2)
+
+        if _G.AutoUpgradeStarter then
+            NetRemote:FireServer("UpgradeNoobMax", "Starter")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradeCooker then
+            NetRemote:FireServer("UpgradeNoobMax", "Cooker")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradeExplorer then
+            NetRemote:FireServer("UpgradeNoobMax", "Explorer")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradeMagician then
+            NetRemote:FireServer("UpgradeNoobMax", "Magician")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradeArcher then
+            NetRemote:FireServer("UpgradeNoobMax", "Archer")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradeSoldier then
+            NetRemote:FireServer("UpgradeNoobMax", "Soldier")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradeMoreOof then
+            NetRemote:FireServer("UpgradeUpgradeMax", "Oof", "MoreOof")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradeFasterNoobs then
+            NetRemote:FireServer("UpgradeUpgradeMax", "Oof", "FasterNoobs")
+            task.wait(0.2)
+        end
+
+        if _G.AutoUpgradePharaoh then
+            NetRemote:FireServer("UpgradeNoobMax", "Pharaoh")
+            task.wait(0.2)
+        end
     end
 end)
 
