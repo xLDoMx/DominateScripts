@@ -90,6 +90,7 @@ local toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 local toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
 local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
 local toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
+local toggleBuildFire = makeSubRow("Auto Build Fire", 5, realm1FireScroll)
 
 local toggleConvertBlaze = makeSubRow("Auto Convert Fire to Blaze", 1, realm1BlazeScroll)
 local toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
