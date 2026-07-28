@@ -202,10 +202,7 @@ task.spawn(function()
     end
 end)
 
--- MULTI-THREAD ISOLATED FAST-LANES FOR YOUR RECENT REMOTE SPY PARAMETERS
-task.spawn(function()
-    while true do task.wait(0.4) 
-        -- FULLY SEPARATED FIRE AUTOMATION MOTORS (Prevents Max-Level Thread Starvation)
+-- FULLY SEPARATED FIRE AUTOMATION MOTORS (Prevents Max-Level Thread Starvation)
 task.spawn(function()
     while true do task.wait(0.4) 
         if _G.AutoFireMoreFire then NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end
@@ -230,6 +227,7 @@ task.spawn(function()
         if _G.AutoPrestige then NetRemote:FireServer("Prestige") end
     end
 end)
+
 
 task.spawn(function()
     while true do task.wait(0.5) 
