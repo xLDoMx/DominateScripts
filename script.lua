@@ -8,6 +8,7 @@ _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false
 _G.AutoFireMoreFire, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreBulk = false, false, false, false
 _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoConvertBlaze, _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof = false, false, false, false
+_G.AutoBuildFire = false
 
 player.Idled:Connect(function()
     if _G.AntiAFK then
@@ -558,6 +559,44 @@ task.spawn(function()
     end
 end)
 
+-- AUTO BUILD FIRE
+local FirePosition = Vector3.new(
+    1080.31,
+    13.55,
+    -675.99
+)
+
+task.spawn(function()
+
+    while true do
+
+        task.wait(0.5)
+
+        if _G.AutoBuildFire then
+
+            local char = player.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+            if hrp then
+
+                local distance =
+                    (hrp.Position - FirePosition).Magnitude
+
+                if distance > 5 then
+
+                    hrp.CFrame =
+                        CFrame.new(FirePosition)
+
+                end
+
+            end
+
+        end
+
+    end
+
+end)
+
 task.spawn(function()
     while true do
         task.wait(0.2)
@@ -615,6 +654,12 @@ task.spawn(function()
                 NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk")
             end)
             task.wait(0.25)
+
+                local toggleBuildFire = makeSubRow(
+    "Auto Build Fire",
+    5,
+    realm1FireScroll
+)
         end
     end
 end)
@@ -654,6 +699,11 @@ toggleFireFire.MouseButton1Click:Connect(function() tState(toggleFireFire, "Auto
 toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth, "AutoFireMoreRebirth") end)
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
+
+-- Auto Build Fire
+toggleBuildFire.MouseButton1Click:Connect(function()
+    tState(toggleBuildFire, "AutoBuildFire")
+end)
 
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) toggleRuneBasic.MouseButton1Click:Connect(function() tState(toggleRuneBasic, "AutoRuneBasic") end)
 toggleConvertBlaze.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoConvertBlaze") end) toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleConvertBlaze, "AutoBlazeMoreFire") end) toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
