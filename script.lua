@@ -244,7 +244,6 @@ task.spawn(function()
             if _G.AutoCapsule then 
                 InsideTrail = false MovePlayer(CapsulePosition) 
             elseif _G.AutoFarmCash then
-                InsideTrail = false MovePlayer(ResolveConveyorPosition())
             end
             
             if selected then
