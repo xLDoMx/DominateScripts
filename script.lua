@@ -1,5 +1,5 @@
 --======================================================================================
--- BROSWE HUB | PART 1 OF 8 (CRITICAL ENGINE PATH VERIFICATION)
+-- BROSWE HUB | PART 1 OF 9 (CRITICAL ENGINE PATH VERIFICATION)
 --======================================================================================
 player = game:GetService("Players").LocalPlayer
 vu = game:GetService("VirtualUser")
@@ -30,7 +30,7 @@ repeat
     if not NetRemote then task.wait(0.5) end
 until NetRemote
 --======================================================================================
--- BROSWE HUB | PART 2 OF 8 (MASTER PAGES REGISTRY SETUP)
+-- BROSWE HUB | PART 2 OF 9 (MASTER PAGES REGISTRY SETUP)
 --======================================================================================
 local sg = Instance.new("ScreenGui") sg.Name = "LukesBrosweHubMirror" sg.Parent = player:WaitForChild("PlayerGui") sg.ResetOnSpawn = false
 mainFrame = Instance.new("Frame") mainFrame.Size = UDim2.new(0, 460, 0, 360) mainFrame.Position = UDim2.new(0.5, -230, 0.5, -180) mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
@@ -43,7 +43,7 @@ realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) r
 settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
 --======================================================================================
--- BROSWE HUB | PART 3 OF 8 (INTERFACE INTERACTIVE HEADER AND TABS LOADING)
+-- BROSWE HUB | PART 3 OF 9 (INTERFACE INTERACTIVE HEADER AND TABS LOADING)
 --======================================================================================
 local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(1, -20, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Broswe Hub | Noob Incremental" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
@@ -70,7 +70,7 @@ subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 75, 1, 0)
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
 --======================================================================================
--- BROSWE HUB | PART 4 OF 8 (SCROLL CONTAINER INSTANTIATIONS)
+-- BROSWE HUB | PART 4 OF 9 (SCROLL CONTAINER INSTANTIATIONS)
 --======================================================================================
 local function makeScroll(canvas) 
     local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = realm1MasterPage return s 
@@ -97,7 +97,7 @@ function makeSubRow(label, idx, scr)
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
 end
 --======================================================================================
--- BROSWE HUB | PART 5 OF 8 (COMPONENT INTERACTIVE TOGGLES LIST MAPPING)
+-- BROSWE HUB | PART 5 OF 9 (COMPONENT INTERACTIVE TOGGLES LIST MAPPING)
 --======================================================================================
 toggleEasy = gridRow("Auto Trial (Easy) - Fast Entry", 1, trialPage)
 toggleMed = gridRow("Auto Trial (Medium) - Progress Entry", 2, trialPage)
@@ -148,7 +148,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 8 (CORE SPATIAL CALCULATORS & TYPE VALIDATION RUNTIMES)
+-- BROSWE HUB | PART 6 OF 9 (CORE SPATIAL CALCULATORS & TYPE VALIDATION RUNTIMES)
 --======================================================================================
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
@@ -217,7 +217,7 @@ local function GetChosenTrail()
     return nil
 end
 --======================================================================================
--- BROSWE HUB | PART 7 OF 8 (LOCOMOTIVE SYSTEMS & EVENT DRIVEN REACTIVE LOOPS)
+-- BROSWE HUB | PART 7 OF 9 (LOCOMOTIVE SYSTEMS & EVENT DRIVEN REACTIVE LOOPS)
 --======================================================================================
 local function GetGate(name)
     local world3 = workspace:FindFirstChild("__GAME_CONTENT") and workspace.__GAME_CONTENT:FindFirstChild("Contents") and workspace.__GAME_CONTENT.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
@@ -313,7 +313,7 @@ end
 
 task.spawn(function()
     local livePlot = workspace.__GAME_CONTENT:WaitForChild("Tycoon", 10)
-    local buttonsFolder = livePlot and livePlot:WaitForChild("Buttons", 10)
+    local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons", 10)
     
     if buttonsFolder then
         buttonsFolder.ChildRemoved:Connect(function()
@@ -338,7 +338,9 @@ task.spawn(function()
         end
     end
 end)
-
+--======================================================================================
+-- BROSWE HUB | PART 8 OF 9 (MULTI-THREADED REMOTE PURCHASE ROUTINES)
+--======================================================================================
 local function buildPurchaseThread(flag, command, serverArgs)
     task.spawn(function()
         while true do
@@ -392,31 +394,8 @@ task.spawn(function()
     end
 end)
 --======================================================================================
--- BROSWE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
+-- BROSWE HUB | PART 9 OF 9 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
 --======================================================================================
-local hook
-hook = hookfunction(NetRemote.FireServer, function(self, ...)
-    local args = {...}
-    if args == "Prestige" or args == "Rebirth" then
-        task.spawn(function()
-            task.wait(120) 
-            local minionFolder = workspace:FindFirstChild("_GAME_MINIONS")
-            local hrp = GetWorldRoot()
-            if minionFolder and hrp then
-                local originalPos = hrp.CFrame
-                for _, pad in ipairs(minionFolder:GetChildren()) do
-                    local touchTarget = pad:IsA("BasePart") and pad or pad:FindFirstChildWhichIsA("BasePart", true)
-                    if touchTarget then
-                        hrp.CFrame = CFrame.new(touchTarget.Position + Vector3.new(0, 2, 0)) task.wait(0.4) 
-                    end
-                end
-                hrp.CFrame = originalPos
-            end
-        end)
-    end
-    return hook(self, ...)
-end)
-
 function tState(b, v) 
     _G[v] = not _G[v] 
     b.Text = _G[v] and "ACTIVE" or "DISABLED" 
@@ -525,4 +504,5 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 8 LOADED - UI SYSTEM COMPLETELY OPERATIONAL")
+print("PART 9 LOADED - UI SYSTEM COMPLETELY OPERATIONAL")
+
