@@ -118,7 +118,7 @@ toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll)
 toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
--- VERIFIED CANVASES ROWS: Re-linked correctly to use the parented realm1FireScroll canvas context
+-- CORRECTION: Re-indexed rows 1 through 5 to ensure they stack from the top of the canvas view
 toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
 toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
@@ -141,6 +141,7 @@ toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim2.new(1, -85, 0.5, -13) toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
+
 --======================================================================================
 -- BROSWE HUB | PART 6 OF 7 (COMBAT AND UPGRADE TASK SPAWNER THREADS)
 --======================================================================================
