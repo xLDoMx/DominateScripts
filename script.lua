@@ -179,7 +179,6 @@ local function ResolveConveyorPosition()
     return Vector3.new(874.84, 5.51, 13426.69)
 end
 
--- BULLETPROOF PARSER REWRITE: Returns math.huge instead of 0 to safely bypass unaffordable/unpriced pads
 local function ParseCostText(obj)
     if not obj or not obj:IsA("TextLabel") then
         return math.huge 
@@ -374,7 +373,7 @@ local upgrades = {
     {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
-end
+}
 for _, item in ipairs(upgrades) do buildPurchaseThread(item.F, item.T, item.A) end
 
 task.spawn(function()
