@@ -1,5 +1,5 @@
 --======================================================================================
--- BROSWE HUB | PART 1 OF 9 (PROTECTION GATES & STATE CACHING MECHANICS)
+-- BROSWE HUB | PART 1 OF 9 (PROTECTION GATES & DYNAMIC REF BASE GATES)
 --======================================================================================
 if getgenv().BrosweHubLoaded then 
     print("[Broswe Hub] Script is already executing! Aborting duplicate instance.")
@@ -25,11 +25,6 @@ local State = {
 local player = game:GetService("Players").LocalPlayer
 local vu = game:GetService("VirtualUser")
 local rep = game:GetService("ReplicatedStorage")
-
--- CENTRAL CONTENT CACHING LAYER
-local GameContent = workspace:WaitForChild("__GAME_CONTENT", 10)
-local TycoonPlot = GameContent and GameContent:WaitForChild("Tycoon", 10)
-local ButtonsShelf = TycoonPlot and TycoonPlot:WaitForChild("Buttons", 10)
 
 player.Idled:Connect(function()
     if Running and State.AntiAFK then
@@ -166,7 +161,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 9 (CORE SPATIAL CALCULATORS & CACHED PROPERTY MATRIX)
+-- BROSWE HUB | PART 6 OF 9 (DYNAMIC LAYOUT PATH SELECTION INTEGRATIONS)
 --======================================================================================
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
@@ -187,8 +182,12 @@ local function MovePlayer(pos)
     if hrp then hrp.CFrame = CFrame.new(pos) end
 end
 
+-- REAL-TIME REF MATRIX RESOLVER: Re-scans active path variables to completely fix the under-map glitch
 local function ResolveConveyorPosition()
-    local physicalConveyor = TycoonPlot and TycoonPlot:FindFirstChild("Conveyor", true)
+    local content = workspace:FindFirstChild("__GAME_CONTENT")
+    local tycoon = content and content:FindFirstChild("Tycoon")
+    local physicalConveyor = tycoon and tycoon:FindFirstChild("Conveyor", true)
+    
     if physicalConveyor and physicalConveyor:IsA("BasePart") then
         return physicalConveyor.Position + Vector3.new(0, 4, 0)
     end
@@ -227,10 +226,11 @@ local function GetChosenTrail()
     return nil
 end
 --======================================================================================
--- BROSWE HUB | PART 7 OF 9 (PCALL ISOLATED LOCOMOTIVE ROLES ENGINE)
+-- BROSWE HUB | PART 7 OF 9 (LIVE COMBAT ENGINE & DYNAMIC HIERARCHY EVALUATOR)
 --======================================================================================
 local function GetGate(name)
-    local world3 = GameContent and GameContent:FindFirstChild("Contents") and GameContent.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
+    local content = workspace:FindFirstChild("__GAME_CONTENT")
+    local world3 = content and content:FindFirstChild("Contents") and content.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
     if world3 then return world3:FindFirstChild(name .. "Gate", true) end
 end
 
@@ -244,6 +244,7 @@ local function GateOpen(gate)
     return false
 end
 
+-- BOSS LOCATOR FLUID ROUTINE: Dynamically resolves active trail enemies to restore boss teleport functionality
 local function FindEnemy()
     local hrp = GetWorldRoot()
     if not hrp then return nil end
@@ -261,7 +262,6 @@ local function FindEnemy()
     return closest
 end
 
--- CENTRAL PASSIVE LOCOMOTION ROUTINE
 task.spawn(function()
     while Running do
         local ok, err = pcall(function()
@@ -297,9 +297,12 @@ end)
 
 local function ProcessTycoonPurchases()
     if not Running or not State.AutoFarmCash or InsideTrail then return end
-    if not ButtonsShelf then return end
+    local content = workspace:FindFirstChild("__GAME_CONTENT")
+    local tycoon = content and content:FindFirstChild("Tycoon")
+    local buttonsFolder = tycoon and tycoon:FindFirstChild("Buttons")
+    if not buttonsFolder then return end
     
-    for _, btnModel in ipairs(ButtonsShelf:GetChildren()) do
+    for _, btnModel in ipairs(buttonsFolder:GetChildren()) do
         if btnModel:IsA("Model") then
             local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
             local costLabel = btnModel:FindFirstChild("Cost", true)
@@ -311,7 +314,7 @@ local function ProcessTycoonPurchases()
                 if localWallet and parsedCost <= localWallet then
                     TargetOverridePosition = targetBuyPart.Position + Vector3.new(0, 3, 0)
                     local giveUpTime = tick() + 0.4
-                    repeat task.wait(0.05) until not btnModel:IsDescendantOf(ButtonsShelf) or tick() > giveUpTime or not State.AutoFarmCash or InsideTrail or not Running
+                    repeat task.wait(0.05) until not btnModel:IsDescendantOf(buttonsFolder) or tick() > giveUpTime or not State.AutoFarmCash or InsideTrail or not Running
                     TargetOverridePosition = nil
                     break 
                 end
@@ -320,26 +323,18 @@ local function ProcessTycoonPurchases()
     end
 end
 
--- EVENT SUBSCRIPTIONS MANAGEMENT LAYER
 task.spawn(function()
-    if ButtonsShelf then
-        ButtonsShelf.ChildRemoved:Connect(function()
-            if Running then task.wait(0.1) ProcessTycoonPurchases() end
-        end)
-    end
-    
-    local extraFolder = player:WaitForChild("EXTRA", 5)
-    local pinnedFolder = extraFolder and extraFolder:WaitForChild("PINNED_CURRENCIES", 5)
-    local cashObj = pinnedFolder and pinnedFolder:WaitForChild("Cash", 5)
-    if cashObj and cashObj:IsA("ValueBase") then
-        cashObj.Changed:Connect(function()
-            if Running then ProcessTycoonPurchases() end
-        end)
-    end
-    
+    -- LIQUID INTERACTIVE EVENT REGISTRY LOUPE LOOP
     while Running do
-        task.wait(1.5)
-        if not TargetOverridePosition then ProcessTycoonPurchases() end
+        pcall(function()
+            local content = workspace:FindFirstChild("__GAME_CONTENT")
+            local tycoon = content and content:FindFirstChild("Tycoon")
+            local buttonsFolder = tycoon and tycoon:FindFirstChild("Buttons")
+            if buttonsFolder then
+                ProcessTycoonPurchases()
+            end
+        end)
+        task.wait(1.25)
     end
 end)
 --======================================================================================
@@ -354,7 +349,7 @@ local function buildPurchaseThread(flag, command, serverArgs)
                 end
             end)
             if not ok then warn("[Network Purchase Error]", err) end
-            task.wait(0.4) -- Rate-limited throttled frequency delay
+            task.wait(0.4) 
         end
     end)
 end
@@ -513,4 +508,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 9 LOADED - ARCHITECTURE COMPLETELY PERFORMANCE BALANCED")
+print("PART 9 LOADED - DYNAMIC CACHE FRAMEWORK ENTIRELY RUNTIME OPERATIONAL")
