@@ -232,7 +232,7 @@ local function GetChosenTrail()
 end
 
 --======================================================================================
--- BROSWE HUB | PART 7 OF 9 (RESTORED PARALLEL MOVEMENT & SWEOPER RUNTIMES)
+-- BROSWE HUB | PART 7 OF 9 (STRICT STRING GATE KEYWORD OVERRIDES)
 --======================================================================================
 local function GetGate(name)
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
@@ -240,12 +240,21 @@ local function GetGate(name)
     if world3 then return world3:FindFirstChild(name .. "Gate", true) end
 end
 
+-- STRICT STRINGS FILTER GATING: Bypasses countdown timers completely by hunting true active keywords
 local function GateOpen(gate)
     if not gate then return false end
     local gui = gate:FindFirstChildWhichIsA("SurfaceGui", true)
     if gui then
         local label = gui:FindFirstChildWhichIsA("TextLabel", true)
-        if label then return label.Text:lower():find("open") ~= nil end
+        if label then 
+            local txt = label.Text:lower()
+            -- Block the teleport instantly if the text label contains a countdown timer keyword
+            if txt:find("in") or txt:find("m") or txt:find("s") then
+                return false
+            end
+            -- Only pass true if an active entry keyword registers on the board surface
+            return txt:find("enter") ~= nil or txt:find("active") ~= nil or txt:find("now") ~= nil or txt == "open"
+        end
     end
     return false
 end
@@ -282,13 +291,11 @@ task.spawn(function()
                 end
             end
             
-            -- RIGID STATE GATE: Only check gate open status if a trail toggle is explicitly turned on
             if selected and (selected == "Easy" or selected == "Medium" or selected == "Hard") then
                 local gate = GetGate(selected)
                 if GateOpen(gate) then TrailState = "EnteringTrail" end
             end
         elseif TrailState == "EnteringTrail" then
-            -- DOUBLE CHECK GATE: If a ghost trigger occurs or selected goes nil, drop back to Capsule safely
             if selected and (selected == "Easy" or selected == "Medium" or selected == "Hard") then
                 local hrp = GetWorldRoot() if hrp then hrp.CFrame = CFrame.new(CastlePosition) end
                 task.wait(0.5)
@@ -299,7 +306,6 @@ task.spawn(function()
                 TrailState = "Capsule"
             end
         elseif TrailState == "Fighting" then
-            -- If you turn off toggles while fighting, immediately exit back to farming base
             if not selected or (selected ~= "Easy" and selected ~= "Medium" and selected ~= "Hard") then
                 InsideTrail = false
                 TrailState = "Capsule"
@@ -360,6 +366,7 @@ task.spawn(function()
         else SweeperActiveMovement = false end
     end
 end)
+
 
 --======================================================================================
 -- BROSWE HUB | PART 8 OF 9 (MULTI-THREADED REMOTE PURCHASE ROUTINES)
