@@ -1,5 +1,5 @@
 --======================================================================================
--- BROSWE HUB | PART 1 OF 7 (CRITICAL ENGINE PATH VERIFICATION)
+-- Luke'sHub | PART 1 OF 8 (CRITICAL ENGINE PATH VERIFICATION)
 --======================================================================================
 player = game:GetService("Players").LocalPlayer
 vu = game:GetService("VirtualUser")
@@ -13,7 +13,6 @@ _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
 _G.AutoBuildFire = false
 
--- CASH STATE FLAGS REGISTER
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 
 player.Idled:Connect(function()
@@ -30,7 +29,7 @@ repeat
     if not NetRemote then task.wait(0.5) end
 until NetRemote
 --======================================================================================
--- BROSWE HUB | PART 2 OF 7 (MASTER PAGES REGISTRY SETUP)
+-- BROSWE HUB | PART 2 OF 8 (MASTER PAGES REGISTRY SETUP)
 --======================================================================================
 local sg = Instance.new("ScreenGui") sg.Name = "LukesBrosweHubMirror" sg.Parent = player:WaitForChild("PlayerGui") sg.ResetOnSpawn = false
 mainFrame = Instance.new("Frame") mainFrame.Size = UDim2.new(0, 460, 0, 360) mainFrame.Position = UDim2.new(0.5, -230, 0.5, -180) mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
@@ -43,7 +42,7 @@ realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) r
 settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
 --======================================================================================
--- BROSWE HUB | PART 3 OF 7 (INTERFACE INTERACTIVE HEADER AND TABS LOADING)
+-- BROSWE HUB | PART 3 OF 8 (INTERFACE INTERACTIVE HEADER AND TABS LOADING)
 --======================================================================================
 local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(1, -20, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Broswe Hub | Noob Incremental" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
@@ -70,7 +69,7 @@ subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 75, 1, 0)
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
 --======================================================================================
--- BROSWE HUB | PART 4 OF 7 (SCROLL CONTAINER INSTANTIATIONS)
+-- BROSWE HUB | PART 4 OF 8 (SCROLL CONTAINER INSTANTIATIONS)
 --======================================================================================
 local function makeScroll(canvas) 
     local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = realm1MasterPage return s 
@@ -97,7 +96,7 @@ function makeSubRow(label, idx, scr)
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
 end
 --======================================================================================
--- BROSWE HUB | PART 5 OF 7 (COMPONENT INTERACTIVE TOGGLES LIST MAPPING)
+-- BROSWE HUB | PART 5 OF 8 (COMPONENT INTERACTIVE TOGGLES LIST MAPPING)
 --======================================================================================
 toggleEasy = gridRow("Auto Trial (Easy) - Fast Entry", 1, trialPage)
 toggleMed = gridRow("Auto Trial (Medium) - Progress Entry", 2, trialPage)
@@ -148,7 +147,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 7 (COMBAT, PARALLEL UPGRADES & ENHANCED DYNAMIC SWEEPER)
+-- BROSWE HUB | PART 6 OF 8 (COMBAT, PARALLEL UPGRADES & ENHANCED DYNAMIC SWEEPER)
 --======================================================================================
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
@@ -172,7 +171,6 @@ local function MovePlayer(pos)
         hrp.CFrame = CFrame.new(pos)
         task.wait(0.1) 
         print(("Actual -> %.2f %.2f %.2f"):format(hrp.Position.X, hrp.Position.Y, hrp.Position.Z))
-        
         task.wait(0.4) 
         print("Half second later:", tostring(hrp.Position))
     end
@@ -187,13 +185,36 @@ local function ResolveConveyorPosition()
     return Vector3.new(874.84, 5.51, 13426.69)
 end
 
+local function ParseCostText(lbl)
+    if not lbl then return 0 end
+    local text = lbl.Text:upper():gsub("CASH", ""):gsub("%s", "")
+    local num = tonumber(text:match("[%d%.]+")) or 0
+    if text:find("K") then return num * 1000 end
+    if text:find("M") then return num * 1000000 end
+    if text:find("B") then return num * 1000000000 end
+    if text:find("T") then return num * 1000000000000 end
+    return num
+end
+
+local function GetPlayerCash()
+    local extraFolder = player:FindFirstChild("EXTRA")
+    local pinnedFolder = extraFolder and extraFolder:FindFirstChild("PINNED_CURRENCIES")
+    local cashObj = pinnedFolder and pinnedFolder:FindFirstChild("Cash")
+    if cashObj and cashObj:IsA("ValueBase") then 
+        return cashObj.Value 
+    end
+    return nil
+end
+
 local function GetChosenTrail()
     if _G.AutoHardTrails then return "Hard" end
     if _G.AutoMediumTrails then return "Medium" end
     if _G.AutoEasyTrails then return "Easy" end
     return nil
 end
-
+--======================================================================================
+-- BROSWE HUB | PART 7 OF 8 (TARGETING & REWRITTEN CASH SCANNER RUNTIMES)
+--======================================================================================
 local function GetGate(name)
     local world3 = workspace:FindFirstChild("__GAME_CONTENT") and workspace.__GAME_CONTENT:FindFirstChild("Contents") and workspace.__GAME_CONTENT.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
     if world3 then return world3:FindFirstChild(name .. "Gate", true) end
@@ -258,30 +279,52 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait(0.3)
+        task.wait(0.4)
         if _G.AutoFarmCash and not InsideTrail then
             local livePlot = workspace.__GAME_CONTENT:FindFirstChild("Tycoon")
             local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
             
             if buttonsFolder then
-                local currentButtonModel = buttonsFolder:FindFirstChildWhichIsA("Model")
-                local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart", true)
+                local orderedButtons = buttonsFolder:GetChildren()
+                local foundAffordable = false
                 
-                if targetBuyPart and targetBuyPart:IsA("BasePart") then
-                    local hrp = GetWorldRoot()
-                    if hrp then
-                        SweeperActiveMovement = true
+                for _, btnModel in ipairs(orderedButtons) do
+                    if btnModel:IsA("Model") then
+                        local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
+                        local costLabel = btnModel:FindFirstChild("Cost", true)
                         
-                        print("Broswe Hub Sweeper -> Targets: " .. currentButtonModel.Name)
-                        print("Broswe Hub Path -> " .. targetBuyPart:GetFullName())
-                        print("Broswe Hub Coords -> " .. tostring(targetBuyPart.Position))
-                        
-                        MovePlayer(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                        
-                        repeat task.wait(0.1) until not currentButtonModel:IsDescendantOf(buttonsFolder) or InsideTrail or not _G.AutoFarmCash
-                        SweeperActiveMovement = false
+                        if targetBuyPart and targetBuyPart:IsA("BasePart") then
+                            local parsedCost = ParseCostText(costLabel)
+                            local localWallet = GetPlayerCash()
+                            
+                            if localWallet and parsedCost > localWallet then
+                                continue
+                            end
+                            
+                            local hrp = GetWorldRoot()
+                            if hrp then
+                                SweeperActiveMovement = true
+                                foundAffordable = true
+                                
+                                print("Broswe Hub Skipper -> Attempting Purchase: " .. btnModel.Name .. " (Cost: " .. tostring(parsedCost) .. " / Wallet: " .. tostring(localWallet) .. ")")
+                                MovePlayer(targetBuyPart.Position + Vector3.new(0, 3, 0))
+                                
+                                local giveUpTime = tick() + 0.4
+                                repeat 
+                                    task.wait(0.05) 
+                                end until not btnModel:IsDescendantOf(buttonsFolder) or tick() > giveUpTime or InsideTrail or not _G.AutoFarmCash
+                                
+                                MovePlayer(ResolveConveyorPosition())
+                                SweeperActiveMovement = false
+                                break 
+                            end
+                        end
                     end
-                else SweeperActiveMovement = false end
+                end
+                
+                if not foundAffordable then
+                    SweeperActiveMovement = false
+                end
             else SweeperActiveMovement = false end
         else SweeperActiveMovement = false end
     end
@@ -340,7 +383,7 @@ task.spawn(function()
     end
 end)
 --======================================================================================
--- BROSWE HUB | PART 7 OF 7 (INTERACTIVE EVENT LAYOUT SIGNALS AND MECHANICS)
+-- BROSWE HUB | PART 8 OF 8 (INTERACTIVE EVENT LAYOUT SIGNALS AND MECHANICS)
 --======================================================================================
 local hook
 hook = hookfunction(NetRemote.FireServer, function(self, ...)
@@ -389,10 +432,7 @@ toggleFasterNoobs.MouseButton1Click:Connect(function() tState(toggleFasterNoobs,
 toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tState(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tState(toggleRebirthFire, "AutoRebirthMoreFire") end)
-
--- FIXED TYPO HERE: Restored clean default wrapper function instantiation
 toggleFireFire.MouseButton1Click:Connect(function() tState(toggleFireFire, "AutoFireMoreFire") end)
-
 toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth, "AutoFireMoreRebirth") end)
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
