@@ -273,7 +273,20 @@ task.spawn(function()
             local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
             
             if buttonsFolder then
-                local currentButtonModel = buttonsFolder:FindFirstChildWhichIsA("Model")
+                local children = buttonsFolder:GetChildren()
+
+print("Children:", #children)
+
+local currentButtonModel = nil
+for _, child in ipairs(children) do
+    print("Found:", child.Name, child.ClassName)
+    if child:IsA("Model") then
+        currentButtonModel = child
+        break
+    end
+end
+
+print("Selected:", currentButtonModel)
                 -- RECURSIVE SEARCH ENABLED: Added true parameter to find nested parts inside updates safely
                 local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart", true)
                 
