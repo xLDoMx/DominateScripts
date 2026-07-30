@@ -6,7 +6,7 @@ vu = game:GetService("VirtualUser")
 NetRemote = nil
 
 _G.AntiAFK, _G.AutoPrestige = true, false
-_G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeExplorer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
+_G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
 _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false, false, false
 _G.AutoFireMoreFire, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreBulk = false, false, false, false
 _G.AutoRebirthTimer = false
@@ -95,7 +95,7 @@ end
 --======================================================================================
 toggleStarter = makeSubRow("Starter Noob Auto Upgrade", 1, realm1NoobScroll)
 toggleCooker = makeSubRow("Cooker Noob Auto Upgrade", 2, realm1NoobScroll)
-toggleExplorer = makeSubRow("Explorer Noob Auto Upgrade", 3, realm1NoobScroll)
+toggleFarmer = makeSubRow("Farmer Noob Auto Upgrade", 3, realm1NoobScroll) -- LINKED NAME REFACTOR
 toggleMagician = makeSubRow("Magician Noob Auto Upgrade", 4, realm1NoobScroll)
 toggleArcher = makeSubRow("Archer Noob Auto Upgrade", 5, realm1NoobScroll)
 toggleSoldier = makeSubRow("Soldier Noob Auto Upgrade", 6, realm1NoobScroll)
@@ -144,7 +144,6 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
--- FLUID PLOT FINDER: Tracks your moving tycoon base plane dynamically on every wake cycle
 local function ResolveConveyorPosition()
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
     if gameContent then
@@ -169,12 +168,9 @@ local function ResolveConveyorPosition()
     if hrp then return hrp.Position + Vector3.new(0, 15, 0) end
     return Vector3.new(874.84, 15.0, 13426.69)
 end
-
-
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (5-MINUTE BLIND FORCE-STEP SCHEDULER)
+-- DOMINATE HUB | PART 7 OF 8 (UNBROKEN STEP BATCH HARVEST MODULE)
 --======================================================================================
--- DEDICATED BASELINE CONVEYOR HARVEST ANCHOR
 task.spawn(function()
     while true do
         task.wait(0.3)
@@ -185,7 +181,7 @@ task.spawn(function()
     end
 end)
 
--- BLIND INTERVAL SWEEPER ENGINE: Bypasses money logic completely via a 5-minute timed step routine
+-- TIMED BATCH ENGINE WRAPPER: Walks down the button shelf linearly and executes a single 5-minute wait block
 task.spawn(function()
     while true do
         task.wait(0.5)
@@ -197,40 +193,41 @@ task.spawn(function()
             
             if buttonsFolder then
                 local currentButtons = buttonsFolder:GetChildren()
-                print("[Dominate Hub] Initiating scheduled factory sweep batch pass...")
+                print("[Dominate Hub] Launching factory sweep batch...")
                 
-                -- Step through every single button model in order, exactly once per pass
-                for _, btnModel in ipairs(currentButtons) do
+                -- FIXED LINEAR INDEX FOR LOOP: Removes the internal break conflict completely
+                for i = 1, #currentButtons do
+                    local btnModel = currentButtons[i]
                     if not _G.AutoFarmCash then break end
                     
-                    if btnModel:IsA("Model") then
+                    if btnModel and btnModel:IsA("Model") then
                         local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
                         local hrp = GetWorldRoot()
                         
                         if targetBuyPart and targetBuyPart:IsA("BasePart") and hrp then
                             SweeperActiveMovement = true
                             
-                            -- Force-step directly onto the pad vector 
+                            -- Snap precisely onto the pad button vector space
                             hrp.CFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                            task.wait(0.35) -- Stable physical touch window duration
+                            task.wait(0.35) 
                             
-                            -- Instantly return to baseline conveyor line to avoid anchoring errors
+                            -- Safely clear pad and return to active conveyor line baseline plane
                             hrp.CFrame = CFrame.new(ResolveConveyorPosition())
-                            task.wait(0.05) -- Tiny cooldown recovery gap before the next jump
+                            task.wait(0.05) 
                         end
                     end
                 end
                 
-                -- ENTER DEEP TIMED HARVEST: Lock the character to the conveyor for exactly 5 minutes
+                -- ENGAGE TIMER ENCLOSURE GATE: Correctly triggers the 5-minute sleep block only AFTER the pass completes
                 SweeperActiveMovement = false
-                print("[Dominate Hub] Sweep batch complete. Harvesting cash drops for 5 minutes...")
+                print("[Dominate Hub] Full batch pass complete. Entering 5-minute farm sleep...")
                 
-                local sleepEndTime = tick() + 300 -- 5 minutes * 60 seconds
+                local sleepEndTime = tick() + 300
                 repeat 
                     task.wait(1) 
                 until tick() >= sleepEndTime or not _G.AutoFarmCash
                 
-                print("[Dominate Hub] 5 minutes concluded. Preparing next factory sweep pass.")
+                print("[Dominate Hub] Sleep window concluded. Cycling to next pass sweep.")
             else
                 SweeperActiveMovement = false
                 task.wait(2)
@@ -256,7 +253,7 @@ end
 local upgrades = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
-    {F = "AutoUpgradeExplorer",   T = "UpgradeNoobMax",    A = {"Explorer"}},
+    {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}}, -- RESTORED REMOTES REF ARGS
     {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}},
     {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    A = {"Archer"}},
     {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    A = {"Soldier"}},
@@ -294,9 +291,6 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
-
-
-
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
 --======================================================================================
@@ -312,7 +306,7 @@ toggleAFK.MouseButton1Click:Connect(function() tState(toggleAFK, "AntiAFK") end)
 togglePrestige.MouseButton1Click:Connect(function() tState(togglePrestige, "AutoPrestige") end)
 toggleStarter.MouseButton1Click:Connect(function() tState(toggleStarter, "AutoUpgradeStarter") end) 
 toggleCooker.MouseButton1Click:Connect(function() tState(toggleCooker, "AutoUpgradeCooker") end) 
-toggleExplorer.MouseButton1Click:Connect(function() tState(toggleExplorer, "AutoUpgradeExplorer") end) 
+toggleFarmer.MouseButton1Click:Connect(function() tState(toggleFarmer, "AutoUpgradeFarmer") end) 
 toggleMagician.MouseButton1Click:Connect(function() tState(toggleMagician, "AutoUpgradeMagician") end) 
 toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgradeArcher") end) 
 toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) 
