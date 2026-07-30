@@ -206,7 +206,7 @@ local function GetPlayerCash()
 end
 
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (DEDICATED DUAL HARVEST RUNTIME ENGINE)
+-- DOMINATE HUB | PART 7 OF 8 (5-MINUTE INTERVAL RUNTIME ENGINE)
 --======================================================================================
 task.spawn(function()
     while true do
@@ -218,9 +218,11 @@ task.spawn(function()
     end
 end)
 
+-- TIMED INTERVAL RUNTIME THREAD: Puts the pad sweeper into a 5-minute deep sleep if nothing is affordable
 task.spawn(function()
     while true do
-        task.wait(0.4)
+        task.wait(0.5)
+        
         if _G.AutoFarmCash then
             local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
             local tycoon = gameContent and gameContent:FindFirstChild("Tycoon")
@@ -228,7 +230,7 @@ task.spawn(function()
             
             if buttonsFolder then
                 local orderedButtons = buttonsFolder:GetChildren()
-                local foundAffordable = false
+                local foundAffordableThisRound = false
                 
                 for _, btnModel in ipairs(orderedButtons) do
                     if not _G.AutoFarmCash then break end
@@ -240,6 +242,7 @@ task.spawn(function()
                             local parsedCost = ParseCostText(costLabel)
                             local localWallet = GetPlayerCash()
                             
+                            -- Skip calculation if the wallet data clearly shows we cannot afford it
                             if localWallet and localWallet > 0 and parsedCost > localWallet then
                                 continue
                             end
@@ -247,23 +250,42 @@ task.spawn(function()
                             local hrp = GetWorldRoot()
                             if hrp then
                                 SweeperActiveMovement = true
-                                foundAffordable = true
+                                foundAffordableThisRound = true
                                 
+                                -- Jump immediately onto pad coordinate space vectors
                                 hrp.CFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                                task.wait(0.25)
+                                task.wait(0.3) -- Stable physics pause duration
                                 hrp.CFrame = CFrame.new(ResolveConveyorPosition())
                                 
                                 local giveUpTime = tick() + 0.4
                                 repeat task.wait(0.05) until not btnModel:IsDescendantOf(buttonsFolder) or tick() > giveUpTime or not _G.AutoFarmCash
                                 SweeperActiveMovement = false
-                                break 
+                                break -- Exit button loop to run a fresh immediate scan pass
                             end
                         end
                     end
                 end
-                if not foundAffordable then SweeperActiveMovement = false end
-            else SweeperActiveMovement = false end
-        else SweeperActiveMovement = false end
+                
+                -- CRITICAL TIMING GATE: If a full pass found nothing affordable, enter a strict 5-minute deep sleep
+                if not foundAffordableThisRound then
+                    SweeperActiveMovement = false
+                    print("[Dominate Hub] No affordable pads detected! Entering a 5-minute sleep cycle to harvest cash.")
+                    
+                    local sleepEndTime = tick() + 300 -- 5 minutes * 60 seconds
+                    repeat 
+                        task.wait(1) 
+                    until tick() >= sleepEndTime or not _G.AutoFarmCash
+                    
+                    print("[Dominate Hub] Sleep cycle concluded. Initiating next factory pad scan.")
+                end
+            else 
+                SweeperActiveMovement = false 
+                task.wait(2) -- Passive wait if the buttons folder is temporarily missing
+            end
+        else 
+            SweeperActiveMovement = false 
+            task.wait(1) -- Sleep thread if the AutoFarmCash toggle is disabled
+        end
     end
 end)
 
@@ -319,6 +341,7 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
 --======================================================================================
