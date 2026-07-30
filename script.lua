@@ -10,7 +10,7 @@ _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeExplorer, _G.AutoUpgr
 _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false, false, false
 _G.AutoFireMoreFire, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreBulk = false, false, false, false
 _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
-_G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof = false, false, false
+_G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
 _G.AutoBuildFire = false
 
 player.Idled:Connect(function()
@@ -74,11 +74,9 @@ end
 realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
 realm1UpgradeScroll = makeScroll(110)
 realm1RebirthScroll = makeScroll(160)
-
 realm1FireScroll = makeScroll(210)
 realm1FireScroll.Parent = realm1MasterPage
-
-realm1BlazeScroll = makeScroll(160)
+realm1BlazeScroll = makeScroll(210)
 
 function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -116,16 +114,17 @@ toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll)
 toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
--- RESTORED ALL 5 FIRE ROWS: Anchored properly, sequentially structured from index 1 to 5
 toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
 toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
 toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
 toggleBuildFire = makeSubRow("Auto Build Fire", 5, realm1FireScroll)
 
-toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 1, realm1BlazeScroll)
-toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 2, realm1BlazeScroll)
-toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 3, realm1BlazeScroll)
+-- BLAZE PANEL OVERHAUL: Added the 5-Minute Conversion toggle right at row slot index 1
+toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
+toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
+toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
+toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 
 togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 togglePharaoh.Size = UDim2.new(0, 75, 0, 26) togglePharaoh.Position = UDim2.new(1, -85, 0.5, -13)
@@ -161,7 +160,7 @@ local function MovePlayer(pos)
 end
 
 local function GetChosenTrail()
-    if _G.AutoHardTrails6 then return "Hard" end
+    if _G.AutoHardTrails then return "Hard" end
     if _G.AutoMediumTrails then return "Medium" end
     if _G.AutoEasyTrails then return "Easy" end
     return nil
@@ -224,7 +223,6 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    -- COMPLETE FIXED AUTO UPGRADE STACK: Securely loops the 3 missing Blaze upgrades via network remotes
     local upgrades = {
         {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Starter"}},
         {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Cooker"}},
@@ -263,27 +261,23 @@ task.spawn(function()
     end
 end)
 
+-- HUMANIZED TIMED OVERSEER ENGINES: Fires your exact string format between 4.5 and 5.5 minutes dynamically
 task.spawn(function()
-    local rebirthTimer = 0
+    local targetCooldown = math.random(270, 330)
+    local secondsElapsed = 0
     while true do
-        task.wait(0.5)
-        if _G.AutoPrestige and NetRemote then pcall(function() NetRemote:FireServer("Prestige") end) end
-        if _G.AutoRebirthTimer then
-            rebirthTimer = rebirthTimer + 0.5
-            if rebirthTimer >= 600 and NetRemote then rebirthTimer = 0 pcall(function() NetRemote:FireServer("Rebirth") end) end
-        else rebirthTimer = 0 end
-    end
-end)
-
-task.spawn(function()
-    while true do
-        task.wait(0.4)
-        if _G.AutoBuildFire and TrailState == "Capsule" then
-            local hrp = GetWorldRoot()
-            if hrp and (hrp.Position - FirePosition).Magnitude > 5 then hrp.CFrame = CFrame.new(FirePosition) end
-        end
-        if _G.AutoRuneBasic and not InsideTrail then
-            local hrp = GetWorldRoot() if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end
+        task.wait(1)
+        if _G.AutoBlazeConvert and NetRemote then
+            secondsElapsed = secondsElapsed + 1
+            if secondsElapsed >= targetCooldown then
+                secondsElapsed = 0
+                targetCooldown = math.random(270, 330) -- Recalculate dynamic delay jitter
+                pcall(function() 
+                    NetRemote:FireServer("Blaze") 
+                end)
+            end
+        else
+            secondsElapsed = 0
         end
     end
 end)
@@ -347,6 +341,7 @@ toggleRuneBasic.MouseButton1Click:Connect(function() tState(toggleRuneBasic, "Au
 toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
 toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
 toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
+toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
 
 function uCaps() 
     local s = _G.AutoCapsule and "ACTIVE" or "DISABLED" 
@@ -376,7 +371,6 @@ tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
 
--- ROUTING ENG UPDATE: Restored full handling for all 5 sub-tab panel visibility canvas tracking triggers
 function route(targetScroll)
     local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll}
     local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze}
