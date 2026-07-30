@@ -45,7 +45,7 @@ local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(1, -2
 minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) minBtn.Position = UDim2.new(0.5, -47, 0.01, 0) minBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25) minBtn.TextColor3 = Color3.fromRGB(0, 136, 255) minBtn.TextSize = 12; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "Hide UI" minBtn.Parent = sg
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 --======================================================================================
--- BROSWE HUB | PART 3 OF 6 (MENU CONTROL BUTTONS BAR LOADING)
+-- BROSWE HUB | PART 3 OF 6 (MENU CONTROL BUTTONS BAR & CANVAS CANVASES CORRECTION)
 --======================================================================================
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 tabTrial = Instance.new("TextButton") tabTrial.Size = UDim2.new(0, 55, 1, 0) tabTrial.Position = UDim2.new(0, 5, 0, 0) tabTrial.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabTrial.TextColor3 = Color3.fromRGB(15, 15, 15) tabTrial.TextSize = 12; tabTrial.Font = Enum.Font.SourceSansBold; tabTrial.Text = "Trial" tabTrial.Parent = tabList
@@ -72,8 +72,13 @@ end
 realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
 realm1UpgradeScroll = makeScroll(110)
 realm1RebirthScroll = makeScroll(160)
+
+-- FIXED WRAPPER LAYOUT CONNECTION: Explicit parent assignment forced here
 realm1FireScroll = makeScroll(210)
+realm1FireScroll.Parent = realm1MasterPage
+
 realm1BlazeScroll = makeScroll(160)
+
 --======================================================================================
 -- BROSWE HUB | PART 4 OF 6 (CANVAS ROW BUILDERS & COMPONENT LIST ASSEMBLIES)
 --======================================================================================
