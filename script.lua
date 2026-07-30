@@ -133,7 +133,7 @@ toggleRebirthTimerCard.Size = UDim2.new(0, 75, 0, 26) toggleRebirthTimerCard.Pos
 toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim2.new(1, -85, 0.5, -13) toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
 --======================================================================================
--- DOMINATE HUB | PART 6 OF 8 (STREAMLINED LOCATION TRACKERS MATRIX)
+-- DOMINATE HUB | PART 6 OF 8 (CHARACTER NODE RUNTIME COUPLERS)
 --======================================================================================
 print("PART 6 LOADED")
 
@@ -141,51 +141,26 @@ local function GetWorldRoot()
     local char = player.Character
     return char and char:FindFirstChild("HumanoidRootPart")
 end
-
-local function ResolveConveyorPosition()
-    local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-    if gameContent then
-        for _, folder in ipairs(gameContent:GetChildren()) do
-            if folder.Name:lower():find("tycoon") or folder.Name:lower():find("plot") then
-                local conveyor = folder:FindFirstChild("Conveyor", true)
-                if conveyor and conveyor:IsA("BasePart") then
-                    local ownerVal = folder:FindFirstChild("Owner", true) or folder:FindFirstChild("Player", true)
-                    if not ownerVal or (ownerVal:IsA("ValueBase") and ownerVal.Value == player) or ownerVal.Name:lower():find(player.Name:lower()) then
-                        return conveyor.Position + Vector3.new(0, 4, 0)
-                    end
-                end
-            end
-        end
-    end
-    local primaryTycoon = gameContent and gameContent:FindFirstChild("Tycoon")
-    local standardConveyor = primaryTycoon and primaryTycoon:FindFirstChild("Conveyor", true)
-    if standardConveyor and standardConveyor:IsA("BasePart") then
-        return standardConveyor.Position + Vector3.new(0, 4, 0)
-    end
-    local hrp = GetWorldRoot()
-    if hrp then return hrp.Position + Vector3.new(0, 15, 0) end
-    return Vector3.new(874.84, 15.0, 13426.69)
-end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (UNIFIED SOVEREIGN LOCOMOTION ROUTINE)
+-- DOMINATE HUB | PART 7 OF 8 (PURE TIMED PAD SWEEPER LOCOMOTION ROUTINE)
 --======================================================================================
-local MasterTargetCFrame = nil  -- SOVEREIGN COORDINATE COUPLER: Holds the single source of truth for positioning
+local MasterTargetCFrame = nil  -- SOVEREIGN COORDINATE ANCHOR: The absolute singular driver for player positioning
 
--- THE UNIFIED LOCOMOTION ENGINE THREAD: The ONLY loop in the script allowed to write to player CFrame
+-- THE MASTER POSITION WRITER THREAD: Zero position overwrites or conveyor fight overlap risks
 task.spawn(function()
     while true do
-        task.wait(0.1) -- Fast, ultra-smooth replication update rate
+        task.wait(0.1)
         if _G.AutoFarmCash then
             local hrp = GetWorldRoot()
-            if hrp then
-                -- Direct assignment from a single thread entirely kills teleport overlaps and clipping bugs
-                hrp.CFrame = MasterTargetCFrame or CFrame.new(ResolveConveyorPosition())
+            -- Only update the player's CFrame when the batch sweeper has an active target pad destination queued up
+            if hrp and MasterTargetCFrame then
+                hrp.CFrame = MasterTargetCFrame
             end
         end
     end
 end)
 
--- TIMED BATCH INTENT SCHEDULER: Changes the destination coordinate structure sequentially
+-- PURE BLIND BATCH SWEEPER ENGINE: Walks down your tycoon shelf exactly once every 5 minutes
 task.spawn(function()
     while true do
         task.wait(0.5)
@@ -197,7 +172,7 @@ task.spawn(function()
             
             if buttonsFolder then
                 local currentButtons = buttonsFolder:GetChildren()
-                print("[Dominate Hub] Launching scheduled non-clashing factory sweep pass...")
+                print("[Dominate Hub] Initiating passive batch tycoon shelf sweep pass...")
                 
                 for i = 1, #currentButtons do
                     local btnModel = currentButtons[i]
@@ -207,25 +182,23 @@ task.spawn(function()
                         local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
                         
                         if targetBuyPart and targetBuyPart:IsA("BasePart") then
-                            -- Securely hand over positioning coordinates to the master thread
+                            -- Securely lock your position straight onto the button part plane surface
                             MasterTargetCFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                            task.wait(0.35) -- Safe physical button touch window
-                            
-                            -- Clear target frame and hand control back to conveyor baseline placement
-                            MasterTargetCFrame = nil
-                            task.wait(0.05)
+                            task.wait(0.35) -- Stable physical touch window duration
                         end
                     end
                 end
                 
-                print("[Dominate Hub] Scheduled pass complete. Standing firmly on conveyor for 5 minutes...")
+                -- ENTER DEEP PASSIVE DORMANT SLEEP: Disconnect target frames to sit completely still on the final pad
+                MasterTargetCFrame = nil
+                print("[Dominate Hub] Batch pass complete. Resting peacefully on the last button for 5 minutes...")
                 
-                local sleepEndTime = tick() + 300 -- Strict 5-minute countdown block
+                local sleepEndTime = tick() + 300 -- 5 minutes * 60 seconds loop delay
                 repeat 
                     task.wait(1) 
                 until tick() >= sleepEndTime or not _G.AutoFarmCash
                 
-                print("[Dominate Hub] Countdown concluded. Preparing next sweep pass loop.")
+                print("[Dominate Hub] 5 minutes over. Re-initiating active tycoon factory sweep.")
             else
                 MasterTargetCFrame = nil
                 task.wait(2)
@@ -380,4 +353,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 8 LOADED - DOMINATE HUB RUNNING COMPLETELY OPERATIONAL")
+print("PART 8 LOADED - PASSIVE BATCH HARVEST MATRIX OPERATIONAL")
