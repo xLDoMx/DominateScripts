@@ -95,7 +95,7 @@ end
 --======================================================================================
 toggleStarter = makeSubRow("Starter Noob Auto Upgrade", 1, realm1NoobScroll)
 toggleCooker = makeSubRow("Cooker Noob Auto Upgrade", 2, realm1NoobScroll)
-toggleFarmer = makeSubRow("Farmer Noob Auto Upgrade", 3, realm1NoobScroll) -- LINKED NAME REFACTOR
+toggleFarmer = makeSubRow("Farmer Noob Auto Upgrade", 3, realm1NoobScroll)
 toggleMagician = makeSubRow("Magician Noob Auto Upgrade", 4, realm1NoobScroll)
 toggleArcher = makeSubRow("Archer Noob Auto Upgrade", 5, realm1NoobScroll)
 toggleSoldier = makeSubRow("Soldier Noob Auto Upgrade", 6, realm1NoobScroll)
@@ -135,8 +135,6 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 --======================================================================================
 -- DOMINATE HUB | PART 6 OF 8 (STREAMLINED LOCATION TRACKERS MATRIX)
 --======================================================================================
-local SweeperActiveMovement = false
-
 print("PART 6 LOADED")
 
 local function GetWorldRoot()
@@ -169,19 +167,25 @@ local function ResolveConveyorPosition()
     return Vector3.new(874.84, 15.0, 13426.69)
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (UNBROKEN STEP BATCH HARVEST MODULE)
+-- DOMINATE HUB | PART 7 OF 8 (UNIFIED SOVEREIGN LOCOMOTION ROUTINE)
 --======================================================================================
+local MasterTargetCFrame = nil  -- SOVEREIGN COORDINATE COUPLER: Holds the single source of truth for positioning
+
+-- THE UNIFIED LOCOMOTION ENGINE THREAD: The ONLY loop in the script allowed to write to player CFrame
 task.spawn(function()
     while true do
-        task.wait(0.3)
-        if _G.AutoFarmCash and not SweeperActiveMovement then
+        task.wait(0.1) -- Fast, ultra-smooth replication update rate
+        if _G.AutoFarmCash then
             local hrp = GetWorldRoot()
-            if hrp then hrp.CFrame = CFrame.new(ResolveConveyorPosition()) end
+            if hrp then
+                -- Direct assignment from a single thread entirely kills teleport overlaps and clipping bugs
+                hrp.CFrame = MasterTargetCFrame or CFrame.new(ResolveConveyorPosition())
+            end
         end
     end
 end)
 
--- TIMED BATCH ENGINE WRAPPER: Walks down the button shelf linearly and executes a single 5-minute wait block
+-- TIMED BATCH INTENT SCHEDULER: Changes the destination coordinate structure sequentially
 task.spawn(function()
     while true do
         task.wait(0.5)
@@ -193,47 +197,41 @@ task.spawn(function()
             
             if buttonsFolder then
                 local currentButtons = buttonsFolder:GetChildren()
-                print("[Dominate Hub] Launching factory sweep batch...")
+                print("[Dominate Hub] Launching scheduled non-clashing factory sweep pass...")
                 
-                -- FIXED LINEAR INDEX FOR LOOP: Removes the internal break conflict completely
                 for i = 1, #currentButtons do
                     local btnModel = currentButtons[i]
                     if not _G.AutoFarmCash then break end
                     
                     if btnModel and btnModel:IsA("Model") then
                         local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
-                        local hrp = GetWorldRoot()
                         
-                        if targetBuyPart and targetBuyPart:IsA("BasePart") and hrp then
-                            SweeperActiveMovement = true
+                        if targetBuyPart and targetBuyPart:IsA("BasePart") then
+                            -- Securely hand over positioning coordinates to the master thread
+                            MasterTargetCFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
+                            task.wait(0.35) -- Safe physical button touch window
                             
-                            -- Snap precisely onto the pad button vector space
-                            hrp.CFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                            task.wait(0.35) 
-                            
-                            -- Safely clear pad and return to active conveyor line baseline plane
-                            hrp.CFrame = CFrame.new(ResolveConveyorPosition())
-                            task.wait(0.05) 
+                            -- Clear target frame and hand control back to conveyor baseline placement
+                            MasterTargetCFrame = nil
+                            task.wait(0.05)
                         end
                     end
                 end
                 
-                -- ENGAGE TIMER ENCLOSURE GATE: Correctly triggers the 5-minute sleep block only AFTER the pass completes
-                SweeperActiveMovement = false
-                print("[Dominate Hub] Full batch pass complete. Entering 5-minute farm sleep...")
+                print("[Dominate Hub] Scheduled pass complete. Standing firmly on conveyor for 5 minutes...")
                 
-                local sleepEndTime = tick() + 300
+                local sleepEndTime = tick() + 300 -- Strict 5-minute countdown block
                 repeat 
                     task.wait(1) 
                 until tick() >= sleepEndTime or not _G.AutoFarmCash
                 
-                print("[Dominate Hub] Sleep window concluded. Cycling to next pass sweep.")
+                print("[Dominate Hub] Countdown concluded. Preparing next sweep pass loop.")
             else
-                SweeperActiveMovement = false
+                MasterTargetCFrame = nil
                 task.wait(2)
             end
         else
-            SweeperActiveMovement = false
+            MasterTargetCFrame = nil
             task.wait(1)
         end
     end
@@ -253,7 +251,7 @@ end
 local upgrades = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
-    {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}}, -- RESTORED REMOTES REF ARGS
+    {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}},
     {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}},
     {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    A = {"Archer"}},
     {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    A = {"Soldier"}},
