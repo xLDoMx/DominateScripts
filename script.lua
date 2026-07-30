@@ -148,9 +148,8 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 7 (COMBAT, PARALLEL UPGRADES & DYNAMIC BUTTON SWEEPER)
+-- BROSWE HUB | PART 6 OF 7 (COMBAT, PARALLEL UPGRADES & ENHANCED DYNAMIC SWEEPER)
 --======================================================================================
-local GFolder = workspace:WaitForChild("__GAME_CONTENT", 5) and workspace.__GAME_CONTENT:WaitForChild("Contents", 5)
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
 
@@ -168,10 +167,30 @@ local function MovePlayer(pos)
     if hrp then hrp.CFrame = CFrame.new(pos) end
 end
 
+-- LIVE INSTANCE DETECTOR: Scans the entire active world workspace for your specific claimed live tycoon plot folder
+local function GetLiveTycoon()
+    -- Common live tycoon folder paths used by Roblox Tycoon kits
+    local paths = {workspace:FindFirstChild("Tycoons"), workspace:FindFirstChild("Tycoon"), workspace:FindFirstChild("PlayerTycoons")}
+    for _, folder in ipairs(paths) do
+        if folder then
+            -- Searches inner children tree to locate the plot owned or named after your player profile
+            local myPlot = folder:FindFirstChild(player.Name) or folder:FindFirstChild(player.DisplayName)
+            if myPlot then return myPlot end
+            -- Fallback alternative: Check for Creator attribute tag values match
+            for _, plot in ipairs(folder:GetChildren()) do
+                if plot:GetAttribute("Owner") == player.Name or plot:GetAttribute("Creator") == player.Name then
+                    return plot
+                end
+            end
+        end
+    end
+    -- Ultimate fallback check: Scan top layer workspace tree directly
+    return workspace:FindFirstChild(player.Name .. "'s Tycoon") or workspace:FindFirstChild("Tycoon")
+end
+
 local function ResolveConveyorPosition()
-    local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-    local tycoonFolder = gameContent and gameContent:FindFirstChild("Tycoon")
-    local physicalConveyor = tycoonFolder and tycoonFolder:FindFirstChild("Conveyor", true)
+    local livePlot = GetLiveTycoon()
+    local physicalConveyor = livePlot and livePlot:FindFirstChild("Conveyor", true)
     if physicalConveyor and physicalConveyor:IsA("BasePart") then
         return physicalConveyor.Position + Vector3.new(0, 4, 0)
     end
@@ -246,22 +265,29 @@ task.spawn(function()
     end
 end)
 
+-- LIVE RESILIENT BUTTON SWEEPER ENGINE: Tracks real live tycoon buttons recursively with tracers
 task.spawn(function()
     while true do
         task.wait(0.3)
         if _G.AutoFarmCash and not InsideTrail then
-            local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-            local tycoonFolder = gameContent and gameContent:FindFirstChild("Tycoon")
-            local buttonsFolder = tycoonFolder and tycoonFolder:FindFirstChild("Buttons")
+            local livePlot = GetLiveTycoon()
+            local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
             
             if buttonsFolder then
                 local currentButtonModel = buttonsFolder:FindFirstChildWhichIsA("Model")
-                local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart")
+                -- RECURSIVE SEARCH ENABLED: Added true parameter to find nested parts inside updates safely
+                local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart", true)
                 
                 if targetBuyPart and targetBuyPart:IsA("BasePart") then
                     local hrp = GetWorldRoot()
                     if hrp then
-                        MovePlayer(targetBuyPart.Position)
+                        -- LIVE SYSTEM DIAGNOSTIC TRACERS: Prints target validations to console explorer window
+                        print("Broswe Hub Sweeper -> Targets: " .. currentButtonModel.Name)
+                        print("Broswe Hub Path -> " .. targetBuyPart:GetFullName())
+                        print("Broswe Hub Coords -> " .. tostring(targetBuyPart.Position))
+                        
+                        -- Execute safety jump step 3 studs above the real live layout location point
+                        MovePlayer(targetBuyPart.Position + Vector3.new(0, 3, 0))
                         task.wait(0.15)
                         MovePlayer(ResolveConveyorPosition())
                         
