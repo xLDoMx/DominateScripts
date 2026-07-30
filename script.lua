@@ -281,21 +281,34 @@ task.spawn(function()
                     local hrp = GetWorldRoot() if hrp then hrp.CFrame = CFrame.new(ResolveConveyorPosition()) end
                 end
             end
-            if selected then
+            
+            -- RIGID STATE GATE: Only check gate open status if a trail toggle is explicitly turned on
+            if selected and (selected == "Easy" or selected == "Medium" or selected == "Hard") then
                 local gate = GetGate(selected)
                 if GateOpen(gate) then TrailState = "EnteringTrail" end
             end
         elseif TrailState == "EnteringTrail" then
-            local hrp = GetWorldRoot() if hrp then hrp.CFrame = CFrame.new(CastlePosition) end
-            task.wait(0.5)
-            local gate = GetGate(selected)
-            if gate and GetWorldRoot() then GetWorldRoot().CFrame = gate.CFrame * CFrame.new(0, 0, -5) end
-            task.wait(1) InsideTrail = true TrailState = "Fighting"
+            -- DOUBLE CHECK GATE: If a ghost trigger occurs or selected goes nil, drop back to Capsule safely
+            if selected and (selected == "Easy" or selected == "Medium" or selected == "Hard") then
+                local hrp = GetWorldRoot() if hrp then hrp.CFrame = CFrame.new(CastlePosition) end
+                task.wait(0.5)
+                local gate = GetGate(selected)
+                if gate and GetWorldRoot() then GetWorldRoot().CFrame = gate.CFrame * CFrame.new(0, 0, -5) end
+                task.wait(1) InsideTrail = true TrailState = "Fighting"
+            else
+                TrailState = "Capsule"
+            end
         elseif TrailState == "Fighting" then
-            local enemy = FindEnemy()
-            local hrp = GetWorldRoot()
-            if enemy and hrp then hrp.CFrame = CFrame.new(enemy.Position + Vector3.new(0, 3, 0), enemy.Position) end
-            if not InsideTrail then TrailState = "Capsule" end
+            -- If you turn off toggles while fighting, immediately exit back to farming base
+            if not selected or (selected ~= "Easy" and selected ~= "Medium" and selected ~= "Hard") then
+                InsideTrail = false
+                TrailState = "Capsule"
+            else
+                local enemy = FindEnemy()
+                local hrp = GetWorldRoot()
+                if enemy and hrp then hrp.CFrame = CFrame.new(enemy.Position + Vector3.new(0, 3, 0), enemy.Position) end
+                if not InsideTrail then TrailState = "Capsule" end
+            end
         end
     end
 end)
@@ -347,6 +360,7 @@ task.spawn(function()
         else SweeperActiveMovement = false end
     end
 end)
+
 --======================================================================================
 -- BROSWE HUB | PART 8 OF 9 (MULTI-THREADED REMOTE PURCHASE ROUTINES)
 --======================================================================================
