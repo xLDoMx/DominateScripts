@@ -1,34 +1,52 @@
 --======================================================================================
--- BROSWE HUB | PART 1 OF 9 (CRITICAL ENGINE PATH VERIFICATION)
+-- BROSWE HUB | PART 1 OF 9 (PROTECTION GATES & STATE CACHING MECHANICS)
 --======================================================================================
-player = game:GetService("Players").LocalPlayer
-vu = game:GetService("VirtualUser")
-NetRemote = nil
+if getgenv().BrosweHubLoaded then 
+    print("[Broswe Hub] Script is already executing! Aborting duplicate instance.")
+    return 
+end
+getgenv().BrosweHubLoaded = true
 
-_G.AutoEasyTrails, _G.AutoMediumTrails, _G.AutoHardTrails, _G.AutoCapsule, _G.AutoUpgradePharaoh, _G.AntiAFK, _G.AutoPrestige = false, false, false, false, false, true, false
-_G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeExplorer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
-_G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false, false, false
-_G.AutoFireMoreFire, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreBulk = false, false, false, false
-_G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
-_G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
-_G.AutoBuildFire = false
+local Running = true
+local State = {
+    AutoEasyTrails = false, AutoMediumTrails = false, AutoHardTrails = false, 
+    AutoCapsule = false, AutoUpgradePharaoh = false, AntiAFK = true, AutoPrestige = false,
+    AutoUpgradeStarter = false, AutoUpgradeCooker = false, AutoUpgradeExplorer = false, 
+    AutoUpgradeMagician = false, AutoUpgradeArcher = false, AutoUpgradeSoldier = false, 
+    AutoUpgradeMoreOof = false, AutoUpgradeFasterNoobs = false, AutoRebirthMoreOof = false, 
+    AutoRebirthMoreRebirth = false, AutoRebirthMoreFire = false, AutoFireMoreFire = false, 
+    AutoFireMoreOof = false, AutoFireMoreRebirth = false, AutoFireMoreBulk = false, 
+    AutoRebirthTimer = false, AutoRuneBasic = false, AutoBlazeMoreBlaze = false, 
+    AutoBlazeMoreFire = false, AutoBlazeMoreOof = false, AutoBlazeConvert = false, 
+    AutoBuildFire = false, AutoFarmCash = false, AutoUpgradeMoreCash = false, 
+    AutoUpgradeFasterDropper = false, AutoUpgradeMoreRuneLuck = false
+}
 
--- CASH STATE FLAGS REGISTER
-_G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
+local player = game:GetService("Players").LocalPlayer
+local vu = game:GetService("VirtualUser")
+local rep = game:GetService("ReplicatedStorage")
+
+-- CENTRAL CONTENT CACHING LAYER
+local GameContent = workspace:WaitForChild("__GAME_CONTENT", 10)
+local TycoonPlot = GameContent and GameContent:WaitForChild("Tycoon", 10)
+local ButtonsShelf = TycoonPlot and TycoonPlot:WaitForChild("Buttons", 10)
 
 player.Idled:Connect(function()
-    if _G.AntiAFK then
-        vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame) task.wait(1) vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    if Running and State.AntiAFK then
+        vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame) 
+        task.wait(1) 
+        vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
     end
 end)
 
+local NetRemote = nil
 repeat
-    local netService = game:GetService("ReplicatedStorage"):WaitForChild("__Net", 5)
+    local netService = rep:WaitForChild("__Net", 5)
     if netService then
         NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent")
     end
     if not NetRemote then task.wait(0.5) end
-until NetRemote
+until NetRemote or not Running
 --======================================================================================
 -- BROSWE HUB | PART 2 OF 9 (MASTER PAGES REGISTRY SETUP)
 --======================================================================================
@@ -148,14 +166,13 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 9 (CORE SPATIAL CALCULATORS & TYPE VALIDATION RUNTIMES)
+-- BROSWE HUB | PART 6 OF 9 (CORE SPATIAL CALCULATORS & CACHED PROPERTY MATRIX)
 --======================================================================================
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
 local TargetOverridePosition = nil
 
 print("PART 6 LOADED")
-print("Initial Structural States Locked")
 
 local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
@@ -171,8 +188,7 @@ local function MovePlayer(pos)
 end
 
 local function ResolveConveyorPosition()
-    local livePlot = workspace.__GAME_CONTENT:FindFirstChild("Tycoon")
-    local physicalConveyor = livePlot and livePlot:FindFirstChild("Conveyor", true)
+    local physicalConveyor = TycoonPlot and TycoonPlot:FindFirstChild("Conveyor", true)
     if physicalConveyor and physicalConveyor:IsA("BasePart") then
         return physicalConveyor.Position + Vector3.new(0, 4, 0)
     end
@@ -180,18 +196,12 @@ local function ResolveConveyorPosition()
 end
 
 local function ParseCostText(obj)
-    if not obj or not obj:IsA("TextLabel") then
-        return math.huge 
-    end
+    if not obj or not obj:IsA("TextLabel") then return math.huge end
     local text = tostring(obj.Text):upper()
-    if text == "" then
-        return math.huge
-    end
+    if text == "" then return math.huge end
     text = text:gsub("CASH", ""):gsub("%s", "")
     local num = tonumber(text:match("[%d%.]+"))
-    if not num then
-        return math.huge
-    end
+    if not num then return math.huge end
     if text:find("K") then num = num * 1000
     elseif text:find("M") then num = num * 1000000
     elseif text:find("B") then num = num * 1000000000
@@ -211,16 +221,16 @@ local function GetPlayerCash()
 end
 
 local function GetChosenTrail()
-    if _G.AutoHardTrails then return "Hard" end
-    if _G.AutoMediumTrails then return "Medium" end
-    if _G.AutoEasyTrails then return "Easy" end
+    if State.AutoHardTrails then return "Hard" end
+    if State.AutoMediumTrails then return "Medium" end
+    if State.AutoEasyTrails then return "Easy" end
     return nil
 end
 --======================================================================================
--- BROSWE HUB | PART 7 OF 9 (LOCOMOTIVE SYSTEMS & EVENT DRIVEN REACTIVE LOOPS)
+-- BROSWE HUB | PART 7 OF 9 (PCALL ISOLATED LOCOMOTIVE ROLES ENGINE)
 --======================================================================================
 local function GetGate(name)
-    local world3 = workspace:FindFirstChild("__GAME_CONTENT") and workspace.__GAME_CONTENT:FindFirstChild("Contents") and workspace.__GAME_CONTENT.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
+    local world3 = GameContent and GameContent:FindFirstChild("Contents") and GameContent.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
     if world3 then return world3:FindFirstChild(name .. "Gate", true) end
 end
 
@@ -251,43 +261,45 @@ local function FindEnemy()
     return closest
 end
 
+-- CENTRAL PASSIVE LOCOMOTION ROUTINE
 task.spawn(function()
-    while true do
-        task.wait(0.25)
-        local selected = GetChosenTrail()
-        if TrailState == "Capsule" then
-            if TargetOverridePosition then
-                MovePlayer(TargetOverridePosition)
-            elseif _G.AutoCapsule then 
-                InsideTrail = false MovePlayer(CapsulePosition) 
-            elseif _G.AutoFarmCash then
-                InsideTrail = false MovePlayer(ResolveConveyorPosition())
-            end
-            if selected then
+    while Running do
+        local ok, err = pcall(function()
+            local selected = GetChosenTrail()
+            if TrailState == "Capsule" then
+                if TargetOverridePosition then
+                    MovePlayer(TargetOverridePosition)
+                elseif State.AutoCapsule then 
+                    InsideTrail = false MovePlayer(CapsulePosition) 
+                elseif State.AutoFarmCash then
+                    InsideTrail = false MovePlayer(ResolveConveyorPosition())
+                end
+                if selected then
+                    local gate = GetGate(selected)
+                    if GateOpen(gate) then TrailState = "EnteringTrail" end
+                end
+            elseif TrailState == "EnteringTrail" then
+                MovePlayer(CastlePosition) task.wait(0.5)
                 local gate = GetGate(selected)
-                if GateOpen(gate) then TrailState = "EnteringTrail" end
+                if gate and GetWorldRoot() then GetWorldRoot().CFrame = gate.CFrame * CFrame.new(0, 0, -5) end
+                task.wait(1) InsideTrail = true TrailState = "Fighting"
+            elseif TrailState == "Fighting" then
+                local enemy = FindEnemy()
+                local hrp = GetWorldRoot()
+                if enemy and hrp then hrp.CFrame = CFrame.new(enemy.Position + Vector3.new(0, 3, 0), enemy.Position) end
+                if not InsideTrail then TrailState = "Capsule" end
             end
-        elseif TrailState == "EnteringTrail" then
-            MovePlayer(CastlePosition) task.wait(0.5)
-            local gate = GetGate(selected)
-            if gate and GetWorldRoot() then GetWorldRoot().CFrame = gate.CFrame * CFrame.new(0, 0, -5) end
-            task.wait(1) InsideTrail = true TrailState = "Fighting"
-        elseif TrailState == "Fighting" then
-            local enemy = FindEnemy()
-            local hrp = GetWorldRoot()
-            if enemy and hrp then hrp.CFrame = CFrame.new(enemy.Position + Vector3.new(0, 3, 0), enemy.Position) end
-            if not InsideTrail then TrailState = "Capsule" end
-        end
+        end)
+        if not ok then warn("[Locomotion Error]", err) end
+        task.wait(0.25)
     end
 end)
 
 local function ProcessTycoonPurchases()
-    if not _G.AutoFarmCash or InsideTrail then return end
-    local livePlot = workspace.__GAME_CONTENT:FindFirstChild("Tycoon")
-    local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
-    if not buttonsFolder then return end
+    if not Running or not State.AutoFarmCash or InsideTrail then return end
+    if not ButtonsShelf then return end
     
-    for _, btnModel in ipairs(buttonsFolder:GetChildren()) do
+    for _, btnModel in ipairs(ButtonsShelf:GetChildren()) do
         if btnModel:IsA("Model") then
             local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
             local costLabel = btnModel:FindFirstChild("Cost", true)
@@ -297,12 +309,9 @@ local function ProcessTycoonPurchases()
                 local localWallet = GetPlayerCash()
                 
                 if localWallet and parsedCost <= localWallet then
-                    print("Broswe Hub Sweeper -> Affordable Pad Locked: " .. btnModel.Name)
                     TargetOverridePosition = targetBuyPart.Position + Vector3.new(0, 3, 0)
-                    
                     local giveUpTime = tick() + 0.4
-                    repeat task.wait(0.05) until not btnModel:IsDescendantOf(buttonsFolder) or tick() > giveUpTime or not _G.AutoFarmCash or InsideTrail
-                    
+                    repeat task.wait(0.05) until not btnModel:IsDescendantOf(ButtonsShelf) or tick() > giveUpTime or not State.AutoFarmCash or InsideTrail or not Running
                     TargetOverridePosition = nil
                     break 
                 end
@@ -311,14 +320,11 @@ local function ProcessTycoonPurchases()
     end
 end
 
+-- EVENT SUBSCRIPTIONS MANAGEMENT LAYER
 task.spawn(function()
-    local livePlot = workspace.__GAME_CONTENT:WaitForChild("Tycoon", 10)
-    local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons", 10)
-    
-    if buttonsFolder then
-        buttonsFolder.ChildRemoved:Connect(function()
-            task.wait(0.1)
-            ProcessTycoonPurchases()
+    if ButtonsShelf then
+        ButtonsShelf.ChildRemoved:Connect(function()
+            if Running then task.wait(0.1) ProcessTycoonPurchases() end
         end)
     end
     
@@ -327,27 +333,28 @@ task.spawn(function()
     local cashObj = pinnedFolder and pinnedFolder:WaitForChild("Cash", 5)
     if cashObj and cashObj:IsA("ValueBase") then
         cashObj.Changed:Connect(function()
-            ProcessTycoonPurchases()
+            if Running then ProcessTycoonPurchases() end
         end)
     end
     
-    while true do
+    while Running do
         task.wait(1.5)
-        if not TargetOverridePosition then
-            ProcessTycoonPurchases()
-        end
+        if not TargetOverridePosition then ProcessTycoonPurchases() end
     end
 end)
 --======================================================================================
--- BROSWE HUB | PART 8 OF 9 (MULTI-THREADED REMOTE PURCHASE ROUTINES)
+-- BROSWE HUB | PART 8 OF 9 (THROTTLED NET SERVICE FIRES WRAPPERS)
 --======================================================================================
 local function buildPurchaseThread(flag, command, serverArgs)
     task.spawn(function()
-        while true do
-            task.wait(0.4)
-            if _G[flag] and NetRemote then
-                pcall(function() NetRemote:FireServer(command, unpack(serverArgs)) end)
-            end
+        while Running do
+            local ok, err = pcall(function()
+                if State[flag] and NetRemote then
+                    NetRemote:FireServer(command, unpack(serverArgs))
+                end
+            end)
+            if not ok then warn("[Network Purchase Error]", err) end
+            task.wait(0.4) -- Rate-limited throttled frequency delay
         end
     end)
 end
@@ -381,9 +388,8 @@ for _, item in ipairs(upgrades) do buildPurchaseThread(item.F, item.T, item.A) e
 task.spawn(function()
     local targetCooldown = math.random(270, 330)
     local secondsElapsed = 0
-    while true do
-        task.wait(1)
-        if _G.AutoBlazeConvert and NetRemote then
+    while Running do
+        if State.AutoBlazeConvert and NetRemote then
             secondsElapsed = secondsElapsed + 1
             if secondsElapsed >= targetCooldown then
                 secondsElapsed = 0
@@ -391,16 +397,17 @@ task.spawn(function()
                 pcall(function() NetRemote:FireServer("Blaze") end)
             end
         else secondsElapsed = 0 end
+        task.wait(1)
     end
 end)
 --======================================================================================
--- BROSWE HUB | PART 9 OF 9 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
+-- BROSWE HUB | PART 9 OF 9 (LOCAL STATE DRIVEN EVENT LAYOUT CONFIGURATIONS)
 --======================================================================================
 function tState(b, v) 
-    _G[v] = not _G[v] 
-    b.Text = _G[v] and "ACTIVE" or "DISABLED" 
-    b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
-    b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    State[v] = not State[v] 
+    b.Text = State[v] and "ACTIVE" or "DISABLED" 
+    b.BackgroundColor3 = State[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
+    b.TextColor3 = State[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
 end
 
 toggleEasy.MouseButton1Click:Connect(function() tState(toggleEasy, "AutoEasyTrails") end) 
@@ -438,18 +445,20 @@ toggleCashFasterDropper.MouseButton1Click:Connect(function() tState(toggleCashFa
 toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tState(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
 
 local function uCaps() 
-    local s = _G.AutoCapsule and "ACTIVE" or "DISABLED" 
-    local c = _G.AutoCapsule and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
-    local t = _G.AutoCapsule and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    local s = State.AutoCapsule and "ACTIVE" or "DISABLED" 
+    local c = State.AutoCapsule and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
+    local t = State.AutoCapsule and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
     toggleTrailCapsule.Text, toggleTrailCapsule.BackgroundColor3, toggleTrailCapsule.TextColor3 = s, c, t 
     toggleStandaloneCapsule.Text, toggleStandaloneCapsule.BackgroundColor3, toggleStandaloneCapsule.TextColor3 = s, c, t 
 end
-toggleTrailCapsule.MouseButton1Click:Connect(function() _G.AutoCapsule = not _G.AutoCapsule; uCaps() end) 
-toggleStandaloneCapsule.MouseButton1Click:Connect(function() _G.AutoCapsule = not _G.AutoCapsule; uCaps() end)
+toggleTrailCapsule.MouseButton1Click:Connect(function() State.AutoCapsule = not State.AutoCapsule; uCaps() end) 
+toggleStandaloneCapsule.MouseButton1Click:Connect(function() State.AutoCapsule = not State.AutoCapsule; uCaps() end)
 
 toggleKillSwitch.MouseButton1Click:Connect(function()
-    for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
-    pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
+    Running = false 
+    getgenv().BrosweHubLoaded = nil 
+    pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) 
+    sg:Destroy()
 end)
 
 function mainRoute(pOpen, bActive) 
@@ -504,5 +513,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 9 LOADED - UI SYSTEM COMPLETELY OPERATIONAL")
-
+print("PART 9 LOADED - ARCHITECTURE COMPLETELY PERFORMANCE BALANCED")
