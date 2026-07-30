@@ -1,11 +1,10 @@
 --======================================================================================
--- BROSWE HUB | PART 1 OF 6 (SAFE VARIABLES INJECTOR INITIALIZATION)
+-- BROSWE HUB | PART 1 OF 6 (CRITICAL PRE-CHECK GATEWAY)
 --======================================================================================
 player = game:GetService("Players").LocalPlayer
 vu = game:GetService("VirtualUser")
 NetRemote = nil
 
--- Global Configuration State Mapping Elements
 _G.AutoEasyTrails, _G.AutoMediumTrails, _G.AutoHardTrails, _G.AutoCapsule, _G.AutoUpgradePharaoh, _G.AntiAFK, _G.AutoPrestige = false, false, false, false, false, true, false
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeExplorer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
 _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false, false, false
@@ -20,17 +19,13 @@ player.Idled:Connect(function()
     end
 end)
 
--- Background Task: Loops safely until it locates the valid NetRemote mapping variable path
-task.spawn(function()
-    while not NetRemote do
-        local netService = game:GetService("ReplicatedStorage"):WaitForChild("__Net", 2)
-        NetRemote = netService and netService:FindFirstChild("MainRemote")
-        if not NetRemote and netService then
-            NetRemote = netService:FindFirstChildWhichIsA("RemoteEvent")
-        end
-        if not NetRemote then task.wait(0.5) end
+repeat
+    local netService = game:GetService("ReplicatedStorage"):WaitForChild("__Net", 5)
+    if netService then
+        NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent")
     end
-end)
+    if not NetRemote then task.wait(0.5) end
+until NetRemote
 --======================================================================================
 -- BROSWE HUB | PART 2 OF 6 (MASTER WINDOW FRAMEWORK CREATION)
 --======================================================================================
@@ -38,7 +33,6 @@ local sg = Instance.new("ScreenGui") sg.Name = "LukesBrosweHubMirror" sg.Parent 
 mainFrame = Instance.new("Frame") mainFrame.Size = UDim2.new(0, 460, 0, 360) mainFrame.Position = UDim2.new(0.5, -230, 0.5, -180) mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
--- MASTER INSTANCE LAYER REGISTER (Declared non-locally at top level scope to bypass visibility crashes)
 trialPage = Instance.new("Frame") trialPage.Size = UDim2.new(1, -20, 1, -85) trialPage.Position = UDim2.new(0, 10, 0, 80) trialPage.BackgroundTransparency = 1; trialPage.Visible = true; trialPage.Parent = mainFrame
 capsulePage = Instance.new("Frame") capsulePage.Size = UDim2.new(1, -20, 1, -85) capsulePage.Position = UDim2.new(0, 10, 0, 80) capsulePage.BackgroundTransparency = 1; capsulePage.Visible = false; capsulePage.Parent = mainFrame
 realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new(1, -20, 1, -85) realm1MasterPage.Position = UDim2.new(0, 10, 0, 80) realm1MasterPage.BackgroundTransparency = 1; realm1MasterPage.Visible = false; realm1MasterPage.Parent = mainFrame
@@ -71,9 +65,7 @@ subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 80, 1, 0)
 subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 65, 1, 0) subBtnBlaze.Position = UDim2.new(0, 310, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5)
---======================================================================================
--- BROSWE HUB | PART 4 OF 6 (CANVAS GENERATORS & TOGGLES ASSEMBLIES)
---======================================================================================
+
 local function makeScroll(canvas) 
     local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = realm1MasterPage return s 
 end
@@ -82,7 +74,9 @@ realm1UpgradeScroll = makeScroll(110)
 realm1RebirthScroll = makeScroll(160)
 realm1FireScroll = makeScroll(210)
 realm1BlazeScroll = makeScroll(160)
-
+--======================================================================================
+-- BROSWE HUB | PART 4 OF 6 (CANVAS ROW BUILDERS & COMPONENT LIST ASSEMBLIES)
+--======================================================================================
 local function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.7, 0, 1, 0) l.Position = UDim2.new(0, 12, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(220, 220, 225) l.TextSize = 13; l.Font = Enum.Font.SourceSans; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.Parent = f
@@ -117,7 +111,6 @@ toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll)
 toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
--- FIXED CANVAS ROUTING LAYER: Tied back directly to the active realm1FireScroll panel context container hierarchy
 toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
 toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
@@ -141,7 +134,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 5 OF 6 (SPATIAL POSITIONING CALCULATIONS & BACKGROUND ENGINES)
+-- BROSWE HUB | PART 5 OF 6 (AUTOMATION ENGINE WORKER THREADS)
 --======================================================================================
 local GFolder = workspace:WaitForChild("__GAME_CONTENT", 5) and workspace.__GAME_CONTENT:WaitForChild("Contents", 5)
 local InsideTrail, PrepTimerActive = false, false
@@ -246,7 +239,7 @@ task.spawn(function()
     while true do
         task.wait(0.4)
         for _, item in ipairs(upgrades) do
-            if _G[item.F] and NetRemote then
+            if _G[item.F] then
                 pcall(function() 
                     NetRemote:FireServer(item.T, unpack(item.A)) 
                     if item.S then
@@ -259,7 +252,9 @@ task.spawn(function()
         end
     end
 end)
-
+--======================================================================================
+-- BROSWE HUB | PART 6 OF 6 (INTERACTIVE MOUNT LAYOUT HANDLING & DRAG MECHANICS)
+--======================================================================================
 task.spawn(function()
     while true do
         task.wait(1)
@@ -273,10 +268,10 @@ task.spawn(function()
     local rebirthTimer = 0
     while true do
         task.wait(0.5)
-        if _G.AutoPrestige and NetRemote then pcall(function() NetRemote:FireServer("Prestige") end) end
+        if _G.AutoPrestige then pcall(function() NetRemote:FireServer("Prestige") end) end
         if _G.AutoRebirthTimer then
             rebirthTimer = rebirthTimer + 0.5
-            if rebirthTimer >= 600 and NetRemote then rebirthTimer = 0 pcall(function() NetRemote:FireServer("Rebirth") end) end
+            if rebirthTimer >= 600 then rebirthTimer = 0 pcall(function() NetRemote:FireServer("Rebirth") end) end
         else rebirthTimer = 0 end
     end
 end)
@@ -293,33 +288,28 @@ task.spawn(function()
         end
     end
 end)
---======================================================================================
--- BROSWE HUB | PART 6 OF 6 (INTERACTIVE MOUSE EVENT HANDLERS & HOOK ROUTERS)
---======================================================================================
-task.spawn(function()
-    while not NetRemote do task.wait(0.5) end
-    local hook
-    hook = hookfunction(NetRemote.FireServer, function(self, ...)
-        local args = {...}
-        if args == "Prestige" or args == "Rebirth" then
-            task.spawn(function()
-                task.wait(120) 
-                local minionFolder = workspace:FindFirstChild("_GAME_MINIONS")
-                local hrp = GetWorldRoot()
-                if minionFolder and hrp then
-                    local originalPos = hrp.CFrame
-                    for _, pad in ipairs(minionFolder:GetChildren()) do
-                        local touchTarget = pad:IsA("BasePart") and pad or pad:FindFirstChildWhichIsA("BasePart", true)
-                        if touchTarget then
-                            hrp.CFrame = CFrame.new(touchTarget.Position + Vector3.new(0, 2, 0)) task.wait(0.4) 
-                        end
+
+local hook
+hook = hookfunction(NetRemote.FireServer, function(self, ...)
+    local args = {...}
+    if args == "Prestige" or args == "Rebirth" then
+        task.spawn(function()
+            task.wait(120) 
+            local minionFolder = workspace:FindFirstChild("_GAME_MINIONS")
+            local hrp = GetWorldRoot()
+            if minionFolder and hrp then
+                local originalPos = hrp.CFrame
+                for _, pad in ipairs(minionFolder:GetChildren()) do
+                    local touchTarget = pad:IsA("BasePart") and pad or pad:FindFirstChildWhichIsA("BasePart", true)
+                    if touchTarget then
+                        hrp.CFrame = CFrame.new(touchTarget.Position + Vector3.new(0, 2, 0)) task.wait(0.4) 
                     end
-                    hrp.CFrame = originalPos
                 end
-            end)
-        end
-        return hook(self, ...)
-    end)
+                hrp.CFrame = originalPos
+            end
+        end)
+    end
+    return hook(self, ...)
 end)
 
 local function tState(b, v) 
@@ -411,7 +401,12 @@ mainFrame.InputBegan:Connect(function(input)
         input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
     end
 end)
-mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
+mainFrame.InputChanged:Connect(function(input) 
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then 
+        dragInput = input 
+    end 
+end)
+
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if input == dragInput and dragging then
         local delta = input.Position - dragStart
