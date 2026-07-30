@@ -13,7 +13,7 @@ _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
 _G.AutoBuildFire = false
 
--- NEW CASH CONFIGURATION FLAGS
+-- FIXED STATE FLAGS REGISTER
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 
 player.Idled:Connect(function()
@@ -42,8 +42,6 @@ realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new(1, -2
 realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
 settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
-
-cashPage = Instance.new("Frame") cashPage.Size = UDim2.new(1, -20, 1, -85) cashPage.Position = UDim2.new(0, 10, 0, 80) cashPage.BackgroundTransparency = 1; cashPage.Visible = false; cashPage.Parent = mainFrame
 --======================================================================================
 -- BROSWE HUB | PART 3 OF 7 (INTERFACE INTERACTIVE HEADER AND TABS LOADING)
 --======================================================================================
@@ -53,26 +51,29 @@ minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) minBtn
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
-tabTrial = Instance.new("TextButton") tabTrial.Size = UDim2.new(0, 55, 1, 0) tabTrial.Position = UDim2.new(0, 5, 0, 0) tabTrial.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabTrial.TextColor3 = Color3.fromRGB(15, 15, 15) tabTrial.TextSize = 12; tabTrial.Font = Enum.Font.SourceSansBold; tabTrial.Text = "Trial" tabTrial.Parent = tabList
-tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 70, 1, 0) tabCapsules.Position = UDim2.new(0, 65, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 12; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
-tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 70, 1, 0) tabRealm1.Position = UDim2.new(0, 140, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm1.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+tabTrial = Instance.new("TextButton") tabTrial.Size = UDim2.new(0, 60, 1, 0) tabTrial.Position = UDim2.new(0, 5, 0, 0) tabTrial.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabTrial.TextColor3 = Color3.fromRGB(15, 15, 15) tabTrial.TextSize = 12; tabTrial.Font = Enum.Font.SourceSansBold; tabTrial.Text = "Trial" tabTrial.Parent = tabList
+tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 75, 1, 0) tabCapsules.Position = UDim2.new(0, 70, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 12; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
 
-tabCash = Instance.new("TextButton") tabCash.Size = UDim2.new(0, 55, 1, 0) tabCash.Position = UDim2.new(0, 215, 0, 0) tabCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCash.TextColor3 = Color3.fromRGB(170, 170, 170) tabCash.TextSize = 12; tabCash.Font = Enum.Font.SourceSansBold; tabCash.Text = "Cash" tabCash.Parent = tabList
+-- RESTORED CLEAN TOP MENU: Cash tab removed, directly returning space to standard main layout views
+tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 75, 1, 0) tabRealm1.Position = UDim2.new(0, 150, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm1.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 75, 1, 0) tabRealm3.Position = UDim2.new(0, 230, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 75, 1, 0) tabSettings.Position = UDim2.new(0, 310, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tabRunes.Position = UDim2.new(0, 390, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
 
-tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 60, 1, 0) tabRealm3.Position = UDim2.new(0, 275, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 65, 1, 0) tabSettings.Position = UDim2.new(0, 340, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
-tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 50, 1, 0) tabRunes.Position = UDim2.new(0, 410, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+Instance.new("UICorner", tabTrial).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16)
 
-Instance.new("UICorner", tabTrial).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCash).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16)
-
+-- REALM 1 INTERFACE REFACTOR: Resized sub-navigation row buttons to fit the new Cash sub-tab button option
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 50, 1, 0) subBtnNoobs.Position = UDim2.new(0, 2, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
 subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 75, 1, 0) subBtnOof.Position = UDim2.new(0, 54, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 10; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof Upgrades" subBtnOof.Parent = subTabList
 subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 95, 1, 0) subBtnRebirth.Position = UDim2.new(0, 131, 0, 0) subBtnRebirth.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnRebirth.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnRebirth.TextSize = 10; subBtnRebirth.Font = Enum.Font.SourceSansBold; subBtnRebirth.Text = "Rebirth Upgrades" subBtnRebirth.Parent = subTabList
-subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 80, 1, 0) subBtnFire.Position = UDim2.new(0, 228, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 10; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire Upgrades" subBtnFire.Parent = subTabList
-subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 65, 1, 0) subBtnBlaze.Position = UDim2.new(0, 310, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
+subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 75, 1, 0) subBtnFire.Position = UDim2.new(0, 228, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 10; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire Upgrades" subBtnFire.Parent = subTabList
+subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 50, 1, 0) subBtnBlaze.Position = UDim2.new(0, 305, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
 
-Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5)
+-- NEW INJECTED SUB-TAB: Cash Upgrades allocated directly inside the Realm 1 panel navigation menu bar frame
+subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 75, 1, 0) subBtnCash.Position = UDim2.new(0, 357, 0, 0) subBtnCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnCash.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnCash.TextSize = 10; subBtnCash.Font = Enum.Font.SourceSansBold; subBtnCash.Text = "Cash Upgrades" subBtnCash.Parent = subTabList
+
+Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
 --======================================================================================
 -- BROSWE HUB | PART 4 OF 7 (SCROLL CONTAINER INSTANTIATIONS)
 --======================================================================================
@@ -86,7 +87,8 @@ realm1FireScroll = makeScroll(210)
 realm1FireScroll.Parent = realm1MasterPage
 realm1BlazeScroll = makeScroll(210)
 
-realm1CashScroll = Instance.new("ScrollingFrame") realm1CashScroll.Size = UDim2.new(1, 0, 1, -10) realm1CashScroll.Position = UDim2.new(0, 0, 0, 10) realm1CashScroll.BackgroundTransparency = 1; realm1CashScroll.BorderSizePixel = 0; realm1CashScroll.CanvasSize = UDim2.new(0, 0, 0, 210) realm1CashScroll.ScrollBarThickness = 3; realm1CashScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) realm1CashScroll.Parent = cashPage
+-- SUB-CANVAS RELOCATION: Reparented cash scroller under the master realm1MasterPage container layout element list
+realm1CashScroll = makeScroll(170)
 
 function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -135,6 +137,7 @@ toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
 toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
 toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 
+-- CASH SCROLL ROWS: Successfully populated inside the newly parented scroll frame
 toggleAutoFarmCash = makeSubRow("Auto Stand On Conveyor Pad", 1, realm1CashScroll)
 toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
 toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
@@ -162,7 +165,9 @@ local TrailState = "Capsule"
 local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
 local FirePosition = Vector3.new(1080.31, 13.55, -675.99)
-local ConveyorPosition = Vector3.new(874.84, 5.51, 13426.69)
+
+-- FIXED VECTOR ENGINE COORDS: Safely anchors position back inside the Realm 1 Tycoon plot matrix bounds
+local ConveyorPosition = Vector3.new(-65.5, 6.2, -676.4)
 
 local function GetWorldRoot()
     local char = player.Character
@@ -261,47 +266,43 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    local upgrades = {
-        {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Starter"}},
-        {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Cooker"}},
-        {F = "AutoUpgradeExplorer",   T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Explorer"}},
-        {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Magician"}},
-        {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Archer"}},
-        {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Soldier"}},
-        {F = "AutoUpgradePharaoh",    T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Pharaoh"}},
-        {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
-        {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
-        {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
-        {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
-        {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
-        {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
-        {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
-        {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
-        {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
-        {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
-        {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
-        {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}},
-        {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
-        {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
-        {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
-    }
-    while true do
-        task.wait(0.4)
-        for _, item in ipairs(upgrades) do
-            if _G[item.F] and NetRemote then
-                pcall(function() 
-                    NetRemote:FireServer(item.T, unpack(item.A)) 
-                    if item.S then
-                        task.wait(0.05)
-                        for i = 1, 5 do NetRemote:FireServer(item.S, unpack(item.A)) end
-                    end
-                end)
-                task.wait(0.1)
+-- MULTI-THREADED ACTION QUEUE REFACTOR: Splitting each active flag out into its own loop fixes parallel upgrading bugs completely
+local function buildPurchaseThread(flag, command, serverArgs)
+    task.spawn(function()
+        while true do
+            task.wait(0.4)
+            if _G[flag] and NetRemote then
+                pcall(function() NetRemote:FireServer(command, unpack(serverArgs)) end)
             end
         end
-    end
-end)
+    end)
+end
+
+local upgrades = {
+    {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
+    {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
+    {F = "AutoUpgradeExplorer",   T = "UpgradeNoobMax",    A = {"Explorer"}},
+    {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}},
+    {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    A = {"Archer"}},
+    {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    A = {"Soldier"}},
+    {F = "AutoUpgradePharaoh",    T = "UpgradeNoobMax",    A = {"Pharaoh"}},
+    {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
+    {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
+    {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
+    {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
+    {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
+    {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
+    {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
+    {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
+    {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
+    {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
+    {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
+    {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}},
+    {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
+    {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
+    {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
+}
+for _, item in ipairs(upgrades) do buildPurchaseThread(item.F, item.T, item.A) end
 
 task.spawn(function()
     local targetCooldown = math.random(270, 330)
@@ -313,13 +314,9 @@ task.spawn(function()
             if secondsElapsed >= targetCooldown then
                 secondsElapsed = 0
                 targetCooldown = math.random(270, 330)
-                pcall(function() 
-                    NetRemote:FireServer("Blaze") 
-                end)
+                pcall(function() NetRemote:FireServer("Blaze") end)
             end
-        else
-            secondsElapsed = 0
-        end
+        else secondsElapsed = 0 end
     end
 end)
 --======================================================================================
@@ -405,22 +402,22 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 function mainRoute(pOpen, bActive) 
-    trialPage.Visible, capsulePage.Visible, realm1MasterPage.Visible, cashPage.Visible, realm3Page.Visible, settingsPage.Visible, runesPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabTrial, tabCapsules, tabRealm1, tabCash, tabRealm3, tabSettings, tabRunes}
+    trialPage.Visible, capsulePage.Visible, realm1MasterPage.Visible, realm3Page.Visible, settingsPage.Visible, runesPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabTrial, tabCapsules, tabRealm1, tabRealm3, tabSettings, tabRunes}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
 tabTrial.MouseButton1Click:Connect(function() mainRoute(trialPage, tabTrial) end) 
 tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulePage, tabCapsules) end) 
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
-tabCash.MouseButton1Click:Connect(function() mainRoute(cashPage, tabCash) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
 
+-- FIXED SUB TAB MATRIX ROUTER: Added realm1CashScroll straight inside the main active toggle visibility array map list
 function route(targetScroll)
-    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll}
-    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze}
+    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1CashScroll}
+    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, subBtnCash}
     for i, s in ipairs(scrolls) do
         s.Visible = (s == targetScroll)
         if s == targetScroll then
@@ -435,6 +432,7 @@ subBtnOof.MouseButton1Click:Connect(function() route(realm1UpgradeScroll) end)
 subBtnRebirth.MouseButton1Click:Connect(function() route(realm1RebirthScroll) end)
 subBtnFire.MouseButton1Click:Connect(function() route(realm1FireScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(realm1BlazeScroll) end)
+subBtnCash.MouseButton1Click:Connect(function() route(realm1CashScroll) end)
 
 minBtn.MouseButton1Click:Connect(function() 
     mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
