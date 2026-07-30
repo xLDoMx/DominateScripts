@@ -126,6 +126,16 @@ local toggleBuildFire = makeSubRow("Auto Build Fire", 5, realm1FireScroll)
 local toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 1, realm1BlazeScroll)
 local toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 2, realm1BlazeScroll)
 local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 3, realm1BlazeScroll)
+
+--======================================================================================
+-- BROSWE HUB | MISSING FIRE ROWS ADD-ON
+--======================================================================================
+local toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
+local toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
+local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
+local toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
+local toggleBuildFire = makeSubRow("Auto Build Fire", 5, realm1FireScroll)
+
 --======================================================================================
 -- BROSWE HUB | PART 10
 --======================================================================================
