@@ -133,7 +133,7 @@ toggleRebirthTimerCard.Size = UDim2.new(0, 75, 0, 26) toggleRebirthTimerCard.Pos
 toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim2.new(1, -85, 0.5, -13) toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
 --======================================================================================
--- DOMINATE HUB | PART 6 OF 8 (DYNAMIC SPATIAL RUNTIMES MATRIX)
+-- DOMINATE HUB | PART 6 OF 8 (SCIENTIFIC NOTATION PARSER RUNTIMES)
 --======================================================================================
 local SweeperActiveMovement = false
 
@@ -169,19 +169,30 @@ local function ResolveConveyorPosition()
     return Vector3.new(874.84, 15.0, 13426.69)
 end
 
+-- SCIENTIFIC DECODER UPGRADE: Seamlessly parses late-game numbers like 2.8e128 and suffix letters
 local function ParseCostText(obj)
     if not obj or not obj:IsA("TextLabel") then return math.huge end
-    local text = tostring(obj.Text):upper()
+    local text = tostring(obj.Text):upper():gsub("CASH", ""):gsub("%s", "")
     if text == "" then return math.huge end
-    text = text:gsub("CASH", ""):gsub("%s", "")
-    local num = tonumber(text:match("[%d%.]+"))
-    if not num then return math.huge end
-    if text:find("K") then num = num * 1000
-    elseif text:find("M") then num = num * 1000000
-    elseif text:find("B") then num = num * 1000000000
-    elseif text:find("T") then num = num * 1000000000000
+    
+    -- Extract strings formatted in standard scientific notation first (e.g., 2.8E128)
+    local scientificMatch = text:match("[%d%.]+E%[%+%-]?%d+") or text:match("[%d%.]+E%d+")
+    if scientificMatch then
+        local num = tonumber(scientificMatch)
+        if num then return num end
     end
-    return num
+    
+    -- Fallback converter layout for standard metric suffix formats (K, M, B, T)
+    local baseNum = tonumber(text:match("[%d%.]+"))
+    if not baseNum then return math.huge end
+    
+    if text:find("K") then baseNum = baseNum * 1e3
+    elseif text:find("M") then baseNum = baseNum * 1e6
+    elseif text:find("B") then baseNum = baseNum * 1e9
+    elseif text:find("T") then baseNum = baseNum * 1e12
+    elseif text:find("QN") then baseNum = baseNum * 1e15
+    end
+    return baseNum
 end
 
 local function GetPlayerCash()
@@ -193,6 +204,7 @@ local function GetPlayerCash()
     end
     return 0
 end
+
 --======================================================================================
 -- DOMINATE HUB | PART 7 OF 8 (DEDICATED DUAL HARVEST RUNTIME ENGINE)
 --======================================================================================
