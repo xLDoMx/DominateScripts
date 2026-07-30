@@ -13,7 +13,6 @@ _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
 _G.AutoBuildFire = false
 
--- CASH STATE FLAGS REGISTER
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 
 player.Idled:Connect(function()
@@ -150,11 +149,13 @@ toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.
 --======================================================================================
 -- BROSWE HUB | PART 6 OF 7 (COMBAT, PARALLEL UPGRADES & ENHANCED DYNAMIC SWEEPER)
 --======================================================================================
-print("PART 6 LOADED")
-print("Initial:", SweeperActiveMovement, TrailState)
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
-local SweeperActiveMovement = false -- CRITICAL STATE LOCK: Prevents loops from fighting
+local SweeperActiveMovement = false
+
+-- CHRONOLOGICAL CORRECTIONS HANDLED: Variables declared above before print statements run
+print("PART 6 LOADED")
+print("Initial:", SweeperActiveMovement, TrailState)
 
 local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
@@ -233,13 +234,11 @@ local function FindEnemy()
     return closest
 end
 
--- MAIN CORE MOVEMENT HANDLER
 task.spawn(function()
     while true do
         task.wait(0.25)
         local selected = GetChosenTrail()
         if TrailState == "Capsule" then
-            -- Only move to the conveyor if the sweeper isn't actively jumping to a pad
             if not SweeperActiveMovement then
                 if _G.AutoCapsule then 
                     InsideTrail = false MovePlayer(CapsulePosition) 
@@ -247,7 +246,6 @@ task.spawn(function()
                     InsideTrail = false MovePlayer(ResolveConveyorPosition())
                 end
             end
-            
             if selected then
                 local gate = GetGate(selected)
                 if GateOpen(gate) then TrailState = "EnteringTrail" end
@@ -266,43 +264,36 @@ task.spawn(function()
     end
 end)
 
--- SINGLE-MOVEMENT DYNAMIC BUTTON SWEEPER ENGINE
 task.spawn(function()
     while true do
         task.wait(0.3)
         if _G.AutoFarmCash and not InsideTrail then
             local livePlot = GetLiveTycoon()
             local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
-            
             if buttonsFolder then
                 local currentButtonModel = buttonsFolder:FindFirstChildWhichIsA("Model")
                 local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart", true)
-                
                 if targetBuyPart and targetBuyPart:IsA("BasePart") then
                     local hrp = GetWorldRoot()
                     if hrp then
-                        -- Activating lock: Main loop stops sending you to the conveyor
                         SweeperActiveMovement = true
                         
-                        print("Broswe Hub Sweeper -> Purchasing: " .. currentButtonModel.Name)
+                        -- ISOLATION DIAGNOSTICS: Run the verification prints right inside the active sweeper thread loop
+                        local plot = GetLiveTycoon()
+                        print("Live Plot Found:", plot)
+                        print("Full Path Location:", plot and plot:GetFullName())
+                        print("Sniping Target Pad:", currentButtonModel.Name)
+                        print("Target Pad Position:", tostring(targetBuyPart.Position))
+                        
                         MovePlayer(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                        task.wait(0.25) -- Slightly higher delay to ensure collision registers cleanly
-                        
-                        -- Keep holding until tycoon folder tree removes it
+                        task.wait(0.25)
+                        MovePlayer(ResolveConveyorPosition())
                         repeat task.wait(0.1) until not currentButtonModel:IsDescendantOf(buttonsFolder) or InsideTrail or not _G.AutoFarmCash
-                        
-                        -- Release lock: Allow return to conveyor
                         SweeperActiveMovement = false
                     end
-                else
-                    SweeperActiveMovement = false
-                end
-            else
-                SweeperActiveMovement = false
-            end
-        else
-            SweeperActiveMovement = false
-        end
+                else SweeperActiveMovement = false end
+            else SweeperActiveMovement = false end
+        else SweeperActiveMovement = false end
     end
 end)
 
@@ -358,7 +349,6 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
-
 --======================================================================================
 -- BROSWE HUB | PART 7 OF 7 (INTERACTIVE EVENT LAYOUT SIGNALS AND MECHANICS)
 --======================================================================================
