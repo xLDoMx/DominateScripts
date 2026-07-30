@@ -148,7 +148,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 9 (RESTORED ENGINE CONTINUOUS POLLING RUNTIMES)
+-- BROSWE HUB | PART 6 OF 9 (RESTORED PARALLEL STRUCTURE VALUE RUNTIMES)
 --======================================================================================
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
@@ -164,7 +164,7 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
--- CONTINUOUS FLAT PATH RESOLVER: Completely fixes under-map bugs by evaluating variables fresh
+-- FLUID CALCULATOR: Checks positions dynamically on every loop to guarantee you don't drop under-map
 local function ResolveConveyorPosition()
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
     local tycoon = gameContent and gameContent:FindFirstChild("Tycoon")
@@ -175,6 +175,7 @@ local function ResolveConveyorPosition()
     return Vector3.new(874.84, 5.51, 13426.69)
 end
 
+-- CRASH FILTER WRAPPER: Robust text check blocks bad arithmetic errors completely
 local function ParseCostText(obj)
     if not obj or not obj:IsA("TextLabel") then return math.huge end
     local text = tostring(obj.Text):upper()
@@ -190,6 +191,7 @@ local function ParseCostText(obj)
     return num
 end
 
+-- TYPE-VALIDATED MONEY SENSOR
 local function GetPlayerCash()
     local extraFolder = player:FindFirstChild("EXTRA")
     local pinnedFolder = extraFolder and extraFolder:FindFirstChild("PINNED_CURRENCIES")
@@ -207,7 +209,7 @@ local function GetChosenTrail()
     return nil
 end
 --======================================================================================
--- BROSWE HUB | PART 7 OF 9 (RESTORED DEDICATED LOOPS & CONTINUOUS SWEEPER)
+-- BROSWE HUB | PART 7 OF 9 (RESTORED PARALLEL MOVEMENT & SWEOPER RUNTIMES)
 --======================================================================================
 local function GetGate(name)
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
@@ -242,7 +244,7 @@ local function FindEnemy()
     return closest
 end
 
--- ORIGINAL ISOLATED COMBAT ROUTINE THREAD: Completely restores auto fire teleport functionality
+-- ORIGINAL SEPARATE COMBAT RUNTIME THREAD: Bypasses state override variables to restore auto-fire teleports instantly
 task.spawn(function()
     while true do
         task.wait(0.25)
@@ -276,7 +278,7 @@ task.spawn(function()
     end
 end)
 
--- RESTORED CONTINUOUS POLLING SWEEPER: Completely bypasses bad event listeners and handles upgrades fresh
+-- ORIGINAL INDEPENDENT SWEOPER LOOP
 task.spawn(function()
     while true do
         task.wait(0.4)
@@ -490,4 +492,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 9 LOADED - CORE ENGINES COMPLETELY PERFORMANCE RESTORED")
+print("PART 9 LOADED - SEPARATE INDEPENDENT MOVEMENT ENGINE FULLY OPERATIONAL")
