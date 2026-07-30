@@ -165,16 +165,15 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
--- INSTRUMENTED MOVEMENT TRACKER ENGINE: Traces real-time server vs client teleport verification updates
 local function MovePlayer(pos)
     print(("MovePlayer -> %.2f %.2f %.2f"):format(pos.X, pos.Y, pos.Z))
     local hrp = GetWorldRoot()
     if hrp then
         hrp.CFrame = CFrame.new(pos)
-        task.wait(0.1) -- Short verification gap interval
+        task.wait(0.1) 
         print(("Actual -> %.2f %.2f %.2f"):format(hrp.Position.X, hrp.Position.Y, hrp.Position.Z))
         
-        task.wait(0.4) -- Total wait reaches exactly 0.5 seconds later
+        task.wait(0.4) 
         print("Half second later:", tostring(hrp.Position))
     end
 end
