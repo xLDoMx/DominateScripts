@@ -13,6 +13,7 @@ _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
 _G.AutoBuildFire = false
 
+-- CASH STATE FLAGS REGISTER
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 
 player.Idled:Connect(function()
@@ -153,7 +154,6 @@ local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
 local SweeperActiveMovement = false
 
--- CHRONOLOGICAL CORRECTIONS HANDLED: Variables declared above before print statements run
 print("PART 6 LOADED")
 print("Initial:", SweeperActiveMovement, TrailState)
 
@@ -165,29 +165,22 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
+-- INSTRUMENTED MOVEMENT TRACKER ENGINE: Traces real-time server vs client teleport verification updates
 local function MovePlayer(pos)
+    print(("MovePlayer -> %.2f %.2f %.2f"):format(pos.X, pos.Y, pos.Z))
     local hrp = GetWorldRoot()
-    if hrp then hrp.CFrame = CFrame.new(pos) end
-end
-
-local function GetLiveTycoon()
-    local paths = {workspace:FindFirstChild("Tycoons"), workspace:FindFirstChild("Tycoon"), workspace:FindFirstChild("PlayerTycoons")}
-    for _, folder in ipairs(paths) do
-        if folder then
-            local myPlot = folder:FindFirstChild(player.Name) or folder:FindFirstChild(player.DisplayName)
-            if myPlot then return myPlot end
-            for _, plot in ipairs(folder:GetChildren()) do
-                if plot:GetAttribute("Owner") == player.Name or plot:GetAttribute("Creator") == player.Name then
-                    return plot
-                end
-            end
-        end
+    if hrp then
+        hrp.CFrame = CFrame.new(pos)
+        task.wait(0.1) -- Short verification gap interval
+        print(("Actual -> %.2f %.2f %.2f"):format(hrp.Position.X, hrp.Position.Y, hrp.Position.Z))
+        
+        task.wait(0.4) -- Total wait reaches exactly 0.5 seconds later
+        print("Half second later:", tostring(hrp.Position))
     end
-    return workspace:FindFirstChild(player.Name .. "'s Tycoon") or workspace:FindFirstChild("Tycoon")
 end
 
 local function ResolveConveyorPosition()
-    local livePlot = GetLiveTycoon()
+    local livePlot = workspace.__GAME_CONTENT:FindFirstChild("Tycoon")
     local physicalConveyor = livePlot and livePlot:FindFirstChild("Conveyor", true)
     if physicalConveyor and physicalConveyor:IsA("BasePart") then
         return physicalConveyor.Position + Vector3.new(0, 4, 0)
@@ -268,26 +261,24 @@ task.spawn(function()
     while true do
         task.wait(0.3)
         if _G.AutoFarmCash and not InsideTrail then
-            local livePlot = GetLiveTycoon()
+            local livePlot = workspace.__GAME_CONTENT:FindFirstChild("Tycoon")
             local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
+            
             if buttonsFolder then
                 local currentButtonModel = buttonsFolder:FindFirstChildWhichIsA("Model")
                 local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart", true)
+                
                 if targetBuyPart and targetBuyPart:IsA("BasePart") then
                     local hrp = GetWorldRoot()
                     if hrp then
                         SweeperActiveMovement = true
                         
-                        -- ISOLATION DIAGNOSTICS: Run the verification prints right inside the active sweeper thread loop
-                        local plot = GetLiveTycoon()
-                        print("Live Plot Found:", plot)
-                        print("Full Path Location:", plot and plot:GetFullName())
-                        print("Sniping Target Pad:", currentButtonModel.Name)
-                        print("Target Pad Position:", tostring(targetBuyPart.Position))
+                        print("Broswe Hub Sweeper -> Targets: " .. currentButtonModel.Name)
+                        print("Broswe Hub Path -> " .. targetBuyPart:GetFullName())
+                        print("Broswe Hub Coords -> " .. tostring(targetBuyPart.Position))
                         
                         MovePlayer(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                        task.wait(0.25)
-                        MovePlayer(ResolveConveyorPosition())
+                        
                         repeat task.wait(0.1) until not currentButtonModel:IsDescendantOf(buttonsFolder) or InsideTrail or not _G.AutoFarmCash
                         SweeperActiveMovement = false
                     end
@@ -399,7 +390,7 @@ toggleFasterNoobs.MouseButton1Click:Connect(function() tState(toggleFasterNoobs,
 toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tState(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tState(toggleRebirthFire, "AutoRebirthMoreFire") end)
-toggleFireFire.MouseButton1Click:Connect(function() tState(toggleFireFire, "AutoFireMoreFire") end)
+toggleFireFire.MouseButton1Click:Connect(function3() tState(toggleFireFire, "AutoFireMoreFire") end)
 toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth, "AutoFireMoreRebirth") end)
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
