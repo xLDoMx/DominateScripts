@@ -179,14 +179,25 @@ local function ResolveConveyorPosition()
     return Vector3.new(874.84, 5.51, 13426.69)
 end
 
-local function ParseCostText(lbl)
-    if not lbl then return 0 end
-    local text = lbl.Text:upper():gsub("CASH", ""):gsub("%s", "")
-    local num = tonumber(text:match("[%d%.]+")) or 0
-    if text:find("K") then return num * 1000 end
-    if text:find("M") then return num * 1000000 end
-    if text:find("B") then return num * 1000000000 end
-    if text:find("T") then return num * 1000000000000 end
+-- BULLETPROOF PARSER REWRITE: Returns math.huge instead of 0 to safely bypass unaffordable/unpriced pads
+local function ParseCostText(obj)
+    if not obj or not obj:IsA("TextLabel") then
+        return math.huge 
+    end
+    local text = tostring(obj.Text):upper()
+    if text == "" then
+        return math.huge
+    end
+    text = text:gsub("CASH", ""):gsub("%s", "")
+    local num = tonumber(text:match("[%d%.]+"))
+    if not num then
+        return math.huge
+    end
+    if text:find("K") then num = num * 1000
+    elseif text:find("M") then num = num * 1000000
+    elseif text:find("B") then num = num * 1000000000
+    elseif text:find("T") then num = num * 1000000000000
+    end
     return num
 end
 
@@ -363,7 +374,7 @@ local upgrades = {
     {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
-}
+end
 for _, item in ipairs(upgrades) do buildPurchaseThread(item.F, item.T, item.A) end
 
 task.spawn(function()
@@ -449,11 +460,11 @@ toggleCashFasterDropper.MouseButton1Click:Connect(function() tState(toggleCashFa
 toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tState(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
 
 local function uCaps() 
-    local s = _G.AutoCapsule and "ACTIVE" or "DISABLED"  
-    local c = _G.AutoCapsule and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)  
-    local t = _G.AutoCapsule and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)  
-    toggleTrailCapsule.Text, toggleTrailCapsule.BackgroundColor3, toggleTrailCapsule.TextColor3 = s, c, t  
-    toggleStandaloneCapsule.Text, toggleStandaloneCapsule.BackgroundColor3, toggleStandaloneCapsule.TextColor3 = s, c, t  
+    local s = _G.AutoCapsule and "ACTIVE" or "DISABLED" 
+    local c = _G.AutoCapsule and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
+    local t = _G.AutoCapsule and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    toggleTrailCapsule.Text, toggleTrailCapsule.BackgroundColor3, toggleTrailCapsule.TextColor3 = s, c, t 
+    toggleStandaloneCapsule.Text, toggleStandaloneCapsule.BackgroundColor3, toggleStandaloneCapsule.TextColor3 = s, c, t 
 end
 toggleTrailCapsule.MouseButton1Click:Connect(function() _G.AutoCapsule = not _G.AutoCapsule; uCaps() end) 
 toggleStandaloneCapsule.MouseButton1Click:Connect(function() _G.AutoCapsule = not _G.AutoCapsule; uCaps() end)
@@ -514,3 +525,5 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
+
+print("PART 8 LOADED - UI SYSTEM COMPLETELY OPERATIONAL")
