@@ -65,11 +65,26 @@ Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new
 local function makeScroll(canvas) 
     local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = realm1MasterPage return s 
 end
+--======================================================================================
+-- BROSWE HUB | FIRE CANVAS LAYOUT PATCH (PART 2 CORRECTION)
+--======================================================================================
 realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
 realm1UpgradeScroll = makeScroll(110)
 realm1RebirthScroll = makeScroll(160)
-realm1FireScroll = makeScroll(210)
+
+-- CORRECTION: Explicitly forced realm1MasterPage as parent scope anchor
+realm1FireScroll = makeScroll(210) 
+realm1FireScroll.Parent = realm1MasterPage 
+
 realm1BlazeScroll = makeScroll(160)
+
+local function makeSubRow(label, idx, scr)
+    local f = Instance.new("Frame") f.Size = UDim2.new(1, -12, 0, 42) f.Position = UDim2.new(0, 5, 0, (idx-1)*48+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = scr
+    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.7, 0, 1, 0) l.Position = UDim2.new(0, 12, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(220, 220, 225) l.TextSize = 13; l.Font = Enum.Font.SourceSans; l.Text = label; l.TextXAlignment = Enum.TextXAlignment.Left; l.Parent = f
+    local b = Instance.new("TextButton") b.Size = UDim2.new(0, 75, 0, 24) b.Position = UDim2.new(1, -85, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 11; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
+end
+
 --======================================================================================
 -- BROSWE HUB | PART 5 OF 6 (COMPONENT CONSTRUCTOR UTILITIES LOADING)
 --======================================================================================
