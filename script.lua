@@ -13,7 +13,7 @@ _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
 _G.AutoBuildFire = false
 
--- FIXED STATE FLAGS REGISTER
+-- CASH STATE FLAGS REGISTER
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 
 player.Idled:Connect(function()
@@ -53,8 +53,6 @@ local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 tabTrial = Instance.new("TextButton") tabTrial.Size = UDim2.new(0, 60, 1, 0) tabTrial.Position = UDim2.new(0, 5, 0, 0) tabTrial.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabTrial.TextColor3 = Color3.fromRGB(15, 15, 15) tabTrial.TextSize = 12; tabTrial.Font = Enum.Font.SourceSansBold; tabTrial.Text = "Trial" tabTrial.Parent = tabList
 tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 75, 1, 0) tabCapsules.Position = UDim2.new(0, 70, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 12; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
-
--- RESTORED CLEAN TOP MENU: Cash tab removed, directly returning space to standard main layout views
 tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 75, 1, 0) tabRealm1.Position = UDim2.new(0, 150, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm1.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
 tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 75, 1, 0) tabRealm3.Position = UDim2.new(0, 230, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
 tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 75, 1, 0) tabSettings.Position = UDim2.new(0, 310, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
@@ -62,7 +60,7 @@ tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tab
 
 Instance.new("UICorner", tabTrial).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16)
 
--- REALM 1 INTERFACE REFACTOR: Resized sub-navigation row buttons to fit the new Cash sub-tab button option
+-- REALM 1 NAV REFACTOR: Balanced width layout sizing mapping for sub buttons array list
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 50, 1, 0) subBtnNoobs.Position = UDim2.new(0, 2, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
 subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 75, 1, 0) subBtnOof.Position = UDim2.new(0, 54, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 10; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof Upgrades" subBtnOof.Parent = subTabList
@@ -70,7 +68,7 @@ subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 95,
 subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 75, 1, 0) subBtnFire.Position = UDim2.new(0, 228, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 10; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire Upgrades" subBtnFire.Parent = subTabList
 subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 50, 1, 0) subBtnBlaze.Position = UDim2.new(0, 305, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
 
--- NEW INJECTED SUB-TAB: Cash Upgrades allocated directly inside the Realm 1 panel navigation menu bar frame
+-- REASSIGNED REALM 1 SUB BUTTON: Cash Upgrades nested successfully inside Realm 1 layout
 subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 75, 1, 0) subBtnCash.Position = UDim2.new(0, 357, 0, 0) subBtnCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnCash.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnCash.TextSize = 10; subBtnCash.Font = Enum.Font.SourceSansBold; subBtnCash.Text = "Cash Upgrades" subBtnCash.Parent = subTabList
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
@@ -87,7 +85,7 @@ realm1FireScroll = makeScroll(210)
 realm1FireScroll.Parent = realm1MasterPage
 realm1BlazeScroll = makeScroll(210)
 
--- SUB-CANVAS RELOCATION: Reparented cash scroller under the master realm1MasterPage container layout element list
+-- SYNCHRONIZED SCROLL CONTEXT PARENTING: Tied completely onto realm1MasterPage layer registry bounds
 realm1CashScroll = makeScroll(170)
 
 function gridRow(txt, pos, page)
@@ -137,7 +135,7 @@ toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
 toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
 toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 
--- CASH SCROLL ROWS: Successfully populated inside the newly parented scroll frame
+-- CASH UPGRADES GENERATED SECURELY: Placed seamlessly onto realm1CashScroll panel layout framework
 toggleAutoFarmCash = makeSubRow("Auto Stand On Conveyor Pad", 1, realm1CashScroll)
 toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
 toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
@@ -156,7 +154,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 7 (COMBAT, CASH FARMING & AUTOMATED STARTUP LOOPS)
+-- BROSWE HUB | PART 6 OF 7 (COMBAT, PARALLEL UPGRADES & DYNAMIC BUTTON SWEEPER)
 --======================================================================================
 local GFolder = workspace:WaitForChild("__GAME_CONTENT", 5) and workspace.__GAME_CONTENT:WaitForChild("Contents", 5)
 local InsideTrail, PrepTimerActive = false, false
@@ -166,7 +164,7 @@ local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
 local FirePosition = Vector3.new(1080.31, 13.55, -675.99)
 
--- FIXED VECTOR ENGINE COORDS: Safely anchors position back inside the Realm 1 Tycoon plot matrix bounds
+-- CORRECTED COORDS MATRIX: Safely matches the absolute location bounds of World 1 area plots
 local ConveyorPosition = Vector3.new(-65.5, 6.2, -676.4)
 
 local function GetWorldRoot()
@@ -247,26 +245,35 @@ task.spawn(function()
     end
 end)
 
+-- DYNAMIC TYCOON SWEEPER ENGINE: Taps active queue objects safely and smooth-waits until bought
 task.spawn(function()
     while true do
-        task.wait(0.5)
+        task.wait(0.3)
         if _G.AutoFarmCash and not InsideTrail then
-            local tycoonFolder = workspace:FindFirstChild("Tycoons") or workspace:FindFirstChild("Tycoon")
-            local starterButton = tycoonFolder and tycoonFolder:FindFirstChild("Conveyor", true) or workspace:FindFirstChild("Conveyor", true)
+            local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
+            local tycoonFolder = gameContent and gameContent:FindFirstChild("Tycoon")
+            local buttonsFolder = tycoonFolder and tycoonFolder:FindFirstChild("Buttons")
             
-            if starterButton and starterButton:IsA("BasePart") then
-                local hrp = GetWorldRoot()
-                if hrp then
-                    local currentPos = hrp.CFrame
-                    hrp.CFrame = starterButton.CFrame task.wait(0.2)
-                    hrp.CFrame = currentPos
+            if buttonsFolder then
+                local currentButtonModel = buttonsFolder:FindFirstChildWhichIsA("Model")
+                local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart")
+                
+                if targetBuyPart and targetBuyPart:IsA("BasePart") then
+                    local hrp = GetWorldRoot()
+                    if hrp then
+                        MovePlayer(targetBuyPart.Position)
+                        task.wait(0.15)
+                        MovePlayer(ConveyorPosition)
+                        
+                        repeat task.wait(0.1) until not currentButtonModel:IsDescendantOf(buttonsFolder) or InsideTrail or not _G.AutoFarmCash
+                    end
                 end
             end
         end
     end
 end)
 
--- MULTI-THREADED ACTION QUEUE REFACTOR: Splitting each active flag out into its own loop fixes parallel upgrading bugs completely
+-- INDEPENDENT THREAD FACTORY: Completely prevents parallel item priority buy locks
 local function buildPurchaseThread(flag, command, serverArgs)
     task.spawn(function()
         while true do
@@ -414,7 +421,6 @@ tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
 
--- FIXED SUB TAB MATRIX ROUTER: Added realm1CashScroll straight inside the main active toggle visibility array map list
 function route(targetScroll)
     local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1CashScroll}
     local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, subBtnCash}
