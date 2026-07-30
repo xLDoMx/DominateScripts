@@ -116,7 +116,7 @@ toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll)
 toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
--- RESTORED FIRE ROWS: Correctly anchored inside the verified scroll engine view window
+-- RESTORED ALL 5 FIRE ROWS: Anchored properly, sequentially structured from index 1 to 5
 toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
 toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
@@ -161,7 +161,7 @@ local function MovePlayer(pos)
 end
 
 local function GetChosenTrail()
-    if _G.AutoHardTrails then return "Hard" end
+    if _G.AutoHardTrails6 then return "Hard" end
     if _G.AutoMediumTrails then return "Medium" end
     if _G.AutoEasyTrails then return "Easy" end
     return nil
@@ -224,6 +224,7 @@ task.spawn(function()
 end)
 
 task.spawn(function()
+    -- COMPLETE FIXED AUTO UPGRADE STACK: Securely loops the 3 missing Blaze upgrades via network remotes
     local upgrades = {
         {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Starter"}},
         {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Cooker"}},
@@ -240,7 +241,10 @@ task.spawn(function()
         {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
         {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
         {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
-        {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
+        {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
+        {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
+        {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
+        {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}}
     }
     while true do
         task.wait(0.4)
@@ -256,15 +260,6 @@ task.spawn(function()
                 task.wait(0.1)
             end
         end
-    end
-end)
-
-task.spawn(function()
-    while true do
-        task.wait(1)
-        if _G.AutoBlazeMoreBlaze then print("Blaze MoreBlaze") end
-        if _G.AutoBlazeMoreFire then print("Blaze MoreFire") end
-        if _G.AutoBlazeMoreOof then print("Blaze MoreOof") end
     end
 end)
 
@@ -381,7 +376,7 @@ tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
 
--- FIXED CLIPPING WRAPPER: Fully manages the visibility of the restored Fire list container frame
+-- ROUTING ENG UPDATE: Restored full handling for all 5 sub-tab panel visibility canvas tracking triggers
 function route(targetScroll)
     local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll}
     local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze}
