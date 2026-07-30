@@ -147,14 +147,14 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 8 (COMBAT, PARALLEL UPGRADES & ENHANCED DYNAMIC SWEEPER)
+-- BROSWE HUB | PART 6 OF 8 (CORE SPATIAL ENGINE & UNIFIED LOCOMOTIVE LOOPS)
 --======================================================================================
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
-local SweeperActiveMovement = false
+local TargetOverridePosition = nil -- UNIFIED MOVEMENT TARGET: nil = stand on conveyor
 
 print("PART 6 LOADED")
-print("Initial:", SweeperActiveMovement, TrailState)
+print("Initial States Loaded Safely")
 
 local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
@@ -165,15 +165,8 @@ local function GetWorldRoot()
 end
 
 local function MovePlayer(pos)
-    print(("MovePlayer -> %.2f %.2f %.2f"):format(pos.X, pos.Y, pos.Z))
     local hrp = GetWorldRoot()
-    if hrp then
-        hrp.CFrame = CFrame.new(pos)
-        task.wait(0.1) 
-        print(("Actual -> %.2f %.2f %.2f"):format(hrp.Position.X, hrp.Position.Y, hrp.Position.Z))
-        task.wait(0.4) 
-        print("Half second later:", tostring(hrp.Position))
-    end
+    if hrp then hrp.CFrame = CFrame.new(pos) end
 end
 
 local function ResolveConveyorPosition()
@@ -200,10 +193,10 @@ local function GetPlayerCash()
     local extraFolder = player:FindFirstChild("EXTRA")
     local pinnedFolder = extraFolder and extraFolder:FindFirstChild("PINNED_CURRENCIES")
     local cashObj = pinnedFolder and pinnedFolder:FindFirstChild("Cash")
-    if cashObj and cashObj:IsA("ValueBase") then 
+    if cashObj and cashObj:IsA("ValueBase") and type(cashObj.Value) == "number" then 
         return cashObj.Value 
     end
-    return nil
+    return 0
 end
 
 local function GetChosenTrail()
@@ -213,7 +206,7 @@ local function GetChosenTrail()
     return nil
 end
 --======================================================================================
--- BROSWE HUB | PART 7 OF 8 (TARGETING & REWRITTEN CASH SCANNER RUNTIMES)
+-- BROSWE HUB | PART 7 OF 8 (UNIFIED MASTER MOVEMENT & REACTIVE EVENT SWEEPER)
 --======================================================================================
 local function GetGate(name)
     local world3 = workspace:FindFirstChild("__GAME_CONTENT") and workspace.__GAME_CONTENT:FindFirstChild("Contents") and workspace.__GAME_CONTENT.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
@@ -247,18 +240,21 @@ local function FindEnemy()
     return closest
 end
 
+-- UNIFIED SINGLE LOCOMOTIVE THREAD: Sole source of character CFrame position routing logic
 task.spawn(function()
     while true do
         task.wait(0.25)
         local selected = GetChosenTrail()
         if TrailState == "Capsule" then
-            if not SweeperActiveMovement then
-                if _G.AutoCapsule then 
-                    InsideTrail = false MovePlayer(CapsulePosition) 
-                elseif _G.AutoFarmCash then
-                    InsideTrail = false MovePlayer(ResolveConveyorPosition())
-                end
+            -- Route movement based on the unified state layout hierarchy
+            if TargetOverridePosition then
+                MovePlayer(TargetOverridePosition)
+            elseif _G.AutoCapsule then 
+                InsideTrail = false MovePlayer(CapsulePosition) 
+            elseif _G.AutoFarmCash then
+                InsideTrail = false MovePlayer(ResolveConveyorPosition())
             end
+            
             if selected then
                 local gate = GetGate(selected)
                 if GateOpen(gate) then TrailState = "EnteringTrail" end
@@ -277,56 +273,68 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    while true do
-        task.wait(0.4)
-        if _G.AutoFarmCash and not InsideTrail then
-            local livePlot = workspace.__GAME_CONTENT:FindFirstChild("Tycoon")
-            local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
+-- BULLETPROOF EVENT-DRIVEN SWEEPER FUNCTION
+local function ProcessTycoonPurchases()
+    if not _G.AutoFarmCash or InsideTrail then return end
+    local livePlot = workspace.__GAME_CONTENT:FindFirstChild("Tycoon")
+    local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
+    if not buttonsFolder then return end
+    
+    for _, btnModel in ipairs(buttonsFolder:GetChildren()) do
+        if btnModel:IsA("Model") then
+            local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
+            local costLabel = btnModel:FindFirstChild("Cost", true)
             
-            if buttonsFolder then
-                local orderedButtons = buttonsFolder:GetChildren()
-                local foundAffordable = false
+            if targetBuyPart and targetBuyPart:IsA("BasePart") then
+                local parsedCost = ParseCostText(costLabel)
+                local localWallet = GetPlayerCash()
                 
-                for _, btnModel in ipairs(orderedButtons) do
-                    if btnModel:IsA("Model") then
-                        local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
-                        local costLabel = btnModel:FindFirstChild("Cost", true)
-                        
-                        if targetBuyPart and targetBuyPart:IsA("BasePart") then
-                            local parsedCost = ParseCostText(costLabel)
-                            local localWallet = GetPlayerCash()
-                            
-                            if localWallet and parsedCost > localWallet then
-                                continue
-                            end
-                            
-                            local hrp = GetWorldRoot()
-                            if hrp then
-                                SweeperActiveMovement = true
-                                foundAffordable = true
-                                
-                                print("Broswe Hub Skipper -> Attempting Purchase: " .. btnModel.Name .. " (Cost: " .. tostring(parsedCost) .. " / Wallet: " .. tostring(localWallet) .. ")")
-                                MovePlayer(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                                
-                                local giveUpTime = tick() + 0.4
-                                repeat 
-                                    task.wait(0.05) 
-                                end until not btnModel:IsDescendantOf(buttonsFolder) or tick() > giveUpTime or InsideTrail or not _G.AutoFarmCash
-                                
-                                MovePlayer(ResolveConveyorPosition())
-                                SweeperActiveMovement = false
-                                break 
-                            end
-                        end
-                    end
+                if localWallet and parsedCost <= localWallet then
+                    print("Broswe Hub Sweeper -> Affordable Pad Locked: " .. btnModel.Name)
+                    -- Set the override target position link (Master Locomotive thread handles the jump)
+                    TargetOverridePosition = targetBuyPart.Position + Vector3.new(0, 3, 0)
+                    
+                    -- Wait for the folder instance tree context to drop it naturally
+                    local giveUpTime = tick() + 0.4
+                    repeat task.wait(0.05) until not btnModel:IsDescendantOf(buttonsFolder) or tick() > giveUpTime or not _G.AutoFarmCash or InsideTrail
+                    
+                    TargetOverridePosition = nil -- Clear override target link cleanly
+                    break 
                 end
-                
-                if not foundAffordable then
-                    SweeperActiveMovement = false
-                end
-            else SweeperActiveMovement = false end
-        else SweeperActiveMovement = false end
+            end
+        end
+    end
+end
+
+-- EVENT-DRIVEN LISTENERS MATRIX ENGINE: Removes polling, sleeps until an actual change occurs
+task.spawn(function()
+    local livePlot = workspace.__GAME_CONTENT:WaitForChild("Tycoon", 10)
+    local buttonsFolder = livePlot and livePlot:WaitForChild("Buttons", 10)
+    
+    -- Event Hook 1: Instantly trigger whenever an item vanishes from the buttons shelf folder
+    if buttonsFolder then
+        buttonsFolder.ChildRemoved:Connect(function()
+            task.wait(0.1) -- Short buffer gap to allow text labels to replicate
+            ProcessTycoonPurchases()
+        end)
+    end
+    
+    -- Event Hook 2: Instatically trigger whenever your player cash value registers a change update
+    local extraFolder = player:WaitForChild("EXTRA", 5)
+    local pinnedFolder = extraFolder and extraFolder:WaitForChild("PINNED_CURRENCIES", 5)
+    local cashObj = pinnedFolder and pinnedFolder:WaitForChild("Cash", 5)
+    if cashObj and cashObj:IsA("ValueBase") then
+        cashObj.Changed:Connect(function()
+            ProcessTycoonPurchases()
+        end)
+    end
+    
+    -- Light Safety Fallback: A relaxed passive loop to guarantee safety sync continuity
+    while true do
+        task.wait(1.5)
+        if not TargetOverridePosition then
+            ProcessTycoonPurchases()
+        end
     end
 end)
 
@@ -380,138 +388,5 @@ task.spawn(function()
                 pcall(function() NetRemote:FireServer("Blaze") end)
             end
         else secondsElapsed = 0 end
-    end
-end)
---======================================================================================
--- BROSWE HUB | PART 8 OF 8 (INTERACTIVE EVENT LAYOUT SIGNALS AND MECHANICS)
---======================================================================================
-local hook
-hook = hookfunction(NetRemote.FireServer, function(self, ...)
-    local args = {...}
-    if args == "Prestige" or args == "Rebirth" then
-        task.spawn(function()
-            task.wait(120) 
-            local minionFolder = workspace:FindFirstChild("_GAME_MINIONS")
-            local hrp = GetWorldRoot()
-            if minionFolder and hrp then
-                local originalPos = hrp.CFrame
-                for _, pad in ipairs(minionFolder:GetChildren()) do
-                    local touchTarget = pad:IsA("BasePart") and pad or pad:FindFirstChildWhichIsA("BasePart", true)
-                    if touchTarget then
-                        hrp.CFrame = CFrame.new(touchTarget.Position + Vector3.new(0, 2, 0)) task.wait(0.4) 
-                    end
-                end
-                hrp.CFrame = originalPos
-            end
-        end)
-    end
-    return hook(self, ...)
-end)
-
-function tState(b, v) 
-    _G[v] = not _G[v] 
-    b.Text = _G[v] and "ACTIVE" or "DISABLED" 
-    b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
-    b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
-end
-
-toggleEasy.MouseButton1Click:Connect(function() tState(toggleEasy, "AutoEasyTrails") end) 
-toggleMed.MouseButton1Click:Connect(function() tState(toggleMed, "AutoMediumTrails") end) 
-toggleHard.MouseButton1Click:Connect(function() tState(toggleHard, "AutoHardTrails") end) 
-togglePharaoh.MouseButton1Click:Connect(function() tState(togglePharaoh, "AutoUpgradePharaoh") end) 
-toggleAFK.MouseButton1Click:Connect(function() tState(toggleAFK, "AntiAFK") end) 
-togglePrestige.MouseButton1Click:Connect(function() tState(togglePrestige, "AutoPrestige") end)
-toggleStarter.MouseButton1Click:Connect(function() tState(toggleStarter, "AutoUpgradeStarter") end) 
-toggleCooker.MouseButton1Click:Connect(function() tState(toggleCooker, "AutoUpgradeCooker") end) 
-toggleExplorer.MouseButton1Click:Connect(function() tState(toggleExplorer, "AutoUpgradeExplorer") end) 
-toggleMagician.MouseButton1Click:Connect(function() tState(toggleMagician, "AutoUpgradeMagician") end) 
-toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgradeArcher") end) 
-toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) 
-toggleMoreOof.MouseButton1Click:Connect(function() tState(toggleMoreOof, "AutoUpgradeMoreOof") end) 
-toggleFasterNoobs.MouseButton1Click:Connect(function() tState(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
-toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) 
-toggleRebirthRebirth.MouseButton1Click:Connect(function() tState(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
-toggleRebirthFire.MouseButton1Click:Connect(function() tState(toggleRebirthFire, "AutoRebirthMoreFire") end)
-toggleFireFire.MouseButton1Click:Connect(function() tState(toggleFireFire, "AutoFireMoreFire") end)
-toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
-toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth, "AutoFireMoreRebirth") end)
-toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
-toggleBuildFire.MouseButton1Click:Connect(function() tState(toggleBuildFire, "AutoBuildFire") end)
-toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
-toggleRuneBasic.MouseButton1Click:Connect(function() tState(toggleRuneBasic, "AutoRuneBasic") end)
-toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
-toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
-toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
-toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
-
-toggleAutoFarmCash.MouseButton1Click:Connect(function() tState(toggleAutoFarmCash, "AutoFarmCash") end)
-toggleCashMoreCash.MouseButton1Click:Connect(function() tState(toggleCashMoreCash, "AutoUpgradeMoreCash") end)
-toggleCashFasterDropper.MouseButton1Click:Connect(function() tState(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
-toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tState(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
-
-local function uCaps() 
-    local s = _G.AutoCapsule and "ACTIVE" or "DISABLED" 
-    local c = _G.AutoCapsule and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
-    local t = _G.AutoCapsule and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
-    toggleTrailCapsule.Text, toggleTrailCapsule.BackgroundColor3, toggleTrailCapsule.TextColor3 = s, c, t 
-    toggleStandaloneCapsule.Text, toggleStandaloneCapsule.BackgroundColor3, toggleStandaloneCapsule.TextColor3 = s, c, t 
-end
-toggleTrailCapsule.MouseButton1Click:Connect(function() _G.AutoCapsule = not _G.AutoCapsule; uCaps() end) 
-toggleStandaloneCapsule.MouseButton1Click:Connect(function() _G.AutoCapsule = not _G.AutoCapsule; uCaps() end)
-
-toggleKillSwitch.MouseButton1Click:Connect(function()
-    for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
-    pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
-end)
-
-function mainRoute(pOpen, bActive) 
-    trialPage.Visible, capsulePage.Visible, realm1MasterPage.Visible, realm3Page.Visible, settingsPage.Visible, runesPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabTrial, tabCapsules, tabRealm1, tabRealm3, tabSettings, tabRunes}
-    for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
-    bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
-end
-tabTrial.MouseButton1Click:Connect(function() mainRoute(trialPage, tabTrial) end) 
-tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulePage, tabCapsules) end) 
-tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
-tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
-tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
-tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
-
-function route(targetScroll)
-    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1CashScroll}
-    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, subBtnCash}
-    for i, s in ipairs(scrolls) do
-        s.Visible = (s == targetScroll)
-        if s == targetScroll then
-            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15)
-        else
-            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170)
-        end
-    end
-end
-subBtnNoobs.MouseButton1Click:Connect(function() route(realm1NoobScroll) end)
-subBtnOof.MouseButton1Click:Connect(function() route(realm1UpgradeScroll) end)
-subBtnRebirth.MouseButton1Click:Connect(function() route(realm1RebirthScroll) end)
-subBtnFire.MouseButton1Click:Connect(function() route(realm1FireScroll) end)
-subBtnBlaze.MouseButton1Click:Connect(function() route(realm1BlazeScroll) end)
-subBtnCash.MouseButton1Click:Connect(function() route(realm1CashScroll) end)
-
-minBtn.MouseButton1Click:Connect(function() 
-    mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
-    minBtn.TextColor3 = mainFrame.Visible and Color3.fromRGB(0, 136, 255) or Color3.fromRGB(0, 215, 110) 
-end)
-
-local dragging, dragInput, dragStart, startPos
-mainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true dragStart = input.Position startPos = mainFrame.Position
-        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
-    end
-end)
-mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
