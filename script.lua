@@ -384,19 +384,25 @@ tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
 
-function route(b1, b2, b3, b4, b5, s1, s2, s3, s4, s5)
-    s1.Visible, s2.Visible, s3.Visible, s4.Visible, s5.Visible = true, false, false, false, false
-    local btns = {b1, b2, b3, b4, b5}
-    for i, b in ipairs(btns) do
-        if i == 1 then b.BackgroundColor3, b.TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15)
-        else b.BackgroundColor3, b.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
+-- FIXED CLIPPING WRAPPER: Re-added all 5 active canvas scroll structures into the routing mapping list
+function route(targetScroll)
+    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll}
+    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze}
+    
+    for i, s in ipairs(scrolls) do
+        s.Visible = (s == targetScroll)
+        if s == targetScroll then
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15)
+        else
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170)
+        end
     end
 end
-subBtnNoobs.MouseButton1Click:Connect(function() route(subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
-subBtnOof.MouseButton1Click:Connect(function() route(subBtnOof, subBtnNoobs, subBtnRebirth, subBtnFire, subBtnBlaze, realm1UpgradeScroll, realm1NoobScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
-subBtnRebirth.MouseButton1Click:Connect(function() route(subBtnRebirth, subBtnNoobs, subBtnOof, subBtnFire, subBtnBlaze, realm1RebirthScroll, realm1NoobScroll, realm1UpgradeScroll, realm1FireScroll, realm1BlazeScroll) end)
-subBtnFire.MouseButton1Click:Connect(function() route(subBtnFire, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnBlaze, realm1FireScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll) end)
-subBtnBlaze.MouseButton1Click:Connect(function() route(subBtnBlaze, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, realm1BlazeScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll) end)
+subBtnNoobs.MouseButton1Click:Connect(function() route(realm1NoobScroll) end)
+subBtnOof.MouseButton1Click:Connect(function() route(realm1UpgradeScroll) end)
+subBtnRebirth.MouseButton1Click:Connect(function() route(realm1RebirthScroll) end)
+subBtnFire.MouseButton1Click:Connect(function() route(realm1FireScroll) end)
+subBtnBlaze.MouseButton1Click:Connect(function() route(realm1BlazeScroll) end)
 
 minBtn.MouseButton1Click:Connect(function() 
     mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
@@ -417,3 +423,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
+
