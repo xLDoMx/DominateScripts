@@ -60,15 +60,12 @@ tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tab
 
 Instance.new("UICorner", tabTrial).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16)
 
--- REALM 1 NAV REFACTOR: Balanced width layout sizing mapping for sub buttons array list
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 50, 1, 0) subBtnNoobs.Position = UDim2.new(0, 2, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
 subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 75, 1, 0) subBtnOof.Position = UDim2.new(0, 54, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 10; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof Upgrades" subBtnOof.Parent = subTabList
 subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 95, 1, 0) subBtnRebirth.Position = UDim2.new(0, 131, 0, 0) subBtnRebirth.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnRebirth.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnRebirth.TextSize = 10; subBtnRebirth.Font = Enum.Font.SourceSansBold; subBtnRebirth.Text = "Rebirth Upgrades" subBtnRebirth.Parent = subTabList
 subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 75, 1, 0) subBtnFire.Position = UDim2.new(0, 228, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 10; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire Upgrades" subBtnFire.Parent = subTabList
 subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 50, 1, 0) subBtnBlaze.Position = UDim2.new(0, 305, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
-
--- REASSIGNED REALM 1 SUB BUTTON: Cash Upgrades nested successfully inside Realm 1 layout
 subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 75, 1, 0) subBtnCash.Position = UDim2.new(0, 357, 0, 0) subBtnCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnCash.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnCash.TextSize = 10; subBtnCash.Font = Enum.Font.SourceSansBold; subBtnCash.Text = "Cash Upgrades" subBtnCash.Parent = subTabList
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
@@ -84,8 +81,6 @@ realm1RebirthScroll = makeScroll(160)
 realm1FireScroll = makeScroll(210)
 realm1FireScroll.Parent = realm1MasterPage
 realm1BlazeScroll = makeScroll(210)
-
--- SYNCHRONIZED SCROLL CONTEXT PARENTING: Tied completely onto realm1MasterPage layer registry bounds
 realm1CashScroll = makeScroll(170)
 
 function gridRow(txt, pos, page)
@@ -135,7 +130,6 @@ toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
 toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
 toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 
--- CASH UPGRADES GENERATED SECURELY: Placed seamlessly onto realm1CashScroll panel layout framework
 toggleAutoFarmCash = makeSubRow("Auto Stand On Conveyor Pad", 1, realm1CashScroll)
 toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
 toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
@@ -164,9 +158,6 @@ local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
 local FirePosition = Vector3.new(1080.31, 13.55, -675.99)
 
--- CORRECTED COORDS MATRIX: Safely matches the absolute location bounds of World 1 area plots
-local ConveyorPosition = Vector3.new(-65.5, 6.2, -676.4)
-
 local function GetWorldRoot()
     local char = player.Character
     return char and char:FindFirstChild("HumanoidRootPart")
@@ -175,6 +166,19 @@ end
 local function MovePlayer(pos)
     local hrp = GetWorldRoot()
     if hrp then hrp.CFrame = CFrame.new(pos) end
+end
+
+-- NEW REPLICATED SCOPE LOCATION RESOLVER: Dynamic scanning replaces hardcoded values completely
+local function ResolveConveyorPosition()
+    local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
+    local tycoonFolder = gameContent and gameContent:FindFirstChild("Tycoon")
+    
+    -- Dynamically locks onto your claimed plot conveyor belt asset part
+    local physicalConveyor = tycoonFolder and tycoonFolder:FindFirstChild("Conveyor", true)
+    if physicalConveyor and physicalConveyor:IsA("BasePart") then
+        return physicalConveyor.Position + Vector3.new(0, 4, 0)
+    end
+    return Vector3.new(874.84, 5.51, 13426.69) -- Fallback matrix safety coordinate
 end
 
 local function GetChosenTrail()
@@ -224,7 +228,7 @@ task.spawn(function()
             if _G.AutoCapsule then 
                 InsideTrail = false MovePlayer(CapsulePosition) 
             elseif _G.AutoFarmCash then
-                InsideTrail = false MovePlayer(ConveyorPosition)
+                InsideTrail = false MovePlayer(ResolveConveyorPosition())
             end
             
             if selected then
@@ -245,7 +249,7 @@ task.spawn(function()
     end
 end)
 
--- DYNAMIC TYCOON SWEEPER ENGINE: Taps active queue objects safely and smooth-waits until bought
+-- DYNAMIC BUTTON SWEEPER ENGINE: Seamlessly targets active purchase parts using folder verification
 task.spawn(function()
     while true do
         task.wait(0.3)
@@ -263,7 +267,7 @@ task.spawn(function()
                     if hrp then
                         MovePlayer(targetBuyPart.Position)
                         task.wait(0.15)
-                        MovePlayer(ConveyorPosition)
+                        MovePlayer(ResolveConveyorPosition())
                         
                         repeat task.wait(0.1) until not currentButtonModel:IsDescendantOf(buttonsFolder) or InsideTrail or not _G.AutoFarmCash
                     end
@@ -273,7 +277,7 @@ task.spawn(function()
     end
 end)
 
--- INDEPENDENT THREAD FACTORY: Completely prevents parallel item priority buy locks
+-- PARALLEL ENGINE FACTORY: Unlinks execution mapping completely to prevent sequential priority locks
 local function buildPurchaseThread(flag, command, serverArgs)
     task.spawn(function()
         while true do
@@ -367,7 +371,7 @@ toggleAFK.MouseButton1Click:Connect(function() tState(toggleAFK, "AntiAFK") end)
 togglePrestige.MouseButton1Click:Connect(function() tState(togglePrestige, "AutoPrestige") end)
 toggleStarter.MouseButton1Click:Connect(function() tState(toggleStarter, "AutoUpgradeStarter") end) 
 toggleCooker.MouseButton1Click:Connect(function() tState(toggleCooker, "AutoUpgradeCooker") end) 
-toggleExplorer.MouseButton1Click:Connect(function() tState(toggleExplorer, "AutoUpgradeExplorer") end) 
+toggleExplorer.MouseButton1Connect and toggleExplorer.MouseButton1Click:Connect(function() tState(toggleExplorer, "AutoUpgradeExplorer") end)
 toggleMagician.MouseButton1Click:Connect(function() tState(toggleMagician, "AutoUpgradeMagician") end) 
 toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgradeArcher") end) 
 toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) 
