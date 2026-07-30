@@ -232,7 +232,7 @@ local function GetChosenTrail()
 end
 
 --======================================================================================
--- BROSWE HUB | PART 7 OF 9 (STRICT STRING GATE KEYWORD OVERRIDES)
+-- BROSWE HUB | PART 7 OF 9 (MUTUAL EXCLUSION LOCK GATED TELEPORT LAYOUTS)
 --======================================================================================
 local function GetGate(name)
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
@@ -240,7 +240,6 @@ local function GetGate(name)
     if world3 then return world3:FindFirstChild(name .. "Gate", true) end
 end
 
--- STRICT STRINGS FILTER GATING: Bypasses countdown timers completely by hunting true active keywords
 local function GateOpen(gate)
     if not gate then return false end
     local gui = gate:FindFirstChildWhichIsA("SurfaceGui", true)
@@ -248,11 +247,7 @@ local function GateOpen(gate)
         local label = gui:FindFirstChildWhichIsA("TextLabel", true)
         if label then 
             local txt = label.Text:lower()
-            -- Block the teleport instantly if the text label contains a countdown timer keyword
-            if txt:find("in") or txt:find("m") or txt:find("s") then
-                return false
-            end
-            -- Only pass true if an active entry keyword registers on the board surface
+            if txt:find("in") or txt:find("m") or txt:find("s") then return false end
             return txt:find("enter") ~= nil or txt:find("active") ~= nil or txt:find("now") ~= nil or txt == "open"
         end
     end
@@ -276,11 +271,14 @@ local function FindEnemy()
     return closest
 end
 
+-- THREAD 1: MASTER LOCOMOTION & BOSS TRIAL COMBAT ENGINE
 task.spawn(function()
     while true do
         task.wait(0.25)
         local selected = GetChosenTrail()
+        
         if TrailState == "Capsule" then
+            -- Peetime: Only write CFrame if the sweeper isn't actively hunting a tycoon pad
             if not SweeperActiveMovement then
                 if _G.AutoCapsule then 
                     InsideTrail = false 
@@ -295,16 +293,20 @@ task.spawn(function()
                 local gate = GetGate(selected)
                 if GateOpen(gate) then TrailState = "EnteringTrail" end
             end
+            
         elseif TrailState == "EnteringTrail" then
             if selected and (selected == "Easy" or selected == "Medium" or selected == "Hard") then
+                InsideTrail = true -- CRITICAL LOCK: Freeze the tycoon sweeper loop instantly
                 local hrp = GetWorldRoot() if hrp then hrp.CFrame = CFrame.new(CastlePosition) end
                 task.wait(0.5)
                 local gate = GetGate(selected)
                 if gate and GetWorldRoot() then GetWorldRoot().CFrame = gate.CFrame * CFrame.new(0, 0, -5) end
-                task.wait(1) InsideTrail = true TrailState = "Fighting"
+                task.wait(1) TrailState = "Fighting"
             else
+                InsideTrail = false
                 TrailState = "Capsule"
             end
+            
         elseif TrailState == "Fighting" then
             if not selected or (selected ~= "Easy" and selected ~= "Medium" and selected ~= "Hard") then
                 InsideTrail = false
@@ -319,10 +321,12 @@ task.spawn(function()
     end
 end)
 
+-- THREAD 2: MUTUAL EXCLUSION LOCK GATED TYCOON PAD SWEEPER
 task.spawn(function()
     while true do
         task.wait(0.4)
-        if _G.AutoFarmCash and not InsideTrail then
+        -- STRICT MUTUAL EXCLUSION GATING: If Thread 1 is entering or fighting a trial, freeze this loop entirely
+        if _G.AutoFarmCash and not InsideTrail and TrailState == "Capsule" then
             local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
             local tycoon = gameContent and gameContent:FindFirstChild("Tycoon")
             local buttonsFolder = tycoon and tycoon:FindFirstChild("Buttons")
@@ -332,6 +336,9 @@ task.spawn(function()
                 local foundAffordable = false
                 
                 for _, btnModel in ipairs(orderedButtons) do
+                    -- Double-check safety gate right inside the purchase iteration block
+                    if InsideTrail or TrailState ~= "Capsule" or not _G.AutoFarmCash then break end
+                    
                     if btnModel:IsA("Model") then
                         local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
                         local costLabel = btnModel:FindFirstChild("Cost", true)
@@ -349,8 +356,11 @@ task.spawn(function()
                                 SweeperActiveMovement = true
                                 foundAffordable = true
                                 
+                                -- Execute the tycoon jump cleanly with zero interference from Thread 1
                                 hrp.CFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
                                 task.wait(0.25)
+                                
+                                -- Drop back down safely onto the plot
                                 hrp.CFrame = CFrame.new(ResolveConveyorPosition())
                                 
                                 local giveUpTime = tick() + 0.4
@@ -366,7 +376,6 @@ task.spawn(function()
         else SweeperActiveMovement = false end
     end
 end)
-
 
 --======================================================================================
 -- BROSWE HUB | PART 8 OF 9 (MULTI-THREADED REMOTE PURCHASE ROUTINES)
