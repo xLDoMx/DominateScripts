@@ -133,9 +133,11 @@ toggleRebirthTimerCard.Size = UDim2.new(0, 75, 0, 26) toggleRebirthTimerCard.Pos
 toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim2.new(1, -85, 0.5, -13) toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
 --======================================================================================
--- DOMINATE HUB | PART 6 OF 8 (SCIENTIFIC NOTATION PARSER RUNTIMES)
+-- DOMINATE HUB | PART 6 OF 8 (SECURE AFFORDABILITY MATRIX)
 --======================================================================================
 local SweeperActiveMovement = false
+local ButtonFailureTracker = {} 
+local ButtonBlacklist = {}     
 
 print("PART 6 LOADED")
 
@@ -169,20 +171,17 @@ local function ResolveConveyorPosition()
     return Vector3.new(874.84, 15.0, 13426.69)
 end
 
--- SCIENTIFIC DECODER UPGRADE: Seamlessly parses late-game numbers like 2.8e128 and suffix letters
 local function ParseCostText(obj)
     if not obj or not obj:IsA("TextLabel") then return math.huge end
     local text = tostring(obj.Text):upper():gsub("CASH", ""):gsub("%s", "")
     if text == "" then return math.huge end
     
-    -- Extract strings formatted in standard scientific notation first (e.g., 2.8E128)
     local scientificMatch = text:match("[%d%.]+E%[%+%-]?%d+") or text:match("[%d%.]+E%d+")
     if scientificMatch then
         local num = tonumber(scientificMatch)
         if num then return num end
     end
     
-    -- Fallback converter layout for standard metric suffix formats (K, M, B, T)
     local baseNum = tonumber(text:match("[%d%.]+"))
     if not baseNum then return math.huge end
     
@@ -195,6 +194,7 @@ local function ParseCostText(obj)
     return baseNum
 end
 
+-- SECURE CASH SENSOR: Returns -1 if replication lag causes your wallet directory to drop
 local function GetPlayerCash()
     local extraFolder = player:FindFirstChild("EXTRA")
     local pinnedFolder = extraFolder and extraFolder:FindFirstChild("PINNED_CURRENCIES")
@@ -202,11 +202,12 @@ local function GetPlayerCash()
     if cashObj and cashObj:IsA("ValueBase") and type(cashObj.Value) == "number" then 
         return cashObj.Value 
     end
-    return 0
+    return -1 
 end
 
+
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (5-MINUTE INTERVAL RUNTIME ENGINE)
+-- DOMINATE HUB | PART 7 OF 8 (STRICT SELECTION HARVEST ENG COMPONENT)
 --======================================================================================
 task.spawn(function()
     while true do
@@ -218,7 +219,6 @@ task.spawn(function()
     end
 end)
 
--- TIMED INTERVAL RUNTIME THREAD: Puts the pad sweeper into a 5-minute deep sleep if nothing is affordable
 task.spawn(function()
     while true do
         task.wait(0.5)
@@ -234,6 +234,8 @@ task.spawn(function()
                 
                 for _, btnModel in ipairs(orderedButtons) do
                     if not _G.AutoFarmCash then break end
+                    if ButtonBlacklist[btnModel] or ButtonBlacklist[btnModel.Name] then continue end
+                    
                     if btnModel:IsA("Model") then
                         local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
                         local costLabel = btnModel:FindFirstChild("Cost", true)
@@ -242,49 +244,55 @@ task.spawn(function()
                             local parsedCost = ParseCostText(costLabel)
                             local localWallet = GetPlayerCash()
                             
-                            -- Skip calculation if the wallet data clearly shows we cannot afford it
-                            if localWallet and localWallet > 0 and parsedCost > localWallet then
-                                continue
-                            end
-                            
-                            local hrp = GetWorldRoot()
-                            if hrp then
-                                SweeperActiveMovement = true
-                                foundAffordableThisRound = true
-                                
-                                -- Jump immediately onto pad coordinate space vectors
-                                hrp.CFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                                task.wait(0.3) -- Stable physics pause duration
-                                hrp.CFrame = CFrame.new(ResolveConveyorPosition())
-                                
-                                local giveUpTime = tick() + 0.4
-                                repeat task.wait(0.05) until not btnModel:IsDescendantOf(buttonsFolder) or tick() > giveUpTime or not _G.AutoFarmCash
-                                SweeperActiveMovement = false
-                                break -- Exit button loop to run a fresh immediate scan pass
+                            -- RIGID WHITE-LIST CHECK: Only allow teleportation if cash is verified greater than cost [1]
+                            -- If localWallet is -1 (lagging out) or less than cost, it skips instantly!
+                            if localWallet and localWallet >= 0 and localWallet >= parsedCost then
+                                local hrp = GetWorldRoot()
+                                if hrp then
+                                    SweeperActiveMovement = true
+                                    foundAffordableThisRound = true
+                                    
+                                    hrp.CFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
+                                    task.wait(0.35) 
+                                    hrp.CFrame = CFrame.new(ResolveConveyorPosition())
+                                    task.wait(0.1) 
+                                    
+                                    if btnModel:IsDescendantOf(buttonsFolder) then
+                                        local currentFailures = (ButtonFailureTracker[btnModel] or 0) + 1
+                                        ButtonFailureTracker[btnModel] = currentFailures
+                                        if currentFailures >= 2 then
+                                            ButtonBlacklist[btnModel] = true
+                                            ButtonBlacklist[btnModel.Name] = true
+                                            warn("[Dominate Hub] Unbuyable Pad Banned: " .. tostring(btnModel.Name))
+                                        end
+                                    end
+                                    
+                                    SweeperActiveMovement = false
+                                    break 
+                                end
                             end
                         end
                     end
                 end
                 
-                -- CRITICAL TIMING GATE: If a full pass found nothing affordable, enter a strict 5-minute deep sleep
                 if not foundAffordableThisRound then
                     SweeperActiveMovement = false
-                    print("[Dominate Hub] No affordable pads detected! Entering a 5-minute sleep cycle to harvest cash.")
+                    print("[Dominate Hub] All pads unaffordable. Sleeping 5 minutes to gather capital.")
                     
-                    local sleepEndTime = tick() + 300 -- 5 minutes * 60 seconds
+                    local sleepEndTime = tick() + 300
                     repeat 
                         task.wait(1) 
                     until tick() >= sleepEndTime or not _G.AutoFarmCash
                     
-                    print("[Dominate Hub] Sleep cycle concluded. Initiating next factory pad scan.")
+                    print("[Dominate Hub] Sleep cycle over. Re-checking tycoon pad availability.")
                 end
             else 
                 SweeperActiveMovement = false 
-                task.wait(2) -- Passive wait if the buttons folder is temporarily missing
+                task.wait(2)
             end
         else 
             SweeperActiveMovement = false 
-            task.wait(1) -- Sleep thread if the AutoFarmCash toggle is disabled
+            task.wait(1)
         end
     end
 end)
@@ -341,6 +349,7 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
