@@ -13,6 +13,9 @@ _G.AutoRebirthTimer, _G.AutoRuneBasic = false, false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
 _G.AutoBuildFire = false
 
+-- NEW CASH CONFIGURATION FLAGS
+_G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
+
 player.Idled:Connect(function()
     if _G.AntiAFK then
         vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame) task.wait(1) vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
@@ -39,6 +42,8 @@ realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new(1, -2
 realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
 settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
+
+cashPage = Instance.new("Frame") cashPage.Size = UDim2.new(1, -20, 1, -85) cashPage.Position = UDim2.new(0, 10, 0, 80) cashPage.BackgroundTransparency = 1; cashPage.Visible = false; cashPage.Parent = mainFrame
 --======================================================================================
 -- BROSWE HUB | PART 3 OF 7 (INTERFACE INTERACTIVE HEADER AND TABS LOADING)
 --======================================================================================
@@ -51,11 +56,14 @@ local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) ta
 tabTrial = Instance.new("TextButton") tabTrial.Size = UDim2.new(0, 55, 1, 0) tabTrial.Position = UDim2.new(0, 5, 0, 0) tabTrial.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabTrial.TextColor3 = Color3.fromRGB(15, 15, 15) tabTrial.TextSize = 12; tabTrial.Font = Enum.Font.SourceSansBold; tabTrial.Text = "Trial" tabTrial.Parent = tabList
 tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 70, 1, 0) tabCapsules.Position = UDim2.new(0, 65, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 12; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
 tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 70, 1, 0) tabRealm1.Position = UDim2.new(0, 140, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm1.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
-tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 70, 1, 0) tabRealm3.Position = UDim2.new(0, 215, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 70, 1, 0) tabSettings.Position = UDim2.new(0, 290, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
-tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tabRunes.Position = UDim2.new(0, 365, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
 
-Instance.new("UICorner", tabTrial).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16)
+tabCash = Instance.new("TextButton") tabCash.Size = UDim2.new(0, 55, 1, 0) tabCash.Position = UDim2.new(0, 215, 0, 0) tabCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCash.TextColor3 = Color3.fromRGB(170, 170, 170) tabCash.TextSize = 12; tabCash.Font = Enum.Font.SourceSansBold; tabCash.Text = "Cash" tabCash.Parent = tabList
+
+tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 60, 1, 0) tabRealm3.Position = UDim2.new(0, 275, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 65, 1, 0) tabSettings.Position = UDim2.new(0, 340, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 50, 1, 0) tabRunes.Position = UDim2.new(0, 410, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+
+Instance.new("UICorner", tabTrial).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCash).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16)
 
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 50, 1, 0) subBtnNoobs.Position = UDim2.new(0, 2, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
@@ -77,6 +85,8 @@ realm1RebirthScroll = makeScroll(160)
 realm1FireScroll = makeScroll(210)
 realm1FireScroll.Parent = realm1MasterPage
 realm1BlazeScroll = makeScroll(210)
+
+realm1CashScroll = Instance.new("ScrollingFrame") realm1CashScroll.Size = UDim2.new(1, 0, 1, -10) realm1CashScroll.Position = UDim2.new(0, 0, 0, 10) realm1CashScroll.BackgroundTransparency = 1; realm1CashScroll.BorderSizePixel = 0; realm1CashScroll.CanvasSize = UDim2.new(0, 0, 0, 210) realm1CashScroll.ScrollBarThickness = 3; realm1CashScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) realm1CashScroll.Parent = cashPage
 
 function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -120,11 +130,15 @@ toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
 toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
 toggleBuildFire = makeSubRow("Auto Build Fire", 5, realm1FireScroll)
 
--- BLAZE PANEL OVERHAUL: Added the 5-Minute Conversion toggle right at row slot index 1
 toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
 toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
 toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
 toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
+
+toggleAutoFarmCash = makeSubRow("Auto Stand On Conveyor Pad", 1, realm1CashScroll)
+toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
+toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
+toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
 togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 togglePharaoh.Size = UDim2.new(0, 75, 0, 26) togglePharaoh.Position = UDim2.new(1, -85, 0.5, -13)
@@ -139,7 +153,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 7 (COMBAT AND UPGRADE TASK SPAWNER THREADS)
+-- BROSWE HUB | PART 6 OF 7 (COMBAT, CASH FARMING & AUTOMATED STARTUP LOOPS)
 --======================================================================================
 local GFolder = workspace:WaitForChild("__GAME_CONTENT", 5) and workspace.__GAME_CONTENT:WaitForChild("Contents", 5)
 local InsideTrail, PrepTimerActive = false, false
@@ -148,6 +162,7 @@ local TrailState = "Capsule"
 local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
 local FirePosition = Vector3.new(1080.31, 13.55, -675.99)
+local ConveyorPosition = Vector3.new(874.84, 5.51, 13426.69)
 
 local function GetWorldRoot()
     local char = player.Character
@@ -203,7 +218,12 @@ task.spawn(function()
         task.wait(0.25)
         local selected = GetChosenTrail()
         if TrailState == "Capsule" then
-            if _G.AutoCapsule then InsideTrail = false MovePlayer(CapsulePosition) end
+            if _G.AutoCapsule then 
+                InsideTrail = false MovePlayer(CapsulePosition) 
+            elseif _G.AutoFarmCash then
+                InsideTrail = false MovePlayer(ConveyorPosition)
+            end
+            
             if selected then
                 local gate = GetGate(selected)
                 if GateOpen(gate) then TrailState = "EnteringTrail" end
@@ -218,6 +238,25 @@ task.spawn(function()
             local hrp = GetWorldRoot()
             if enemy and hrp then hrp.CFrame = CFrame.new(enemy.Position + Vector3.new(0, 3, 0), enemy.Position) end
             if not InsideTrail then TrailState = "Capsule" end
+        end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(0.5)
+        if _G.AutoFarmCash and not InsideTrail then
+            local tycoonFolder = workspace:FindFirstChild("Tycoons") or workspace:FindFirstChild("Tycoon")
+            local starterButton = tycoonFolder and tycoonFolder:FindFirstChild("Conveyor", true) or workspace:FindFirstChild("Conveyor", true)
+            
+            if starterButton and starterButton:IsA("BasePart") then
+                local hrp = GetWorldRoot()
+                if hrp then
+                    local currentPos = hrp.CFrame
+                    hrp.CFrame = starterButton.CFrame task.wait(0.2)
+                    hrp.CFrame = currentPos
+                end
+            end
         end
     end
 end)
@@ -242,7 +281,10 @@ task.spawn(function()
         {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
         {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
         {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
-        {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}}
+        {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}},
+        {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
+        {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
+        {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
     }
     while true do
         task.wait(0.4)
@@ -261,7 +303,6 @@ task.spawn(function()
     end
 end)
 
--- HUMANIZED TIMED OVERSEER ENGINES: Fires your exact string format between 4.5 and 5.5 minutes dynamically
 task.spawn(function()
     local targetCooldown = math.random(270, 330)
     local secondsElapsed = 0
@@ -271,7 +312,7 @@ task.spawn(function()
             secondsElapsed = secondsElapsed + 1
             if secondsElapsed >= targetCooldown then
                 secondsElapsed = 0
-                targetCooldown = math.random(270, 330) -- Recalculate dynamic delay jitter
+                targetCooldown = math.random(270, 330)
                 pcall(function() 
                     NetRemote:FireServer("Blaze") 
                 end)
@@ -343,7 +384,12 @@ toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreF
 toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
 
-function uCaps() 
+toggleAutoFarmCash.MouseButton1Click:Connect(function() tState(toggleAutoFarmCash, "AutoFarmCash") end)
+toggleCashMoreCash.MouseButton1Click:Connect(function() tState(toggleCashMoreCash, "AutoUpgradeMoreCash") end)
+toggleCashFasterDropper.MouseButton1Click:Connect(function() tState(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
+toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tState(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
+
+local function uCaps() 
     local s = _G.AutoCapsule and "ACTIVE" or "DISABLED" 
     local c = _G.AutoCapsule and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
     local t = _G.AutoCapsule and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
@@ -359,14 +405,15 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 function mainRoute(pOpen, bActive) 
-    trialPage.Visible, capsulePage.Visible, realm1MasterPage.Visible, realm3Page.Visible, settingsPage.Visible, runesPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabTrial, tabCapsules, tabRealm1, tabRealm3, tabSettings, tabRunes}
+    trialPage.Visible, capsulePage.Visible, realm1MasterPage.Visible, cashPage.Visible, realm3Page.Visible, settingsPage.Visible, runesPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabTrial, tabCapsules, tabRealm1, tabCash, tabRealm3, tabSettings, tabRunes}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
 tabTrial.MouseButton1Click:Connect(function() mainRoute(trialPage, tabTrial) end) 
 tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulePage, tabCapsules) end) 
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
+tabCash.MouseButton1Click:Connect(function() mainRoute(cashPage, tabCash) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
@@ -374,7 +421,6 @@ tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end
 function route(targetScroll)
     local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll}
     local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze}
-    
     for i, s in ipairs(scrolls) do
         s.Visible = (s == targetScroll)
         if s == targetScroll then
