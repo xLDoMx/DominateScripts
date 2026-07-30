@@ -1,5 +1,5 @@
 --======================================================================================
--- BROSWE HUB | PART 1
+-- BROSWE HUB | PART 1 OF 4 (SYSTEM SETUP & GRAPHICAL INTERFACE)
 --======================================================================================
 local player = game:GetService("Players").LocalPlayer
 local NetRemote = game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote")
@@ -18,9 +18,7 @@ player.Idled:Connect(function()
         vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame) task.wait(1) vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
     end
 end)
---======================================================================================
--- BROSWE HUB | PART 2
---======================================================================================
+
 local sg = Instance.new("ScreenGui") sg.Name = "LukesBrosweHubMirror" sg.Parent = player:WaitForChild("PlayerGui") sg.ResetOnSpawn = false
 local mainFrame = Instance.new("Frame") mainFrame.Size = UDim2.new(0, 460, 0, 360) mainFrame.Position = UDim2.new(0.5, -230, 0.5, -180) mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
@@ -31,9 +29,6 @@ local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) 
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
---======================================================================================
--- BROSWE HUB | PART 3
---======================================================================================
 local tabTrial = Instance.new("TextButton") tabTrial.Size = UDim2.new(0, 55, 1, 0) tabTrial.Position = UDim2.new(0, 5, 0, 0) tabTrial.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabTrial.TextColor3 = Color3.fromRGB(15, 15, 15) tabTrial.TextSize = 12; tabTrial.Font = Enum.Font.SourceSansBold; tabTrial.Text = "Trial" tabTrial.Parent = tabList
 local tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 70, 1, 0) tabCapsules.Position = UDim2.new(0, 65, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 12; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
 local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 70, 1, 0) tabRealm1.Position = UDim2.new(0, 140, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm1.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
@@ -43,7 +38,7 @@ local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 
 
 Instance.new("UICorner", tabTrial).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16)
 --======================================================================================
--- BROSWE HUB | PART 4
+-- BROSWE HUB | PART 2 OF 4 (SCROLL FRAME LAYOUTS & COMPONENT LOADING)
 --======================================================================================
 local trialPage = Instance.new("Frame") trialPage.Size = UDim2.new(1, -20, 1, -85) trialPage.Position = UDim2.new(0, 10, 0, 80) trialPage.BackgroundTransparency = 1; trialPage.Visible = true; trialPage.Parent = mainFrame
 local capsulePage = Instance.new("Frame") capsulePage.Size = UDim2.new(1, -20, 1, -85) capsulePage.Position = UDim2.new(0, 10, 0, 80) capsulePage.BackgroundTransparency = 1; capsulePage.Visible = false; capsulePage.Parent = mainFrame
@@ -53,9 +48,6 @@ local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20,
 local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
 
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
---======================================================================================
--- BROSWE HUB | PART 5
---======================================================================================
 local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 50, 1, 0) subBtnNoobs.Position = UDim2.new(0, 2, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
 local subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 75, 1, 0) subBtnOof.Position = UDim2.new(0, 54, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 10; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof Upgrades" subBtnOof.Parent = subTabList
 local subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 95, 1, 0) subBtnRebirth.Position = UDim2.new(0, 131, 0, 0) subBtnRebirth.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnRebirth.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnRebirth.TextSize = 10; subBtnRebirth.Font = Enum.Font.SourceSansBold; subBtnRebirth.Text = "Rebirth Upgrades" subBtnRebirth.Parent = subTabList
@@ -63,9 +55,7 @@ local subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 80,
 local subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 65, 1, 0) subBtnBlaze.Position = UDim2.new(0, 310, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5)
---======================================================================================
--- BROSWE HUB | PART 6
---======================================================================================
+
 local function makeScroll(canvas) 
     local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = realm1MasterPage return s 
 end
@@ -74,9 +64,7 @@ local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
 local realm1FireScroll = makeScroll(210)
 local realm1BlazeScroll = makeScroll(160)
---======================================================================================
--- BROSWE HUB | PART 7
---======================================================================================
+
 local function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.7, 0, 1, 0) l.Position = UDim2.new(0, 12, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(220, 220, 225) l.TextSize = 13; l.Font = Enum.Font.SourceSans; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.Parent = f
@@ -90,14 +78,11 @@ local function makeSubRow(label, idx, scr)
     local b = Instance.new("TextButton") b.Size = UDim2.new(0, 75, 0, 24) b.Position = UDim2.new(1, -85, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 11; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
 end
---======================================================================================
--- BROSWE HUB | PART 8
---======================================================================================
+
 local toggleEasy = gridRow("Auto Trial (Easy) - Fast Entry", 1, trialPage)
 local toggleMed = gridRow("Auto Trial (Medium) - Progress Entry", 2, trialPage)
 local toggleHard = gridRow("Auto Trial (Hard) - Rapid Chain", 3, trialPage)
 local toggleTrailCapsule = gridRow("Auto Open Capsule After Trial (Ancient)", 4, trialPage)
-
 local toggleStandaloneCapsule = gridRow("Open Ancient Capsule", 1, capsulePage)
 toggleStandaloneCapsule.Size = UDim2.new(0, 75, 0, 26) toggleStandaloneCapsule.Position = UDim2.new(1, -85, 0.5, -13)
 
@@ -107,12 +92,9 @@ local toggleExplorer = makeSubRow("Explorer Noob Auto Upgrade", 3, realm1NoobScr
 local toggleMagician = makeSubRow("Magician Noob Auto Upgrade", 4, realm1NoobScroll)
 local toggleArcher = makeSubRow("Archer Noob Auto Upgrade", 5, realm1NoobScroll)
 local toggleSoldier = makeSubRow("Soldier Noob Auto Upgrade", 6, realm1NoobScroll)
---======================================================================================
--- BROSWE HUB | PART 9
---======================================================================================
+
 local toggleMoreOof = makeSubRow("More Oof Auto Upgrade", 1, realm1UpgradeScroll)
 local toggleFasterNoobs = makeSubRow("Faster Noobs Auto Upgrade", 2, realm1UpgradeScroll)
-
 local toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll)
 local toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 local toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
@@ -127,37 +109,30 @@ local toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 1, realm1BlazeScro
 local toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 2, realm1BlazeScroll)
 local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 3, realm1BlazeScroll)
 
---======================================================================================
--- BROSWE HUB | MISSING FIRE ROWS ADD-ON
---======================================================================================
-local toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
-local toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
-local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
-local toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
-local toggleBuildFire = makeSubRow("Auto Build Fire", 5, realm1FireScroll)
-
---======================================================================================
--- BROSWE HUB | PART 10
---======================================================================================
 local togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 togglePharaoh.Size = UDim2.new(0, 75, 0, 26) togglePharaoh.Position = UDim2.new(1, -85, 0.5, -13)
-
 local toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 1, settingsPage)
 toggleAFK.Size = UDim2.new(0, 75, 0, 26) toggleAFK.Position = UDim2.new(1, -85, 0.5, -13) toggleAFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) toggleAFK.TextColor3 = Color3.fromRGB(120, 255, 120) toggleAFK.Text = "ACTIVE"
-
 local togglePrestige = gridRow("Auto Prestige (Server Max Buy Engine)", 2, settingsPage)
 togglePrestige.Size = UDim2.new(0, 75, 0, 26) togglePrestige.Position = UDim2.new(1, -85, 0.5, -13)
-
 local toggleRebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 3, settingsPage)
 toggleRebirthTimerCard.Size = UDim2.new(0, 75, 0, 26) toggleRebirthTimerCard.Position = UDim2.new(1, -85, 0.5, -13)
-
 local toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
-toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim2.new(1, -85, 0.5, -13) toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
+toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) 
+toggleKillSwitch.Position = UDim2.new(1, -85, 0.5, -13) 
+toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) 
+toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) 
+toggleKillSwitch.Text = "TERMINATE"
 
 local toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
-toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
+toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) 
+toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
+---
+
+### Part 3: Map Engine Core, Combat Threads & Upgrade Purchase Loops
+```lua
 --======================================================================================
--- BROSWE HUB | PART 11
+-- BROSWE HUB | PART 3 OF 4 (SPATIAL AUTOMATION ENGINE & LOOPS)
 --======================================================================================
 local GFolder = workspace:WaitForChild("__GAME_CONTENT", 5) and workspace.__GAME_CONTENT:WaitForChild("Contents", 5)
 local InsideTrail, PrepTimerActive = false, false
@@ -183,9 +158,7 @@ local function GetChosenTrail()
     if _G.AutoEasyTrails then return "Easy" end
     return nil
 end
---======================================================================================
--- BROSWE HUB | PART 12
---======================================================================================
+
 local function GetGate(name)
     local world3 = workspace:FindFirstChild("__GAME_CONTENT") and workspace.__GAME_CONTENT:FindFirstChild("Contents") and workspace.__GAME_CONTENT.Contents:FindFirstChild("WORLD - 3.AncientBossModel")
     if world3 then return world3:FindFirstChild(name .. "Gate", true) end
@@ -205,7 +178,6 @@ local function FindEnemy()
     local hrp = GetRoot()
     if not hrp then return nil end
     local closest, distance = nil, math.huge
-    
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj:IsA("Model") and obj ~= player.Character then
             local hum = obj:FindFirstChildOfClass("Humanoid")
@@ -218,44 +190,31 @@ local function FindEnemy()
     end
     return closest
 end
---======================================================================================
--- BROSWE HUB | PART 13
---======================================================================================
+
 task.spawn(function()
     while true do
         task.wait(0.25)
         local selected = GetChosenTrail()
-
         if TrailState == "Capsule" then
-            if _G.AutoCapsule then
-                InsideTrail = false
-                MovePlayer(CapsulePosition)
-            end
+            if _G.AutoCapsule then InsideTrail = false MovePlayer(CapsulePosition) end
             if selected then
                 local gate = GetGate(selected)
                 if GateOpen(gate) then TrailState = "EnteringTrail" end
             end
         elseif TrailState == "EnteringTrail" then
-            MovePlayer(CastlePosition)
-            task.wait(0.5)
+            MovePlayer(CastlePosition) task.wait(0.5)
             local gate = GetGate(selected)
             if gate and GetRoot() then GetRoot().CFrame = gate.CFrame * CFrame.new(0, 0, -5) end
-            task.wait(1)
-            InsideTrail = true
-            TrailState = "Fighting"
+            task.wait(1) InsideTrail = true TrailState = "Fighting"
         elseif TrailState == "Fighting" then
             local enemy = FindEnemy()
             local hrp = GetRoot()
-            if enemy and hrp then
-                hrp.CFrame = CFrame.new(enemy.Position + Vector3.new(0, 3, 0), enemy.Position)
-            end
+            if enemy and hrp then hrp.CFrame = CFrame.new(enemy.Position + Vector3.new(0, 3, 0), enemy.Position) end
             if not InsideTrail then TrailState = "Capsule" end
         end
     end
 end)
---======================================================================================
--- BROSWE HUB | PART 14
---======================================================================================
+
 task.spawn(function()
     local upgrades = {
         {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    S = "UpgradeNoob",    A = {"Starter"}},
@@ -291,9 +250,7 @@ task.spawn(function()
         end
     end
 end)
---======================================================================================
--- BROSWE HUB | PART 15
---======================================================================================
+
 task.spawn(function()
     while true do
         task.wait(1)
@@ -308,16 +265,10 @@ task.spawn(function()
     while true do
         task.wait(0.5)
         if _G.AutoPrestige then pcall(function() NetRemote:FireServer("Prestige") end) end
-        
         if _G.AutoRebirthTimer then
             rebirthTimer = rebirthTimer + 0.5
-            if rebirthTimer >= 600 then
-                rebirthTimer = 0
-                pcall(function() NetRemote:FireServer("Rebirth") end)
-            end
-        else
-            rebirthTimer = 0
-        end
+            if rebirthTimer >= 600 then rebirthTimer = 0 pcall(function() NetRemote:FireServer("Rebirth") end) end
+        else rebirthTimer = 0 end
     end
 end)
 
@@ -329,13 +280,12 @@ task.spawn(function()
             if hrp and (hrp.Position - FirePosition).Magnitude > 5 then hrp.CFrame = CFrame.new(FirePosition) end
         end
         if _G.AutoRuneBasic and not InsideTrail then
-            local hrp = GetRoot()
-            if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end
+            local hrp = GetRoot() if hrp then hrp.CFrame = CFrame.new(879.04, 12.35, 13443.09) end
         end
     end
 end)
 --======================================================================================
--- BROSWE HUB | PART 16
+-- BROSWE HUB | PART 4 OF 4 (REMOTE CONNECTIONS & COMPONENT INTERACTIVITY)
 --======================================================================================
 local hook
 hook = hookfunction(NetRemote.FireServer, function(self, ...)
@@ -350,8 +300,7 @@ hook = hookfunction(NetRemote.FireServer, function(self, ...)
                 for _, pad in ipairs(minionFolder:GetChildren()) do
                     local touchTarget = pad:IsA("BasePart") and pad or pad:FindFirstChildWhichIsA("BasePart", true)
                     if touchTarget then
-                        hrp.CFrame = CFrame.new(touchTarget.Position + Vector3.new(0, 2, 0))
-                        task.wait(0.4) 
+                        hrp.CFrame = CFrame.new(touchTarget.Position + Vector3.new(0, 2, 0)) task.wait(0.4) 
                     end
                 end
                 hrp.CFrame = originalPos
@@ -360,9 +309,7 @@ hook = hookfunction(NetRemote.FireServer, function(self, ...)
     end
     return hook(self, ...)
 end)
---======================================================================================
--- BROSWE HUB | PART 17
---======================================================================================
+
 local function tState(b, v) 
     _G[v] = not _G[v] 
     b.Text = _G[v] and "ACTIVE" or "DISABLED" 
@@ -384,9 +331,6 @@ toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgr
 toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) 
 toggleMoreOof.MouseButton1Click:Connect(function() tState(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tState(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
---======================================================================================
--- BROSWE HUB | PART 18
---======================================================================================
 toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tState(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tState(toggleRebirthFire, "AutoRebirthMoreFire") end)
@@ -400,9 +344,7 @@ toggleRuneBasic.MouseButton1Click:Connect(function() tState(toggleRuneBasic, "Au
 toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
 toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
 toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
---======================================================================================
--- BROSWE HUB | PART 19
---======================================================================================
+
 local function uCaps() 
     local s = _G.AutoCapsule and "ACTIVE" or "DISABLED" 
     local c = _G.AutoCapsule and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
@@ -415,28 +357,22 @@ toggleStandaloneCapsule.MouseButton1Click:Connect(function() _G.AutoCapsule = no
 
 toggleKillSwitch.MouseButton1Click:Connect(function()
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
-    pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end)
-    sg:Destroy()
+    pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
 end)
---======================================================================================
--- BROSWE HUB | PART 20
---======================================================================================
+
 local function mainRoute(pOpen, bActive) 
     trialPage.Visible, capsulePage.Visible, realm1MasterPage.Visible, realm3Page.Visible, settingsPage.Visible, runesPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabTrial, tabCapsules, tabRealm1, tabRealm3, tabSettings, tabRunes}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
-
 tabTrial.MouseButton1Click:Connect(function() mainRoute(trialPage, tabTrial) end) 
 tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulePage, tabCapsules) end) 
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end)
---======================================================================================
--- BROSWE HUB | PART 21
---======================================================================================
+
 local function route(b1, b2, b3, b4, b5, s1, s2, s3, s4, s5)
     s1.Visible, s2.Visible, s3.Visible, s4.Visible, s5.Visible = true, false, false, false, false
     local btns = {b1, b2, b3, b4, b5}
@@ -445,18 +381,14 @@ local function route(b1, b2, b3, b4, b5, s1, s2, s3, s4, s5)
         else b.BackgroundColor3, b.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     end
 end
-
 subBtnNoobs.MouseButton1Click:Connect(function() route(subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
 subBtnOof.MouseButton1Click:Connect(function() route(subBtnOof, subBtnNoobs, subBtnRebirth, subBtnFire, subBtnBlaze, realm1UpgradeScroll, realm1NoobScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll) end)
 subBtnRebirth.MouseButton1Click:Connect(function() route(subBtnRebirth, subBtnNoobs, subBtnOof, subBtnFire, subBtnBlaze, realm1RebirthScroll, realm1NoobScroll, realm1UpgradeScroll, realm1FireScroll, realm1BlazeScroll) end)
 subBtnFire.MouseButton1Click:Connect(function() route(subBtnFire, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnBlaze, realm1FireScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(subBtnBlaze, subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, realm1BlazeScroll, realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll) end)
---======================================================================================
--- BROSWE HUB | PART 22
---======================================================================================
+
 minBtn.MouseButton1Click:Connect(function() 
-    mainFrame.Visible = not mainFrame.Visible
-    minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
+    mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
     minBtn.TextColor3 = mainFrame.Visible and Color3.fromRGB(0, 136, 255) or Color3.fromRGB(0, 215, 110) 
 end)
 
