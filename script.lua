@@ -150,12 +150,14 @@ toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.
 --======================================================================================
 -- BROSWE HUB | PART 6 OF 7 (COMBAT, PARALLEL UPGRADES & ENHANCED DYNAMIC SWEEPER)
 --======================================================================================
+print("PART 6 LOADED")
+print("Initial:", SweeperActiveMovement, TrailState)
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
+local SweeperActiveMovement = false -- CRITICAL STATE LOCK: Prevents loops from fighting
 
 local CastlePosition = Vector3.new(879.0405, 12.3479, 13443.0859)
 local CapsulePosition = Vector3.new(712.6, 5.7, 7814.0)
-local FirePosition = Vector3.new(1080.31, 13.55, -675.99)
 
 local function GetWorldRoot()
     local char = player.Character
@@ -167,16 +169,12 @@ local function MovePlayer(pos)
     if hrp then hrp.CFrame = CFrame.new(pos) end
 end
 
--- LIVE INSTANCE DETECTOR: Scans the entire active world workspace for your specific claimed live tycoon plot folder
 local function GetLiveTycoon()
-    -- Common live tycoon folder paths used by Roblox Tycoon kits
     local paths = {workspace:FindFirstChild("Tycoons"), workspace:FindFirstChild("Tycoon"), workspace:FindFirstChild("PlayerTycoons")}
     for _, folder in ipairs(paths) do
         if folder then
-            -- Searches inner children tree to locate the plot owned or named after your player profile
             local myPlot = folder:FindFirstChild(player.Name) or folder:FindFirstChild(player.DisplayName)
             if myPlot then return myPlot end
-            -- Fallback alternative: Check for Creator attribute tag values match
             for _, plot in ipairs(folder:GetChildren()) do
                 if plot:GetAttribute("Owner") == player.Name or plot:GetAttribute("Creator") == player.Name then
                     return plot
@@ -184,7 +182,6 @@ local function GetLiveTycoon()
             end
         end
     end
-    -- Ultimate fallback check: Scan top layer workspace tree directly
     return workspace:FindFirstChild(player.Name .. "'s Tycoon") or workspace:FindFirstChild("Tycoon")
 end
 
@@ -236,14 +233,19 @@ local function FindEnemy()
     return closest
 end
 
+-- MAIN CORE MOVEMENT HANDLER
 task.spawn(function()
     while true do
         task.wait(0.25)
         local selected = GetChosenTrail()
         if TrailState == "Capsule" then
-            if _G.AutoCapsule then 
-                InsideTrail = false MovePlayer(CapsulePosition) 
-            elseif _G.AutoFarmCash then
+            -- Only move to the conveyor if the sweeper isn't actively jumping to a pad
+            if not SweeperActiveMovement then
+                if _G.AutoCapsule then 
+                    InsideTrail = false MovePlayer(CapsulePosition) 
+                elseif _G.AutoFarmCash then
+                    InsideTrail = false MovePlayer(ResolveConveyorPosition())
+                end
             end
             
             if selected then
@@ -264,7 +266,7 @@ task.spawn(function()
     end
 end)
 
--- LIVE RESILIENT BUTTON SWEEPER ENGINE: Tracks real live tycoon buttons recursively with tracers
+-- SINGLE-MOVEMENT DYNAMIC BUTTON SWEEPER ENGINE
 task.spawn(function()
     while true do
         task.wait(0.3)
@@ -273,40 +275,33 @@ task.spawn(function()
             local buttonsFolder = livePlot and livePlot:FindFirstChild("Buttons")
             
             if buttonsFolder then
-                local children = buttonsFolder:GetChildren()
-
-print("Children:", #children)
-
-local currentButtonModel = nil
-for _, child in ipairs(children) do
-    print("Found:", child.Name, child.ClassName)
-    if child:IsA("Model") then
-        currentButtonModel = child
-        break
-    end
-end
-
-print("Selected:", currentButtonModel)
-                -- RECURSIVE SEARCH ENABLED: Added true parameter to find nested parts inside updates safely
+                local currentButtonModel = buttonsFolder:FindFirstChildWhichIsA("Model")
                 local targetBuyPart = currentButtonModel and currentButtonModel:FindFirstChild("BuyingButtonPart", true)
                 
                 if targetBuyPart and targetBuyPart:IsA("BasePart") then
                     local hrp = GetWorldRoot()
                     if hrp then
-                        -- LIVE SYSTEM DIAGNOSTIC TRACERS: Prints target validations to console explorer window
-                        print("Broswe Hub Sweeper -> Targets: " .. currentButtonModel.Name)
-                        print("Broswe Hub Path -> " .. targetBuyPart:GetFullName())
-                        print("Broswe Hub Coords -> " .. tostring(targetBuyPart.Position))
+                        -- Activating lock: Main loop stops sending you to the conveyor
+                        SweeperActiveMovement = true
                         
-                        -- Execute safety jump step 3 studs above the real live layout location point
+                        print("Broswe Hub Sweeper -> Purchasing: " .. currentButtonModel.Name)
                         MovePlayer(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                        task.wait(0.15)
-                        MovePlayer(ResolveConveyorPosition())
+                        task.wait(0.25) -- Slightly higher delay to ensure collision registers cleanly
                         
+                        -- Keep holding until tycoon folder tree removes it
                         repeat task.wait(0.1) until not currentButtonModel:IsDescendantOf(buttonsFolder) or InsideTrail or not _G.AutoFarmCash
+                        
+                        -- Release lock: Allow return to conveyor
+                        SweeperActiveMovement = false
                     end
+                else
+                    SweeperActiveMovement = false
                 end
+            else
+                SweeperActiveMovement = false
             end
+        else
+            SweeperActiveMovement = false
         end
     end
 end)
@@ -363,6 +358,7 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 --======================================================================================
 -- BROSWE HUB | PART 7 OF 7 (INTERACTIVE EVENT LAYOUT SIGNALS AND MECHANICS)
 --======================================================================================
