@@ -148,7 +148,7 @@ toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim
 toggleRuneBasic = gridRow("Teleport Basic Rune (Auto-Collection Loop)", 1, runesPage)
 toggleRuneBasic.Size = UDim2.new(0, 75, 0, 26) toggleRuneBasic.Position = UDim2.new(1, -85, 0.5, -13)
 --======================================================================================
--- BROSWE HUB | PART 6 OF 9 (RESTORED PARALLEL STRUCTURE VALUE RUNTIMES)
+-- BROSWE HUB | PART 6 OF 9 (PLOT-AGNOSTIC SPATIAL VALUE MATRIX)
 --======================================================================================
 local InsideTrail, PrepTimerActive = false, false
 local TrailState = "Capsule"
@@ -164,14 +164,39 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
+-- PLOT-AGNOSTIC CONVEYOR FINDER: Dynamically crawls the map to find your live belt and kill under-map bugs
 local function ResolveConveyorPosition()
+    local hrp = GetWorldRoot()
+    
+    -- Method 1: Scan all active tycoon plots in the game content folder tree dynamically
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-    local tycoon = gameContent and gameContent:FindFirstChild("Tycoon")
-    local physicalConveyor = tycoon and tycoon:FindFirstChild("Conveyor", true)
-    if physicalConveyor and physicalConveyor:IsA("BasePart") then
-        return physicalConveyor.Position + Vector3.new(0, 4, 0)
+    if gameContent then
+        for _, folder in ipairs(gameContent:GetChildren()) do
+            if folder.Name:lower():find("tycoon") or folder.Name:lower():find("plot") then
+                local conveyor = folder:FindFirstChild("Conveyor", true)
+                if conveyor and conveyor:IsA("BasePart") then
+                    -- Verify this tycoon belongs to the player by checking nearby owner models
+                    local ownerVal = folder:FindFirstChild("Owner", true) or folder:FindFirstChild("Player", true)
+                    if not ownerVal or (ownerVal:IsA("ValueBase") and ownerVal.Value == player) or ownerVal.Name:lower():find(player.Name:lower()) then
+                        return conveyor.Position + Vector3.new(0, 4, 0)
+                    end
+                end
+            end
+        end
     end
-    return Vector3.new(874.84, 5.51, 13426.69)
+    
+    -- Method 2: Universal Ancestry Sweep Fallback
+    local primaryTycoon = gameContent and gameContent:FindFirstChild("Tycoon")
+    local standardConveyor = primaryTycoon and primaryTycoon:FindFirstChild("Conveyor", true)
+    if standardConveyor and standardConveyor:IsA("BasePart") then
+        return standardConveyor.Position + Vector3.new(0, 4, 0)
+    end
+    
+    -- Method 3: Absolute Anti-Clip Buffer Gate (Keeps you 15 studs in the air above current position if lost)
+    if hrp then
+        return hrp.Position + Vector3.new(0, 15, 0)
+    end
+    return Vector3.new(874.84, 15.0, 13426.69) -- Raised fallback safety height out of the void
 end
 
 local function ParseCostText(obj)
@@ -205,6 +230,7 @@ local function GetChosenTrail()
     if _G.AutoEasyTrails then return "Easy" end
     return nil
 end
+
 --======================================================================================
 -- BROSWE HUB | PART 7 OF 9 (RESTORED PARALLEL MOVEMENT & SWEOPER RUNTIMES)
 --======================================================================================
@@ -295,7 +321,7 @@ task.spawn(function()
                             local parsedCost = ParseCostText(costLabel)
                             local localWallet = GetPlayerCash()
                             
-                            if localWallet and parsedCost > localWallet then
+                            if localWallet and localWallet > 0 and parsedCost > localWallet then
                                 continue
                             end
                             
