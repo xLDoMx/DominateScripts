@@ -168,17 +168,14 @@ local function MovePlayer(pos)
     if hrp then hrp.CFrame = CFrame.new(pos) end
 end
 
--- NEW REPLICATED SCOPE LOCATION RESOLVER: Dynamic scanning replaces hardcoded values completely
 local function ResolveConveyorPosition()
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
     local tycoonFolder = gameContent and gameContent:FindFirstChild("Tycoon")
-    
-    -- Dynamically locks onto your claimed plot conveyor belt asset part
     local physicalConveyor = tycoonFolder and tycoonFolder:FindFirstChild("Conveyor", true)
     if physicalConveyor and physicalConveyor:IsA("BasePart") then
         return physicalConveyor.Position + Vector3.new(0, 4, 0)
     end
-    return Vector3.new(874.84, 5.51, 13426.69) -- Fallback matrix safety coordinate
+    return Vector3.new(874.84, 5.51, 13426.69)
 end
 
 local function GetChosenTrail()
@@ -249,7 +246,6 @@ task.spawn(function()
     end
 end)
 
--- DYNAMIC BUTTON SWEEPER ENGINE: Seamlessly targets active purchase parts using folder verification
 task.spawn(function()
     while true do
         task.wait(0.3)
@@ -277,7 +273,6 @@ task.spawn(function()
     end
 end)
 
--- PARALLEL ENGINE FACTORY: Unlinks execution mapping completely to prevent sequential priority locks
 local function buildPurchaseThread(flag, command, serverArgs)
     task.spawn(function()
         while true do
@@ -371,7 +366,7 @@ toggleAFK.MouseButton1Click:Connect(function() tState(toggleAFK, "AntiAFK") end)
 togglePrestige.MouseButton1Click:Connect(function() tState(togglePrestige, "AutoPrestige") end)
 toggleStarter.MouseButton1Click:Connect(function() tState(toggleStarter, "AutoUpgradeStarter") end) 
 toggleCooker.MouseButton1Click:Connect(function() tState(toggleCooker, "AutoUpgradeCooker") end) 
-toggleExplorer.MouseButton1Connect and toggleExplorer.MouseButton1Click:Connect(function() tState(toggleExplorer, "AutoUpgradeExplorer") end)
+toggleExplorer.MouseButton1Click:Connect(function() tState(toggleExplorer, "AutoUpgradeExplorer") end) 
 toggleMagician.MouseButton1Click:Connect(function() tState(toggleMagician, "AutoUpgradeMagician") end) 
 toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgradeArcher") end) 
 toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) 
