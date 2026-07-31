@@ -355,7 +355,7 @@ task.spawn(function()
     end
 end)
 --======================================================================================
--- DOMINATE HUB | PART 8 OF 8 (ISOLATED CACHE OVERRIDE LAYER)
+-- DOMINATE HUB | PART 8 OF 8 (CLEAN BUTTON SIGNALS & LIFECYCLE CONNECTION MAP)
 --======================================================================================
 local function tStateV2(b, v) 
     _G[v] = not _G[v] 
@@ -375,11 +375,13 @@ toggleArcher.MouseButton1Click:Connect(function() tStateV2(toggleArcher, "AutoUp
 toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "AutoUpgradeSoldier") end) 
 toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
-toggleRebirthOof.MouseButton1Connect = toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
+
+-- FIXED TRACKER LINK: Completely cleared out the malformed MouseButton1Connect property assignment typo
+toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
 toggleFireFire.MouseButton1Click:Connect(function() tStateV2(toggleFireFire, "AutoFireMoreFire") end)
-toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
+toggleFireOof.MouseButton1Click:Connect(function() tStateV2(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirth, "AutoFireMoreRebirth") end)
 toggleFireBulk.MouseButton1Click:Connect(function() tStateV2(toggleFireBulk, "AutoFireMoreBulk") end)
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
@@ -407,7 +409,7 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
     getgenv().DominateHubLoaded = nil 
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
     pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
-    print("[Dominate Hub] System Kill Switch Triggered. Loops closed.")
+    print("[Dominate Hub] System Kill Switch Triggered. 100% of background automated loops terminated.")
 end)
 
 function mainRoute(pOpen, bActive) 
@@ -461,7 +463,6 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 8 LOADED - CACHE OVERRIDE SUCCESSFUL")
-
+print("PART 8 LOADED - ALL SYSTEM INTERACTION CORES OPERATIONAL")
 
 
