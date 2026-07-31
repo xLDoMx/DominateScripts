@@ -1,6 +1,13 @@
 --======================================================================================
--- DOMINATE HUB | PART 1 OF 8 (CRITICAL ENGINE PATH VERIFICATION)
+-- DOMINATE HUB | PART 1 OF 8 (CRITICAL ENGINE Lifecycle GATES)
 --======================================================================================
+if getgenv().DominateHubLoaded then 
+    print("[Dominate Hub] Already running! Aborting duplicate instance.")
+    return 
+end
+getgenv().DominateHubLoaded = true
+
+local Running = true -- CENTRAL LIFECYCLE FLAG: Flipping this to false physically kills all threads
 player = game:GetService("Players").LocalPlayer
 vu = game:GetService("VirtualUser")
 NetRemote = nil
@@ -17,7 +24,7 @@ _G.AutoBuildFire = false
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 
 player.Idled:Connect(function()
-    if _G.AntiAFK then
+    if Running and _G.AntiAFK then
         vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame) task.wait(1) vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
     end
 end)
@@ -28,7 +35,7 @@ repeat
         NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent")
     end
     if not NetRemote then task.wait(0.5) end
-until NetRemote
+until NetRemote or not Running
 --======================================================================================
 -- DOMINATE HUB | PART 2 OF 8 (MASTER PAGES REGISTRY SETUP)
 --======================================================================================
@@ -142,92 +149,87 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (DYNAMIC ACTIVE-CHAIN SWEEPER ENGINE)
+-- DOMINATE HUB | PART 7 OF 8 (HARD-KILLED ACTIVE MOVEMENT SCHEDULER)
 --======================================================================================
-local MasterTargetVector = nil  -- Singular source of truth coordinate anchor
+local MasterTargetVector = nil  
 
--- THE SOVEREIGN POSITION更新 THREAD: Eliminates CFrame wars completely
+-- THE MASTER POSITION WRITER THREAD: Terminates completely when Running turns false
 task.spawn(function()
-    while true do
+    while Running do
         task.wait(0.1)
         if _G.AutoFarmCash then
             local hrp = GetWorldRoot()
-            if hrp and MasterTargetVector then
+            if hrp and MasterTargetVector and Running then
                 if (hrp.Position - MasterTargetVector).Magnitude > 5 then
                     hrp.CFrame = CFrame.new(MasterTargetVector)
                 end
             end
         end
     end
+    print("[Dominate Hub] Master Locomotion Thread hard-stopped successfully.")
 end)
 
--- DYNAMIC ACTIVE-CHAIN LOOP ENGINE: Chains purchases continuously until running out of affordable options
+-- DYNAMIC ACTIVE-CHAIN LOOP ENGINE: Aborts processing instantly upon Running flag drop
 task.spawn(function()
-    while true do
+    while Running do
         task.wait(0.5)
         
-        if _G.AutoFarmCash then
+        if _G.AutoFarmCash and Running then
             local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
             local tycoon = gameContent and gameContent:FindFirstChild("Tycoon")
             local buttonsFolder = tycoon and tycoon:FindFirstChild("Buttons")
             
-            if buttonsFolder then
-                local roundLockedPads = {} -- Temporary bucket tracks unaffordable pads for this specific pass
+            if buttonsFolder and Running then
+                local roundLockedPads = {} 
                 local madePurchaseThisRound = false
                 
-                -- Keep checking the folder continuously as long as affordable options exist
                 repeat
+                    if not Running then break end
                     local visibleButtons = buttonsFolder:GetChildren()
                     local attemptedAPadThisPass = false
                     
                     for i = 1, #visibleButtons do
+                        if not Running or not _G.AutoFarmCash then break end
                         local btnModel = visibleButtons[i]
-                        if not _G.AutoFarmCash then break end
                         
-                        -- Skip this pad if we already verified we cannot afford it during this sweep sequence
                         if btnModel and btnModel:IsA("Model") and not roundLockedPads[btnModel.Name] then
                             local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
                             
-                            if targetBuyPart and targetBuyPart:IsA("BasePart") then
+                            if targetBuyPart and targetBuyPart:IsA("BasePart") and Running then
                                 attemptedAPadThisPass = true
                                 MasterTargetVector = targetBuyPart.Position + Vector3.new(0, 3, 0)
-                                task.wait(0.4) -- Stable touch and replication delay window
+                                task.wait(0.4) 
                                 
-                                -- VERIFICATION CHECK: See if the pad is still alive after being stepped on
+                                if not Running then break end
                                 if btnModel:IsDescendantOf(buttonsFolder) then
-                                    -- Button is still there: You can't afford it. Lock it out for the rest of this round.
                                     roundLockedPads[btnModel.Name] = true
                                     MasterTargetVector = nil
                                     task.wait(0.05)
                                 else
-                                    -- Button vanished: Purchase successful! Clear target and instantly re-run the loop tree
                                     madePurchaseThisRound = true
-                                    print("[Dominate Hub] Purchase successful! Chain-targeting next available pad: " .. tostring(btnModel.Name))
                                     MasterTargetVector = nil
                                     task.wait(0.1)
-                                    break -- Break the current 'for' loop to refresh the folder array snapshot back-to-back
+                                    break 
                                 end
                             end
                         end
                     end
                     
-                    -- If we ran through the entire folder snapshot and couldn't even attempt a single new pad, exit the chain
-                    if not attemptedAPadThisPass or not _G.AutoFarmCash then
+                    if not attemptedAPadThisPass or not _G.AutoFarmCash or not Running then
                         break
                     end
                     task.wait(0.1)
                 until false
                 
-                -- ENTER HARVEST BLOCK: Safe to sleep only after checking every single pad and buying everything possible
-                MasterTargetVector = nil
-                print("[Dominate Hub] Active factory sweep pass complete. Harvesting capital for 5 minutes...")
-                
-                local sleepEndTime = tick() + 300 -- 5-minute countdown duration gate
-                repeat 
-                    task.wait(1) 
-                until tick() >= sleepEndTime or not _G.AutoFarmCash
-                
-                print("[Dominate Hub] 5 minutes concluded. Initializing next active factory sweep sequence.")
+                if Running then
+                    MasterTargetVector = nil
+                    print("[Dominate Hub] Active pass complete. Waiting 5 minutes...")
+                    
+                    local sleepEndTime = tick() + 300 
+                    repeat 
+                        task.wait(1) 
+                    until tick() >= sleepEndTime or not _G.AutoFarmCash or not Running
+                end
             else
                 MasterTargetVector = nil
                 task.wait(2)
@@ -237,16 +239,18 @@ task.spawn(function()
             task.wait(1)
         end
     end
+    print("[Dominate Hub] Sweeper Automated Thread hard-stopped successfully.")
 end)
 
 local function buildPurchaseThread(flag, command, serverArgs)
     task.spawn(function()
-        while true do
+        while Running do
             task.wait(0.4)
-            if _G[flag] and NetRemote then
+            if Running and _G[flag] and NetRemote then
                 pcall(function() NetRemote:FireServer(command, unpack(serverArgs)) end)
             end
         end
+        print("[Dominate Hub] Network Thread (" .. flag .. ") closed down cleanly.")
     end)
 end
 
@@ -279,9 +283,9 @@ for _, item in ipairs(upgrades) do buildPurchaseThread(item.F, item.T, item.A) e
 task.spawn(function()
     local targetCooldown = math.random(270, 330)
     local secondsElapsed = 0
-    while true do
+    while Running do
         task.wait(1)
-        if _G.AutoBlazeConvert and NetRemote then
+        if Running and _G.AutoBlazeConvert and NetRemote then
             secondsElapsed = secondsElapsed + 1
             if secondsElapsed >= targetCooldown then
                 secondsElapsed = 0
@@ -290,10 +294,10 @@ task.spawn(function()
             end
         else secondsElapsed = 0 end
     end
+    print("[Dominate Hub] Conversion Thread hard-stopped successfully.")
 end)
-
 --======================================================================================
--- DOMINATE HUB | PART 8 OF 8 (CORRECTED BLAZE BUTTON INTERACTIVE MAPPINGS)
+-- DOMINATE HUB | PART 8 OF 8 (HARD-KILLED LIFECYCLE CONTROLLERS MAPPING)
 --======================================================================================
 function tState(b, v) 
     _G[v] = not _G[v] 
@@ -322,8 +326,6 @@ toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth,
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
 toggleBuildFire.MouseButton1Click:Connect(function() tState(toggleBuildFire, "AutoBuildFire") end)
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
-
--- FIXED VARIABLE REGISTER INTERFACE CONNECTORS: Corrected maps unlock toggle activations instantly
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
 toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
 toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
@@ -334,9 +336,26 @@ toggleCashMoreCash.MouseButton1Click:Connect(function() tState(toggleCashMoreCas
 toggleCashFasterDropper.MouseButton1Click:Connect(function() tState(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
 toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tState(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
 
+-- THE ABSOLUTE ENGINE SOVEREIGN TERMINATION INTERRUPT LIFECYCLE HOOK
 toggleKillSwitch.MouseButton1Click:Connect(function()
-    for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
-    pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
+    Running = false -- Instantly trips the conditional gates, completely flatlining all threads
+    getgenv().DominateHubLoaded = nil -- Unlocks loader protection to allow a clean future re-execution
+    
+    -- Clear out standard global variables completely
+    for k, _ in pairs(_G) do 
+        if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then 
+            _G[k] = false 
+        end 
+    end
+    
+    -- Force camera state and physics bounds tracking resets
+    pcall(function() 
+        local cam = workspace.CurrentCamera 
+        if cam then cam.CameraType = Enum.CameraType.Custom end 
+    end) 
+    
+    sg:Destroy() -- Destroys UI canvas instance objects completely from game memory
+    print("[Dominate Hub] System Kill Switch Triggered. 100% of background automated loops terminated.")
 end)
 
 function mainRoute(pOpen, bActive) 
@@ -388,5 +407,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 8 LOADED - DOMINATE HUB RUNNING COMPLETELY OPERATIONAL")
-
+print("PART 8 LOADED - ENGINE LIFECYCLE PROTECTION SECURED")
