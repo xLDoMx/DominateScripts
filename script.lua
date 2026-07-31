@@ -264,31 +264,38 @@ task.spawn(function()
     end
 end)
 
--- FIRE & DIRECT CHEST OPENING REMOTE ENGINE (TRUE x10 SPAM ENGINE)
+--======================================================================================
+-- DOMINATE HUB | PART 3 OF 4 (FIXED BULK CHEST REMOTE ENGINE)
+--======================================================================================
 task.spawn(function()
     while Running do
-        task.wait(0.15) -- Pause between bulk waves
+        task.wait(0.3) -- Moderate pacing to let server clear debounces
         if NetRemote and Running then
+            -- 1. Standard Upgrades
             if _G.AutoFireMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end) end
             if _G.AutoFireMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end) end
             if _G.AutoFireMoreRebirth then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end) end
             if _G.AutoFireMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end) end
             
-            -- DIRECT REMOTE CHEST OPENER ENGINE (FIRES 10 REMOTES PER TICK)
+            -- 2. T1 Chest Opening
             if _G.AutoOpenT1Chest then
                 pcall(function()
-                    for i = 1, 10 do
+                    -- Fire 7 times with tiny spacing to bypass server debounce rate limits
+                    for i = 1, 7 do
                         if not Running or not _G.AutoOpenT1Chest then break end
-                        NetRemote:FireServer("OpenChest", "T1TrialChest", 1)
+                        NetRemote:FireServer("OpenChest", "T1TrialChest", 10)
+                        task.wait(0.04) -- Critical delay so server registers each call
                     end
                 end)
             end
 
+            -- 3. T2 Chest Opening
             if _G.AutoOpenT2Chest then
                 pcall(function()
-                    for i = 1, 10 do
+                    for i = 1, 7 do
                         if not Running or not _G.AutoOpenT2Chest then break end
-                        NetRemote:FireServer("OpenChest", "T2TrialChest", 1)
+                        NetRemote:FireServer("OpenChest", "T2TrialChest", 10)
+                        task.wait(0.04)
                     end
                 end)
             end
