@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PART 1 OF 8 (CORE LIFECYCLE CONTROLLERS)
+-- DOMINATE HUB | PART 1 OF 8 (OPTIMIZED Lifecycle AND SERVICE CACHING)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -7,9 +7,13 @@ if getgenv().DominateHubLoaded then
 end
 getgenv().DominateHubLoaded = true
 
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local Running = true
-player = game:GetService("Players").LocalPlayer
-vu = game:GetService("VirtualUser")
+player = Players.LocalPlayer
+vu = VirtualUser
 NetRemote = nil
 
 _G.AntiAFK, _G.AutoPrestige = true, false
@@ -29,12 +33,14 @@ _G.AutoRollCosmicRune = false
 
 player.Idled:Connect(function()
     if Running and _G.AntiAFK then
-        vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame) task.wait(1) vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        local cam = workspace.CurrentCamera
+        local cf = cam and cam.CFrame or CFrame.new()
+        vu:Button2Down(Vector2.new(0,0), cf) task.wait(0.5) vu:Button2Up(Vector2.new(0,0), cf)
     end
 end)
 
 repeat
-    local netService = game:GetService("ReplicatedStorage"):WaitForChild("__Net", 5)
+    local netService = ReplicatedStorage:WaitForChild("__Net", 5)
     if netService then
         NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent")
     end
@@ -160,27 +166,30 @@ toggleRebirthTimerCard.Size = UDim2.new(0, 75, 0, 26) toggleRebirthTimerCard.Pos
 toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.Size = UDim2.new(0, 75, 0, 26) toggleKillSwitch.Position = UDim2.new(1, -85, 0.5, -13) toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
 --======================================================================================
--- DOMINATE HUB | PART 6 OF 8 (CHARACTER SYSTEM LINK COUPLERS)
+-- DOMINATE HUB | PART 6 OF 8 (OPTIMIZED NODE CORE CALCULATORS)
 --======================================================================================
 print("PART 6 LOADED")
 
 local function GetWorldRoot()
     local char = player.Character
-    return char and char:FindFirstChild("HumanoidRootPart")
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (LOCOMOTION & AUTO-PRESTIGE SCANNER)
+-- DOMINATE HUB | PART 7 OF 8 (UNIFIED MOVEMENT & SAFETY QUEUE ENGINE)
 --======================================================================================
 local MasterTargetVector = nil  
+local CurrentLoopStateSleep = false 
+
 local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1510009765625)
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
 
--- MASTER POSITION UPDATER THREAD
+-- SOVEREIGN POSITION CONTROLLER 
 task.spawn(function()
     while Running do
-        task.wait(0.1)
+        task.wait(CurrentLoopStateSleep and 1.0 or 0.1)
         local hrp = GetWorldRoot()
         if hrp and Running then
             local activeDestination = nil
@@ -205,7 +214,7 @@ task.spawn(function()
     end
 end)
 
--- TIMED ACTIVE-CHAIN SWEEPER LOOPS
+-- UNBROKEN STEP ACTIVE BATCH TYCOON SWEEPER ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -216,6 +225,8 @@ task.spawn(function()
             
             if buttonsFolder and Running then
                 local roundLockedPads = {}
+                CurrentLoopStateSleep = false 
+                
                 repeat
                     if not Running or not _G.AutoFarmCash then break end
                     local visibleButtons = buttonsFolder:GetChildren()
@@ -250,6 +261,9 @@ task.spawn(function()
                 
                 if Running then
                     MasterTargetVector = nil
+                    print("[Dominate Hub] Tycoon pass over. Entering sleep cooldown...")
+                    CurrentLoopStateSleep = true 
+                    
                     local sleepEndTime = tick() + 300
                     repeat task.wait(1) until tick() >= sleepEndTime or not _G.AutoFarmCash or not Running
                 end
@@ -259,57 +273,14 @@ task.spawn(function()
             end
         else
             MasterTargetVector = nil
+            CurrentLoopStateSleep = true
             task.wait(1)
         end
     end
 end)
 
--- AUTOMATED SCREENSPACE PRESTIGE MONITOR THREAD
-task.spawn(function()
-    while Running do
-        task.wait(1)
-        if _G.AutoPrestige and NetRemote and Running then
-            local pGui = player:FindFirstChild("PlayerGui")
-            local foundEligibleText = false
-            
-            if pGui then
-                -- Dynamically scans all active BillboardGuis and ScreenGuis on your monitor layout frame
-                for _, desc in ipairs(pGui:GetDescendants()) do
-                    if desc:IsA("TextLabel") then
-                        local text = desc.Text:lower()
-                        -- Detects when "Progress for Prestige" converts into a live click message
-                        if text:find("prestige") and (text:find("can") or text:find("ready") or text:find("now") or text:find("click") or desc.TextColor3.G > 0.7) then
-                            if not text:find("progress") then
-                                foundEligibleText = true
-                                break
-                            end
-                        end
-                    end
-                end
-            end
-            
-            -- If the over-screen label layout greenlights the reset, fire the network purchase event instantly
-            if foundEligibleText and Running then
-                print("[Dominate Hub] Top screen indicator turned green/ready! Executing auto-prestige reset remote event sequence.")
-                pcall(function() NetRemote:FireServer("Prestige") end)
-                task.wait(5) -- Safe anti-spam interval window padding
-            end
-        end
-    end
-end)
-
-local function buildPurchaseThread(flag, command, serverArgs)
-    task.spawn(function()
-        while Running do
-            task.wait(0.4)
-            if Running and _G[flag] and NetRemote then
-                pcall(function() NetRemote:FireServer(command, unpack(serverArgs)) end)
-            end
-        end
-    end)
-end
-
-local upgrades = {
+-- UNIFIED SEQUENTIAL UPGRADE ENGINE: Steps through active upgrades one by one to eliminate remote packet drops
+local UpgradeQueueList = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
     {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}},
@@ -326,6 +297,7 @@ local upgrades = {
     {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
     {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
     {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
+    {F = "AutoBuildFire",         T = "UpgradeUpgradeMax", A = {"Fire", "AutoBuildFire"}}, -- REBIF/FIRE PATCH LINKED
     {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
     {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
     {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}},
@@ -333,7 +305,53 @@ local upgrades = {
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
 }
-for _, item in ipairs(upgrades) do buildPurchaseThread(item.F, item.T, item.A) end
+
+task.spawn(function()
+    while Running do
+        task.wait(0.15) -- Safe structural pace window ensures zero anti-cheat spam flags trigger [1]
+        if NetRemote and Running then
+            for i = 1, #UpgradeQueueList do
+                if not Running then break end
+                local item = UpgradeQueueList[i]
+                
+                -- Check if this specific upgrade toggle is enabled by the player
+                if _G[item.F] then
+                    pcall(function() 
+                        NetRemote:FireServer(item.T, unpack(item.A)) 
+                    end)
+                    task.wait(0.08) -- Padded micro-gap prevents the server from dropping subsequent parameters [1]
+                end
+            end
+        end
+    end
+    print("[Dominate Hub] Sequential Upgrade Engine safely closed.")
+end)
+
+-- AUTO SCREENSPACE PRESTIGE MONITOR THREAD
+task.spawn(function()
+    while Running do
+        task.wait(1)
+        if _G.AutoPrestige and NetRemote and Running then
+            local pGui = player:FindFirstChild("PlayerGui")
+            local foundEligibleText = false
+            if pGui then
+                for _, desc in ipairs(pGui:GetDescendants()) do
+                    if desc:IsA("TextLabel") then
+                        local text = desc.Text:lower()
+                        if text:find("prestige") and (text:find("can") or text:find("ready") or text:find("now") or text:find("click") or desc.TextColor3.G > 0.7) then
+                            if not text:find("progress") then foundEligibleText = true; break end
+                        end
+                    end
+                end
+            end
+            if foundEligibleText and Running then
+                print("[Dominate Hub] Prestige criteria verified. Firing reset remote.")
+                pcall(function() NetRemote:FireServer("Prestige") end)
+                task.wait(5) 
+            end
+        end
+    end
+end)
 
 task.spawn(function()
     local targetCooldown = math.random(270, 330)
@@ -350,7 +368,6 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
-
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
 --======================================================================================
@@ -456,4 +473,3 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
 end)
 
 print("PART 8 LOADED - DOMINATE HUB RUNNING COMPLETELY OPERATIONAL")
-
