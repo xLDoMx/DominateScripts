@@ -176,11 +176,11 @@ local function GetWorldRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (UNIFIED POSITIONING & UP-VALUE POINTER ENGINE)
+-- DOMINATE HUB | PART 7 OF 8 (ISOLATED RUNTIME SAFETY QUEUE MATRIX)
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
-local CachedPrestigeLabel = nil -- MEMORY INSTANCE CACHE: Eradicates tree-crawling UI loop lag entirely
+local CachedPrestigeLabel = nil 
 
 local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1510009765625)
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
@@ -193,22 +193,13 @@ task.spawn(function()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local activeDestination = nil
-            if MasterTargetVector then
-                activeDestination = MasterTargetVector
-            elseif _G.AutoRollCosmicRune then
-                activeDestination = CosmicRuneVector
-            elseif _G.AutoRollAdvancedRune then
-                activeDestination = AdvancedRuneVector
-            elseif _G.AutoRollSuperRune then
-                activeDestination = SuperRuneVector
-            elseif _G.AutoRollBasicRune then
-                activeDestination = BasicRuneVector
-            end
-            
-            if activeDestination and Running then
-                if (hrp.Position - activeDestination).Magnitude > 5 then
-                    hrp.CFrame = CFrame.new(activeDestination)
-                end
+            if MasterTargetVector then activeDestination = MasterTargetVector
+            elseif _G.AutoRollCosmicRune then activeDestination = CosmicRuneVector
+            elseif _G.AutoRollAdvancedRune then activeDestination = AdvancedRuneVector
+            elseif _G.AutoRollSuperRune then activeDestination = SuperRuneVector
+            elseif _G.AutoRollBasicRune then activeDestination = BasicRuneVector end
+            if activeDestination and Running and (hrp.Position - activeDestination).Magnitude > 5 then
+                hrp.CFrame = CFrame.new(activeDestination)
             end
         end
     end
@@ -221,64 +212,39 @@ task.spawn(function()
             local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
             local tycoon = gameContent and gameContent:FindFirstChild("Tycoon")
             local buttonsFolder = tycoon and tycoon:FindFirstChild("Buttons")
-            
             if buttonsFolder and Running then
-                local roundLockedPads = {}
-                CurrentLoopStateSleep = false 
-                
+                local roundLockedPads = {} CurrentLoopStateSleep = false 
                 repeat
                     if not Running or not _G.AutoFarmCash then break end
                     local visibleButtons = buttonsFolder:GetChildren()
                     local attemptedAPadThisPass = false
-                    
                     for i = 1, #visibleButtons do
                         if not Running or not _G.AutoFarmCash then break end
                         local btnModel = visibleButtons[i]
                         if btnModel and btnModel:IsA("Model") and not roundLockedPads[btnModel.Name] then
                             local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
                             if targetBuyPart and targetBuyPart:IsA("BasePart") and Running then
-                                attemptedAPadThisPass = true
-                                MasterTargetVector = targetBuyPart.Position + Vector3.new(0, 3, 0)
+                                attemptedAPadThisPass = true MasterTargetVector = targetBuyPart.Position + Vector3.new(0, 3, 0)
                                 task.wait(0.4)
-                                
                                 if not Running then break end
-                                if btnModel:IsDescendantOf(buttonsFolder) then
-                                    roundLockedPads[btnModel.Name] = true
-                                    MasterTargetVector = nil
-                                    task.wait(0.05)
-                                else
-                                    MasterTargetVector = nil
-                                    task.wait(0.1)
-                                    break
-                                end
+                                if btnModel:IsDescendantOf(buttonsFolder) then roundLockedPads[btnModel.Name] = true MasterTargetVector = nil task.wait(0.05)
+                                else MasterTargetVector = nil task.wait(0.1) break end
                             end
                         end
                     end
                     if not attemptedAPadThisPass or not _G.AutoFarmCash or not Running then break end
                     task.wait(0.1)
                 until false
-                
                 if Running then
-                    MasterTargetVector = nil
-                    print("[Dominate Hub] Tycoon pass over. Entering sleep cooldown...")
-                    CurrentLoopStateSleep = true 
-                    
-                    local sleepEndTime = tick() + 300
+                    MasterTargetVector = nil CurrentLoopStateSleep = true local sleepEndTime = tick() + 300
                     repeat task.wait(1) until tick() >= sleepEndTime or not _G.AutoFarmCash or not Running
                 end
-            else
-                MasterTargetVector = nil
-                task.wait(2)
-            end
-        else
-            MasterTargetVector = nil
-            CurrentLoopStateSleep = true
-            task.wait(1)
-        end
+            else MasterTargetVector = nil task.wait(2) end
+        else MasterTargetVector = nil CurrentLoopStateSleep = true task.wait(1) end
     end
 end)
 
-local UpgradeQueueList = {
+local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
     {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}},
@@ -291,10 +257,6 @@ local UpgradeQueueList = {
     {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
     {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
     {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
-    {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
-    {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
-    {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
-    {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
     {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
     {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
     {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}},
@@ -303,48 +265,50 @@ local UpgradeQueueList = {
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
 }
 
+local FireUpgradeQueue = {
+    {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
+    {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "Oof"}}, -- FIXED STRUCTURAL STRING: Corrected to "Oof"
+    {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
+    {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
+}
+
 task.spawn(function()
     while Running do
-        task.wait(0.15) 
+        task.wait(0.18)
         if NetRemote and Running then
-            for i = 1, #UpgradeQueueList do
+            for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end
-                local item = UpgradeQueueList[i]
-                if _G[item.F] then
-                    pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end)
-                    task.wait(0.08) 
-                end
+                local item = PrimaryUpgradeQueue[i]
+                if _G[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.08) end
+            end
+            task.wait(0.12)
+            for j = 1, #FireUpgradeQueue do
+                if not Running then break end
+                local item = FireUpgradeQueue[j]
+                if _G[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.08) end
             end
         end
     end
 end)
 
--- ZERO-LAG AUTO PRESTIGE POINTER SYSTEM
 task.spawn(function()
     while Running do
         task.wait(1)
         if _G.AutoPrestige and NetRemote and Running then
             local pGui = player:FindFirstChild("PlayerGui")
             if pGui and Running then
-                -- INITIAL PRE-CACHE PASS: Locates the object memory address exactly once
                 if not CachedPrestigeLabel or not CachedPrestigeLabel.Parent then
                     for _, desc in ipairs(pGui:GetDescendants()) do
                         if desc:IsA("TextLabel") and desc.Text:lower():find("progress for prestige") then
-                            CachedPrestigeLabel = desc
-                            print("[Dominate Hub] Prestige box memory address successfully pre-cached and isolated!")
-                            break
+                            CachedPrestigeLabel = desc break
                         end
                     end
                 end
-                
-                -- HARD-POINT READ EVALUATION: Instantly checks values without crawling your UI tree
                 if CachedPrestigeLabel and CachedPrestigeLabel.Parent then
                     local text = CachedPrestigeLabel.Text:lower()
                     if text:find("prestige") and (text:find("can") or text:find("ready") or text:find("now") or text:find("click") or CachedPrestigeLabel.TextColor3.G > 0.7) then
                         if not text:find("progress") then
-                            print("[Dominate Hub] Prestige condition unlocked via hardcache up-value pointer. Resresetting world...")
-                            pcall(function() NetRemote:FireServer("Prestige") end)
-                            task.wait(5)
+                            pcall(function() NetRemote:FireServer("Prestige") end) task.wait(5)
                         end
                     end
                 end
@@ -354,15 +318,13 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    local targetCooldown = math.random(270, 330)
-    local secondsElapsed = 0
+    local targetCooldown = math.random(270, 330) local secondsElapsed = 0
     while Running do
         task.wait(1)
         if Running and _G.AutoBlazeConvert and NetRemote then
             secondsElapsed = secondsElapsed + 1
             if secondsElapsed >= targetCooldown then
-                secondsElapsed = 0
-                targetCooldown = math.random(270, 330)
+                secondsElapsed = 0 targetCooldown = math.random(270, 330)
                 pcall(function() NetRemote:FireServer("Blaze") end)
             end
         else secondsElapsed = 0 end
