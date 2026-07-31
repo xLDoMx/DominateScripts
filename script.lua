@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PART 1 OF 8 (OPTIMIZED Lifecycle AND SERVICE CACHING)
+-- DOMINATE HUB | PART 1 OF 8 (OPTIMIZED LIFECYCLE AND SERVICE CACHING)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -22,14 +22,11 @@ _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false
 _G.AutoFireMoreFire, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreBulk = false, false, false, false
 _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
-_G.AutoBuildFire = false
 
 -- AUTOMATION FLAGS REGISTRY
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
-_G.AutoRollBasicRune = false
-_G.AutoRollSuperRune = false
-_G.AutoRollAdvancedRune = false
-_G.AutoRollCosmicRune = false
+_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
+_G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false -- NEW CHEST INVENTORY FLAG REGISTERS
 
 player.Idled:Connect(function()
     if Running and _G.AntiAFK then
@@ -56,6 +53,7 @@ local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0
 realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new(1, -20, 1, -85) realm1MasterPage.Position = UDim2.new(0, 10, 0, 80) realm1MasterPage.BackgroundTransparency = 1; realm1MasterPage.Visible = true; realm1MasterPage.Parent = mainFrame
 realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
 runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
+chestsPage = Instance.new("Frame") chestsPage.Size = UDim2.new(1, -20, 1, -85) chestsPage.Position = UDim2.new(0, 10, 0, 80) chestsPage.BackgroundTransparency = 1; chestsPage.Visible = false; chestsPage.Parent = mainFrame -- NEW CHESTS CONTENT FRAME LAYER
 settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 --======================================================================================
 -- DOMINATE HUB | PART 3 OF 8 (HEADER & NAV TAB INTERACTIVES)
@@ -66,12 +64,13 @@ minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) minBtn
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
-tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 100, 1, 0) tabRealm1.Position = UDim2.new(0, 5, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
-tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 100, 1, 0) tabRealm3.Position = UDim2.new(0, 115, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 100, 1, 0) tabRunes.Position = UDim2.new(0, 225, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
-tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 100, 1, 0) tabSettings.Position = UDim2.new(0, 335, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 80, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 80, 1, 0) tabRealm3.Position = UDim2.new(0, 87, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 80, 1, 0) tabRunes.Position = UDim2.new(0, 172, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 80, 1, 0) tabChests.Position = UDim2.new(0, 257, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 12; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList -- NEW CHESTS ENGINE HEADER TAB BUTTON
+tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 90, 1, 0) tabSettings.Position = UDim2.new(0, 342, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
 
-Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
 
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 50, 1, 0) subBtnNoobs.Position = UDim2.new(0, 2, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
@@ -91,7 +90,7 @@ end
 realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
 realm1UpgradeScroll = makeScroll(110)
 realm1RebirthScroll = makeScroll(160)
-realm1FireScroll = makeScroll(210)
+realm1FireScroll = makeScroll(170)
 realm1FireScroll.Parent = realm1MasterPage
 realm1BlazeScroll = makeScroll(210)
 realm1CashScroll = makeScroll(170)
@@ -129,7 +128,6 @@ toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
 toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
 toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
-toggleBuildFire = makeSubRow("Auto Build Fire", 5, realm1FireScroll)
 
 toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
 toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
@@ -144,18 +142,21 @@ toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1Cash
 togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 togglePharaoh.Size = UDim2.new(0, 75, 0, 26) togglePharaoh.Position = UDim2.new(1, -85, 0.5, -13)
 
--- RUNES SECTION COMPONENT ROW LAYOUT LISTING
+-- RUNES SECTION GRID ROWS
 toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 toggleRollBasicRuneCard.Size = UDim2.new(0, 75, 0, 26) toggleRollBasicRuneCard.Position = UDim2.new(1, -85, 0.5, -13)
-
 toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
 toggleRollSuperRuneCard.Size = UDim2.new(0, 75, 0, 26) toggleRollSuperRuneCard.Position = UDim2.new(1, -85, 0.5, -13)
-
 toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesPage)
 toggleRollAdvancedRuneCard.Size = UDim2.new(0, 75, 0, 26) toggleRollAdvancedRuneCard.Position = UDim2.new(1, -85, 0.5, -13)
-
 toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesPage)
 toggleRollCosmicRuneCard.Size = UDim2.new(0, 75, 0, 26) toggleRollCosmicRuneCard.Position = UDim2.new(1, -85, 0.5, -13)
+
+-- BRAND NEW CHESTS TAB GRID TOGGLES
+toggleOpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, chestsPage)
+toggleOpenT1ChestCard.Size = UDim2.new(0, 75, 0, 26) toggleOpenT1ChestCard.Position = UDim2.new(1, -85, 0.5, -13)
+toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, chestsPage)
+toggleOpenT2ChestCard.Size = UDim2.new(0, 75, 0, 26) toggleOpenT2ChestCard.Position = UDim2.new(1, -85, 0.5, -13)
 
 toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 1, settingsPage)
 toggleAFK.Size = UDim2.new(0, 75, 0, 26) toggleAFK.Position = UDim2.new(1, -85, 0.5, -13) toggleAFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) toggleAFK.TextColor3 = Color3.fromRGB(120, 255, 120) toggleAFK.Text = "ACTIVE"
@@ -176,7 +177,7 @@ local function GetWorldRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (SANDBOXED RUNTIME SAFETY MATRIX)
+-- DOMINATE HUB | PART 7 OF 8 (UNIFIED LOCOMOTION & STAGGERED OPENING ENGINE)
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
@@ -265,12 +266,12 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
 }
 
--- Stable Fire variables maps
 local FireItemMoreFire    = {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}}
+local FireItemMoreOof     = {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}}
 local FireItemMoreRebirth = {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}}
 local FireItemMoreBulk    = {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
 
--- THREAD A: Main Factory and Tycoon upgrades loop
+-- THREAD A: Main Factory & Tycoon Sequential upgrades loop
 task.spawn(function()
     while Running do
         task.wait(0.2)
@@ -284,35 +285,31 @@ task.spawn(function()
     end
 end)
 
--- THREAD B: Padded Fire upgrades loop (Guarantees More Fire and More Rebirths never break)
+-- THREAD B: PROTECTED FIRE UPGRADES & ANTI-BAN CHEST OPENER LOOP
 task.spawn(function()
     while Running do
-        task.wait(0.25)
+        task.wait(0.25) -- Continuous smooth processing tick rate
         if NetRemote and Running then
+            -- 1. Standard Fire Multipliers Processing
             if _G[FireItemMoreFire.F] then pcall(function() NetRemote:FireServer(FireItemMoreFire.T, unpack(FireItemMoreFire.A)) end) task.wait(0.08) end
+            if _G[FireItemMoreOof.F] then pcall(function() NetRemote:FireServer(FireItemMoreOof.T, unpack(FireItemMoreOof.A)) end) task.wait(0.08) end
             if _G[FireItemMoreRebirth.F] then pcall(function() NetRemote:FireServer(FireItemMoreRebirth.T, unpack(FireItemMoreRebirth.A)) end) task.wait(0.08) end
             if _G[FireItemMoreBulk.F] then pcall(function() NetRemote:FireServer(FireItemMoreBulk.T, unpack(FireItemMoreBulk.A)) end) task.wait(0.08) end
-        end
-    end
-end)
-
--- THREAD C: 100% ISOLATED SANDBOX FOR MORE OOF (Cycles through possible backend keys safely)
-task.spawn(function()
-    local OofStringVariations = {
-        {"Fire", "MoreOof"},
-        {"Fire", "MoreOofs"},
-        {"Fire", "OofMore"}
-    }
-    while Running do
-        task.wait(0.4) -- Slower, high-fidelity rest cycle window padding
-        if NetRemote and Running and _G.AutoFireMoreOof then
-            for k = 1, #OofStringVariations do
-                if not Running or not _G.AutoFireMoreOof then break end
+            
+            -- 2. T1 Chest Opener Queue Window: Runs exactly one chest transaction per tick with strict gapping
+            if _G.AutoOpenT1Chest and Running then
                 pcall(function()
-                    -- Fires variants inside an error-proof catch framework so it can NEVER drop Thread B
-                    NetRemote:FireServer("UpgradeUpgradeMax", OofStringVariations[k][1], OofStringVariations[k][2])
+                    NetRemote:FireServer("OpenChest", "T1")
                 end)
-                task.wait(0.1)
+                task.wait(0.12) -- Safety padding eliminates automated spam detection completely
+            end
+            
+            -- 3. T2 Chest Opener Queue Window
+            if _G.AutoOpenT2Chest and Running then
+                pcall(function()
+                    NetRemote:FireServer("OpenChest", "T2")
+                end)
+                task.wait(0.12)
             end
         end
     end
@@ -357,8 +354,6 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
-
-
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
 --======================================================================================
@@ -380,17 +375,16 @@ toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgr
 toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) 
 toggleMoreOof.MouseButton1Click:Connect(function() tState(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tState(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
-toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) 
+toggleRebirthOof.MouseButton1Connect = toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tState(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tState(toggleRebirthFire, "AutoRebirthMoreFire") end)
 toggleFireFire.MouseButton1Click:Connect(function() tState(toggleFireFire, "AutoFireMoreFire") end)
 toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth, "AutoFireMoreRebirth") end)
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
-toggleBuildFire.MouseButton1Click:Connect(function() tState(toggleBuildFire, "AutoBuildFire") end)
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
-toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
+toggleBlazeMoreBlaze.MouseButton1Click:Connect(function3() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
 toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
 toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
 
@@ -405,6 +399,10 @@ toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tState(toggleRollSu
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tState(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
 toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tState(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
 
+-- NEW CHESTS INTERACTIVE MENU BUTTON LAYOUT ATTACHMENTS
+toggleOpenT1ChestCard.MouseButton1Click:Connect(function() tState(toggleOpenT1ChestCard, "AutoOpenT1Chest") end)
+toggleOpenT2ChestCard.MouseButton1Click:Connect(function() tState(toggleOpenT2ChestCard, "AutoOpenT2Chest") end)
+
 toggleKillSwitch.MouseButton1Click:Connect(function()
     Running = false 
     getgenv().DominateHubLoaded = nil 
@@ -414,14 +412,15 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 function mainRoute(pOpen, bActive) 
-    realm1MasterPage.Visible, realm3Page.Visible, runesPage.Visible, settingsPage.Visible = false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabRealm1, tabRealm3, tabRunes, tabSettings}
+    realm1MasterPage.Visible, realm3Page.Visible, runesPage.Visible, chestsPage.Visible, settingsPage.Visible = false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabRealm1, tabRealm3, tabRunes, tabChests, tabSettings}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
+tabChests.MouseButton1Click:Connect(function() mainRoute(chestsPage, tabChests) end) -- ROUTE MAP AtTACHMENT
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 function route(targetScroll)
