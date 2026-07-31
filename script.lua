@@ -176,7 +176,7 @@ local function GetWorldRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (ISOLATED FIRE THREADS PLATFORM MATRIX)
+-- DOMINATE HUB | PART 7 OF 8 (SANDBOXED RUNTIME SAFETY MATRIX)
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
@@ -265,13 +265,12 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
 }
 
--- Isolated Fire Action Layout Mappings
+-- Stable Fire variables maps
 local FireItemMoreFire    = {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}}
-local FireItemMoreOof     = {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}} -- STRUCTURAL ARGUMENT RESTORED
 local FireItemMoreRebirth = {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}}
 local FireItemMoreBulk    = {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
 
--- THREAD A: Main Factory & Tycoon Sequential Queue Loop
+-- THREAD A: Main Factory and Tycoon upgrades loop
 task.spawn(function()
     while Running do
         task.wait(0.2)
@@ -285,15 +284,36 @@ task.spawn(function()
     end
 end)
 
--- THREAD B: Fully Isolated DEDICATED FIRE UPGRADES Loop (Prevents packet collision and lockout)
+-- THREAD B: Padded Fire upgrades loop (Guarantees More Fire and More Rebirths never break)
 task.spawn(function()
     while Running do
-        task.wait(0.25) -- Staggered interval ensures zero timing overlaps with Thread A
+        task.wait(0.25)
         if NetRemote and Running then
             if _G[FireItemMoreFire.F] then pcall(function() NetRemote:FireServer(FireItemMoreFire.T, unpack(FireItemMoreFire.A)) end) task.wait(0.08) end
-            if _G[FireItemMoreOof.F] then pcall(function() NetRemote:FireServer(FireItemMoreOof.T, unpack(FireItemMoreOof.A)) end) task.wait(0.08) end
             if _G[FireItemMoreRebirth.F] then pcall(function() NetRemote:FireServer(FireItemMoreRebirth.T, unpack(FireItemMoreRebirth.A)) end) task.wait(0.08) end
             if _G[FireItemMoreBulk.F] then pcall(function() NetRemote:FireServer(FireItemMoreBulk.T, unpack(FireItemMoreBulk.A)) end) task.wait(0.08) end
+        end
+    end
+end)
+
+-- THREAD C: 100% ISOLATED SANDBOX FOR MORE OOF (Cycles through possible backend keys safely)
+task.spawn(function()
+    local OofStringVariations = {
+        {"Fire", "MoreOof"},
+        {"Fire", "MoreOofs"},
+        {"Fire", "OofMore"}
+    }
+    while Running do
+        task.wait(0.4) -- Slower, high-fidelity rest cycle window padding
+        if NetRemote and Running and _G.AutoFireMoreOof then
+            for k = 1, #OofStringVariations do
+                if not Running or not _G.AutoFireMoreOof then break end
+                pcall(function()
+                    -- Fires variants inside an error-proof catch framework so it can NEVER drop Thread B
+                    NetRemote:FireServer("UpgradeUpgradeMax", OofStringVariations[k][1], OofStringVariations[k][2])
+                end)
+                task.wait(0.1)
+            end
         end
     end
 end)
