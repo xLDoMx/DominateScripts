@@ -264,33 +264,22 @@ task.spawn(function()
     end
 end)
 
--- FIRE & DIRECT CHEST OPENING REMOTE ENGINE (BULK SIMULATION)
+-- FIRE & DIRECT CHEST OPENING REMOTE ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.15) -- Pause between bulk cycles
+        task.wait(0.12) -- Balanced execution yield
         if NetRemote and Running then
             if _G.AutoFireMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end) end
             if _G.AutoFireMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end) end
             if _G.AutoFireMoreRebirth then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end) end
             if _G.AutoFireMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end) end
             
-            -- DIRECT REMOTE CHEST OPENER ENGINE (REPLICATES x10 BULK USE)
+            -- DIRECT REMOTE CHEST OPENER ENGINE (MASS OPEN x10)
             if _G.AutoOpenT1Chest then
-                pcall(function()
-                    for i = 1, 7 do -- Fires 7 direct remote calls back-to-back per loop tick
-                        if not Running or not _G.AutoOpenT1Chest then break end
-                        NetRemote:FireServer("OpenChest", "T1TrialChest", 1)
-                    end
-                end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end)
             end
-
             if _G.AutoOpenT2Chest then
-                pcall(function()
-                    for i = 1, 7 do
-                        if not Running or not _G.AutoOpenT2Chest then break end
-                        NetRemote:FireServer("OpenChest", "T2TrialChest", 1)
-                    end
-                end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end)
             end
         end
     end
