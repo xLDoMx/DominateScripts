@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (REWORKED FIRE UPGRADES + MORE TIER LUCK)
+-- DOMINATE HUB | FULL SCRIPT (FIRE UPGRADES + PRESTIGE FIX INCLUDED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -20,7 +20,7 @@ local NetRemote = nil
 _G.AntiAFK, _G.AutoPrestige = true, false
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
 _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false, false, false
-_G.AutoFireMoreFire, _G.AutoFireMoreBulk, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreTierLuck = false, false, false, false, false
+_G.AutoFireMoreFire, _G.AutoFireMoreBulk, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreTierLuck, _G.AutoFireMoreCashBonus = false, false, false, false, false, false
 _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
@@ -92,7 +92,7 @@ end
 local realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
 local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
-local realm1FireScroll = makeScroll(250) -- Adjusted canvas size for 5 Fire upgrades
+local realm1FireScroll = makeScroll(300)
 local realm1BlazeScroll = makeScroll(360)
 local realm1CashScroll = makeScroll(170)
 
@@ -123,12 +123,13 @@ local toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll
 local toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 local toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
--- FIRE SUBTAB ROWS (UPDATED)
+-- FIRE SUBTAB ROWS
 local toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 local toggleFireBulk = makeSubRow("More Bulk (Fire)", 2, realm1FireScroll)
 local toggleFireOof = makeSubRow("More Oof (Fire)", 3, realm1FireScroll)
 local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 4, realm1FireScroll)
 local toggleFireTierLuck = makeSubRow("More Tier Luck (Fire)", 5, realm1FireScroll)
+local toggleFireCashBonus = makeSubRow("More Cash (Fire)", 6, realm1FireScroll)
 
 -- BLAZE TAB ROWS
 local toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
@@ -164,7 +165,6 @@ toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
-local CachedPrestigeLabel = nil 
 
 local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1510009765625)
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
@@ -251,14 +251,15 @@ local PrimaryUpgradeQueue = {
     {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
     {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
     
-    -- ALL 5 FIRE UPGRADES INTEGRATED HERE
-    {F = "AutoFireMoreFire",     T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
-    {F = "AutoFireMoreBulk",     T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
-    {F = "AutoFireMoreOof",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
-    {F = "AutoFireMoreRebirth",  T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
-    {F = "AutoFireMoreTierLuck", T = "UpgradeUpgradeMax", A = {"Fire", "MoreTierLuck"}},
+    -- FIRE UPGRADES (INCLUDING MORE CASH BONUS)
+    {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
+    {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
+    {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
+    {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
+    {F = "AutoFireMoreTierLuck",  T = "UpgradeUpgradeMax", A = {"Fire", "MoreTierLuck"}},
+    {F = "AutoFireMoreCashBonus", T = "UpgradeUpgradeMax", A = {"Fire", "MoreCashBonus"}},
     
-    {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
+    {F = "AutoUpgradeMoreCash",    T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
 }
@@ -337,29 +338,35 @@ task.spawn(function()
     end
 end)
 
--- PRESTIGE CHECKER LOOP
+-- UPDATED PRESTIGE CHECKER LOOP (REMOTE INVOKER + UI EVENT FALLBACK)
 task.spawn(function()
     while Running do
-        task.wait(1)
+        task.wait(1.5)
         if _G.AutoPrestige and NetRemote and Running then
-            local pGui = player:FindFirstChild("PlayerGui")
-            if pGui and Running then
-                if not CachedPrestigeLabel or not CachedPrestigeLabel.Parent then
+            pcall(function()
+                -- Direct Remote Attempt
+                NetRemote:FireServer("Prestige")
+                NetRemote:FireServer("PrestigePrestige")
+                
+                -- Fallback: Scan PlayerGui for Prestige Buttons & Fire Activated/Click
+                local pGui = player:FindFirstChild("PlayerGui")
+                if pGui then
                     for _, desc in ipairs(pGui:GetDescendants()) do
-                        if desc:IsA("TextLabel") and desc.Text:lower():find("progress for prestige") then
-                            CachedPrestigeLabel = desc break
+                        if desc:IsA("TextButton") or desc:IsA("ImageButton") then
+                            local name = desc.Name:lower()
+                            local text = (desc:IsA("TextButton") and desc.Text:lower()) or ""
+                            if name:find("prestige") or text:find("prestige") then
+                                for _, conn in ipairs(getconnections(desc.MouseButton1Click)) do
+                                    conn:Fire()
+                                end
+                                for _, conn in ipairs(getconnections(desc.Activated)) do
+                                    conn:Fire()
+                                end
+                            end
                         end
                     end
                 end
-                if CachedPrestigeLabel and CachedPrestigeLabel.Parent then
-                    local text = CachedPrestigeLabel.Text:lower()
-                    if text:find("prestige") and (text:find("can") or text:find("ready") or text:find("now") or text:find("click") or CachedPrestigeLabel.TextColor3.G > 0.7) then
-                        if not text:find("progress") then
-                            pcall(function() NetRemote:FireServer("Prestige") end) task.wait(5)
-                        end
-                    end
-                end
-            end
+            end)
         end
     end
 end)
@@ -411,6 +418,7 @@ toggleFireBulk.MouseButton1Click:Connect(function() tStateV2(toggleFireBulk, "Au
 toggleFireOof.MouseButton1Click:Connect(function() tStateV2(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirth, "AutoFireMoreRebirth") end)
 toggleFireTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleFireTierLuck, "AutoFireMoreTierLuck") end)
+toggleFireCashBonus.MouseButton1Click:Connect(function() tStateV2(toggleFireCashBonus, "AutoFireMoreCashBonus") end)
 
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
