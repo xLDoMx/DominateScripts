@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (FIRE UPGRADES + PRESTIGE FIX INCLUDED)
+-- DOMINATE HUB | FULL SCRIPT (UI ACTIVATED SIGNAL VERSION)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -10,7 +10,6 @@ getgenv().DominateHubLoaded = true
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GuiService = game:GetService("GuiService")
 
 local Running = true
 local player = Players.LocalPlayer
@@ -25,7 +24,6 @@ _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
 
--- AUTOMATION FLAGS REGISTRY
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
@@ -123,7 +121,6 @@ local toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll
 local toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 local toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
--- FIRE SUBTAB ROWS
 local toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
 local toggleFireBulk = makeSubRow("More Bulk (Fire)", 2, realm1FireScroll)
 local toggleFireOof = makeSubRow("More Oof (Fire)", 3, realm1FireScroll)
@@ -131,7 +128,6 @@ local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 4, realm1FireScroll)
 local toggleFireTierLuck = makeSubRow("More Tier Luck (Fire)", 5, realm1FireScroll)
 local toggleFireCashBonus = makeSubRow("More Cash (Fire)", 6, realm1FireScroll)
 
--- BLAZE TAB ROWS
 local toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
 local toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
 local toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
@@ -155,7 +151,7 @@ local toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, chest
 
 local toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 1, settingsPage)
 toggleAFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) toggleAFK.TextColor3 = Color3.fromRGB(120, 255, 120) toggleAFK.Text = "ACTIVE"
-local togglePrestige = gridRow("Auto Prestige (Server Max Buy Engine)", 2, settingsPage)
+local togglePrestige = gridRow("Auto Prestige (GuiButton Activated Event)", 2, settingsPage)
 local toggleRebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 3, settingsPage)
 local toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
@@ -178,7 +174,7 @@ end
 -- RUNE TELEPORTATION LOOP
 task.spawn(function()
     while Running do
-        task.wait(CurrentLoopStateSleep and 1.0 or 0.1)
+        task.wait(CurrentLoopStateSleep and 1.0 or 0.2)
         local hrp = GetWorldRoot()
         if hrp and Running then
             local activeDestination = nil
@@ -234,7 +230,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE (NOOBS / OOF / REBIRTH / FIRE / CASH)
+-- UNIFIED PRIMARY UPGRADE QUEUE
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -251,7 +247,6 @@ local PrimaryUpgradeQueue = {
     {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
     {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
     
-    -- FIRE UPGRADES (INCLUDING MORE CASH BONUS)
     {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
     {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
     {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
@@ -266,12 +261,15 @@ local PrimaryUpgradeQueue = {
 
 task.spawn(function()
     while Running do
-        task.wait(0.2)
+        task.wait(0.3)
         if NetRemote and Running then
             for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end
                 local item = PrimaryUpgradeQueue[i]
-                if _G[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.05) end
+                if _G[item.F] then 
+                    pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) 
+                    task.wait(0.1) 
+                end
             end
         end
     end
@@ -280,90 +278,44 @@ end)
 -- BLAZE AUTO-UPGRADE ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.25)
+        task.wait(0.4)
         if NetRemote and Running then
-            if _G.AutoBlazeMoreBlaze then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end)
-                task.wait(0.04)
-            end
-
-            if _G.AutoBlazeMoreFire then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end)
-                task.wait(0.04)
-            end
-
-            if _G.AutoBlazeMoreOof then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end)
-                task.wait(0.04)
-            end
-
-            if _G.AutoBlazeMoreOofs then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end)
-                task.wait(0.04)
-            end
-
-            if _G.AutoBlazeMoreBulk then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end)
-                task.wait(0.04)
-            end
+            if _G.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.1) end
+            if _G.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.1) end
+            if _G.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.1) end
+            if _G.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.1) end
+            if _G.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.1) end
         end
     end
 end)
 
--- DIRECT REMOTE CHEST OPENER ENGINE
+-- CHEST OPENER ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.3)
+        task.wait(0.5)
         if NetRemote and Running then
             if _G.AutoOpenT1Chest then
-                pcall(function()
-                    for i = 1, 7 do
-                        if not Running or not _G.AutoOpenT1Chest then break end
-                        NetRemote:FireServer("OpenChest", "T1TrialChest", 10)
-                        task.wait(0.04)
-                    end
-                end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end)
             end
-
             if _G.AutoOpenT2Chest then
-                pcall(function()
-                    for i = 1, 7 do
-                        if not Running or not _G.AutoOpenT2Chest then break end
-                        NetRemote:FireServer("OpenChest", "T2TrialChest", 10)
-                        task.wait(0.04)
-                    end
-                end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end)
             end
         end
     end
 end)
 
--- UPDATED PRESTIGE CHECKER LOOP (REMOTE INVOKER + UI EVENT FALLBACK)
+-- NATIVE UI ACTIVATED SIGNAL PRESTIGE LOOP (SAFE & REMOTE-FREE)
 task.spawn(function()
     while Running do
-        task.wait(1.5)
-        if _G.AutoPrestige and NetRemote and Running then
+        task.wait(2.5)
+        if _G.AutoPrestige and Running then
             pcall(function()
-                -- Direct Remote Attempt
-                NetRemote:FireServer("Prestige")
-                NetRemote:FireServer("PrestigePrestige")
-                
-                -- Fallback: Scan PlayerGui for Prestige Buttons & Fire Activated/Click
                 local pGui = player:FindFirstChild("PlayerGui")
                 if pGui then
-                    for _, desc in ipairs(pGui:GetDescendants()) do
-                        if desc:IsA("TextButton") or desc:IsA("ImageButton") then
-                            local name = desc.Name:lower()
-                            local text = (desc:IsA("TextButton") and desc.Text:lower()) or ""
-                            if name:find("prestige") or text:find("prestige") then
-                                for _, conn in ipairs(getconnections(desc.MouseButton1Click)) do
-                                    conn:Fire()
-                                end
-                                for _, conn in ipairs(getconnections(desc.Activated)) do
-                                    conn:Fire()
-                                end
-                            end
-                        end
+                    local targetBtn = pGui:FindFirstChild("Prestige", true) or pGui:FindFirstChild("PrestigeButton", true)
+                    if targetBtn and targetBtn:IsA("GuiButton") then
+                        -- Triggers the game's built-in client UI signal natively
+                        targetBtn.Activated:Fire()
                     end
                 end
             end)
@@ -412,7 +364,6 @@ toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof,
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
 
--- FIRE TOGGLE CONNECTORS
 toggleFireFire.MouseButton1Click:Connect(function() tStateV2(toggleFireFire, "AutoFireMoreFire") end)
 toggleFireBulk.MouseButton1Click:Connect(function() tStateV2(toggleFireBulk, "AutoFireMoreBulk") end)
 toggleFireOof.MouseButton1Click:Connect(function() tStateV2(toggleFireOof, "AutoFireMoreOof") end)
@@ -500,4 +451,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Fully Loaded and Operational!")
+print("[Dominate Hub] Activated UI Signal Engine Loaded!")
