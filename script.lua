@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH SEPARATE MORE OOF & MORE OOFS TOGGLES)
+-- DOMINATE HUB | FULL SCRIPT (REWORKED FIRE UPGRADES + MORE TIER LUCK)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -20,7 +20,7 @@ local NetRemote = nil
 _G.AntiAFK, _G.AutoPrestige = true, false
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
 _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false, false, false
-_G.AutoFireMoreFire, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreBulk = false, false, false, false
+_G.AutoFireMoreFire, _G.AutoFireMoreBulk, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreTierLuck = false, false, false, false, false
 _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
@@ -92,8 +92,8 @@ end
 local realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
 local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
-local realm1FireScroll = makeScroll(170)
-local realm1BlazeScroll = makeScroll(360) -- Canvas expanded to fit 6 Blaze options comfortably
+local realm1FireScroll = makeScroll(250) -- Adjusted canvas size for 5 Fire upgrades
+local realm1BlazeScroll = makeScroll(360)
 local realm1CashScroll = makeScroll(170)
 
 local function gridRow(txt, pos, page)
@@ -123,12 +123,14 @@ local toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll
 local toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
 local toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
+-- FIRE SUBTAB ROWS (UPDATED)
 local toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
-local toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
-local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
-local toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
+local toggleFireBulk = makeSubRow("More Bulk (Fire)", 2, realm1FireScroll)
+local toggleFireOof = makeSubRow("More Oof (Fire)", 3, realm1FireScroll)
+local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 4, realm1FireScroll)
+local toggleFireTierLuck = makeSubRow("More Tier Luck (Fire)", 5, realm1FireScroll)
 
--- BLAZE TAB ROWS (WITH INDEPENDENT MORE OOF AND MORE OOFS TOGGLES)
+-- BLAZE TAB ROWS
 local toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
 local toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
 local toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
@@ -232,7 +234,7 @@ task.spawn(function()
     end
 end)
 
--- PRIMARY UPGRADE REMOTE ENGINE (NOOBS / OOF / REBIRTH / CASH)
+-- UNIFIED PRIMARY UPGRADE QUEUE (NOOBS / OOF / REBIRTH / FIRE / CASH)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -241,11 +243,21 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    A = {"Archer"}},
     {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    A = {"Soldier"}},
     {F = "AutoUpgradePharaoh",    T = "UpgradeNoobMax",    A = {"Pharaoh"}},
+    
     {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
     {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
+    
     {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
     {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
     {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
+    
+    -- ALL 5 FIRE UPGRADES INTEGRATED HERE
+    {F = "AutoFireMoreFire",     T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
+    {F = "AutoFireMoreBulk",     T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
+    {F = "AutoFireMoreOof",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
+    {F = "AutoFireMoreRebirth",  T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
+    {F = "AutoFireMoreTierLuck", T = "UpgradeUpgradeMax", A = {"Fire", "MoreTierLuck"}},
+    
     {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
@@ -264,33 +276,11 @@ task.spawn(function()
     end
 end)
 
--- FIRE & BLAZE AUTO-UPGRADE ENGINE
+-- BLAZE AUTO-UPGRADE ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.25)
         if NetRemote and Running then
-            -- FIRE UPGRADES
-            if _G.AutoFireMoreOof then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end)
-                task.wait(0.04)
-            end
-
-            if _G.AutoFireMoreRebirth then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end)
-                task.wait(0.04)
-            end
-
-            if _G.AutoFireMoreBulk then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end)
-                task.wait(0.04)
-            end
-
-            if _G.AutoFireMoreFire then
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end)
-                task.wait(0.04)
-            end
-
-            -- BLAZE UPGRADES (FULLY DEDICATED)
             if _G.AutoBlazeMoreBlaze then
                 pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end)
                 task.wait(0.04)
@@ -414,10 +404,14 @@ toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoob
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
+
+-- FIRE TOGGLE CONNECTORS
 toggleFireFire.MouseButton1Click:Connect(function() tStateV2(toggleFireFire, "AutoFireMoreFire") end)
+toggleFireBulk.MouseButton1Click:Connect(function() tStateV2(toggleFireBulk, "AutoFireMoreBulk") end)
 toggleFireOof.MouseButton1Click:Connect(function() tStateV2(toggleFireOof, "AutoFireMoreOof") end)
 toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirth, "AutoFireMoreRebirth") end)
-toggleFireBulk.MouseButton1Click:Connect(function() tStateV2(toggleFireBulk, "AutoFireMoreBulk") end)
+toggleFireTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleFireTierLuck, "AutoFireMoreTierLuck") end)
+
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
 
