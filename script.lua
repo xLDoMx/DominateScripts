@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PART 1 OF 4 (CORE SETUP & UI HOUSING)
+-- DOMINATE HUB | FULL SCRIPT (WITH SEPARATE MORE OOF & MORE OOFS TOGGLES)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -22,7 +22,7 @@ _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgrad
 _G.AutoRebirthMoreOof, _G.AutoRebirthMoreRebirth, _G.AutoRebirthMoreFire = false, false, false
 _G.AutoFireMoreFire, _G.AutoFireMoreOof, _G.AutoFireMoreRebirth, _G.AutoFireMoreBulk = false, false, false, false
 _G.AutoRebirthTimer = false
-_G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeConvert = false, false, false, false
+_G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
 
 -- AUTOMATION FLAGS REGISTRY
@@ -60,9 +60,8 @@ local realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, 
 local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
 local chestsPage = Instance.new("Frame") chestsPage.Size = UDim2.new(1, -20, 1, -85) chestsPage.Position = UDim2.new(0, 10, 0, 80) chestsPage.BackgroundTransparency = 1; chestsPage.Visible = false; chestsPage.Parent = mainFrame
 local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
---======================================================================================
--- DOMINATE HUB | PART 2 OF 4 (HEADER & REGISTRY INTERFACING)
---======================================================================================
+
+-- UI HEADER & TABS
 local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(1, -20, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | Noob Incremental" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) minBtn.Position = UDim2.new(0.5, -47, 0.01, 0) minBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25) minBtn.TextColor3 = Color3.fromRGB(0, 136, 255) minBtn.TextSize = 12; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "Hide UI" minBtn.Parent = sg
@@ -94,7 +93,7 @@ local realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
 local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
 local realm1FireScroll = makeScroll(170)
-local realm1BlazeScroll = makeScroll(210)
+local realm1BlazeScroll = makeScroll(360) -- Canvas expanded to fit 6 Blaze options comfortably
 local realm1CashScroll = makeScroll(170)
 
 local function gridRow(txt, pos, page)
@@ -129,10 +128,13 @@ local toggleFireOof = makeSubRow("More Oof (Fire)", 2, realm1FireScroll)
 local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 3, realm1FireScroll)
 local toggleFireBulk = makeSubRow("More Bulk (Fire)", 4, realm1FireScroll)
 
+-- BLAZE TAB ROWS (WITH INDEPENDENT MORE OOF AND MORE OOFS TOGGLES)
 local toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
 local toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
 local toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
 local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
+local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
+local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
 local toggleAutoFarmCash = makeSubRow("Auto Stand On Conveyor Pad", 1, realm1CashScroll)
 local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
@@ -154,8 +156,9 @@ local togglePrestige = gridRow("Auto Prestige (Server Max Buy Engine)", 2, setti
 local toggleRebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 3, settingsPage)
 local toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
+
 --======================================================================================
--- DOMINATE HUB | PART 3 OF 4 (LOCOMOTION & OPTIMIZED REMOTE ENGINES)
+-- LOCOMOTION & REMOTE ENGINES
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
@@ -261,69 +264,55 @@ task.spawn(function()
     end
 end)
 
--- FIRE & BLAZE AUTO-UPGRADE ENGINE (DUAL METHOD FIRE LOGIC)
+-- FIRE & BLAZE AUTO-UPGRADE ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.25)
         if NetRemote and Running then
             -- FIRE UPGRADES
             if _G.AutoFireMoreOof then
-                pcall(function()
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof")
-                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreOof")
-                end)
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end)
                 task.wait(0.04)
             end
 
             if _G.AutoFireMoreRebirth then
-                pcall(function()
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth")
-                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreRebirth")
-                end)
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end)
                 task.wait(0.04)
             end
 
             if _G.AutoFireMoreBulk then
-                pcall(function()
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk")
-                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreBulk")
-                end)
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end)
                 task.wait(0.04)
             end
 
             if _G.AutoFireMoreFire then
-                pcall(function()
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire")
-                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreFire")
-                end)
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end)
                 task.wait(0.04)
             end
 
-            -- BLAZE UPGRADES (MULTI-KEY FALLBACK ENGINE)
+            -- BLAZE UPGRADES (FULLY DEDICATED)
             if _G.AutoBlazeMoreBlaze then
-                pcall(function()
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze")
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "Blaze")
-                    NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreBlaze")
-                end)
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end)
                 task.wait(0.04)
             end
 
             if _G.AutoBlazeMoreFire then
-                pcall(function()
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire")
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "Fire")
-                    NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreFire")
-                end)
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end)
                 task.wait(0.04)
             end
 
             if _G.AutoBlazeMoreOof then
-                pcall(function()
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof")
-                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "Oof")
-                    NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreOof")
-                end)
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end)
+                task.wait(0.04)
+            end
+
+            if _G.AutoBlazeMoreOofs then
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end)
+                task.wait(0.04)
+            end
+
+            if _G.AutoBlazeMoreBulk then
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end)
                 task.wait(0.04)
             end
         end
@@ -399,8 +388,9 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 --======================================================================================
--- DOMINATE HUB | PART 4 OF 4 (CONNECTORS, KILL SWITCH & DRAG CONTROLLER)
+-- CONNECTORS, KILL SWITCH & DRAG CONTROLLER
 --======================================================================================
 local function tStateV2(b, v) 
     _G[v] = not _G[v] 
@@ -434,6 +424,8 @@ toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoB
 toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
 toggleBlazeMoreFire.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
 toggleBlazeMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
+toggleBlazeMoreOofs.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreOofs, "AutoBlazeMoreOofs") end)
+toggleBlazeMoreBulk.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreBulk, "AutoBlazeMoreBulk") end)
 
 toggleAutoFarmCash.MouseButton1Click:Connect(function() tStateV2(toggleAutoFarmCash, "AutoFarmCash") end)
 toggleCashMoreCash.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreCash, "AutoUpgradeMoreCash") end)
