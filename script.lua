@@ -169,24 +169,24 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (MAGNITUDE BALANCED AUTOMATION SCHEDULER)
+-- DOMINATE HUB | PART 7 OF 8 (LOCOMOTION & AUTO-PRESTIGE SCANNER)
 --======================================================================================
 local MasterTargetVector = nil  
 local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1510009765625)
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
-local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125) -- HARDFROZEN EXACT DEX COORDINATE SOURCE [image_2IPSvY.png]
+local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
 
+-- MASTER POSITION UPDATER THREAD
 task.spawn(function()
     while Running do
         task.wait(0.1)
         local hrp = GetWorldRoot()
         if hrp and Running then
             local activeDestination = nil
-            
             if MasterTargetVector then
                 activeDestination = MasterTargetVector
-            elseif _G.AutoRollCosmicRune then -- HIERARCHICAL OVERRIDE UPGRADE
+            elseif _G.AutoRollCosmicRune then
                 activeDestination = CosmicRuneVector
             elseif _G.AutoRollAdvancedRune then
                 activeDestination = AdvancedRuneVector
@@ -203,22 +203,19 @@ task.spawn(function()
             end
         end
     end
-    print("[Dominate Hub] Master Locomotion Thread hard-stopped successfully.")
 end)
 
+-- TIMED ACTIVE-CHAIN SWEEPER LOOPS
 task.spawn(function()
     while Running do
         task.wait(0.5)
-        
         if _G.AutoFarmCash and Running then
             local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
             local tycoon = gameContent and gameContent:FindFirstChild("Tycoon")
             local buttonsFolder = tycoon and tycoon:FindFirstChild("Buttons")
             
             if buttonsFolder and Running then
-                local roundLockedPads = {} 
-                local madePurchaseThisRound = false
-                
+                local roundLockedPads = {}
                 repeat
                     if not Running or not _G.AutoFarmCash then break end
                     local visibleButtons = buttonsFolder:GetChildren()
@@ -227,14 +224,12 @@ task.spawn(function()
                     for i = 1, #visibleButtons do
                         if not Running or not _G.AutoFarmCash then break end
                         local btnModel = visibleButtons[i]
-                        
                         if btnModel and btnModel:IsA("Model") and not roundLockedPads[btnModel.Name] then
                             local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
-                            
                             if targetBuyPart and targetBuyPart:IsA("BasePart") and Running then
                                 attemptedAPadThisPass = true
                                 MasterTargetVector = targetBuyPart.Position + Vector3.new(0, 3, 0)
-                                task.wait(0.4) 
+                                task.wait(0.4)
                                 
                                 if not Running then break end
                                 if btnModel:IsDescendantOf(buttonsFolder) then
@@ -242,29 +237,21 @@ task.spawn(function()
                                     MasterTargetVector = nil
                                     task.wait(0.05)
                                 else
-                                    madePurchaseThisRound = true
                                     MasterTargetVector = nil
                                     task.wait(0.1)
-                                    break 
-                               end
+                                    break
+                                end
                             end
                         end
                     end
-                    
-                    if not attemptedAPadThisPass or not _G.AutoFarmCash or not Running then
-                        break
-                    end
+                    if not attemptedAPadThisPass or not _G.AutoFarmCash or not Running then break end
                     task.wait(0.1)
                 until false
                 
                 if Running then
                     MasterTargetVector = nil
-                    print("[Dominate Hub] Tycoon batch complete. Entering 5-minute cooldown phase layer...")
-                    
                     local sleepEndTime = tick() + 300
-                    repeat 
-                        task.wait(1) 
-                    until tick() >= sleepEndTime or not _G.AutoFarmCash or not Running
+                    repeat task.wait(1) until tick() >= sleepEndTime or not _G.AutoFarmCash or not Running
                 end
             else
                 MasterTargetVector = nil
@@ -275,7 +262,40 @@ task.spawn(function()
             task.wait(1)
         end
     end
-    print("[Dominate Hub] Sweeper Automated Thread hard-stopped successfully.")
+end)
+
+-- AUTOMATED SCREENSPACE PRESTIGE MONITOR THREAD
+task.spawn(function()
+    while Running do
+        task.wait(1)
+        if _G.AutoPrestige and NetRemote and Running then
+            local pGui = player:FindFirstChild("PlayerGui")
+            local foundEligibleText = false
+            
+            if pGui then
+                -- Dynamically scans all active BillboardGuis and ScreenGuis on your monitor layout frame
+                for _, desc in ipairs(pGui:GetDescendants()) do
+                    if desc:IsA("TextLabel") then
+                        local text = desc.Text:lower()
+                        -- Detects when "Progress for Prestige" converts into a live click message
+                        if text:find("prestige") and (text:find("can") or text:find("ready") or text:find("now") or text:find("click") or desc.TextColor3.G > 0.7) then
+                            if not text:find("progress") then
+                                foundEligibleText = true
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+            
+            -- If the over-screen label layout greenlights the reset, fire the network purchase event instantly
+            if foundEligibleText and Running then
+                print("[Dominate Hub] Top screen indicator turned green/ready! Executing auto-prestige reset remote event sequence.")
+                pcall(function() NetRemote:FireServer("Prestige") end)
+                task.wait(5) -- Safe anti-spam interval window padding
+            end
+        end
+    end
 end)
 
 local function buildPurchaseThread(flag, command, serverArgs)
@@ -286,7 +306,6 @@ local function buildPurchaseThread(flag, command, serverArgs)
                 pcall(function() NetRemote:FireServer(command, unpack(serverArgs)) end)
             end
         end
-        print("[Dominate Hub] Network Thread (" .. flag .. ") closed down cleanly.")
     end)
 end
 
@@ -330,8 +349,8 @@ task.spawn(function()
             end
         else secondsElapsed = 0 end
     end
-    print("[Dominate Hub] Conversion Thread hard-stopped successfully.")
 end)
+
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
 --======================================================================================
@@ -437,3 +456,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
 end)
 
 print("PART 8 LOADED - DOMINATE HUB RUNNING COMPLETELY OPERATIONAL")
+
