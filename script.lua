@@ -299,26 +299,29 @@ task.spawn(function()
                 task.wait(0.04)
             end
 
-            -- BLAZE UPGRADES
+            -- BLAZE UPGRADES (MULTI-KEY FALLBACK ENGINE)
             if _G.AutoBlazeMoreBlaze then
-                pcall(function() 
+                pcall(function()
                     NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze")
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "Blaze")
                     NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreBlaze")
                 end)
                 task.wait(0.04)
             end
 
             if _G.AutoBlazeMoreFire then
-                pcall(function() 
+                pcall(function()
                     NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire")
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "Fire")
                     NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreFire")
                 end)
                 task.wait(0.04)
             end
 
             if _G.AutoBlazeMoreOof then
-                pcall(function() 
+                pcall(function()
                     NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof")
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "Oof")
                     NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreOof")
                 end)
                 task.wait(0.04)
