@@ -294,32 +294,32 @@ task.spawn(function()
             if _G[FireItemMoreRebirth.F] then pcall(function() NetRemote:FireServer(FireItemMoreRebirth.T, unpack(FireItemMoreRebirth.A)) end) task.wait(0.08) end
             if _G[FireItemMoreBulk.F] then pcall(function() NetRemote:FireServer(FireItemMoreBulk.T, unpack(FireItemMoreBulk.A)) end) task.wait(0.08) end
             
-            -- NATIVE VIRTUAL TOUCH INTERFACE GENERATOR: Simulates real UI item selection loops safely
+            -- DIRECT SCREEN SPACE UI CLICK EMULATION: Finds the visual boxes and clicks them natively
             local pGui = player:FindFirstChild("PlayerGui")
             if pGui and Running then
                 if _G.AutoOpenT1Chest then
                     for _, desc in ipairs(pGui:GetDescendants()) do
                         if desc:IsA("TextLabel") and desc.Text == "T1 Trial Chest" then
-                            local mainButton = desc.Parent and desc.Parent:FindFirstChildWhichIsA("TextButton") or desc.Parent
-                            if mainButton and mainButton:IsA("TextButton") then
-                                -- Natively triggers the UI layout click code directly on your device screen
-                                pcall(function() vu:ClickButton1(Vector2.new(0,0), mainButton.AbsolutePosition) end)
-                            end
+                            -- Target the click frame directly on your mobile coordinates
+                            local clickTarget = desc.Parent:IsA("GuiObject") and desc.Parent or desc
+                            pcall(function() 
+                                game:GetService("VirtualUser"):ClickButton1(Vector2.new(clickTarget.AbsolutePosition.X + (clickTarget.AbsoluteSize.X / 2), clickTarget.AbsolutePosition.Y + (clickTarget.AbsoluteSize.Y / 2)))
+                            end)
                         end
                     end
-                    task.wait(0.1)
+                    task.wait(0.05)
                 end
                 
                 if _G.AutoOpenT2Chest then
                     for _, desc in ipairs(pGui:GetDescendants()) do
                         if desc:IsA("TextLabel") and desc.Text == "T2 Trial Chest" then
-                            local mainButton = desc.Parent and desc.Parent:FindFirstChildWhichIsA("TextButton") or desc.Parent
-                            if mainButton and mainButton:IsA("TextButton") then
-                                pcall(function() vu:ClickButton1(Vector2.new(0,0), mainButton.AbsolutePosition) end)
-                            end
+                            local clickTarget = desc.Parent:IsA("GuiObject") and desc.Parent or desc
+                            pcall(function() 
+                                game:GetService("VirtualUser"):ClickButton1(Vector2.new(clickTarget.AbsolutePosition.X + (clickTarget.AbsoluteSize.X / 2), clickTarget.AbsolutePosition.Y + (clickTarget.AbsoluteSize.Y / 2)))
+                            end)
                         end
                     end
-                    task.wait(0.1)
+                    task.wait(0.05)
                 end
             end
         end
