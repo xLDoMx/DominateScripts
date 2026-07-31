@@ -384,7 +384,9 @@ toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth,
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
-toggleBlazeMoreBlaze.MouseButton1Click:Connect(function3() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
+
+-- FIXED SYNTAX LAYER: Corrected "function3()" down to native "function()" execution handler
+toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
 toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
 toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
 
@@ -420,7 +422,7 @@ end
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
-tabChests.MouseButton1Click:Connect(function() mainRoute(chestsPage, tabChests) end) -- ROUTE MAP AtTACHMENT
+tabChests.MouseButton1Click:Connect(function() mainRoute(chestsPage, tabChests) end) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 function route(targetScroll)
@@ -463,3 +465,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
 end)
 
 print("PART 8 LOADED - DOMINATE HUB RUNNING COMPLETELY OPERATIONAL")
+
