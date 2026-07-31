@@ -276,16 +276,14 @@ task.spawn(function()
         end
     end
 end)
+
 --======================================================================================
--- DOMINATE HUB | PART 7B OF 8 (BRUTE-FORCE DATA AND TIMED CLOCKS CONVERTERS)
+-- DOMINATE HUB | PART 7B OF 8 (FIRE CORES AND NATIVE INTERFACE CLICK HELPERS)
 --======================================================================================
 local FireItemMoreFire    = {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}}
 local FireItemMoreOof     = {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}}
 local FireItemMoreRebirth = {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}}
 local FireItemMoreBulk    = {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
-
-local T1Variations = {"T1 Chest", "T1 Trial Chest", "T1Trial", "t1_trial", "t1_chest", "t1", "Trial1", "Trial Chest 1"}
-local T2Variations = {"T2 Chest", "T2 Trial Chest", "T2Trial", "t2_trial", "t2_chest", "t2", "Trial2", "Trial Chest 2"}
 
 task.spawn(function()
     while Running do
@@ -296,19 +294,33 @@ task.spawn(function()
             if _G[FireItemMoreRebirth.F] then pcall(function() NetRemote:FireServer(FireItemMoreRebirth.T, unpack(FireItemMoreRebirth.A)) end) task.wait(0.08) end
             if _G[FireItemMoreBulk.F] then pcall(function() NetRemote:FireServer(FireItemMoreBulk.T, unpack(FireItemMoreBulk.A)) end) task.wait(0.08) end
             
-            if _G.AutoOpenT1Chest and Running then
-                for v = 1, #T1Variations do
-                    if not Running or not _G.AutoOpenT1Chest then break end
-                    pcall(function() NetRemote:FireServer("OpenChest", T1Variations[v]) end) task.wait(0.05)
+            -- NATIVE VIRTUAL TOUCH INTERFACE GENERATOR: Simulates real UI item selection loops safely
+            local pGui = player:FindFirstChild("PlayerGui")
+            if pGui and Running then
+                if _G.AutoOpenT1Chest then
+                    for _, desc in ipairs(pGui:GetDescendants()) do
+                        if desc:IsA("TextLabel") and desc.Text == "T1 Trial Chest" then
+                            local mainButton = desc.Parent and desc.Parent:FindFirstChildWhichIsA("TextButton") or desc.Parent
+                            if mainButton and mainButton:IsA("TextButton") then
+                                -- Natively triggers the UI layout click code directly on your device screen
+                                pcall(function() vu:ClickButton1(Vector2.new(0,0), mainButton.AbsolutePosition) end)
+                            end
+                        end
+                    end
+                    task.wait(0.1)
                 end
-                task.wait(0.1)
-            end
-            if _G.AutoOpenT2Chest and Running then
-                for v = 1, #T2Variations do
-                    if not Running or not _G.AutoOpenT2Chest then break end
-                    pcall(function() NetRemote:FireServer("OpenChest", T2Variations[v]) end) task.wait(0.05)
+                
+                if _G.AutoOpenT2Chest then
+                    for _, desc in ipairs(pGui:GetDescendants()) do
+                        if desc:IsA("TextLabel") and desc.Text == "T2 Trial Chest" then
+                            local mainButton = desc.Parent and desc.Parent:FindFirstChildWhichIsA("TextButton") or desc.Parent
+                            if mainButton and mainButton:IsA("TextButton") then
+                                pcall(function() vu:ClickButton1(Vector2.new(0,0), mainButton.AbsolutePosition) end)
+                            end
+                        end
+                    end
+                    task.wait(0.1)
                 end
-                task.wait(0.1)
             end
         end
     end
@@ -366,7 +378,6 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
-
 
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (VERIFIED NATIVE BUTTON STATE CONNECTORS)
