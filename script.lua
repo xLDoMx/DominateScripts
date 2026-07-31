@@ -176,7 +176,7 @@ local function GetWorldRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (ISOLATED RUNTIME SAFETY QUEUE MATRIX)
+-- DOMINATE HUB | PART 7 OF 8 (ISOLATED FIRE THREADS PLATFORM MATRIX)
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
@@ -265,28 +265,35 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
 }
 
-local FireUpgradeQueue = {
-    {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}},
-    {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "Oof"}}, -- FIXED STRUCTURAL STRING: Corrected to "Oof"
-    {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
-    {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
-}
+-- Isolated Fire Action Layout Mappings
+local FireItemMoreFire    = {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}}
+local FireItemMoreOof     = {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}} -- STRUCTURAL ARGUMENT RESTORED
+local FireItemMoreRebirth = {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}}
+local FireItemMoreBulk    = {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
 
+-- THREAD A: Main Factory & Tycoon Sequential Queue Loop
 task.spawn(function()
     while Running do
-        task.wait(0.18)
+        task.wait(0.2)
         if NetRemote and Running then
             for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end
                 local item = PrimaryUpgradeQueue[i]
                 if _G[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.08) end
             end
-            task.wait(0.12)
-            for j = 1, #FireUpgradeQueue do
-                if not Running then break end
-                local item = FireUpgradeQueue[j]
-                if _G[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.08) end
-            end
+        end
+    end
+end)
+
+-- THREAD B: Fully Isolated DEDICATED FIRE UPGRADES Loop (Prevents packet collision and lockout)
+task.spawn(function()
+    while Running do
+        task.wait(0.25) -- Staggered interval ensures zero timing overlaps with Thread A
+        if NetRemote and Running then
+            if _G[FireItemMoreFire.F] then pcall(function() NetRemote:FireServer(FireItemMoreFire.T, unpack(FireItemMoreFire.A)) end) task.wait(0.08) end
+            if _G[FireItemMoreOof.F] then pcall(function() NetRemote:FireServer(FireItemMoreOof.T, unpack(FireItemMoreOof.A)) end) task.wait(0.08) end
+            if _G[FireItemMoreRebirth.F] then pcall(function() NetRemote:FireServer(FireItemMoreRebirth.T, unpack(FireItemMoreRebirth.A)) end) task.wait(0.08) end
+            if _G[FireItemMoreBulk.F] then pcall(function() NetRemote:FireServer(FireItemMoreBulk.T, unpack(FireItemMoreBulk.A)) end) task.wait(0.08) end
         end
     end
 end)
@@ -330,6 +337,7 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
