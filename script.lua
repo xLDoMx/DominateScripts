@@ -355,7 +355,7 @@ task.spawn(function()
     end
 end)
 --======================================================================================
--- DOMINATE HUB | PART 8 OF 8 (CLEAN BUTTON SIGNALS & LIFECYCLE CONNECTION MAP)
+-- DOMINATE HUB | PART 8 OF 8 (VERIFIED NATIVE BUTTON STATE CONNECTORS)
 --======================================================================================
 local function tStateV2(b, v) 
     _G[v] = not _G[v] 
@@ -376,7 +376,7 @@ toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "Auto
 toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
 
--- FIXED TRACKER LINK: Completely cleared out the malformed MouseButton1Connect property assignment typo
+-- NATIVE HOOK: Completely clean, error-free event click architecture mapping
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
@@ -463,6 +463,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 8 LOADED - ALL SYSTEM INTERACTION CORES OPERATIONAL")
-
-
+print("PART 8 LOADED - FRESH COMPILE OPERATIONAL")
