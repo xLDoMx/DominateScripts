@@ -229,7 +229,7 @@ task.spawn(function()
     end
 end)
 
--- PRIMARY UPGRADE REMOTE ENGINE
+-- PRIMARY UPGRADE REMOTE ENGINE (NOOBS / OOF / REBIRTH / CASH)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -261,30 +261,67 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED FIRE & BLAZE AUTO-UPGRADE ENGINE (QUEUE BASED)
+-- FIRE & BLAZE AUTO-UPGRADE ENGINE (DUAL METHOD FIRE LOGIC)
 task.spawn(function()
-    local fireQueue = {
-        {Flag = "AutoFireMoreFire",    Type = "Fire", Upgrade = "MoreFire"},
-        {Flag = "AutoFireMoreOof",     Type = "Fire", Upgrade = "MoreOof"},
-        {Flag = "AutoFireMoreRebirth", Type = "Fire", Upgrade = "MoreRebirth"},
-        {Flag = "AutoFireMoreBulk",    Type = "Fire", Upgrade = "MoreBulk"},
-        {Flag = "AutoBlazeMoreBlaze",  Type = "Blaze", Upgrade = "MoreBlaze"},
-        {Flag = "AutoBlazeMoreFire",   Type = "Blaze", Upgrade = "MoreFire"},
-        {Flag = "AutoBlazeMoreOof",    Type = "Blaze", Upgrade = "MoreOof"},
-    }
-
     while Running do
-        task.wait(0.2)
+        task.wait(0.25)
         if NetRemote and Running then
-            for i = 1, #fireQueue do
-                if not Running then break end
-                local item = fireQueue[i]
-                if _G[item.Flag] then
-                    pcall(function()
-                        NetRemote:FireServer("UpgradeUpgradeMax", item.Type, item.Upgrade)
-                    end)
-                    task.wait(0.03) -- Yield ensures each upgrade is registered individually by server
-                end
+            -- FIRE UPGRADES
+            if _G.AutoFireMoreOof then
+                pcall(function()
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof")
+                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreOof")
+                end)
+                task.wait(0.04)
+            end
+
+            if _G.AutoFireMoreRebirth then
+                pcall(function()
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth")
+                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreRebirth")
+                end)
+                task.wait(0.04)
+            end
+
+            if _G.AutoFireMoreBulk then
+                pcall(function()
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk")
+                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreBulk")
+                end)
+                task.wait(0.04)
+            end
+
+            if _G.AutoFireMoreFire then
+                pcall(function()
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire")
+                    NetRemote:FireServer("UpgradeUpgrade", "Fire", "MoreFire")
+                end)
+                task.wait(0.04)
+            end
+
+            -- BLAZE UPGRADES
+            if _G.AutoBlazeMoreBlaze then
+                pcall(function() 
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze")
+                    NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreBlaze")
+                end)
+                task.wait(0.04)
+            end
+
+            if _G.AutoBlazeMoreFire then
+                pcall(function() 
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire")
+                    NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreFire")
+                end)
+                task.wait(0.04)
+            end
+
+            if _G.AutoBlazeMoreOof then
+                pcall(function() 
+                    NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof")
+                    NetRemote:FireServer("UpgradeUpgrade", "Blaze", "MoreOof")
+                end)
+                task.wait(0.04)
             end
         end
     end
