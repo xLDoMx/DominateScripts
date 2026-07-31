@@ -274,17 +274,16 @@ task.spawn(function()
             if _G.AutoFireMoreRebirth then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end) end
             if _G.AutoFireMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end) end
             
-            -- DIRECT REMOTE CHEST OPENER ENGINE (MASS OPEN x10)
+            -- DIRECT REMOTE CHEST OPENER ENGINE (SERVER MAX BATCH: 7)
             if _G.AutoOpenT1Chest then
-                pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 7) end)
             end
             if _G.AutoOpenT2Chest then
-                pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 7) end)
             end
         end
     end
 end)
-
 -- PRESTIGE CHECKER LOOP
 task.spawn(function()
     while Running do
