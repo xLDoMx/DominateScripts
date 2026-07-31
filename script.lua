@@ -355,62 +355,59 @@ task.spawn(function()
     end
 end)
 --======================================================================================
--- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
+-- DOMINATE HUB | PART 8 OF 8 (ISOLATED CACHE OVERRIDE LAYER)
 --======================================================================================
-function tState(b, v) 
+local function tStateV2(b, v) 
     _G[v] = not _G[v] 
     b.Text = _G[v] and "ACTIVE" or "DISABLED" 
     b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
     b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
 end
 
-togglePharaoh.MouseButton1Click:Connect(function() tState(togglePharaoh, "AutoUpgradePharaoh") end) 
-toggleAFK.MouseButton1Click:Connect(function() tState(toggleAFK, "AntiAFK") end) 
-togglePrestige.MouseButton1Click:Connect(function() tState(togglePrestige, "AutoPrestige") end)
-toggleStarter.MouseButton1Click:Connect(function() tState(toggleStarter, "AutoUpgradeStarter") end) 
-toggleCooker.MouseButton1Click:Connect(function() tState(toggleCooker, "AutoUpgradeCooker") end) 
-toggleFarmer.MouseButton1Click:Connect(function() tState(toggleFarmer, "AutoUpgradeFarmer") end) 
-toggleMagician.MouseButton1Click:Connect(function() tState(toggleMagician, "AutoUpgradeMagician") end) 
-toggleArcher.MouseButton1Click:Connect(function() tState(toggleArcher, "AutoUpgradeArcher") end) 
-toggleSoldier.MouseButton1Click:Connect(function() tState(toggleSoldier, "AutoUpgradeSoldier") end) 
-toggleMoreOof.MouseButton1Click:Connect(function() tState(toggleMoreOof, "AutoUpgradeMoreOof") end) 
-toggleFasterNoobs.MouseButton1Click:Connect(function() tState(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
-toggleRebirthOof.MouseButton1Connect = toggleRebirthOof.MouseButton1Click:Connect(function() tState(toggleRebirthOof, "AutoRebirthMoreOof") end) 
-toggleRebirthRebirth.MouseButton1Click:Connect(function() tState(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
-toggleRebirthFire.MouseButton1Click:Connect(function() tState(toggleRebirthFire, "AutoRebirthMoreFire") end)
-toggleFireFire.MouseButton1Click:Connect(function() tState(toggleFireFire, "AutoFireMoreFire") end)
+togglePharaoh.MouseButton1Click:Connect(function() tStateV2(togglePharaoh, "AutoUpgradePharaoh") end) 
+toggleAFK.MouseButton1Click:Connect(function() tStateV2(toggleAFK, "AntiAFK") end) 
+togglePrestige.MouseButton1Click:Connect(function() tStateV2(togglePrestige, "AutoPrestige") end)
+toggleStarter.MouseButton1Click:Connect(function() tStateV2(toggleStarter, "AutoUpgradeStarter") end) 
+toggleCooker.MouseButton1Click:Connect(function() tStateV2(toggleCooker, "AutoUpgradeCooker") end) 
+toggleFarmer.MouseButton1Click:Connect(function() tStateV2(toggleFarmer, "AutoUpgradeFarmer") end) 
+toggleMagician.MouseButton1Click:Connect(function() tStateV2(toggleMagician, "AutoUpgradeMagician") end) 
+toggleArcher.MouseButton1Click:Connect(function() tStateV2(toggleArcher, "AutoUpgradeArcher") end) 
+toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "AutoUpgradeSoldier") end) 
+toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
+toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
+toggleRebirthOof.MouseButton1Connect = toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
+toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
+toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
+toggleFireFire.MouseButton1Click:Connect(function() tStateV2(toggleFireFire, "AutoFireMoreFire") end)
 toggleFireOof.MouseButton1Click:Connect(function() tState(toggleFireOof, "AutoFireMoreOof") end)
-toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth, "AutoFireMoreRebirth") end)
-toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
-toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
-toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
+toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirth, "AutoFireMoreRebirth") end)
+toggleFireBulk.MouseButton1Click:Connect(function() tStateV2(toggleFireBulk, "AutoFireMoreBulk") end)
+toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
+toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
 
--- FIXED SYNTAX LAYER: Corrected "function3()" down to native "function()" execution handler
-toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
-toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
-toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
+toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
+toggleBlazeMoreFire.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
+toggleBlazeMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
 
-toggleAutoFarmCash.MouseButton1Click:Connect(function() tState(toggleAutoFarmCash, "AutoFarmCash") end)
-toggleCashMoreCash.MouseButton1Click:Connect(function() tState(toggleCashMoreCash, "AutoUpgradeMoreCash") end)
-toggleCashFasterDropper.MouseButton1Click:Connect(function() tState(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
-toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tState(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
+toggleAutoFarmCash.MouseButton1Click:Connect(function() tStateV2(toggleAutoFarmCash, "AutoFarmCash") end)
+toggleCashMoreCash.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreCash, "AutoUpgradeMoreCash") end)
+toggleCashFasterDropper.MouseButton1Click:Connect(function() tStateV2(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
+toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
 
--- RUNES TOGGLE LINKED ASSET INTERACTIVE CONNECTORS
-toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tState(toggleRollBasicRuneCard, "AutoRollBasicRune") end)
-toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tState(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
-toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tState(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
-toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tState(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
+toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollBasicRuneCard, "AutoRollBasicRune") end)
+toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
+toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
+toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
 
--- NEW CHESTS INTERACTIVE MENU BUTTON LAYOUT ATTACHMENTS
-toggleOpenT1ChestCard.MouseButton1Click:Connect(function() tState(toggleOpenT1ChestCard, "AutoOpenT1Chest") end)
-toggleOpenT2ChestCard.MouseButton1Click:Connect(function() tState(toggleOpenT2ChestCard, "AutoOpenT2Chest") end)
+toggleOpenT1ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT1ChestCard, "AutoOpenT1Chest") end)
+toggleOpenT2ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT2ChestCard, "AutoOpenT2Chest") end)
 
 toggleKillSwitch.MouseButton1Click:Connect(function()
     Running = false 
     getgenv().DominateHubLoaded = nil 
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
     pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
-    print("[Dominate Hub] System Kill Switch Triggered. 100% of background automated loops terminated.")
+    print("[Dominate Hub] System Kill Switch Triggered. Loops closed.")
 end)
 
 function mainRoute(pOpen, bActive) 
@@ -464,5 +461,6 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 8 LOADED - DOMINATE HUB RUNNING COMPLETELY OPERATIONAL")
+print("PART 8 LOADED - CACHE OVERRIDE SUCCESSFUL")
+
 
