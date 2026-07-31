@@ -175,7 +175,7 @@ local function GetWorldRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (SANDBOXED RUNTIME SAFETY MATRIX)
+-- DOMINATE HUB | PART 7 OF 8 (UNIFIED LOCOMOTION & VERIFIED OPENING ENGINE)
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
@@ -265,6 +265,7 @@ local PrimaryUpgradeQueue = {
 }
 
 local FireItemMoreFire    = {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}}
+local FireItemMoreOof     = {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}}
 local FireItemMoreRebirth = {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}}
 local FireItemMoreBulk    = {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
 
@@ -286,11 +287,19 @@ task.spawn(function()
         task.wait(0.25)
         if NetRemote and Running then
             if _G[FireItemMoreFire.F] then pcall(function() NetRemote:FireServer(FireItemMoreFire.T, unpack(FireItemMoreFire.A)) end) task.wait(0.08) end
+            if _G[FireItemMoreOof.F] then pcall(function() NetRemote:FireServer(FireItemMoreOof.T, unpack(FireItemMoreOof.A)) end) task.wait(0.08) end
             if _G[FireItemMoreRebirth.F] then pcall(function() NetRemote:FireServer(FireItemMoreRebirth.T, unpack(FireItemMoreRebirth.A)) end) task.wait(0.08) end
             if _G[FireItemMoreBulk.F] then pcall(function() NetRemote:FireServer(FireItemMoreBulk.T, unpack(FireItemMoreBulk.A)) end) task.wait(0.08) end
             
-            if _G.AutoOpenT1Chest and Running then pcall(function() NetRemote:FireServer("OpenChest", "T1") end) task.wait(0.12) end
-            if _G.AutoOpenT2Chest and Running then pcall(function() NetRemote:FireServer("OpenChest", "T2") end) task.wait(0.12) end
+            -- HIGH-FIDELITY AUTOMATED CHEST DISPATCHERS: Utilizing verified server backend payload string keys
+            if _G.AutoOpenT1Chest and Running then
+                pcall(function() NetRemote:FireServer("OpenChest", "T1 Trial Chest") end)
+                task.wait(0.12)
+            end
+            if _G.AutoOpenT2Chest and Running then
+                pcall(function() NetRemote:FireServer("OpenChest", "T2 Trial Chest") end)
+                task.wait(0.12)
+            end
         end
     end
 end)
@@ -347,6 +356,7 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (VERIFIED NATIVE BUTTON STATE CONNECTORS)
 --======================================================================================
