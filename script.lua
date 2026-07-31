@@ -274,12 +274,12 @@ task.spawn(function()
             if _G.AutoFireMoreRebirth then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end) end
             if _G.AutoFireMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end) end
             
-            -- DIRECT REMOTE CHEST OPENER ENGINE (BYPASSES ANIMATIONS & UI CLICKS)
+            -- DIRECT REMOTE CHEST OPENER ENGINE (MASS OPEN x10)
             if _G.AutoOpenT1Chest then
-                pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 1) end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end)
             end
             if _G.AutoOpenT2Chest then
-                pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 1) end)
+                pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end)
             end
         end
     end
