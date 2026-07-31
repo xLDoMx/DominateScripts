@@ -176,17 +176,17 @@ local function GetWorldRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (UNIFIED MOVEMENT & SAFETY QUEUE ENGINE)
+-- DOMINATE HUB | PART 7 OF 8 (UNIFIED POSITIONING & UP-VALUE POINTER ENGINE)
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
+local CachedPrestigeLabel = nil -- MEMORY INSTANCE CACHE: Eradicates tree-crawling UI loop lag entirely
 
 local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1510009765625)
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
 
--- SOVEREIGN POSITION CONTROLLER 
 task.spawn(function()
     while Running do
         task.wait(CurrentLoopStateSleep and 1.0 or 0.1)
@@ -214,7 +214,6 @@ task.spawn(function()
     end
 end)
 
--- UNBROKEN STEP ACTIVE BATCH TYCOON SWEEPER ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -279,12 +278,11 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED SEQUENTIAL UPGRADE ENGINE: Steps through active upgrades one by one to eliminate remote packet drops
 local UpgradeQueueList = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
     {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}},
-    {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}},
+    {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magnet"}},
     {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    A = {"Archer"}},
     {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    A = {"Soldier"}},
     {F = "AutoUpgradePharaoh",    T = "UpgradeNoobMax",    A = {"Pharaoh"}},
@@ -297,7 +295,6 @@ local UpgradeQueueList = {
     {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}},
     {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
     {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}},
-    {F = "AutoBuildFire",         T = "UpgradeUpgradeMax", A = {"Fire", "AutoBuildFire"}}, -- REBIF/FIRE PATCH LINKED
     {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
     {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
     {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}},
@@ -308,46 +305,49 @@ local UpgradeQueueList = {
 
 task.spawn(function()
     while Running do
-        task.wait(0.15) -- Safe structural pace window ensures zero anti-cheat spam flags trigger [1]
+        task.wait(0.15) 
         if NetRemote and Running then
             for i = 1, #UpgradeQueueList do
                 if not Running then break end
                 local item = UpgradeQueueList[i]
-                
-                -- Check if this specific upgrade toggle is enabled by the player
                 if _G[item.F] then
-                    pcall(function() 
-                        NetRemote:FireServer(item.T, unpack(item.A)) 
-                    end)
-                    task.wait(0.08) -- Padded micro-gap prevents the server from dropping subsequent parameters [1]
+                    pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end)
+                    task.wait(0.08) 
                 end
             end
         end
     end
-    print("[Dominate Hub] Sequential Upgrade Engine safely closed.")
 end)
 
--- AUTO SCREENSPACE PRESTIGE MONITOR THREAD
+-- ZERO-LAG AUTO PRESTIGE POINTER SYSTEM
 task.spawn(function()
     while Running do
         task.wait(1)
         if _G.AutoPrestige and NetRemote and Running then
             local pGui = player:FindFirstChild("PlayerGui")
-            local foundEligibleText = false
-            if pGui then
-                for _, desc in ipairs(pGui:GetDescendants()) do
-                    if desc:IsA("TextLabel") then
-                        local text = desc.Text:lower()
-                        if text:find("prestige") and (text:find("can") or text:find("ready") or text:find("now") or text:find("click") or desc.TextColor3.G > 0.7) then
-                            if not text:find("progress") then foundEligibleText = true; break end
+            if pGui and Running then
+                -- INITIAL PRE-CACHE PASS: Locates the object memory address exactly once
+                if not CachedPrestigeLabel or not CachedPrestigeLabel.Parent then
+                    for _, desc in ipairs(pGui:GetDescendants()) do
+                        if desc:IsA("TextLabel") and desc.Text:lower():find("progress for prestige") then
+                            CachedPrestigeLabel = desc
+                            print("[Dominate Hub] Prestige box memory address successfully pre-cached and isolated!")
+                            break
                         end
                     end
                 end
-            end
-            if foundEligibleText and Running then
-                print("[Dominate Hub] Prestige criteria verified. Firing reset remote.")
-                pcall(function() NetRemote:FireServer("Prestige") end)
-                task.wait(5) 
+                
+                -- HARD-POINT READ EVALUATION: Instantly checks values without crawling your UI tree
+                if CachedPrestigeLabel and CachedPrestigeLabel.Parent then
+                    local text = CachedPrestigeLabel.Text:lower()
+                    if text:find("prestige") and (text:find("can") or text:find("ready") or text:find("now") or text:find("click") or CachedPrestigeLabel.TextColor3.G > 0.7) then
+                        if not text:find("progress") then
+                            print("[Dominate Hub] Prestige condition unlocked via hardcache up-value pointer. Resresetting world...")
+                            pcall(function() NetRemote:FireServer("Prestige") end)
+                            task.wait(5)
+                        end
+                    end
+                end
             end
         end
     end
@@ -368,6 +368,7 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 --======================================================================================
 -- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
 --======================================================================================
