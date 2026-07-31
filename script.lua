@@ -142,25 +142,26 @@ local function GetWorldRoot()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (PURE TIMED PAD SWEEPER LOCOMOTION ROUTINE)
+-- DOMINATE HUB | PART 7 OF 8 (DYNAMIC ACTIVE-CHAIN SWEEPER ENGINE)
 --======================================================================================
-local MasterTargetCFrame = nil  -- SOVEREIGN COORDINATE ANCHOR: The absolute singular driver for player positioning
+local MasterTargetVector = nil  -- Singular source of truth coordinate anchor
 
--- THE MASTER POSITION WRITER THREAD: Zero position overwrites or conveyor fight overlap risks
+-- THE SOVEREIGN POSITION更新 THREAD: Eliminates CFrame wars completely
 task.spawn(function()
     while true do
         task.wait(0.1)
         if _G.AutoFarmCash then
             local hrp = GetWorldRoot()
-            -- Only update the player's CFrame when the batch sweeper has an active target pad destination queued up
-            if hrp and MasterTargetCFrame then
-                hrp.CFrame = MasterTargetCFrame
+            if hrp and MasterTargetVector then
+                if (hrp.Position - MasterTargetVector).Magnitude > 5 then
+                    hrp.CFrame = CFrame.new(MasterTargetVector)
+                end
             end
         end
     end
 end)
 
--- PURE BLIND BATCH SWEEPER ENGINE: Walks down your tycoon shelf exactly once every 5 minutes
+-- DYNAMIC ACTIVE-CHAIN LOOP ENGINE: Chains purchases continuously until running out of affordable options
 task.spawn(function()
     while true do
         task.wait(0.5)
@@ -171,40 +172,68 @@ task.spawn(function()
             local buttonsFolder = tycoon and tycoon:FindFirstChild("Buttons")
             
             if buttonsFolder then
-                local currentButtons = buttonsFolder:GetChildren()
-                print("[Dominate Hub] Initiating passive batch tycoon shelf sweep pass...")
+                local roundLockedPads = {} -- Temporary bucket tracks unaffordable pads for this specific pass
+                local madePurchaseThisRound = false
                 
-                for i = 1, #currentButtons do
-                    local btnModel = currentButtons[i]
-                    if not _G.AutoFarmCash then break end
+                -- Keep checking the folder continuously as long as affordable options exist
+                repeat
+                    local visibleButtons = buttonsFolder:GetChildren()
+                    local attemptedAPadThisPass = false
                     
-                    if btnModel and btnModel:IsA("Model") then
-                        local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
+                    for i = 1, #visibleButtons do
+                        local btnModel = visibleButtons[i]
+                        if not _G.AutoFarmCash then break end
                         
-                        if targetBuyPart and targetBuyPart:IsA("BasePart") then
-                            -- Securely lock your position straight onto the button part plane surface
-                            MasterTargetCFrame = CFrame.new(targetBuyPart.Position + Vector3.new(0, 3, 0))
-                            task.wait(0.35) -- Stable physical touch window duration
+                        -- Skip this pad if we already verified we cannot afford it during this sweep sequence
+                        if btnModel and btnModel:IsA("Model") and not roundLockedPads[btnModel.Name] then
+                            local targetBuyPart = btnModel:FindFirstChild("BuyingButtonPart", true)
+                            
+                            if targetBuyPart and targetBuyPart:IsA("BasePart") then
+                                attemptedAPadThisPass = true
+                                MasterTargetVector = targetBuyPart.Position + Vector3.new(0, 3, 0)
+                                task.wait(0.4) -- Stable touch and replication delay window
+                                
+                                -- VERIFICATION CHECK: See if the pad is still alive after being stepped on
+                                if btnModel:IsDescendantOf(buttonsFolder) then
+                                    -- Button is still there: You can't afford it. Lock it out for the rest of this round.
+                                    roundLockedPads[btnModel.Name] = true
+                                    MasterTargetVector = nil
+                                    task.wait(0.05)
+                                else
+                                    -- Button vanished: Purchase successful! Clear target and instantly re-run the loop tree
+                                    madePurchaseThisRound = true
+                                    print("[Dominate Hub] Purchase successful! Chain-targeting next available pad: " .. tostring(btnModel.Name))
+                                    MasterTargetVector = nil
+                                    task.wait(0.1)
+                                    break -- Break the current 'for' loop to refresh the folder array snapshot back-to-back
+                                end
+                            end
                         end
                     end
-                end
+                    
+                    -- If we ran through the entire folder snapshot and couldn't even attempt a single new pad, exit the chain
+                    if not attemptedAPadThisPass or not _G.AutoFarmCash then
+                        break
+                    end
+                    task.wait(0.1)
+                until false
                 
-                -- ENTER DEEP PASSIVE DORMANT SLEEP: Disconnect target frames to sit completely still on the final pad
-                MasterTargetCFrame = nil
-                print("[Dominate Hub] Batch pass complete. Resting peacefully on the last button for 5 minutes...")
+                -- ENTER HARVEST BLOCK: Safe to sleep only after checking every single pad and buying everything possible
+                MasterTargetVector = nil
+                print("[Dominate Hub] Active factory sweep pass complete. Harvesting capital for 5 minutes...")
                 
-                local sleepEndTime = tick() + 300 -- 5 minutes * 60 seconds loop delay
+                local sleepEndTime = tick() + 300 -- 5-minute countdown duration gate
                 repeat 
                     task.wait(1) 
                 until tick() >= sleepEndTime or not _G.AutoFarmCash
                 
-                print("[Dominate Hub] 5 minutes over. Re-initiating active tycoon factory sweep.")
+                print("[Dominate Hub] 5 minutes concluded. Initializing next active factory sweep sequence.")
             else
-                MasterTargetCFrame = nil
+                MasterTargetVector = nil
                 task.wait(2)
             end
         else
-            MasterTargetCFrame = nil
+            MasterTargetVector = nil
             task.wait(1)
         end
     end
@@ -262,8 +291,9 @@ task.spawn(function()
         else secondsElapsed = 0 end
     end
 end)
+
 --======================================================================================
--- DOMINATE HUB | PART 8 OF 8 (SIGNALS INTERACTIVE TOGGLES MAPPING FRAMEWORKS)
+-- DOMINATE HUB | PART 8 OF 8 (CORRECTED BLAZE BUTTON INTERACTIVE MAPPINGS)
 --======================================================================================
 function tState(b, v) 
     _G[v] = not _G[v] 
@@ -292,7 +322,12 @@ toggleFireRebirth.MouseButton1Click:Connect(function() tState(toggleFireRebirth,
 toggleFireBulk.MouseButton1Click:Connect(function() tState(toggleFireBulk, "AutoFireMoreBulk") end)
 toggleBuildFire.MouseButton1Click:Connect(function() tState(toggleBuildFire, "AutoBuildFire") end)
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tState(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
+
+-- FIXED VARIABLE REGISTER INTERFACE CONNECTORS: Corrected maps unlock toggle activations instantly
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tState(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
+toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tState(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
+toggleBlazeMoreFire.MouseButton1Click:Connect(function() tState(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
+toggleBlazeMoreOof.MouseButton1Click:Connect(function() tState(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
 
 toggleAutoFarmCash.MouseButton1Click:Connect(function() tState(toggleAutoFarmCash, "AutoFarmCash") end)
 toggleCashMoreCash.MouseButton1Click:Connect(function() tState(toggleCashMoreCash, "AutoUpgradeMoreCash") end)
@@ -353,4 +388,5 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("PART 8 LOADED - PASSIVE BATCH HARVEST MATRIX OPERATIONAL")
+print("PART 8 LOADED - DOMINATE HUB RUNNING COMPLETELY OPERATIONAL")
+
