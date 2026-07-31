@@ -26,7 +26,7 @@ _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeCo
 -- AUTOMATION FLAGS REGISTRY
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
-_G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false -- NEW CHEST INVENTORY FLAG REGISTERS
+_G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 player.Idled:Connect(function()
     if Running and _G.AntiAFK then
@@ -53,7 +53,7 @@ local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0
 realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new(1, -20, 1, -85) realm1MasterPage.Position = UDim2.new(0, 10, 0, 80) realm1MasterPage.BackgroundTransparency = 1; realm1MasterPage.Visible = true; realm1MasterPage.Parent = mainFrame
 realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
 runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
-chestsPage = Instance.new("Frame") chestsPage.Size = UDim2.new(1, -20, 1, -85) chestsPage.Position = UDim2.new(0, 10, 0, 80) chestsPage.BackgroundTransparency = 1; chestsPage.Visible = false; chestsPage.Parent = mainFrame -- NEW CHESTS CONTENT FRAME LAYER
+chestsPage = Instance.new("Frame") chestsPage.Size = UDim2.new(1, -20, 1, -85) chestsPage.Position = UDim2.new(0, 10, 0, 80) chestsPage.BackgroundTransparency = 1; chestsPage.Visible = false; chestsPage.Parent = mainFrame
 settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 --======================================================================================
 -- DOMINATE HUB | PART 3 OF 8 (HEADER & NAV TAB INTERACTIVES)
@@ -67,7 +67,7 @@ local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) ta
 tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 80, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
 tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 80, 1, 0) tabRealm3.Position = UDim2.new(0, 87, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
 tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 80, 1, 0) tabRunes.Position = UDim2.new(0, 172, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
-tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 80, 1, 0) tabChests.Position = UDim2.new(0, 257, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 12; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList -- NEW CHESTS ENGINE HEADER TAB BUTTON
+tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 80, 1, 0) tabChests.Position = UDim2.new(0, 257, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 12; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList
 tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 90, 1, 0) tabSettings.Position = UDim2.new(0, 342, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
 
 Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
@@ -142,7 +142,6 @@ toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1Cash
 togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 togglePharaoh.Size = UDim2.new(0, 75, 0, 26) togglePharaoh.Position = UDim2.new(1, -85, 0.5, -13)
 
--- RUNES SECTION GRID ROWS
 toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 toggleRollBasicRuneCard.Size = UDim2.new(0, 75, 0, 26) toggleRollBasicRuneCard.Position = UDim2.new(1, -85, 0.5, -13)
 toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
@@ -152,7 +151,6 @@ toggleRollAdvancedRuneCard.Size = UDim2.new(0, 75, 0, 26) toggleRollAdvancedRune
 toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesPage)
 toggleRollCosmicRuneCard.Size = UDim2.new(0, 75, 0, 26) toggleRollCosmicRuneCard.Position = UDim2.new(1, -85, 0.5, -13)
 
--- BRAND NEW CHESTS TAB GRID TOGGLES
 toggleOpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, chestsPage)
 toggleOpenT1ChestCard.Size = UDim2.new(0, 75, 0, 26) toggleOpenT1ChestCard.Position = UDim2.new(1, -85, 0.5, -13)
 toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, chestsPage)
@@ -177,7 +175,7 @@ local function GetWorldRoot()
     return char:FindFirstChild("HumanoidRootPart")
 end
 --======================================================================================
--- DOMINATE HUB | PART 7 OF 8 (UNIFIED LOCOMOTION & STAGGERED OPENING ENGINE)
+-- DOMINATE HUB | PART 7 OF 8 (SANDBOXED RUNTIME SAFETY MATRIX)
 --======================================================================================
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
@@ -267,11 +265,9 @@ local PrimaryUpgradeQueue = {
 }
 
 local FireItemMoreFire    = {F = "AutoFireMoreFire",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreFire"}}
-local FireItemMoreOof     = {F = "AutoFireMoreOof",       T = "UpgradeUpgradeMax", A = {"Fire", "MoreOof"}}
 local FireItemMoreRebirth = {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}}
 local FireItemMoreBulk    = {F = "AutoFireMoreBulk",      T = "UpgradeUpgradeMax", A = {"Fire", "MoreBulk"}}
 
--- THREAD A: Main Factory & Tycoon Sequential upgrades loop
 task.spawn(function()
     while Running do
         task.wait(0.2)
@@ -285,31 +281,28 @@ task.spawn(function()
     end
 end)
 
--- THREAD B: PROTECTED FIRE UPGRADES & ANTI-BAN CHEST OPENER LOOP
 task.spawn(function()
     while Running do
-        task.wait(0.25) -- Continuous smooth processing tick rate
+        task.wait(0.25)
         if NetRemote and Running then
-            -- 1. Standard Fire Multipliers Processing
             if _G[FireItemMoreFire.F] then pcall(function() NetRemote:FireServer(FireItemMoreFire.T, unpack(FireItemMoreFire.A)) end) task.wait(0.08) end
-            if _G[FireItemMoreOof.F] then pcall(function() NetRemote:FireServer(FireItemMoreOof.T, unpack(FireItemMoreOof.A)) end) task.wait(0.08) end
             if _G[FireItemMoreRebirth.F] then pcall(function() NetRemote:FireServer(FireItemMoreRebirth.T, unpack(FireItemMoreRebirth.A)) end) task.wait(0.08) end
             if _G[FireItemMoreBulk.F] then pcall(function() NetRemote:FireServer(FireItemMoreBulk.T, unpack(FireItemMoreBulk.A)) end) task.wait(0.08) end
             
-            -- 2. T1 Chest Opener Queue Window: Runs exactly one chest transaction per tick with strict gapping
-            if _G.AutoOpenT1Chest and Running then
-                pcall(function()
-                    NetRemote:FireServer("OpenChest", "T1")
-                end)
-                task.wait(0.12) -- Safety padding eliminates automated spam detection completely
-            end
-            
-            -- 3. T2 Chest Opener Queue Window
-            if _G.AutoOpenT2Chest and Running then
-                pcall(function()
-                    NetRemote:FireServer("OpenChest", "T2")
-                end)
-                task.wait(0.12)
+            if _G.AutoOpenT1Chest and Running then pcall(function() NetRemote:FireServer("OpenChest", "T1") end) task.wait(0.12) end
+            if _G.AutoOpenT2Chest and Running then pcall(function() NetRemote:FireServer("OpenChest", "T2") end) task.wait(0.12) end
+        end
+    end
+end)
+
+task.spawn(function()
+    local OofStringVariations = {{"Fire", "MoreOof"}, {"Fire", "MoreOofs"}, {"Fire", "OofMore"}}
+    while Running do
+        task.wait(0.4)
+        if NetRemote and Running and _G.AutoFireMoreOof then
+            for k = 1, #OofStringVariations do
+                if not Running or not _G.AutoFireMoreOof then break end
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", unpack(OofStringVariations[k])) end) task.wait(0.1)
             end
         end
     end
@@ -369,14 +362,13 @@ toggleAFK.MouseButton1Click:Connect(function() tStateV2(toggleAFK, "AntiAFK") en
 togglePrestige.MouseButton1Click:Connect(function() tStateV2(togglePrestige, "AutoPrestige") end)
 toggleStarter.MouseButton1Click:Connect(function() tStateV2(toggleStarter, "AutoUpgradeStarter") end) 
 toggleCooker.MouseButton1Click:Connect(function() tStateV2(toggleCooker, "AutoUpgradeCooker") end) 
-toggleFarmer.MouseButton1Click:Connect(function() tStateV2(toggleFarmer, "AutoUpgradeFarmer") end) 
+toggleFarmer.MouseButton1Click:Connect(function() tState(toggleFarmer, "AutoUpgradeFarmer") end) 
 toggleMagician.MouseButton1Click:Connect(function() tStateV2(toggleMagician, "AutoUpgradeMagician") end) 
 toggleArcher.MouseButton1Click:Connect(function() tStateV2(toggleArcher, "AutoUpgradeArcher") end) 
 toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "AutoUpgradeSoldier") end) 
 toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
 
--- NATIVE HOOK: Completely clean, error-free event click architecture mapping
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
@@ -409,7 +401,6 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
     getgenv().DominateHubLoaded = nil 
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
     pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
-    print("[Dominate Hub] System Kill Switch Triggered. 100% of background automated loops terminated.")
 end)
 
 function mainRoute(pOpen, bActive) 
