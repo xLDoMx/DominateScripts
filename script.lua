@@ -234,7 +234,7 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
     {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}},
-    {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}}, -- Fixed argument name from Magnet to Magician
+    {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}},
     {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    A = {"Archer"}},
     {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    A = {"Soldier"}},
     {F = "AutoUpgradePharaoh",    T = "UpgradeNoobMax",    A = {"Pharaoh"}},
@@ -243,9 +243,6 @@ local PrimaryUpgradeQueue = {
     {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
     {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
     {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
-    {F = "AutoBlazeMoreBlaze",    T = "UpgradeUpgradeMax", A = {"Blaze", "MoreBlaze"}},
-    {F = "AutoBlazeMoreFire",     T = "UpgradeUpgradeMax", A = {"Blaze", "MoreFire"}},
-    {F = "AutoBlazeMoreOof",      T = "UpgradeUpgradeMax", A = {"Blaze", "MoreOof"}},
     {F = "AutoUpgradeMoreCash",   T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
     {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
@@ -258,38 +255,56 @@ task.spawn(function()
             for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end
                 local item = PrimaryUpgradeQueue[i]
-                if _G[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.08) end
+                if _G[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.05) end
             end
         end
     end
 end)
 
---======================================================================================
--- DOMINATE HUB | PART 3 OF 4 (FIXED BULK CHEST REMOTE ENGINE)
---======================================================================================
+-- DEDICATED FIRE & BLAZE AUTO-UPGRADE ENGINE (QUEUE BASED)
+task.spawn(function()
+    local fireQueue = {
+        {Flag = "AutoFireMoreFire",    Type = "Fire", Upgrade = "MoreFire"},
+        {Flag = "AutoFireMoreOof",     Type = "Fire", Upgrade = "MoreOof"},
+        {Flag = "AutoFireMoreRebirth", Type = "Fire", Upgrade = "MoreRebirth"},
+        {Flag = "AutoFireMoreBulk",    Type = "Fire", Upgrade = "MoreBulk"},
+        {Flag = "AutoBlazeMoreBlaze",  Type = "Blaze", Upgrade = "MoreBlaze"},
+        {Flag = "AutoBlazeMoreFire",   Type = "Blaze", Upgrade = "MoreFire"},
+        {Flag = "AutoBlazeMoreOof",    Type = "Blaze", Upgrade = "MoreOof"},
+    }
+
+    while Running do
+        task.wait(0.2)
+        if NetRemote and Running then
+            for i = 1, #fireQueue do
+                if not Running then break end
+                local item = fireQueue[i]
+                if _G[item.Flag] then
+                    pcall(function()
+                        NetRemote:FireServer("UpgradeUpgradeMax", item.Type, item.Upgrade)
+                    end)
+                    task.wait(0.03) -- Yield ensures each upgrade is registered individually by server
+                end
+            end
+        end
+    end
+end)
+
+-- DIRECT REMOTE CHEST OPENER ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.3) -- Moderate pacing to let server clear debounces
+        task.wait(0.3)
         if NetRemote and Running then
-            -- 1. Standard Upgrades
-            if _G.AutoFireMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreFire") end) end
-            if _G.AutoFireMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreOof") end) end
-            if _G.AutoFireMoreRebirth then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreRebirth") end) end
-            if _G.AutoFireMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Fire", "MoreBulk") end) end
-            
-            -- 2. T1 Chest Opening
             if _G.AutoOpenT1Chest then
                 pcall(function()
-                    -- Fire 7 times with tiny spacing to bypass server debounce rate limits
                     for i = 1, 7 do
                         if not Running or not _G.AutoOpenT1Chest then break end
                         NetRemote:FireServer("OpenChest", "T1TrialChest", 10)
-                        task.wait(0.04) -- Critical delay so server registers each call
+                        task.wait(0.04)
                     end
                 end)
             end
 
-            -- 3. T2 Chest Opening
             if _G.AutoOpenT2Chest then
                 pcall(function()
                     for i = 1, 7 do
@@ -302,6 +317,7 @@ task.spawn(function()
         end
     end
 end)
+
 -- PRESTIGE CHECKER LOOP
 task.spawn(function()
     while Running do
@@ -358,7 +374,7 @@ toggleAFK.MouseButton1Click:Connect(function() tStateV2(toggleAFK, "AntiAFK") en
 togglePrestige.MouseButton1Click:Connect(function() tStateV2(togglePrestige, "AutoPrestige") end)
 toggleStarter.MouseButton1Click:Connect(function() tStateV2(toggleStarter, "AutoUpgradeStarter") end) 
 toggleCooker.MouseButton1Click:Connect(function() tStateV2(toggleCooker, "AutoUpgradeCooker") end) 
-toggleFarmer.MouseButton1Click:Connect(function() tStateV2(toggleFarmer, "AutoUpgradeFarmer") end) -- Fixed tState typo
+toggleFarmer.MouseButton1Click:Connect(function() tStateV2(toggleFarmer, "AutoUpgradeFarmer") end) 
 toggleMagician.MouseButton1Click:Connect(function() tStateV2(toggleMagician, "AutoUpgradeMagician") end) 
 toggleArcher.MouseButton1Click:Connect(function() tStateV2(toggleArcher, "AutoUpgradeArcher") end) 
 toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "AutoUpgradeSoldier") end) 
