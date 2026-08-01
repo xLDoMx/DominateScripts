@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (CORRECTED AUTO KICK ARGUMENTS)
+-- DOMINATE HUB | FULL SCRIPT (TYPO FIXED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -10,6 +10,7 @@ getgenv().DominateHubLoaded = true
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 local Running = true
 local player = Players.LocalPlayer
@@ -321,7 +322,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE (WITH CORRECTED "AutoKick" ARGUMENT)
+-- UNIFIED PRIMARY UPGRADE QUEUE
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -691,11 +692,11 @@ mainFrame.InputBegan:Connect(function(input)
     end
 end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
-game:nested = game:GetService("UserInputService").InputChanged:Connect(function(input)
+UserInputService.InputChanged:Connect(function(input)
     if input == dragInput and dragging then
         local delta = input.Position - dragStart
         mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
 
-print("[Dominate Hub] Auto Kick Argument Corrected!")
+print("[Dominate Hub] Typo Fixed & Loaded Successfully!")
