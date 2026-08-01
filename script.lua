@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (HACKER NOOBS 1 TO 6 EXPANDED)
+-- DOMINATE HUB | FULL SCRIPT (ATTACKINGMID, GOALKEEPER & STRIKER FOOTBALL NOOBS ADDED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -24,8 +24,27 @@ _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
 
--- HACKER NOOBS AUTOMATION FLAGS (Hacker 1 through 6)
+-- HACKER NOOBS AUTOMATION FLAGS
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4, _G.AutoUpgradeHacker5, _G.AutoUpgradeHacker6 = false, false, false, false, false, false
+
+-- FOOTBALL & GOALS AUTOMATION FLAGS
+_G.AutoScoreGoal = false
+_G.AutoGoalsMoreGoals = false
+_G.AutoGoalsRuneBulk = false
+_G.AutoGoalsRuneLuck = false
+_G.AutoFootballAutoKicker = false
+
+-- FOOTBALL POSITIONS AUTOMATION FLAGS (UPDATED WITH GOALKEEPER & STRIKER)
+_G.AutoUpgradeAttackingMid = false
+_G.AutoUpgradeGoalkeeper = false
+_G.AutoUpgradeStriker = false
+_G.AutoUpgradeLeftCenterBack = false
+_G.AutoUpgradeLeftDefensiveMid = false
+_G.AutoUpgradeLeftWing = false
+_G.AutoUpgradeRightBack = false
+_G.AutoUpgradeRightCenterBack = false
+_G.AutoUpgradeRightDefensiveMid = false
+_G.AutoUpgradeRightWing = false
 
 -- BREAD & ANIMAL AUTOMATION FLAGS
 _G.AutoBreadMoreBread, _G.AutoBreadMoreBread2, _G.AutoBreadMoreWheat, _G.AutoBreadBiggerWheatDeposit, _G.AutoDepositWheat = false, false, false, false, false
@@ -63,6 +82,8 @@ local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0
 
 local realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new(1, -20, 1, -85) realm1MasterPage.Position = UDim2.new(0, 10, 0, 80) realm1MasterPage.BackgroundTransparency = 1; realm1MasterPage.Visible = true; realm1MasterPage.Parent = mainFrame
 local realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
+local hackerPage = Instance.new("Frame") hackerPage.Size = UDim2.new(1, -20, 1, -85) hackerPage.Position = UDim2.new(0, 10, 0, 80) hackerPage.BackgroundTransparency = 1; hackerPage.Visible = false; hackerPage.Parent = mainFrame
+local footballPage = Instance.new("Frame") footballPage.Size = UDim2.new(1, -20, 1, -85) footballPage.Position = UDim2.new(0, 10, 0, 80) footballPage.BackgroundTransparency = 1; footballPage.Visible = false; footballPage.Parent = mainFrame
 local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
 local chestsPage = Instance.new("Frame") chestsPage.Size = UDim2.new(1, -20, 1, -85) chestsPage.Position = UDim2.new(0, 10, 0, 80) chestsPage.BackgroundTransparency = 1; chestsPage.Visible = false; chestsPage.Parent = mainFrame
 local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
@@ -74,14 +95,15 @@ local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) 
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
-local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 68, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
-local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 68, 1, 0) tabRealm3.Position = UDim2.new(0, 73, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-local tabHacker = Instance.new("TextButton") tabHacker.Size = UDim2.new(0, 68, 1, 0) tabHacker.Position = UDim2.new(0, 144, 0, 0) tabHacker.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabHacker.TextColor3 = Color3.fromRGB(170, 170, 170) tabHacker.TextSize = 11; tabHacker.Font = Enum.Font.SourceSansBold; tabHacker.Text = "Hacker" tabHacker.Parent = tabList
-local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 68, 1, 0) tabRunes.Position = UDim2.new(0, 215, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
-local tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 68, 1, 0) tabChests.Position = UDim2.new(0, 286, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 11; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList
-local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 78, 1, 0) tabSettings.Position = UDim2.new(0, 357, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 60, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 60, 1, 0) tabRealm3.Position = UDim2.new(0, 64, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+local tabHacker = Instance.new("TextButton") tabHacker.Size = UDim2.new(0, 60, 1, 0) tabHacker.Position = UDim2.new(0, 126, 0, 0) tabHacker.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabHacker.TextColor3 = Color3.fromRGB(170, 170, 170) tabHacker.TextSize = 11; tabHacker.Font = Enum.Font.SourceSansBold; tabHacker.Text = "Hacker" tabHacker.Parent = tabList
+local tabFootball = Instance.new("TextButton") tabFootball.Size = UDim2.new(0, 65, 1, 0) tabFootball.Position = UDim2.new(0, 188, 0, 0) tabFootball.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabFootball.TextColor3 = Color3.fromRGB(170, 170, 170) tabFootball.TextSize = 11; tabFootball.Font = Enum.Font.SourceSansBold; tabFootball.Text = "Football" tabFootball.Parent = tabList
+local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tabRunes.Position = UDim2.new(0, 255, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+local tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 60, 1, 0) tabChests.Position = UDim2.new(0, 317, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 11; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList
+local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 68, 1, 0) tabSettings.Position = UDim2.new(0, 380, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
 
-Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabHacker).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabHacker).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabFootball).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
 
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 45, 1, 0) subBtnNoobs.Position = UDim2.new(0, 0, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
@@ -94,16 +116,27 @@ local subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 85,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBread).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
 
-local function makeScroll(canvas) 
-    local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = realm1MasterPage return s 
+-- FOOTBALL SUB-TABS (Noobs vs Upgrades)
+local footballSubTabList = Instance.new("Frame") footballSubTabList.Size = UDim2.new(1, 0, 0, 25) footballSubTabList.Position = UDim2.new(0, 0, 0, 0) footballSubTabList.BackgroundTransparency = 1; footballSubTabList.Parent = footballPage
+local footballSubBtnNoobs = Instance.new("TextButton") footballSubBtnNoobs.Size = UDim2.new(0, 110, 1, 0) footballSubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) footballSubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) footballSubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) footballSubBtnNoobs.TextSize = 11; footballSubBtnNoobs.Font = Enum.Font.SourceSansBold; footballSubBtnNoobs.Text = "Football Noobs" footballSubBtnNoobs.Parent = footballSubTabList
+local footballSubBtnUpgrades = Instance.new("TextButton") footballSubBtnUpgrades.Size = UDim2.new(0, 130, 1, 0) footballSubBtnUpgrades.Position = UDim2.new(0, 115, 0, 0) footballSubBtnUpgrades.BackgroundColor3 = Color3.fromRGB(45, 45, 45) footballSubBtnUpgrades.TextColor3 = Color3.fromRGB(170, 170, 170) footballSubBtnUpgrades.TextSize = 11; footballSubBtnUpgrades.Font = Enum.Font.SourceSansBold; footballSubBtnUpgrades.Text = "Goals & Auto Kicker" footballSubBtnUpgrades.Parent = footballSubTabList
+
+Instance.new("UICorner", footballSubBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", footballSubBtnUpgrades).CornerRadius = UDim.new(0, 5)
+
+local function makeScroll(canvas, parent) 
+    local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = parent return s 
 end
-local realm1NoobScroll = makeScroll(310) realm1NoobScroll.Visible = true
-local realm1UpgradeScroll = makeScroll(110)
-local realm1RebirthScroll = makeScroll(160)
-local realm1FireScroll = makeScroll(300)
-local realm1BlazeScroll = makeScroll(360)
-local realm1BreadScroll = makeScroll(650)
-local realm1CashScroll = makeScroll(170)
+
+local realm1NoobScroll = makeScroll(310, realm1MasterPage) realm1NoobScroll.Visible = true
+local realm1UpgradeScroll = makeScroll(110, realm1MasterPage)
+local realm1RebirthScroll = makeScroll(160, realm1MasterPage)
+local realm1FireScroll = makeScroll(300, realm1MasterPage)
+local realm1BlazeScroll = makeScroll(360, realm1MasterPage)
+local realm1BreadScroll = makeScroll(650, realm1MasterPage)
+local realm1CashScroll = makeScroll(170, realm1MasterPage)
+
+local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
+local footballUpgradeScroll = makeScroll(250, footballPage)
 
 local function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -167,8 +200,7 @@ local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, real
 
 local togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 
--- HACKER PAGE & SCROLL (Grid rows for Hacker Noobs 1-6)
-local hackerPage = Instance.new("Frame") hackerPage.Size = UDim2.new(1, -20, 1, -85) hackerPage.Position = UDim2.new(0, 10, 0, 80) hackerPage.BackgroundTransparency = 1; hackerPage.Visible = false; hackerPage.Parent = mainFrame
+-- HACKER ROWS
 local hackerScroll = Instance.new("ScrollingFrame") hackerScroll.Size = UDim2.new(1, 0, 1, 0) hackerScroll.Position = UDim2.new(0, 0, 0, 0) hackerScroll.BackgroundTransparency = 1; hackerScroll.BorderSizePixel = 0; hackerScroll.CanvasSize = UDim2.new(0, 0, 0, 260) hackerScroll.ScrollBarThickness = 3; hackerScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) hackerScroll.Visible = true; hackerScroll.Parent = hackerPage
 
 local toggleHacker1 = gridRow("Auto Upgrade Hacker 1 (Max)", 1, hackerScroll)
@@ -177,6 +209,24 @@ local toggleHacker3 = gridRow("Auto Upgrade Hacker 3 (Max)", 3, hackerScroll)
 local toggleHacker4 = gridRow("Auto Upgrade Hacker 4 (Max)", 4, hackerScroll)
 local toggleHacker5 = gridRow("Auto Upgrade Hacker 5 (Max)", 5, hackerScroll)
 local toggleHacker6 = gridRow("Auto Upgrade Hacker 6 (Max)", 6, hackerScroll)
+
+-- FOOTBALL ROWS (Noobs and Upgrades/Kicker)
+local toggleAttackingMid = gridRow("Auto Upgrade AttackingMid (Max)", 1, footballNoobScroll)
+local toggleGoalkeeper = gridRow("Auto Upgrade Goalkeeper (Max)", 2, footballNoobScroll)
+local toggleStriker = gridRow("Auto Upgrade Striker (Max)", 3, footballNoobScroll)
+local toggleLeftCenterBack = gridRow("Auto Upgrade LeftCenterBack (Max)", 4, footballNoobScroll)
+local toggleLeftDefensiveMid = gridRow("Auto Upgrade LeftDefensiveMid (Max)", 5, footballNoobScroll)
+local toggleLeftWing = gridRow("Auto Upgrade LeftWing (Max)", 6, footballNoobScroll)
+local toggleRightBack = gridRow("Auto Upgrade RightBack (Max)", 7, footballNoobScroll)
+local toggleRightCenterBack = gridRow("Auto Upgrade RightCenterBack (Max)", 8, footballNoobScroll)
+local toggleRightDefensiveMid = gridRow("Auto Upgrade RightDefensiveMid (Max)", 9, footballNoobScroll)
+local toggleRightWing = gridRow("Auto Upgrade RightWing (Max)", 10, footballNoobScroll)
+
+local toggleScoreGoal = gridRow("Auto Score Goal", 1, footballUpgradeScroll)
+local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
+local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
+local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
+local toggleAutoFootballKicker = gridRow("Auto Kick (Built-in Kicker Bypass)", 5, footballUpgradeScroll)
 
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
@@ -269,7 +319,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING HACKERS 1-6)
+-- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING HACKERS & FOOTBALL NOOBS)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -285,6 +335,17 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeHacker4",    T = "UpgradeNoobMax",    A = {"Hacker 4"}},
     {F = "AutoUpgradeHacker5",    T = "UpgradeNoobMax",    A = {"Hacker 5"}},
     {F = "AutoUpgradeHacker6",    T = "UpgradeNoobMax",    A = {"Hacker 6"}},
+
+    {F = "AutoUpgradeAttackingMid", T = "UpgradeNoobMax",    A = {"AttackingMid"}},
+    {F = "AutoUpgradeGoalkeeper",   T = "UpgradeNoobMax",    A = {"Goalkeeper"}},
+    {F = "AutoUpgradeStriker",      T = "UpgradeNoobMax",    A = {"Striker"}},
+    {F = "AutoUpgradeLeftCenterBack", T = "UpgradeNoobMax",  A = {"LeftCenterBack"}},
+    {F = "AutoUpgradeLeftDefensiveMid", T = "UpgradeNoobMax",A = {"LeftDefensiveMid"}},
+    {F = "AutoUpgradeLeftWing",   T = "UpgradeNoobMax",    A = {"LeftWing"}},
+    {F = "AutoUpgradeRightBack",  T = "UpgradeNoobMax",    A = {"RightBack"}},
+    {F = "AutoUpgradeRightCenterBack", T = "UpgradeNoobMax", A = {"RightCenterBack"}},
+    {F = "AutoUpgradeRightDefensiveMid", T = "UpgradeNoobMax", A = {"RightDefensiveMid"}},
+    {F = "AutoUpgradeRightWing",  T = "UpgradeNoobMax",    A = {"RightWing"}},
     
     {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
     {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
@@ -302,7 +363,11 @@ local PrimaryUpgradeQueue = {
     
     {F = "AutoUpgradeMoreCash",    T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
-    {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}}
+    {F = "AutoUpgradeMoreRuneLuck",T = "UpgradeUpgradeMax", A = {"Cash", "MoreRuneLuck"}},
+
+    {F = "AutoGoalsMoreGoals",     T = "UpgradeUpgradeMax", A = {"Goals", "MoreGoals"}},
+    {F = "AutoGoalsRuneBulk",      T = "UpgradeUpgradeMax", A = {"Goals", "RuneBulk"}},
+    {F = "AutoGoalsRuneLuck",      T = "UpgradeUpgradeMax", A = {"Goals", "RuneLuck"}}
 }
 
 task.spawn(function()
@@ -317,6 +382,30 @@ task.spawn(function()
                     task.wait(0.1) 
                 end
             end
+        end
+    end
+end)
+
+-- SCORE GOAL LOOP
+task.spawn(function()
+    while Running do
+        task.wait(0.4)
+        if NetRemote and Running and _G.AutoScoreGoal then
+            pcall(function()
+                NetRemote:FireServer("ScoreGoal")
+            end)
+        end
+    end
+end)
+
+-- AUTO FOOTBALL KICKER BYPASS LOOP
+task.spawn(function()
+    while Running do
+        task.wait(0.2)
+        if NetRemote and Running and _G.AutoFootballAutoKicker then
+            pcall(function()
+                NetRemote:FireServer("ScoreGoal")
+            end)
         end
     end
 end)
@@ -457,6 +546,24 @@ toggleHacker4.MouseButton1Click:Connect(function() tStateV2(toggleHacker4, "Auto
 toggleHacker5.MouseButton1Click:Connect(function() tStateV2(toggleHacker5, "AutoUpgradeHacker5") end)
 toggleHacker6.MouseButton1Click:Connect(function() tStateV2(toggleHacker6, "AutoUpgradeHacker6") end)
 
+-- FOOTBALL TOGGLE CONNECTORS
+toggleAttackingMid.MouseButton1Click:Connect(function() tStateV2(toggleAttackingMid, "AutoUpgradeAttackingMid") end)
+toggleGoalkeeper.MouseButton1Click:Connect(function() tStateV2(toggleGoalkeeper, "AutoUpgradeGoalkeeper") end)
+toggleStriker.MouseButton1Click:Connect(function() tStateV2(toggleStriker, "AutoUpgradeStriker") end)
+toggleLeftCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleLeftCenterBack, "AutoUpgradeLeftCenterBack") end)
+toggleLeftDefensiveMid.MouseButton1Click:Connect(function() tStateV2(toggleLeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end)
+toggleLeftWing.MouseButton1Click:Connect(function() tStateV2(toggleLeftWing, "AutoUpgradeLeftWing") end)
+toggleRightBack.MouseButton1Click:Connect(function() tStateV2(toggleRightBack, "AutoUpgradeRightBack") end)
+toggleRightCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleRightCenterBack, "AutoUpgradeRightCenterBack") end)
+toggleRightDefensiveMid.MouseButton1Click:Connect(function() tStateV2(toggleRightDefensiveMid, "AutoUpgradeRightDefensiveMid") end)
+toggleRightWing.MouseButton1Click:Connect(function() tStateV2(toggleRightWing, "AutoUpgradeRightWing") end)
+
+toggleScoreGoal.MouseButton1Click:Connect(function() tStateV2(toggleScoreGoal, "AutoScoreGoal") end)
+toggleMoreGoals.MouseButton1Click:Connect(function() tStateV2(toggleMoreGoals, "AutoGoalsMoreGoals") end)
+toggleGoalsRuneBulk.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneBulk, "AutoGoalsRuneBulk") end)
+toggleGoalsRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneLuck, "AutoGoalsRuneLuck") end)
+toggleAutoFootballKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoFootballKicker, "AutoFootballAutoKicker") end)
+
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
@@ -513,17 +620,34 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 local function mainRoute(pOpen, bActive) 
-    realm1MasterPage.Visible, realm3Page.Visible, hackerPage.Visible, runesPage.Visible, chestsPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabRealm1, tabRealm3, tabHacker, tabRunes, tabChests, tabSettings}
+    realm1MasterPage.Visible, realm3Page.Visible, hackerPage.Visible, footballPage.Visible, runesPage.Visible, chestsPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabRealm1, tabRealm3, tabHacker, tabFootball, tabRunes, tabChests, tabSettings}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
 tabHacker.MouseButton1Click:Connect(function() mainRoute(hackerPage, tabHacker) end)
+tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end)
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
 tabChests.MouseButton1Click:Connect(function() mainRoute(chestsPage, tabChests) end) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
+
+-- Football Sub-Tab Router
+local function footballRoute(targetScroll, activeBtn)
+    local scrolls = {footballNoobScroll, footballUpgradeScroll}
+    local btns = {footballSubBtnNoobs, footballSubBtnUpgrades}
+    for i, s in ipairs(scrolls) do
+        s.Visible = (s == targetScroll)
+        if s == targetScroll then
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15)
+        else
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170)
+        end
+    end
+end
+footballSubBtnNoobs.MouseButton1Click:Connect(function() footballRoute(footballNoobScroll, footballSubBtnNoobs) end)
+footballSubBtnUpgrades.MouseButton1Click:Connect(function() footballRoute(footballUpgradeScroll, footballSubBtnUpgrades) end)
 
 local function route(targetScroll)
     local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1BreadScroll, realm1CashScroll}
@@ -565,4 +689,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Hacker Noobs 1-6 Automation Loaded!")
+print("[Dominate Hub] AttackingMid, Goalkeeper & Striker Added!")
