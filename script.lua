@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (HACKER TAB & NOOBS ADDED)
+-- DOMINATE HUB | FULL SCRIPT (HACKER NOOBS 1 TO 6 EXPANDED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -543,7 +543,7 @@ subBtnRebirth.MouseButton1Click:Connect(function() route(realm1RebirthScroll) en
 subBtnFire.MouseButton1Click:Connect(function() route(realm1FireScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(realm1BlazeScroll) end)
 subBtnBread.MouseButton1Click:Connect(function() route(realm1BreadScroll) end)
-subBtnCash.MouseButton1Click:Connect(function() TestOrRoute = true route(realm1CashScroll) end)
+subBtnCash.MouseButton1Click:Connect(function() route(realm1CashScroll) end)
 
 minBtn.MouseButton1Click:Connect(function() 
     mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
@@ -565,4 +565,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Hacker Tab & Automation Loaded!")
+print("[Dominate Hub] Hacker Noobs 1-6 Automation Loaded!")
