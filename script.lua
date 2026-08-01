@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (FIXED STARTER NOOB + PRESTIGE REMOTE)
+-- DOMINATE HUB | FULL SCRIPT (UPDATED AUTO PAD TIMER & LABEL)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -135,7 +135,8 @@ local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
 local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
-local toggleAutoFarmCash = makeSubRow("Auto Stand On Conveyor Pad", 1, realm1CashScroll)
+-- RENAMED TO AUTO PAD
+local toggleAutoFarmCash = makeSubRow("Auto Pad", 1, realm1CashScroll)
 local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
 local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
 local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
@@ -190,7 +191,7 @@ task.spawn(function()
     end
 end)
 
--- CONVEYOR CASH PAD AUTO FARM LOOP
+-- CONVEYOR CASH PAD AUTO FARM LOOP (SLEEP TIMER UPDATED TO 2 - 3 MINUTES)
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -222,7 +223,10 @@ task.spawn(function()
                     task.wait(0.1)
                 until false
                 if Running then
-                    MasterTargetVector = nil CurrentLoopStateSleep = true local sleepEndTime = tick() + 300
+                    MasterTargetVector = nil CurrentLoopStateSleep = true 
+                    -- Random sleep timer between 120 and 180 seconds (2 to 3 minutes)
+                    local sleepDuration = math.random(120, 180)
+                    local sleepEndTime = tick() + sleepDuration
                     repeat task.wait(1) until tick() >= sleepEndTime or not _G.AutoFarmCash or not Running
                 end
             else MasterTargetVector = nil task.wait(2) end
@@ -230,9 +234,9 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE (FIXED STARTER NOOB PAYLOAD)
+-- UNIFIED PRIMARY UPGRADE QUEUE
 local PrimaryUpgradeQueue = {
-    {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}}, -- Changed from UpgradeNoobMax -> UpgradeNoob
+    {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
     {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}},
     {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}},
@@ -304,7 +308,7 @@ task.spawn(function()
     end
 end)
 
--- DIRECT PRESTIGE REMOTE LOOP (EXACT SIMPLESPY PAYLOAD)
+-- DIRECT PRESTIGE REMOTE LOOP
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -444,4 +448,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Fixed Build Loaded!")
+print("[Dominate Hub] Auto Pad Timer Updated!")
