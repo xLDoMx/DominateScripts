@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (DEBUGGED AUTO KICK & SCORE)
+-- DOMINATE HUB | FULL SCRIPT (WITH EXACT "BuyTrophy" AUTOMATION)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -35,6 +35,7 @@ _G.AutoGoalsRuneBulk = false
 _G.AutoGoalsRuneLuck = false
 _G.AutoBuyAutoKick = false
 _G.AutoFootballTree = false
+_G.AutoClaimTrophies = false
 
 -- FOOTBALL POSITIONS AUTOMATION FLAGS
 _G.AutoUpgradeAttackingMid = false
@@ -66,19 +67,12 @@ player.Idled:Connect(function()
 end)
 
 task.spawn(function()
-    print("[Dominate Hub] Searching for network remotes...")
     repeat
         local netService = ReplicatedStorage:WaitForChild("__Net", 5)
         if netService then
             NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent")
-            if NetRemote then
-                print("[Dominate Hub] Successfully located NetRemote:", NetRemote:GetFullName())
-            end
         end
-        if not NetRemote then 
-            print("[Dominate Hub] NetRemote not found yet, retrying...")
-            task.wait(1) 
-        end
+        if not NetRemote then task.wait(0.5) end
     until NetRemote or not Running
 end)
 
@@ -145,7 +139,7 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 
 local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
-local footballUpgradeScroll = makeScroll(300, footballPage)
+local footballUpgradeScroll = makeScroll(380, footballPage)
 
 local function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -237,6 +231,7 @@ local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeS
 local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
 local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScroll)
 local toggleFootballTree = gridRow("Auto Buy Football Tree (Dynamic PlayerGui)", 6, footballUpgradeScroll)
+local toggleClaimTrophies = gridRow("Auto Buy Trophies (1-10)", 7, footballUpgradeScroll)
 
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
@@ -397,37 +392,19 @@ task.spawn(function()
     end
 end)
 
--- DEBUGGED AUTO SCORE & KICK LOOP (WITH 1.5s DELAYS & CONSOLE PRINTS)
+-- AUTO SCORE & KICK LOOP (WITH 1.5s DELAYS)
 task.spawn(function()
     while Running do
         task.wait(0.2)
-        if not NetRemote then
-            print("[Dominate Hub Debug] AutoScore: Waiting for NetRemote to load...")
-            task.wait(1.0)
-        elseif not _G.AutoScoreGoal then
-            -- Do nothing while toggled off, avoid spamming console
-            task.wait(0.5)
-        else
-            print("[Dominate Hub Debug] Firing RegisterFootballKick...")
-            local success1, err1 = pcall(function()
+        if NetRemote and Running and _G.AutoScoreGoal then
+            pcall(function()
                 NetRemote:FireServer("RegisterFootballKick")
             end)
-            if not success1 then
-                print("[Dominate Hub Debug] RegisterFootballKick Error:", err1)
-            end
-            
             task.wait(1.5)
-            
             if not Running or not _G.AutoScoreGoal then break end
-            
-            print("[Dominate Hub Debug] Firing ScoreGoal...")
-            local success2, err2 = pcall(function()
+            pcall(function()
                 NetRemote:FireServer("ScoreGoal")
             end)
-            if not success2 then
-                print("[Dominate Hub Debug] ScoreGoal Error:", err2)
-            end
-            
             task.wait(1.5)
         end
     end
@@ -454,6 +431,26 @@ task.spawn(function()
             end
         end
         task.wait(5.0)
+    end
+end)
+
+-- AUTO BUY TROPHIES ENGINE (1 TO 10)
+task.spawn(function()
+    while Running do
+        task.wait(3.0)
+        if NetRemote and Running and _G.AutoClaimTrophies then
+            for trophyIndex = 1, 10 do
+                if not Running or not _G.AutoClaimTrophies then break end
+                pcall(function()
+                    local args = {
+                        [1] = "BuyTrophy",
+                        [2] = trophyIndex
+                    }
+                    NetRemote:FireServer(unpack(args))
+                end)
+                task.wait(0.2)
+            end
+        end
     end
 end)
 
@@ -611,6 +608,7 @@ toggleGoalsRuneBulk.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRun
 toggleGoalsRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneLuck, "AutoGoalsRuneLuck") end)
 toggleAutoBuyKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoBuyKicker, "AutoBuyAutoKick") end)
 toggleFootballTree.MouseButton1Click:Connect(function() tStateV2(toggleFootballTree, "AutoFootballTree") end)
+toggleClaimTrophies.MouseButton1Click:Connect(function() tStateV2(toggleClaimTrophies, "AutoClaimTrophies") end)
 
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
@@ -737,4 +735,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Debug Engine Fully Loaded! Open F9 to check activity.")
+print("[Dominate Hub] Exact BuyTrophy Engine Loaded!")
