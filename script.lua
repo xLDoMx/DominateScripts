@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH CAPSULES TAB & SAFE TELEPORT ENGINE)
+-- DOMINATE HUB | FULL SCRIPT (HARDCODED CLASSIC CAPSULE TELEPORT)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -288,6 +288,7 @@ local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
+local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
 
 local function GetWorldRoot()
     return player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -312,38 +313,15 @@ task.spawn(function()
     end
 end)
 
-local function teleportToCapsule(capsuleName)
-    local hrp = GetWorldRoot()
-    if not hrp then return end
-
-    local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-    local uiZones = gameContent and gameContent:FindFirstChild("UIZones")
-    local capsuleFolder = uiZones and uiZones:FindFirstChild("__Capsule" .. capsuleName)
-    local targetObj = capsuleFolder and capsuleFolder:FindFirstChild(capsuleName)
-
-    if targetObj then
-        local targetCFrame = nil
-        if targetObj:IsA("BasePart") then
-            targetCFrame = targetObj.CFrame
-        elseif targetObj:IsA("Model") then
-            targetCFrame = targetObj:GetPivot()
-        end
-
-        if targetCFrame then
-            if (hrp.Position - targetCFrame.Position).Magnitude > 10 then
-                hrp.CFrame = targetCFrame + Vector3.new(0, 3, 0)
-            end
-        end
-    else
-        print("[Dominate Hub Debug] Could not find capsule object for:", capsuleName)
-    end
-end
-
+-- HARDCODED CLASSIC CAPSULE TELEPORT & AUTO-OPEN ENGINE
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if NetRemote and Running and _G.AutoOpenClassicCapsule then
-            teleportToCapsule("Classic")
+            local hrp = GetWorldRoot()
+            if hrp and (hrp.Position - ClassicCapsuleVector).Magnitude > 10 then
+                hrp.CFrame = CFrame.new(ClassicCapsuleVector + Vector3.new(0, 3, 0))
+            end
             pcall(function()
                 local args = {
                     [1] = "ToggleMinionAutoOpen",
@@ -826,4 +804,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Capsules Engine & Clean UI Fully Loaded!")
+print("[Dominate Hub] Hardcoded Capsule Engine Fully Loaded!")
