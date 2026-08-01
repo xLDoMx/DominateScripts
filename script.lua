@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH EVENTS FOOTBALL RUNE)
+-- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SET)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -25,6 +25,12 @@ _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
 
+-- REALM 2 AUTOMATION FLAGS
+_G.AutoRealm2MoreOof, _G.AutoRealm2MoreWalkSpeed = false, false
+_G.AutoRealm2MoreWater, _G.AutoRealm2MoreOofWater, _G.AutoRealm2MorePlanks = false, false, false
+_G.AutoRealm2MoreIce, _G.AutoRealm2WaterPump1, _G.AutoRealm2WaterPump2, _G.AutoRealm2MoreOofIce = false, false, false, false
+_G.AutoFillBucket1, _G.AutoFillBucket2, _G.AutoFillBucket3, _G.AutoFillBucket4, _G.AutoFillBucket5 = false, false, false, false, false
+
 -- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
 
@@ -39,6 +45,7 @@ _G.AutoClaimTrophies = false
 
 -- FOOTBALL POSITIONS AUTOMATION FLAGS
 _G.AutoUpgradeGoalkeeper = false
+_G.AutoUpgradeLeftBack = false
 _G.AutoUpgradeLeftCenterBack = false
 _G.AutoUpgradeRightCenterBack = false
 _G.AutoUpgradeRightBack = false
@@ -60,6 +67,19 @@ _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 -- CAPSULE AUTOMATION FLAGS
 _G.AutoOpenClassicCapsule = false
+
+-- ENCHANT AUTO-REROLL FLAGS (Realm 1, 2, 3 Noobs)
+_G.AutoEnchantStarter = false
+_G.AutoEnchantCooker = false
+_G.AutoEnchantFarmer = false
+_G.AutoEnchantMagician = false
+_G.AutoEnchantArcher = false
+_G.AutoEnchantSoldier = false
+_G.AutoEnchantHacker1 = false
+_G.AutoEnchantHacker2 = false
+_G.AutoEnchantHacker3 = false
+_G.AutoEnchantHacker4 = false
+_G.AutoEnchantPharaoh = false
 
 player.Idled:Connect(function()
     if Running and _G.AntiAFK then
@@ -92,6 +112,7 @@ local realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, 
 local footballPage = Instance.new("Frame") footballPage.Size = UDim2.new(1, -20, 1, -85) footballPage.Position = UDim2.new(0, 10, 0, 80) footballPage.BackgroundTransparency = 1; footballPage.Visible = false; footballPage.Parent = mainFrame
 local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
 local capsulesPage = Instance.new("Frame") capsulesPage.Size = UDim2.new(1, -20, 1, -85) capsulesPage.Position = UDim2.new(0, 10, 0, 80) capsulesPage.BackgroundTransparency = 1; capsulesPage.Visible = false; capsulesPage.Parent = mainFrame
+local enchantsPage = Instance.new("Frame") enchantsPage.Size = UDim2.new(1, -20, 1, -85) enchantsPage.Position = UDim2.new(0, 10, 0, 80) enchantsPage.BackgroundTransparency = 1; enchantsPage.Visible = false; enchantsPage.Parent = mainFrame
 local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 
 -- UI HEADER & TABS
@@ -101,13 +122,14 @@ local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) 
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
-local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 60, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
-local tabRealm2 = Instance.new("TextButton") tabRealm2.Size = UDim2.new(0, 60, 1, 0) tabRealm2.Position = UDim2.new(0, 64, 0, 0) tabRealm2.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm2.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm2.TextSize = 11; tabRealm2.Font = Enum.Font.SourceSansBold; tabRealm2.Text = "Realm 2" tabRealm2.Parent = tabList
-local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 60, 1, 0) tabRealm3.Position = UDim2.new(0, 126, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-local tabFootball = Instance.new("TextButton") tabFootball.Size = UDim2.new(0, 62, 1, 0) tabFootball.Position = UDim2.new(0, 188, 0, 0) tabFootball.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabFootball.TextColor3 = Color3.fromRGB(170, 170, 170) tabFootball.TextSize = 11; tabFootball.Font = Enum.Font.SourceSansBold; tabFootball.Text = "Football" tabFootball.Parent = tabList
-local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tabRunes.Position = UDim2.new(0, 252, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
-local tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 62, 1, 0) tabCapsules.Position = UDim2.new(0, 314, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 11; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
-local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 60, 1, 0) tabSettings.Position = UDim2.new(0, 378, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 50, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 10; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+local tabRealm2 = Instance.new("TextButton") tabRealm2.Size = UDim2.new(0, 50, 1, 0) tabRealm2.Position = UDim2.new(0, 54, 0, 0) tabRealm2.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm2.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm2.TextSize = 10; tabRealm2.Font = Enum.Font.SourceSansBold; tabRealm2.Text = "Realm 2" tabRealm2.Parent = tabList
+local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 50, 1, 0) tabRealm3.Position = UDim2.new(0, 106, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 10; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+local tabFootball = Instance.new("TextButton") tabFootball.Size = UDim2.new(0, 56, 1, 0) tabFootball.Position = UDim2.new(0, 158, 0, 0) tabFootball.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabFootball.TextColor3 = Color3.fromRGB(170, 170, 170) tabFootball.TextSize = 10; tabFootball.Font = Enum.Font.SourceSansBold; tabFootball.Text = "Football" tabFootball.Parent = tabList
+local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 48, 1, 0) tabRunes.Position = UDim2.new(0, 216, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 10; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+local tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 54, 1, 0) tabCapsules.Position = UDim2.new(0, 266, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 10; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
+local tabEnchants = Instance.new("TextButton") tabEnchants.Size = UDim2.new(0, 56, 1, 0) tabEnchants.Position = UDim2.new(0, 322, 0, 0) tabEnchants.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabEnchants.TextColor3 = Color3.fromRGB(170, 170, 170) tabEnchants.TextSize = 10; tabEnchants.Font = Enum.Font.SourceSansBold; tabEnchants.Text = "Enchants" tabEnchants.Parent = tabList
+local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 54, 1, 0) tabSettings.Position = UDim2.new(0, 380, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 10; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
 
 Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) 
 Instance.new("UICorner", tabRealm2).CornerRadius = UDim.new(0, 16) 
@@ -115,6 +137,7 @@ Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16)
 Instance.new("UICorner", tabFootball).CornerRadius = UDim.new(0, 16) 
 Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) 
 Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", tabEnchants).CornerRadius = UDim.new(0, 16)
 Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
 
 -- REALM 1 SUB-TABS
@@ -129,6 +152,18 @@ local subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 45,
 local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0, 52, 1, 0) subBtnHacker.Position = UDim2.new(0, 342, 0, 0) subBtnHacker.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnHacker.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnHacker.TextSize = 9; subBtnHacker.Font = Enum.Font.SourceSansBold; subBtnHacker.Text = "Hacker" subBtnHacker.Parent = subTabList
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
+
+-- REALM 2 SUB-TABS
+local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
+local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 75, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 0, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnOof.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
+local r2SubBtnWater = Instance.new("TextButton") r2SubBtnWater.Size = UDim2.new(0, 75, 1, 0) r2SubBtnWater.Position = UDim2.new(0, 80, 0, 0) r2SubBtnWater.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWater.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWater.TextSize = 10; r2SubBtnWater.Font = Enum.Font.SourceSansBold; r2SubBtnWater.Text = "Water" r2SubBtnWater.Parent = realm2SubTabList
+local r2SubBtnIce = Instance.new("TextButton") r2SubBtnIce.Size = UDim2.new(0, 75, 1, 0) r2SubBtnIce.Position = UDim2.new(0, 160, 0, 0) r2SubBtnIce.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnIce.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnIce.TextSize = 10; r2SubBtnIce.Font = Enum.Font.SourceSansBold; r2SubBtnIce.Text = "Ice" r2SubBtnIce.Parent = realm2SubTabList
+local r2SubBtnBuckets = Instance.new("TextButton") r2SubBtnBuckets.Size = UDim2.new(0, 95, 1, 0) r2SubBtnBuckets.Position = UDim2.new(0, 240, 0, 0) r2SubBtnBuckets.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnBuckets.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnBuckets.TextSize = 10; r2SubBtnBuckets.Font = Enum.Font.SourceSansBold; r2SubBtnBuckets.Text = "Water Buckets" r2SubBtnBuckets.Parent = realm2SubTabList
+
+Instance.new("UICorner", r2SubBtnOof).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", r2SubBtnWater).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", r2SubBtnIce).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", r2SubBtnBuckets).CornerRadius = UDim.new(0, 5)
 
 -- RUNES SUB-TABS
 local runesSubTabList = Instance.new("Frame") runesSubTabList.Size = UDim2.new(1, 0, 0, 25) runesSubTabList.Position = UDim2.new(0, 0, 0, 0) runesSubTabList.BackgroundTransparency = 1; runesSubTabList.Parent = runesPage
@@ -159,7 +194,11 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 local realm1HackerScroll = makeScroll(220, realm1MasterPage)
 
-local realm2Scroll = makeScroll(100, realm2Page) realm2Scroll.Visible = true
+-- REALM 2 SCROLL FRAMES
+local realm2OofScroll = makeScroll(110, realm2Page) realm2OofScroll.Visible = true
+local realm2WaterScroll = makeScroll(160, realm2Page)
+local realm2IceScroll = makeScroll(210, realm2Page)
+local realm2BucketScroll = makeScroll(250, realm2Page)
 
 local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
@@ -167,8 +206,9 @@ local runesScroll3 = makeScroll(100, runesPage)
 local runesScrollEvents = makeScroll(100, runesPage)
 
 local capsulesScroll = makeScroll(100, capsulesPage) capsulesScroll.Visible = true
+local enchantsScroll = makeScroll(480, enchantsPage) enchantsScroll.Visible = true
 
-local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
+local footballNoobScroll = makeScroll(500, footballPage) footballNoobScroll.Visible = true
 local footballUpgradeScroll = makeScroll(380, footballPage)
 
 local function gridRow(txt, pos, page)
@@ -231,6 +271,25 @@ local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScr
 local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
 local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
+-- REALM 2 ROWS
+local toggleR2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
+local toggleR2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
+
+local toggleR2MoreWater = gridRow("More Water", 1, realm2WaterScroll)
+local toggleR2WaterOof = gridRow("More Oof (Water)", 2, realm2WaterScroll)
+local toggleR2Planks = gridRow("More Planks", 3, realm2WaterScroll)
+
+local toggleR2MoreIce = gridRow("More Ice", 1, realm2IceScroll)
+local toggleR2WaterPump1 = gridRow("Water Pump Noob Hire (1)", 2, realm2IceScroll)
+local toggleR2WaterPump2 = gridRow("Water Pump Noob Hire (2)", 3, realm2IceScroll)
+local toggleR2IceOof = gridRow("More Oof (Ice)", 4, realm2IceScroll)
+
+local toggleBucket1 = gridRow("Auto Fill Bucket #1", 1, realm2BucketScroll)
+local toggleBucket2 = gridRow("Auto Fill Bucket #2", 2, realm2BucketScroll)
+local toggleBucket3 = gridRow("Auto Fill Bucket #3", 3, realm2BucketScroll)
+local toggleBucket4 = gridRow("Auto Fill Bucket #4", 4, realm2BucketScroll)
+local toggleBucket5 = gridRow("Auto Fill Bucket #5", 5, realm2BucketScroll)
+
 -- HACKER ROWS (1 to 4)
 local toggleHacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
 local toggleHacker2 = makeSubRow("Auto Upgrade Hacker 2", 2, realm1HackerScroll)
@@ -239,17 +298,18 @@ local toggleHacker4 = makeSubRow("Auto Upgrade Hacker 4", 4, realm1HackerScroll)
 
 local togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 
--- FOOTBALL ROWS (Ordered from Goalkeeper to Striker, no Max)
+-- FOOTBALL ROWS (Ordered from Goalkeeper to Striker)
 local toggleGoalkeeper = gridRow("Auto Upgrade Goalkeeper", 1, footballNoobScroll)
-local toggleLeftCenterBack = gridRow("Auto Upgrade Left Center Back", 2, footballNoobScroll)
-local toggleRightCenterBack = gridRow("Auto Upgrade Right Center Back", 3, footballNoobScroll)
-local toggleRightBack = gridRow("Auto Upgrade Right Back", 4, footballNoobScroll)
-local toggleLeftDefensiveMid = gridRow("Auto Upgrade Left Defensive Mid", 5, footballNoobScroll)
-local toggleRightDefensiveMid = gridRow("Auto Upgrade Right Defensive Mid", 6, footballNoobScroll)
-local toggleAttackingMid = gridRow("Auto Upgrade Attacking Mid", 7, footballNoobScroll)
-local toggleLeftWing = gridRow("Auto Upgrade Left Wing", 8, footballNoobScroll)
-local toggleRightWing = gridRow("Auto Upgrade Right Wing", 9, footballNoobScroll)
-local toggleStriker = gridRow("Auto Upgrade Striker", 10, footballNoobScroll)
+local toggleLeftBack = gridRow("Auto Upgrade Left Back", 2, footballNoobScroll)
+local toggleLeftCenterBack = gridRow("Auto Upgrade Left Center Back", 3, footballNoobScroll)
+local toggleRightCenterBack = gridRow("Auto Upgrade Right Center Back", 4, footballNoobScroll)
+local toggleRightBack = gridRow("Auto Upgrade Right Back", 5, footballNoobScroll)
+local toggleLeftDefensiveMid = gridRow("Auto Upgrade Left Defensive Mid", 6, footballNoobScroll)
+local toggleRightDefensiveMid = gridRow("Auto Upgrade Right Defensive Mid", 7, footballNoobScroll)
+local toggleAttackingMid = gridRow("Auto Upgrade Attacking Mid", 8, footballNoobScroll)
+local toggleLeftWing = gridRow("Auto Upgrade Left Wing", 9, footballNoobScroll)
+local toggleRightWing = gridRow("Auto Upgrade Right Wing", 10, footballNoobScroll)
+local toggleStriker = gridRow("Auto Upgrade Striker", 11, footballNoobScroll)
 
 local toggleScoreGoal = gridRow("Auto Score & Kick (1.5s Debug)", 1, footballUpgradeScroll)
 local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
@@ -270,6 +330,19 @@ local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)"
 
 -- CAPSULES ROWS
 local toggleClassicCapsule = gridRow("Auto Teleport & Open Classic Capsule", 1, capsulesScroll)
+
+-- ENCHANTS ROWS (Realm 1, 2, 3 Noobs Auto-Reroll)
+local toggleEnchantStarter = gridRow("Auto Reroll Enchants: Starter", 1, enchantsScroll)
+local toggleEnchantCooker = gridRow("Auto Reroll Enchants: Cooker", 2, enchantsScroll)
+local toggleEnchantFarmer = gridRow("Auto Reroll Enchants: Farmer", 3, enchantsScroll)
+local toggleEnchantMagician = gridRow("Auto Reroll Enchants: Magician", 4, enchantsScroll)
+local toggleEnchantArcher = gridRow("Auto Reroll Enchants: Archer", 5, enchantsScroll)
+local toggleEnchantSoldier = gridRow("Auto Reroll Enchants: Soldier", 6, enchantsScroll)
+local toggleEnchantHacker1 = gridRow("Auto Reroll Enchants: Hacker 1", 7, enchantsScroll)
+local toggleEnchantHacker2 = gridRow("Auto Reroll Enchants: Hacker 2", 8, enchantsScroll)
+local toggleEnchantHacker3 = gridRow("Auto Reroll Enchants: Hacker 3", 9, enchantsScroll)
+local toggleEnchantHacker4 = gridRow("Auto Reroll Enchants: Hacker 4", 10, enchantsScroll)
+local toggleEnchantPharaoh = gridRow("Auto Reroll Enchants: Pharaoh", 11, enchantsScroll)
 
 -- SETTINGS / CHESTS
 local toggleOpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, settingsPage)
@@ -293,6 +366,7 @@ local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -8
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
 local FootballRuneVector = Vector3.new(-2713.26171875, 36.86155319213867, -15.832250595092773)
 local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
+local EnchantStationVector = Vector3.new(1193.1235, 18.7949, -854.0244) 
 
 local function GetWorldRoot()
     return player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -334,6 +408,49 @@ task.spawn(function()
                 }
                 NetRemote:FireServer(unpack(args))
             end)
+        end
+    end
+end)
+
+-- ENCHANTS AUTO-REROLL ENGINE
+local EnchantQueue = {
+    {F = "AutoEnchantStarter",  A = {"Starter"}},
+    {F = "AutoEnchantCooker",   A = {"Cooker"}},
+    {F = "AutoEnchantFarmer",   A = {"Farmer"}},
+    {F = "AutoEnchantMagician", A = {"Magician"}},
+    {F = "AutoEnchantArcher",   A = {"Archer"}},
+    {F = "AutoEnchantSoldier",  A = {"Soldier"}},
+    {F = "AutoEnchantHacker1",  A = {"Hacker 1"}},
+    {F = "AutoEnchantHacker2",  A = {"Hacker 2"}},
+    {F = "AutoEnchantHacker3",  A = {"Hacker 3"}},
+    {F = "AutoEnchantHacker4",  A = {"Hacker 4"}},
+    {F = "AutoEnchantPharaoh",  A = {"Pharaoh"}}
+}
+
+task.spawn(function()
+    while Running do
+        task.wait(0.5)
+        local anyEnchantActive = false
+        for i = 1, #EnchantQueue do
+            if _G[EnchantQueue[i].F] then anyEnchantActive = true break end
+        end
+
+        if NetRemote and Running and anyEnchantActive then
+            local hrp = GetWorldRoot()
+            if hrp and (hrp.Position - EnchantStationVector).Magnitude > 10 then
+                hrp.CFrame = CFrame.new(EnchantStationVector + Vector3.new(0, 3, 0))
+            end
+
+            for i = 1, #EnchantQueue do
+                if not Running then break end
+                local item = EnchantQueue[i]
+                if _G[item.F] then
+                    pcall(function()
+                        NetRemote:FireServer("RerollEnchant", unpack(item.A))
+                    end)
+                    task.wait(0.3)
+                end
+            end
         end
     end
 end)
@@ -380,7 +497,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE
+-- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING REALM 2)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -396,6 +513,7 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeHacker4",    T = "UpgradeNoobMax",    A = {"Hacker 4"}},
 
     {F = "AutoUpgradeGoalkeeper",   T = "UpgradeNoobMax",    A = {"Goalkeeper"}},
+    {F = "AutoUpgradeLeftBack",     T = "UpgradeNoobMax",    A = {"LeftBack"}},
     {F = "AutoUpgradeLeftCenterBack", T = "UpgradeNoobMax",  A = {"LeftCenterBack"}},
     {F = "AutoUpgradeRightCenterBack", T = "UpgradeNoobMax", A = {"RightCenterBack"}},
     {F = "AutoUpgradeRightBack",  T = "UpgradeNoobMax",    A = {"RightBack"}},
@@ -409,6 +527,16 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
     {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
     
+    {F = "AutoRealm2MoreOof",      T = "UpgradeUpgradeMax", A = {"Oof", "MoreOofRealm2"}},
+    {F = "AutoRealm2MoreWalkSpeed",T = "UpgradeUpgradeMax", A = {"Oof", "MoreWalkSpeedRealm2"}},
+    {F = "AutoRealm2MoreWater",    T = "UpgradeUpgradeMax", A = {"Water", "MoreWater"}},
+    {F = "AutoRealm2MoreOofWater", T = "UpgradeUpgradeMax", A = {"Water", "MoreOof"}},
+    {F = "AutoRealm2MorePlanks",   T = "UpgradeUpgradeMax", A = {"Water", "MorePlanks"}},
+    {F = "AutoRealm2MoreIce",      T = "UpgradeUpgradeMax", A = {"Ice", "MoreIce"}},
+    {F = "AutoRealm2WaterPump1",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterPumpNoobHire"}},
+    {F = "AutoRealm2WaterPump2",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterPumpNoobHire"}},
+    {F = "AutoRealm2MoreOofIce",   T = "UpgradeUpgradeMax", A = {"Ice", "MoreOof"}},
+
     {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
     {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
     {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
@@ -446,7 +574,24 @@ task.spawn(function()
     end
 end)
 
--- AUTO SCORE & KICK LOOP (WITH 1.5s DELAYS)
+-- WATER BUCKETS AUTO FILL ENGINE (1 TO 5)
+task.spawn(function()
+    while Running do
+        task.wait(0.5)
+        if NetRemote and Running then
+            for i = 1, 5 do
+                if _G["AutoFillBucket" .. i] then
+                    pcall(function()
+                        NetRemote:FireServer("FillWaterBucket", i)
+                    end)
+                    task.wait(0.2)
+                end
+            end
+        end
+    end
+end)
+
+-- AUTO SCORE & KICK LOOP
 task.spawn(function()
     while Running do
         task.wait(0.2)
@@ -546,7 +691,7 @@ task.spawn(function()
     end
 end)
 
--- AUTO DEPOSIT WHEAT LOOP (1-MINUTE INTERVAL)
+-- AUTO DEPOSIT WHEAT LOOP
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -636,6 +781,23 @@ toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "Auto
 toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
 
+-- REALM 2 TOGGLE CONNECTORS
+toggleR2MoreOof.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreOof, "AutoRealm2MoreOof") end)
+toggleR2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(toggleR2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
+toggleR2MoreWater.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreWater, "AutoRealm2MoreWater") end)
+toggleR2WaterOof.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterOof, "AutoRealm2MoreOofWater") end)
+toggleR2Planks.MouseButton1Click:Connect(function() tStateV2(toggleR2Planks, "AutoRealm2MorePlanks") end)
+toggleR2MoreIce.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreIce, "AutoRealm2MoreIce") end)
+toggleR2WaterPump1.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterPump1, "AutoRealm2WaterPump1") end)
+toggleR2WaterPump2.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterPump2, "AutoRealm2WaterPump2") end)
+toggleR2IceOof.MouseButton1Click:Connect(function() tStateV2(toggleR2IceOof, "AutoRealm2MoreOofIce") end)
+
+toggleBucket1.MouseButton1Click:Connect(function() tStateV2(toggleBucket1, "AutoFillBucket1") end)
+toggleBucket2.MouseButton1Click:Connect(function() tStateV2(toggleBucket2, "AutoFillBucket2") end)
+toggleBucket3.MouseButton1Click:Connect(function() tStateV2(toggleBucket3, "AutoFillBucket3") end)
+toggleBucket4.MouseButton1Click:Connect(function() tStateV2(toggleBucket4, "AutoFillBucket4") end)
+toggleBucket5.MouseButton1Click:Connect(function() tStateV2(toggleBucket5, "AutoFillBucket5") end)
+
 -- HACKER TOGGLE CONNECTORS (1 to 4)
 toggleHacker1.MouseButton1Click:Connect(function() tStateV2(toggleHacker1, "AutoUpgradeHacker1") end)
 toggleHacker2.MouseButton1Click:Connect(function() tStateV2(toggleHacker2, "AutoUpgradeHacker2") end)
@@ -644,6 +806,7 @@ toggleHacker4.MouseButton1Click:Connect(function() tStateV2(toggleHacker4, "Auto
 
 -- FOOTBALL TOGGLE CONNECTORS
 toggleGoalkeeper.MouseButton1Click:Connect(function() tStateV2(toggleGoalkeeper, "AutoUpgradeGoalkeeper") end)
+toggleLeftBack.MouseButton1Click:Connect(function() tStateV2(toggleLeftBack, "AutoUpgradeLeftBack") end)
 toggleLeftCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleLeftCenterBack, "AutoUpgradeLeftCenterBack") end)
 toggleRightCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleRightCenterBack, "AutoUpgradeRightCenterBack") end)
 toggleRightBack.MouseButton1Click:Connect(function() tStateV2(toggleRightBack, "AutoUpgradeRightBack") end)
@@ -710,6 +873,19 @@ toggleFootballRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleFootb
 
 toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
 
+-- ENCHANT TOGGLE CONNECTORS
+toggleEnchantStarter.MouseButton1Click:Connect(function() tStateV2(toggleEnchantStarter, "AutoEnchantStarter") end)
+toggleEnchantCooker.MouseButton1Click:Connect(function() tStateV2(toggleEnchantCooker, "AutoEnchantCooker") end)
+toggleEnchantFarmer.MouseButton1Click:Connect(function() tStateV2(toggleEnchantFarmer, "AutoEnchantFarmer") end)
+toggleEnchantMagician.MouseButton1Click:Connect(function() tStateV2(toggleEnchantMagician, "AutoEnchantMagician") end)
+toggleEnchantArcher.MouseButton1Click:Connect(function() tStateV2(toggleEnchantArcher, "AutoEnchantArcher") end)
+toggleEnchantSoldier.MouseButton1Click:Connect(function() tStateV2(toggleEnchantSoldier, "AutoEnchantSoldier") end)
+toggleEnchantHacker1.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker1, "AutoEnchantHacker1") end)
+toggleEnchantHacker2.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker2, "AutoEnchantHacker2") end)
+toggleEnchantHacker3.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker3, "AutoEnchantHacker3") end)
+toggleEnchantHacker4.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker4, "AutoEnchantHacker4") end)
+toggleEnchantPharaoh.MouseButton1Click:Connect(function() tStateV2(toggleEnchantPharaoh, "AutoEnchantPharaoh") end)
+
 toggleOpenT1ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT1ChestCard, "AutoOpenT1Chest") end)
 toggleOpenT2ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT2ChestCard, "AutoOpenT2Chest") end)
 
@@ -721,8 +897,8 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 local function mainRoute(pOpen, bActive) 
-    realm1MasterPage.Visible, realm2Page.Visible, realm3Page.Visible, footballPage.Visible, runesPage.Visible, capsulesPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabRealm1, tabRealm2, tabRealm3, tabFootball, tabRunes, tabCapsules, tabSettings}
+    realm1MasterPage.Visible, realm2Page.Visible, realm3Page.Visible, footballPage.Visible, runesPage.Visible, capsulesPage.Visible, enchantsPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabRealm1, tabRealm2, tabRealm3, tabFootball, tabRunes, tabCapsules, tabEnchants, tabSettings}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
@@ -732,7 +908,26 @@ tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) 
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end)
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
 tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulesPage, tabCapsules) end)
+tabEnchants.MouseButton1Click:Connect(function() mainRoute(enchantsPage, tabEnchants) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
+
+-- Realm 2 Sub-Tab Router
+local function realm2Route(targetScroll, activeBtn)
+    local scrolls = {realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll}
+    local btns = {r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets}
+    for i, s in ipairs(scrolls) do
+        s.Visible = (s == targetScroll)
+        if s == targetScroll then
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15)
+        else
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170)
+        end
+    end
+end
+r2SubBtnOof.MouseButton1Click:Connect(function() realm2Route(realm2OofScroll, r2SubBtnOof) end)
+r2SubBtnWater.MouseButton1Click:Connect(function() realm2Route(realm2WaterScroll, r2SubBtnWater) end)
+r2SubBtnIce.MouseButton1Click:Connect(function() realm2Route(realm2IceScroll, r2SubBtnIce) end)
+r2SubBtnBuckets.MouseButton1Click:Connect(function() realm2Route(realm2BucketScroll, r2SubBtnBuckets) end)
 
 -- Football Sub-Tab Router
 local function footballRoute(targetScroll, activeBtn)
@@ -810,4 +1005,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Events Football Rune Added Successfully!")
+print("[Dominate Hub] Realm 2 & Enchant Station Coordinates Integrated Successfully!")
