@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (EXPANDED BREAD & ANIMALS ROUND-ROBIN ENGINE)
+-- DOMINATE HUB | FULL SCRIPT (HACKER TAB & NOOBS ADDED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -24,8 +24,11 @@ _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
 
+-- HACKER NOOBS AUTOMATION FLAGS (Hacker 1 through 6)
+_G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4, _G.AutoUpgradeHacker5, _G.AutoUpgradeHacker6 = false, false, false, false, false, false
+
 -- BREAD & ANIMAL AUTOMATION FLAGS
-_G.AutoBreadMoreBread, _G.AutoBreadMoreWheat, _G.AutoBreadBiggerWheatDeposit, _G.AutoDepositWheat = false, false, false, false
+_G.AutoBreadMoreBread, _G.AutoBreadMoreBread2, _G.AutoBreadMoreWheat, _G.AutoBreadBiggerWheatDeposit, _G.AutoDepositWheat = false, false, false, false, false
 _G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMoreRuneLuck, _G.AutoBreadMoreTierLuck = false, false, false, false
 _G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = false, false, false, false
 
@@ -71,13 +74,14 @@ local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) 
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
-local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 80, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 12; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
-local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 80, 1, 0) tabRealm3.Position = UDim2.new(0, 87, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 12; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 80, 1, 0) tabRunes.Position = UDim2.new(0, 172, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 12; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
-local tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 80, 1, 0) tabChests.Position = UDim2.new(0, 257, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 12; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList
-local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 90, 1, 0) tabSettings.Position = UDim2.new(0, 342, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 12; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 68, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 68, 1, 0) tabRealm3.Position = UDim2.new(0, 73, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+local tabHacker = Instance.new("TextButton") tabHacker.Size = UDim2.new(0, 68, 1, 0) tabHacker.Position = UDim2.new(0, 144, 0, 0) tabHacker.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabHacker.TextColor3 = Color3.fromRGB(170, 170, 170) tabHacker.TextSize = 11; tabHacker.Font = Enum.Font.SourceSansBold; tabHacker.Text = "Hacker" tabHacker.Parent = tabList
+local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 68, 1, 0) tabRunes.Position = UDim2.new(0, 215, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+local tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 68, 1, 0) tabChests.Position = UDim2.new(0, 286, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 11; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList
+local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 78, 1, 0) tabSettings.Position = UDim2.new(0, 357, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
 
-Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabHacker).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
 
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 45, 1, 0) subBtnNoobs.Position = UDim2.new(0, 0, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
@@ -98,7 +102,7 @@ local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
 local realm1FireScroll = makeScroll(300)
 local realm1BlazeScroll = makeScroll(360)
-local realm1BreadScroll = makeScroll(600) -- Canvas extended for 12 rows
+local realm1BreadScroll = makeScroll(650)
 local realm1CashScroll = makeScroll(170)
 
 local function gridRow(txt, pos, page)
@@ -142,19 +146,19 @@ local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
 local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
--- BREAD & ANIMALS SUBTAB ROWS
 local toggleDepositWheat = makeSubRow("Auto Deposit Wheat (1m)", 1, realm1BreadScroll)
 local toggleBreadMoreBread = makeSubRow("More Bread (Bread)", 2, realm1BreadScroll)
-local toggleBreadMoreWheat = makeSubRow("More Wheat (Bread)", 3, realm1BreadScroll)
-local toggleBreadBiggerWheatDeposit = makeSubRow("Bigger Wheat Deposit (Bread)", 4, realm1BreadScroll)
-local toggleBreadFasterWheatConversion = makeSubRow("Faster Wheat Conversion (Bread)", 5, realm1BreadScroll)
-local toggleBreadMoreConsumption = makeSubRow("More Consumption (Bread)", 6, realm1BreadScroll)
-local toggleBreadMoreRuneLuck = makeSubRow("More Rune Luck (Bread)", 7, realm1BreadScroll)
-local toggleBreadMoreTierLuck = makeSubRow("More Tier Luck (Bread)", 8, realm1BreadScroll)
-local toggleUpgradeCow = makeSubRow("Upgrade Cow (Level)", 9, realm1BreadScroll)
-local toggleUpgradeChicken = makeSubRow("Upgrade Chicken (Level)", 10, realm1BreadScroll)
-local toggleBuyCow = makeSubRow("Buy Cow (Max)", 11, realm1BreadScroll)
-local toggleBuyChicken = makeSubRow("Buy Chicken (Max)", 12, realm1BreadScroll)
+local toggleBreadMoreBread2 = makeSubRow("More Bread 2 (Bread)", 3, realm1BreadScroll)
+local toggleBreadMoreWheat = makeSubRow("More Wheat (Bread)", 4, realm1BreadScroll)
+local toggleBreadBiggerWheatDeposit = makeSubRow("Bigger Wheat Deposit (Bread)", 5, realm1BreadScroll)
+local toggleBreadFasterWheatConversion = makeSubRow("Faster Wheat Conversion (Bread)", 6, realm1BreadScroll)
+local toggleBreadMoreConsumption = makeSubRow("More Consumption (Bread)", 7, realm1BreadScroll)
+local toggleBreadMoreRuneLuck = makeSubRow("More Rune Luck (Bread)", 8, realm1BreadScroll)
+local toggleBreadMoreTierLuck = makeSubRow("More Tier Luck (Bread)", 9, realm1BreadScroll)
+local toggleUpgradeCow = makeSubRow("Upgrade Cow (Level)", 10, realm1BreadScroll)
+local toggleUpgradeChicken = makeSubRow("Upgrade Chicken (Level)", 11, realm1BreadScroll)
+local toggleBuyCow = makeSubRow("Buy Cow (Max)", 12, realm1BreadScroll)
+local toggleBuyChicken = makeSubRow("Buy Chicken (Max)", 13, realm1BreadScroll)
 
 local toggleAutoFarmCash = makeSubRow("Auto Pad", 1, realm1CashScroll)
 local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
@@ -162,6 +166,18 @@ local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, rea
 local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
 local togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
+
+-- HACKER PAGE & SCROLL (Grid rows for Hacker Noobs 1-6)
+local hackerPage = Instance.new("Frame") hackerPage.Size = UDim2.new(1, -20, 1, -85) hackerPage.Position = UDim2.new(0, 10, 0, 80) hackerPage.BackgroundTransparency = 1; hackerPage.Visible = false; hackerPage.Parent = mainFrame
+local hackerScroll = Instance.new("ScrollingFrame") hackerScroll.Size = UDim2.new(1, 0, 1, 0) hackerScroll.Position = UDim2.new(0, 0, 0, 0) hackerScroll.BackgroundTransparency = 1; hackerScroll.BorderSizePixel = 0; hackerScroll.CanvasSize = UDim2.new(0, 0, 0, 260) hackerScroll.ScrollBarThickness = 3; hackerScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) hackerScroll.Visible = true; hackerScroll.Parent = hackerPage
+
+local toggleHacker1 = gridRow("Auto Upgrade Hacker 1 (Max)", 1, hackerScroll)
+local toggleHacker2 = gridRow("Auto Upgrade Hacker 2 (Max)", 2, hackerScroll)
+local toggleHacker3 = gridRow("Auto Upgrade Hacker 3 (Max)", 3, hackerScroll)
+local toggleHacker4 = gridRow("Auto Upgrade Hacker 4 (Max)", 4, hackerScroll)
+local toggleHacker5 = gridRow("Auto Upgrade Hacker 5 (Max)", 5, hackerScroll)
+local toggleHacker6 = gridRow("Auto Upgrade Hacker 6 (Max)", 6, hackerScroll)
+
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
 local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesPage)
@@ -253,7 +269,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE
+-- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING HACKERS 1-6)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -262,6 +278,13 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeArcher",     T = "UpgradeNoobMax",    A = {"Archer"}},
     {F = "AutoUpgradeSoldier",    T = "UpgradeNoobMax",    A = {"Soldier"}},
     {F = "AutoUpgradePharaoh",    T = "UpgradeNoobMax",    A = {"Pharaoh"}},
+    
+    {F = "AutoUpgradeHacker1",    T = "UpgradeNoobMax",    A = {"Hacker 1"}},
+    {F = "AutoUpgradeHacker2",    T = "UpgradeNoobMax",    A = {"Hacker 2"}},
+    {F = "AutoUpgradeHacker3",    T = "UpgradeNoobMax",    A = {"Hacker 3"}},
+    {F = "AutoUpgradeHacker4",    T = "UpgradeNoobMax",    A = {"Hacker 4"}},
+    {F = "AutoUpgradeHacker5",    T = "UpgradeNoobMax",    A = {"Hacker 5"}},
+    {F = "AutoUpgradeHacker6",    T = "UpgradeNoobMax",    A = {"Hacker 6"}},
     
     {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
     {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
@@ -302,6 +325,7 @@ end)
 local BreadUpgradeList = {
     {F = "AutoBreadMoreWheat",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreWheat"}},
     {F = "AutoBreadMoreBread",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreBread"}},
+    {F = "AutoBreadMoreBread2",         T = "UpgradeUpgradeMax", A = {"Bread", "MoreBread2"}},
     {F = "AutoBreadBiggerWheatDeposit", T = "UpgradeUpgradeMax", A = {"Bread", "BiggerWheatDeposit"}},
     {F = "AutoBreadFasterWheatConversion", T = "UpgradeUpgradeMax", A = {"Bread", "FasterWheatConversion"}},
     {F = "AutoBreadMoreConsumption",    T = "UpgradeUpgradeMax", A = {"Bread", "MoreConsumption"}},
@@ -425,6 +449,14 @@ toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "Auto
 toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
 
+-- HACKER TOGGLE CONNECTORS
+toggleHacker1.MouseButton1Click:Connect(function() tStateV2(toggleHacker1, "AutoUpgradeHacker1") end)
+toggleHacker2.MouseButton1Click:Connect(function() tStateV2(toggleHacker2, "AutoUpgradeHacker2") end)
+toggleHacker3.MouseButton1Click:Connect(function() tStateV2(toggleHacker3, "AutoUpgradeHacker3") end)
+toggleHacker4.MouseButton1Click:Connect(function() tStateV2(toggleHacker4, "AutoUpgradeHacker4") end)
+toggleHacker5.MouseButton1Click:Connect(function() tStateV2(toggleHacker5, "AutoUpgradeHacker5") end)
+toggleHacker6.MouseButton1Click:Connect(function() tStateV2(toggleHacker6, "AutoUpgradeHacker6") end)
+
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
 toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
@@ -439,6 +471,7 @@ toggleFireCashBonus.MouseButton1Click:Connect(function() tStateV2(toggleFireCash
 -- BREAD & ANIMAL TOGGLES
 toggleDepositWheat.MouseButton1Click:Connect(function() tStateV2(toggleDepositWheat, "AutoDepositWheat") end)
 toggleBreadMoreBread.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread, "AutoBreadMoreBread") end)
+toggleBreadMoreBread2.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread2, "AutoBreadMoreBread2") end)
 toggleBreadMoreWheat.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreWheat, "AutoBreadMoreWheat") end)
 toggleBreadBiggerWheatDeposit.MouseButton1Click:Connect(function() tStateV2(toggleBreadBiggerWheatDeposit, "AutoBreadBiggerWheatDeposit") end)
 toggleBreadFasterWheatConversion.MouseButton1Click:Connect(function() tStateV2(toggleBreadFasterWheatConversion, "AutoBreadFasterWheatConversion") end)
@@ -480,13 +513,14 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 local function mainRoute(pOpen, bActive) 
-    realm1MasterPage.Visible, realm3Page.Visible, runesPage.Visible, chestsPage.Visible, settingsPage.Visible = false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabRealm1, tabRealm3, tabRunes, tabChests, tabSettings}
+    realm1MasterPage.Visible, realm3Page.Visible, hackerPage.Visible, runesPage.Visible, chestsPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabRealm1, tabRealm3, tabHacker, tabRunes, tabChests, tabSettings}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
+tabHacker.MouseButton1Click:Connect(function() mainRoute(hackerPage, tabHacker) end)
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
 tabChests.MouseButton1Click:Connect(function() mainRoute(chestsPage, tabChests) end) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
@@ -509,7 +543,7 @@ subBtnRebirth.MouseButton1Click:Connect(function() route(realm1RebirthScroll) en
 subBtnFire.MouseButton1Click:Connect(function() route(realm1FireScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(realm1BlazeScroll) end)
 subBtnBread.MouseButton1Click:Connect(function() route(realm1BreadScroll) end)
-subBtnCash.MouseButton1Click:Connect(function() route(realm1CashScroll) end)
+subBtnCash.MouseButton1Click:Connect(function() TestOrRoute = true route(realm1CashScroll) end)
 
 minBtn.MouseButton1Click:Connect(function() 
     mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
@@ -531,4 +565,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Bread & Animals Suite Loaded!")
+print("[Dominate Hub] Hacker Tab & Automation Loaded!")
