@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (EXPANDED BREAD SUB-TAB & ENGINE)
+-- DOMINATE HUB | FULL SCRIPT (MORE WHEAT PRIORITY FIX)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -97,7 +97,7 @@ local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
 local realm1FireScroll = makeScroll(300)
 local realm1BlazeScroll = makeScroll(360)
-local realm1BreadScroll = makeScroll(360) -- Canvas expanded for new items
+local realm1BreadScroll = makeScroll(360)
 local realm1CashScroll = makeScroll(170)
 
 local function gridRow(txt, pos, page)
@@ -141,7 +141,7 @@ local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
 local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
--- EXPANDED BREAD SUBTAB ROWS
+-- BREAD SUBTAB ROWS
 local toggleDepositWheat = makeSubRow("Auto Deposit Wheat (1m)", 1, realm1BreadScroll)
 local toggleBreadMoreBread = makeSubRow("More Bread (Bread)", 2, realm1BreadScroll)
 local toggleBreadMoreWheat = makeSubRow("More Wheat (Bread)", 3, realm1BreadScroll)
@@ -292,16 +292,17 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED BREAD AUTO-UPGRADE ENGINE (ISOLATED FULL QUEUE)
+-- DEDICATED BREAD AUTO-UPGRADE ENGINE (MORE WHEAT PRIORITIZED FIRST)
 task.spawn(function()
     while Running do
         task.wait(0.4)
         if NetRemote and Running then
-            if _G.AutoBreadMoreBread then 
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreBread") end) task.wait(0.1) 
-            end
+            -- MoreWheat moved to top priority so it grabs currency before MoreBread empties the tank
             if _G.AutoBreadMoreWheat then 
                 pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreWheat") end) task.wait(0.1) 
+            end
+            if _G.AutoBreadMoreBread then 
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreBread") end) task.wait(0.1) 
             end
             if _G.AutoBreadBiggerWheatDeposit then 
                 pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "BiggerWheatDeposit") end) task.wait(0.1) 
@@ -510,4 +511,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Full Bread Suite Engine Loaded!")
+print("[Dominate Hub] Prioritized Bread Upgrade Engine Loaded!")
