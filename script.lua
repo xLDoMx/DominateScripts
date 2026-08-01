@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SET)
+-- DOMINATE HUB | FULL SCRIPT (WITH REALM 2, SNOWY RUNE & ENCHANT STATION COORDS SET)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -63,6 +63,7 @@ _G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = fal
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune = false, false, false, false, false
+_G.AutoRollSnowyRune = false -- Realm 2 Rune
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 -- CAPSULE AUTOMATION FLAGS
@@ -319,11 +320,14 @@ local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScro
 local toggleFootballTree = gridRow("Auto Buy Football Tree (Dynamic PlayerGui)", 6, footballUpgradeScroll)
 local toggleClaimTrophies = gridRow("Auto Buy Trophies (1-10)", 7, footballUpgradeScroll)
 
--- RUNES ROWS
+-- RUNES ROWS (Realm 1)
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesScroll1)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesScroll1)
 local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
 local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
+
+-- RUNES ROWS (Realm 2)
+local toggleRollSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle (Realm 2)", 1, runesScroll2)
 
 -- EVENTS RUNES ROWS
 local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
@@ -364,6 +368,7 @@ local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
+local SnowyRuneVector = Vector3.new(1017.366, 5.866, 3262.671)
 local FootballRuneVector = Vector3.new(-2713.26171875, 36.86155319213867, -15.832250595092773)
 local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
 local EnchantStationVector = Vector3.new(1193.1235, 18.7949, -854.0244) 
@@ -384,7 +389,8 @@ task.spawn(function()
             elseif _G.AutoRollCosmicRune then activeDestination = CosmicRuneVector
             elseif _G.AutoRollAdvancedRune then activeDestination = AdvancedRuneVector
             elseif _G.AutoRollSuperRune then activeDestination = SuperRuneVector
-            elseif _G.AutoRollBasicRune then activeDestination = BasicRuneVector end
+            elseif _G.AutoRollBasicRune then activeDestination = BasicRuneVector
+            elseif _G.AutoRollSnowyRune then activeDestination = SnowyRuneVector end
             if activeDestination and Running and (hrp.Position - activeDestination).Magnitude > 5 then
                 hrp.CFrame = CFrame.new(activeDestination)
             end
@@ -869,6 +875,7 @@ toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRoll
 toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
 toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
+toggleRollSnowyRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSnowyRuneCard, "AutoRollSnowyRune") end)
 toggleFootballRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleFootballRuneCard, "AutoRollFootballRune") end)
 
 toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
@@ -1005,4 +1012,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Realm 2 & Enchant Station Coordinates Integrated Successfully!")
+print("[Dominate Hub] Realm 2 (Snowy Rune Added) & Enchant Station Coordinates Integrated Successfully!")
