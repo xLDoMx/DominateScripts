@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (UI ACTIVATED SIGNAL VERSION)
+-- DOMINATE HUB | FULL SCRIPT (FIXED STARTER NOOB + PRESTIGE REMOTE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -151,7 +151,7 @@ local toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, chest
 
 local toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 1, settingsPage)
 toggleAFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) toggleAFK.TextColor3 = Color3.fromRGB(120, 255, 120) toggleAFK.Text = "ACTIVE"
-local togglePrestige = gridRow("Auto Prestige (GuiButton Activated Event)", 2, settingsPage)
+local togglePrestige = gridRow("Auto Prestige", 2, settingsPage)
 local toggleRebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 3, settingsPage)
 local toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
 toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
@@ -230,9 +230,9 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE
+-- UNIFIED PRIMARY UPGRADE QUEUE (FIXED STARTER NOOB PAYLOAD)
 local PrimaryUpgradeQueue = {
-    {F = "AutoUpgradeStarter",    T = "UpgradeNoobMax",    A = {"Starter"}},
+    {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}}, -- Changed from UpgradeNoobMax -> UpgradeNoob
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
     {F = "AutoUpgradeFarmer",     T = "UpgradeNoobMax",    A = {"Farmer"}},
     {F = "AutoUpgradeMagician",   T = "UpgradeNoobMax",    A = {"Magician"}},
@@ -304,20 +304,13 @@ task.spawn(function()
     end
 end)
 
--- NATIVE UI ACTIVATED SIGNAL PRESTIGE LOOP (SAFE & REMOTE-FREE)
+-- DIRECT PRESTIGE REMOTE LOOP (EXACT SIMPLESPY PAYLOAD)
 task.spawn(function()
     while Running do
-        task.wait(2.5)
-        if _G.AutoPrestige and Running then
+        task.wait(2.0)
+        if _G.AutoPrestige and NetRemote and Running then
             pcall(function()
-                local pGui = player:FindFirstChild("PlayerGui")
-                if pGui then
-                    local targetBtn = pGui:FindFirstChild("Prestige", true) or pGui:FindFirstChild("PrestigeButton", true)
-                    if targetBtn and targetBtn:IsA("GuiButton") then
-                        -- Triggers the game's built-in client UI signal natively
-                        targetBtn.Activated:Fire()
-                    end
-                end
+                NetRemote:FireServer("Prestige")
             end)
         end
     end
@@ -451,4 +444,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Activated UI Signal Engine Loaded!")
+print("[Dominate Hub] Fixed Build Loaded!")
