@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (DEDICATED AUTO KICKER FUNCTION)
+-- DOMINATE HUB | FULL SCRIPT (AUTO KICKER & CLICKER REMOVED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -34,7 +34,6 @@ _G.AutoGoalsMoreGoals = false
 _G.AutoGoalsRuneBulk = false
 _G.AutoGoalsRuneLuck = false
 _G.AutoBuyAutoKick = false
-_G.AutoFootballAutoKicker = false
 
 -- FOOTBALL POSITIONS AUTOMATION FLAGS
 _G.AutoUpgradeAttackingMid = false
@@ -121,7 +120,7 @@ Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new
 -- FOOTBALL SUB-TABS
 local footballSubTabList = Instance.new("Frame") footballSubTabList.Size = UDim2.new(1, 0, 0, 25) footballSubTabList.Position = UDim2.new(0, 0, 0, 0) footballSubTabList.BackgroundTransparency = 1; footballSubTabList.Parent = footballPage
 local footballSubBtnNoobs = Instance.new("TextButton") footballSubBtnNoobs.Size = UDim2.new(0, 110, 1, 0) footballSubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) footballSubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) footballSubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) footballSubBtnNoobs.TextSize = 11; footballSubBtnNoobs.Font = Enum.Font.SourceSansBold; footballSubBtnNoobs.Text = "Football Noobs" footballSubBtnNoobs.Parent = footballSubTabList
-local footballSubBtnUpgrades = Instance.new("TextButton") footballSubBtnUpgrades.Size = UDim2.new(0, 130, 1, 0) footballSubBtnUpgrades.Position = UDim2.new(0, 115, 0, 0) footballSubBtnUpgrades.BackgroundColor3 = Color3.fromRGB(45, 45, 45) footballSubBtnUpgrades.TextColor3 = Color3.fromRGB(170, 170, 170) footballSubBtnUpgrades.TextSize = 11; footballSubBtnUpgrades.Font = Enum.Font.SourceSansBold; footballSubBtnUpgrades.Text = "Goals & Auto Kicker" footballSubBtnUpgrades.Parent = footballSubTabList
+local footballSubBtnUpgrades = Instance.new("TextButton") footballSubBtnUpgrades.Size = UDim2.new(0, 130, 1, 0) footballSubBtnUpgrades.Position = UDim2.new(0, 115, 0, 0) footballSubBtnUpgrades.BackgroundColor3 = Color3.fromRGB(45, 45, 45) footballSubBtnUpgrades.TextColor3 = Color3.fromRGB(170, 170, 170) footballSubBtnUpgrades.TextSize = 11; footballSubBtnUpgrades.Font = Enum.Font.SourceSansBold; footballSubBtnUpgrades.Text = "Goals Upgrades" footballSubBtnUpgrades.Parent = footballSubTabList
 
 Instance.new("UICorner", footballSubBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", footballSubBtnUpgrades).CornerRadius = UDim.new(0, 5)
 
@@ -138,7 +137,7 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 
 local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
-local footballUpgradeScroll = makeScroll(300, footballPage)
+local footballUpgradeScroll = makeScroll(250, footballPage)
 
 local function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -228,8 +227,7 @@ local toggleScoreGoal = gridRow("Auto Score Goal", 1, footballUpgradeScroll)
 local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
 local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
 local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
-local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick (Unlock Bypass)", 5, footballUpgradeScroll)
-local toggleAutoFootballKicker = gridRow("Auto Kick (Active Loop)", 6, footballUpgradeScroll)
+local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScroll)
 
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
@@ -402,20 +400,6 @@ task.spawn(function()
     end
 end)
 
--- ACTIVE AUTO KICKER LOOP (Fires ScoreGoal safely on loop)
-task.spawn(function()
-    while Running do
-        task.wait(0.2)
-        if Running and _G.AutoFootballAutoKicker then
-            pcall(function()
-                if NetRemote then
-                    NetRemote:FireServer("ScoreGoal")
-                end
-            end)
-        end
-    end
-end)
-
 -- INTERLEAVED BREAD & ANIMALS ENGINE (0.8s ROUND-ROBIN PACING)
 local BreadUpgradeList = {
     {F = "AutoBreadMoreWheat",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreWheat"}},
@@ -569,7 +553,6 @@ toggleMoreGoals.MouseButton1Click:Connect(function() tStateV2(toggleMoreGoals, "
 toggleGoalsRuneBulk.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneBulk, "AutoGoalsRuneBulk") end)
 toggleGoalsRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneLuck, "AutoGoalsRuneLuck") end)
 toggleAutoBuyKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoBuyKicker, "AutoBuyAutoKick") end)
-toggleAutoFootballKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoFootballKicker, "AutoFootballAutoKicker") end)
 
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
@@ -696,4 +679,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Auto Kicker Fully Integrated!")
+print("[Dominate Hub] Auto Kicker Completely Removed!")
