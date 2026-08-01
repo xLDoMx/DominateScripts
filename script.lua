@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (CLEANED UI & RESTRUCTURED)
+-- DOMINATE HUB | FULL SCRIPT (WITH CAPSULES TAB & SAFE TELEPORT ENGINE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -58,6 +58,9 @@ _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpg
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
+-- CAPSULE AUTOMATION FLAGS
+_G.AutoOpenClassicCapsule = false
+
 player.Idled:Connect(function()
     if Running and _G.AntiAFK then
         local cam = workspace.CurrentCamera
@@ -88,6 +91,7 @@ local realm2Page = Instance.new("Frame") realm2Page.Size = UDim2.new(1, -20, 1, 
 local realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
 local footballPage = Instance.new("Frame") footballPage.Size = UDim2.new(1, -20, 1, -85) footballPage.Position = UDim2.new(0, 10, 0, 80) footballPage.BackgroundTransparency = 1; footballPage.Visible = false; footballPage.Parent = mainFrame
 local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
+local capsulesPage = Instance.new("Frame") capsulesPage.Size = UDim2.new(1, -20, 1, -85) capsulesPage.Position = UDim2.new(0, 10, 0, 80) capsulesPage.BackgroundTransparency = 1; capsulesPage.Visible = false; capsulesPage.Parent = mainFrame
 local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 
 -- UI HEADER & TABS
@@ -97,16 +101,23 @@ local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) 
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
-local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 70, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
-local tabRealm2 = Instance.new("TextButton") tabRealm2.Size = UDim2.new(0, 70, 1, 0) tabRealm2.Position = UDim2.new(0, 74, 0, 0) tabRealm2.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm2.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm2.TextSize = 11; tabRealm2.Font = Enum.Font.SourceSansBold; tabRealm2.Text = "Realm 2" tabRealm2.Parent = tabList
-local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 70, 1, 0) tabRealm3.Position = UDim2.new(0, 146, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-local tabFootball = Instance.new("TextButton") tabFootball.Size = UDim2.new(0, 70, 1, 0) tabFootball.Position = UDim2.new(0, 218, 0, 0) tabFootball.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabFootball.TextColor3 = Color3.fromRGB(170, 170, 170) tabFootball.TextSize = 11; tabFootball.Font = Enum.Font.SourceSansBold; tabFootball.Text = "Football" tabFootball.Parent = tabList
-local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 70, 1, 0) tabRunes.Position = UDim2.new(0, 290, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
-local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 72, 1, 0) tabSettings.Position = UDim2.new(0, 362, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 60, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+local tabRealm2 = Instance.new("TextButton") tabRealm2.Size = UDim2.new(0, 60, 1, 0) tabRealm2.Position = UDim2.new(0, 64, 0, 0) tabRealm2.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm2.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm2.TextSize = 11; tabRealm2.Font = Enum.Font.SourceSansBold; tabRealm2.Text = "Realm 2" tabRealm2.Parent = tabList
+local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 60, 1, 0) tabRealm3.Position = UDim2.new(0, 126, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+local tabFootball = Instance.new("TextButton") tabFootball.Size = UDim2.new(0, 62, 1, 0) tabFootball.Position = UDim2.new(0, 188, 0, 0) tabFootball.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabFootball.TextColor3 = Color3.fromRGB(170, 170, 170) tabFootball.TextSize = 11; tabFootball.Font = Enum.Font.SourceSansBold; tabFootball.Text = "Football" tabFootball.Parent = tabList
+local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tabRunes.Position = UDim2.new(0, 252, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+local tabCapsules = Instance.new("TextButton") tabCapsules.Size = UDim2.new(0, 62, 1, 0) tabCapsules.Position = UDim2.new(0, 314, 0, 0) tabCapsules.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabCapsules.TextColor3 = Color3.fromRGB(170, 170, 170) tabCapsules.TextSize = 11; tabCapsules.Font = Enum.Font.SourceSansBold; tabCapsules.Text = "Capsules" tabCapsules.Parent = tabList
+local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 60, 1, 0) tabSettings.Position = UDim2.new(0, 378, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
 
-Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm2).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabFootball).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) 
+Instance.new("UICorner", tabRealm2).CornerRadius = UDim.new(0, 16) 
+Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) 
+Instance.new("UICorner", tabFootball).CornerRadius = UDim.new(0, 16) 
+Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) 
+Instance.new("UICorner", tabCapsules).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
 
--- REALM 1 SUB-TABS (Noobs, Oof, Rebirth, Fire, Blaze, Farm, Cash, Hacker)
+-- REALM 1 SUB-TABS
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
 local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 42, 1, 0) subBtnNoobs.Position = UDim2.new(0, 0, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 9; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
 local subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 50, 1, 0) subBtnOof.Position = UDim2.new(0, 44, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 9; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof" subBtnOof.Parent = subTabList
@@ -119,7 +130,7 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- RUNES SUB-TABS (Realm 1, Realm 2, Realm 3, Events)
+-- RUNES SUB-TABS
 local runesSubTabList = Instance.new("Frame") runesSubTabList.Size = UDim2.new(1, 0, 0, 25) runesSubTabList.Position = UDim2.new(0, 0, 0, 0) runesSubTabList.BackgroundTransparency = 1; runesSubTabList.Parent = runesPage
 local runesSubBtn1 = Instance.new("TextButton") runesSubBtn1.Size = UDim2.new(0, 80, 1, 0) runesSubBtn1.Position = UDim2.new(0, 0, 0, 0) runesSubBtn1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) runesSubBtn1.TextColor3 = Color3.fromRGB(15, 15, 15) runesSubBtn1.TextSize = 11; runesSubBtn1.Font = Enum.Font.SourceSansBold; runesSubBtn1.Text = "Realm 1" runesSubBtn1.Parent = runesSubTabList
 local runesSubBtn2 = Instance.new("TextButton") runesSubBtn2.Size = UDim2.new(0, 80, 1, 0) runesSubBtn2.Position = UDim2.new(0, 85, 0, 0) runesSubBtn2.BackgroundColor3 = Color3.fromRGB(45, 45, 45) runesSubBtn2.TextColor3 = Color3.fromRGB(170, 170, 170) runesSubBtn2.TextSize = 11; runesSubBtn2.Font = Enum.Font.SourceSansBold; runesSubBtn2.Text = "Realm 2" runesSubBtn2.Parent = runesSubTabList
@@ -154,6 +165,8 @@ local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
 local runesScroll3 = makeScroll(100, runesPage)
 local runesScrollEvents = makeScroll(100, runesPage)
+
+local capsulesScroll = makeScroll(100, capsulesPage) capsulesScroll.Visible = true
 
 local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
 local footballUpgradeScroll = makeScroll(380, footballPage)
@@ -218,7 +231,7 @@ local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScr
 local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
 local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
--- HACKER ROWS (1 to 4) under Realm 1 Hacker subtab
+-- HACKER ROWS (1 to 4)
 local toggleHacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
 local toggleHacker2 = makeSubRow("Auto Upgrade Hacker 2", 2, realm1HackerScroll)
 local toggleHacker3 = makeSubRow("Auto Upgrade Hacker 3", 3, realm1HackerScroll)
@@ -246,13 +259,16 @@ local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScro
 local toggleFootballTree = gridRow("Auto Buy Football Tree (Dynamic PlayerGui)", 6, footballUpgradeScroll)
 local toggleClaimTrophies = gridRow("Auto Buy Trophies (1-10)", 7, footballUpgradeScroll)
 
--- RUNES ROWS (In Realm 1 runes sub-tab)
+-- RUNES ROWS
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesScroll1)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesScroll1)
 local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
 local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
 
--- CHESTS MOVED TO SETTINGS
+-- CAPSULES ROWS
+local toggleClassicCapsule = gridRow("Auto Teleport & Open Classic Capsule", 1, capsulesScroll)
+
+-- SETTINGS / CHESTS
 local toggleOpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, settingsPage)
 local toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, settingsPage)
 local toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 3, settingsPage)
@@ -292,6 +308,39 @@ task.spawn(function()
             if activeDestination and Running and (hrp.Position - activeDestination).Magnitude > 5 then
                 hrp.CFrame = CFrame.new(activeDestination)
             end
+        end
+    end
+end)
+
+-- CAPSULE TELEPORT & AUTO-OPEN ENGINE
+local function teleportToCapsule(capsuleName)
+    local hrp = GetWorldRoot()
+    if not hrp then return end
+
+    local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
+    local uiZones = gameContent and gameContent:FindFirstChild("UIZones")
+    local capsuleFolder = uiZones and uiZones:FindFirstChild("__Capsule" .. capsuleName)
+    local targetPart = capsuleFolder and capsuleFolder:FindFirstChild(capsuleName)
+
+    if targetPart and targetPart:IsA("BasePart") then
+        if (hrp.Position - targetPart.Position).Magnitude > 10 then
+            hrp.CFrame = targetPart.CFrame + Vector3.new(0, 3, 0)
+        end
+    end
+end
+
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if NetRemote and Running and _G.AutoOpenClassicCapsule then
+            teleportToCapsule("Classic")
+            pcall(function()
+                local args = {
+                    [1] = "ToggleMinionAutoOpen",
+                    [2] = "Classic"
+                }
+                NetRemote:FireServer(unpack(args))
+            end)
         end
     end
 end)
@@ -665,6 +714,8 @@ toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRoll
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
 toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
 
+toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
+
 toggleOpenT1ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT1ChestCard, "AutoOpenT1Chest") end)
 toggleOpenT2ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT2ChestCard, "AutoOpenT2Chest") end)
 
@@ -676,8 +727,8 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 local function mainRoute(pOpen, bActive) 
-    realm1MasterPage.Visible, realm2Page.Visible, realm3Page.Visible, footballPage.Visible, runesPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabRealm1, tabRealm2, tabRealm3, tabFootball, tabRunes, tabSettings}
+    realm1MasterPage.Visible, realm2Page.Visible, realm3Page.Visible, footballPage.Visible, runesPage.Visible, capsulesPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabRealm1, tabRealm2, tabRealm3, tabFootball, tabRunes, tabCapsules, tabSettings}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
@@ -686,6 +737,7 @@ tabRealm2.MouseButton1Click:Connect(function() mainRoute(realm2Page, tabRealm2) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end)
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
+tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulesPage, tabCapsules) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 -- Football Sub-Tab Router
@@ -764,4 +816,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] UI Successfully Cleaned and Restructured!")
+print("[Dominate Hub] Capsules Engine & Clean UI Fully Loaded!")
