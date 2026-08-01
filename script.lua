@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (HARDCODED CLASSIC CAPSULE TELEPORT)
+-- DOMINATE HUB | FULL SCRIPT (WITH EVENTS FOOTBALL RUNE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -55,7 +55,7 @@ _G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMore
 _G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = false, false, false, false
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
-_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
+_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune = false, false, false, false, false
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 -- CAPSULE AUTOMATION FLAGS
@@ -265,6 +265,9 @@ local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, 
 local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
 local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
 
+-- EVENTS RUNES ROWS
+local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
+
 -- CAPSULES ROWS
 local toggleClassicCapsule = gridRow("Auto Teleport & Open Classic Capsule", 1, capsulesScroll)
 
@@ -288,6 +291,7 @@ local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1
 local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
+local FootballRuneVector = Vector3.new(-2713.26171875, 36.86155319213867, -15.832250595092773)
 local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
 
 local function GetWorldRoot()
@@ -302,6 +306,7 @@ task.spawn(function()
         if hrp and Running then
             local activeDestination = nil
             if MasterTargetVector then activeDestination = MasterTargetVector
+            elseif _G.AutoRollFootballRune then activeDestination = FootballRuneVector
             elseif _G.AutoRollCosmicRune then activeDestination = CosmicRuneVector
             elseif _G.AutoRollAdvancedRune then activeDestination = AdvancedRuneVector
             elseif _G.AutoRollSuperRune then activeDestination = SuperRuneVector
@@ -701,6 +706,7 @@ toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRoll
 toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
 toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
+toggleFootballRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleFootballRuneCard, "AutoRollFootballRune") end)
 
 toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
 
@@ -804,4 +810,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Hardcoded Capsule Engine Fully Loaded!")
+print("[Dominate Hub] Events Football Rune Added Successfully!")
