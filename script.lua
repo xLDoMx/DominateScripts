@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (ROUND-ROBIN BREAD ENGINE & BALANCED PACING)
+-- DOMINATE HUB | FULL SCRIPT (EXPANDED BREAD & ANIMALS ROUND-ROBIN ENGINE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -24,9 +24,10 @@ _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
 
--- BREAD AUTOMATION FLAGS
+-- BREAD & ANIMAL AUTOMATION FLAGS
 _G.AutoBreadMoreBread, _G.AutoBreadMoreWheat, _G.AutoBreadBiggerWheatDeposit, _G.AutoDepositWheat = false, false, false, false
-_G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMoreRuneLuck = false, false, false
+_G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMoreRuneLuck, _G.AutoBreadMoreTierLuck = false, false, false, false
+_G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = false, false, false, false
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
@@ -97,7 +98,7 @@ local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
 local realm1FireScroll = makeScroll(300)
 local realm1BlazeScroll = makeScroll(360)
-local realm1BreadScroll = makeScroll(360)
+local realm1BreadScroll = makeScroll(600) -- Canvas extended for 12 rows
 local realm1CashScroll = makeScroll(170)
 
 local function gridRow(txt, pos, page)
@@ -141,7 +142,7 @@ local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
 local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
--- BREAD SUBTAB ROWS
+-- BREAD & ANIMALS SUBTAB ROWS
 local toggleDepositWheat = makeSubRow("Auto Deposit Wheat (1m)", 1, realm1BreadScroll)
 local toggleBreadMoreBread = makeSubRow("More Bread (Bread)", 2, realm1BreadScroll)
 local toggleBreadMoreWheat = makeSubRow("More Wheat (Bread)", 3, realm1BreadScroll)
@@ -149,6 +150,11 @@ local toggleBreadBiggerWheatDeposit = makeSubRow("Bigger Wheat Deposit (Bread)",
 local toggleBreadFasterWheatConversion = makeSubRow("Faster Wheat Conversion (Bread)", 5, realm1BreadScroll)
 local toggleBreadMoreConsumption = makeSubRow("More Consumption (Bread)", 6, realm1BreadScroll)
 local toggleBreadMoreRuneLuck = makeSubRow("More Rune Luck (Bread)", 7, realm1BreadScroll)
+local toggleBreadMoreTierLuck = makeSubRow("More Tier Luck (Bread)", 8, realm1BreadScroll)
+local toggleUpgradeCow = makeSubRow("Upgrade Cow (Level)", 9, realm1BreadScroll)
+local toggleUpgradeChicken = makeSubRow("Upgrade Chicken (Level)", 10, realm1BreadScroll)
+local toggleBuyCow = makeSubRow("Buy Cow (Max)", 11, realm1BreadScroll)
+local toggleBuyChicken = makeSubRow("Buy Chicken (Max)", 12, realm1BreadScroll)
 
 local toggleAutoFarmCash = makeSubRow("Auto Pad", 1, realm1CashScroll)
 local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
@@ -292,20 +298,25 @@ task.spawn(function()
     end
 end)
 
--- INTERLEAVED BREAD AUTO-UPGRADE ENGINE (PACED FOR FAIR-SHARE SAVING)
+-- INTERLEAVED BREAD & ANIMALS ENGINE (0.8s ROUND-ROBIN PACING)
 local BreadUpgradeList = {
-    {F = "AutoBreadMoreWheat",          U = "MoreWheat"},
-    {F = "AutoBreadMoreBread",          U = "MoreBread"},
-    {F = "AutoBreadBiggerWheatDeposit", U = "BiggerWheatDeposit"},
-    {F = "AutoBreadFasterWheatConversion", U = "FasterWheatConversion"},
-    {F = "AutoBreadMoreConsumption",    U = "MoreConsumption"},
-    {F = "AutoBreadMoreRuneLuck",       U = "MoreRuneLuck"}
+    {F = "AutoBreadMoreWheat",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreWheat"}},
+    {F = "AutoBreadMoreBread",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreBread"}},
+    {F = "AutoBreadBiggerWheatDeposit", T = "UpgradeUpgradeMax", A = {"Bread", "BiggerWheatDeposit"}},
+    {F = "AutoBreadFasterWheatConversion", T = "UpgradeUpgradeMax", A = {"Bread", "FasterWheatConversion"}},
+    {F = "AutoBreadMoreConsumption",    T = "UpgradeUpgradeMax", A = {"Bread", "MoreConsumption"}},
+    {F = "AutoBreadMoreRuneLuck",       T = "UpgradeUpgradeMax", A = {"Bread", "MoreRuneLuck"}},
+    {F = "AutoBreadMoreTierLuck",       T = "UpgradeUpgradeMax", A = {"Bread", "MoreTierLuck"}},
+    {F = "AutoUpgradeCow",              T = "UpgradeAnimal",     A = {"Cow"}},
+    {F = "AutoUpgradeChicken",          T = "UpgradeAnimal",     A = {"Chicken"}},
+    {F = "AutoBuyCow",                  T = "BuyAnimal",         A = {"Cow", true}},
+    {F = "AutoBuyChicken",              T = "BuyAnimal",         A = {"Chicken", true}}
 }
 
 task.spawn(function()
     local breadIndex = 1
     while Running do
-        task.wait(0.8) -- Paced at 0.8s to let currency accumulate naturally
+        task.wait(0.8)
         if NetRemote and Running then
             local attempted = 0
             repeat
@@ -315,9 +326,9 @@ task.spawn(function()
 
                 if _G[currentItem.F] then
                     pcall(function() 
-                        NetRemote:FireServer("UpgradeUpgradeMax", "Bread", currentItem.U) 
+                        NetRemote:FireServer(currentItem.T, unpack(currentItem.A)) 
                     end)
-                    break -- Fired one upgrade turn, yields for 0.8s to let Bread save up for next turn
+                    break
                 end
             until attempted >= #BreadUpgradeList
         end
@@ -425,7 +436,7 @@ toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirt
 toggleFireTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleFireTierLuck, "AutoFireMoreTierLuck") end)
 toggleFireCashBonus.MouseButton1Click:Connect(function() tStateV2(toggleFireCashBonus, "AutoFireMoreCashBonus") end)
 
--- BREAD SUBTAB TOGGLE CONNECTORS
+-- BREAD & ANIMAL TOGGLES
 toggleDepositWheat.MouseButton1Click:Connect(function() tStateV2(toggleDepositWheat, "AutoDepositWheat") end)
 toggleBreadMoreBread.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread, "AutoBreadMoreBread") end)
 toggleBreadMoreWheat.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreWheat, "AutoBreadMoreWheat") end)
@@ -433,6 +444,11 @@ toggleBreadBiggerWheatDeposit.MouseButton1Click:Connect(function() tStateV2(togg
 toggleBreadFasterWheatConversion.MouseButton1Click:Connect(function() tStateV2(toggleBreadFasterWheatConversion, "AutoBreadFasterWheatConversion") end)
 toggleBreadMoreConsumption.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreConsumption, "AutoBreadMoreConsumption") end)
 toggleBreadMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreRuneLuck, "AutoBreadMoreRuneLuck") end)
+toggleBreadMoreTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreTierLuck, "AutoBreadMoreTierLuck") end)
+toggleUpgradeCow.MouseButton1Click:Connect(function() tStateV2(toggleUpgradeCow, "AutoUpgradeCow") end)
+toggleUpgradeChicken.MouseButton1Click:Connect(function() tStateV2(toggleUpgradeChicken, "AutoUpgradeChicken") end)
+toggleBuyCow.MouseButton1Click:Connect(function() tStateV2(toggleBuyCow, "AutoBuyCow") end)
+toggleBuyChicken.MouseButton1Click:Connect(function() tStateV2(toggleBuyChicken, "AutoBuyChicken") end)
 
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
@@ -515,4 +531,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Round-Robin Bread Engine Loaded!")
+print("[Dominate Hub] Bread & Animals Suite Loaded!")
