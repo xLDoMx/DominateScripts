@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (DYNAMIC PLAYERGUI FOOTBALL TREE AUTOMATION)
+-- DOMINATE HUB | FULL SCRIPT (MERGED AUTO KICK & SCORE WITH 1.5s DELAYS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -224,7 +224,7 @@ local toggleRightCenterBack = gridRow("Auto Upgrade RightCenterBack (Max)", 8, f
 local toggleRightDefensiveMid = gridRow("Auto Upgrade RightDefensiveMid (Max)", 9, footballNoobScroll)
 local toggleRightWing = gridRow("Auto Upgrade RightWing (Max)", 10, footballNoobScroll)
 
-local toggleScoreGoal = gridRow("Auto Score Goal", 1, footballUpgradeScroll)
+local toggleScoreGoal = gridRow("Auto Score Goal & Kick (1.5s)", 1, footballUpgradeScroll)
 local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
 local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
 local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
@@ -390,14 +390,26 @@ task.spawn(function()
     end
 end)
 
--- SCORE GOAL LOOP
+-- MERGED AUTO SCORE & KICK LOOP (WITH 1.5s DELAYS)
 task.spawn(function()
     while Running do
-        task.wait(1.0)
+        task.wait(0.2)
         if NetRemote and Running and _G.AutoScoreGoal then
             pcall(function()
-                NetRemote:FireServer("ScoreGoal")
+                local kickArgs = { [1] = "RegisterFootballKick" }
+                NetRemote:FireServer(unpack(kickArgs))
             end)
+            
+            task.wait(1.5)
+            
+            if not Running or not _G.AutoScoreGoal then break end
+            
+            pcall(function()
+                local goalArgs = { [1] = "ScoreGoal" }
+                NetRemote:FireServer(unpack(goalArgs))
+            end)
+            
+            task.wait(1.5)
         end
     end
 end)
@@ -412,18 +424,17 @@ task.spawn(function()
             if treeGui then
                 for _, obj in pairs(treeGui:GetDescendants()) do
                     if not Running or not _G.AutoFootballTree then break end
-                    -- Automatically target any UI element whose name represents a valid node button/frame
                     if (obj:IsA("GuiButton") or obj:IsA("Frame")) and obj.Name ~= "Main" and obj.Name ~= "Container" then
                         local nodeKey = obj.Name
                         pcall(function()
                             NetRemote:FireServer("BuyFootballUITreeNode", nodeKey)
                         end)
-                        task.wait(0.5) -- Safe pacing between signals
+                        task.wait(0.5)
                     end
                 end
             end
         end
-        task.wait(5.0) -- Scan interval pass
+        task.wait(5.0)
     end
 end)
 
@@ -707,4 +718,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Dynamic PlayerGui Football Tree Engine Loaded!")
+print("[Dominate Hub] Merged Auto Kick & Score Engine Loaded!")
