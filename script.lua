@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (AUTO KICKER FIX & CLICK SIMULATION)
+-- DOMINATE HUB | FULL SCRIPT (CORRECTED AUTO KICK ARGUMENTS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -32,6 +32,7 @@ _G.AutoScoreGoal = false
 _G.AutoGoalsMoreGoals = false
 _G.AutoGoalsRuneBulk = false
 _G.AutoGoalsRuneLuck = false
+_G.AutoBuyAutoKick = false
 _G.AutoFootballAutoKicker = false
 
 -- FOOTBALL POSITIONS AUTOMATION FLAGS
@@ -136,7 +137,7 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 
 local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
-local footballUpgradeScroll = makeScroll(250, footballPage)
+local footballUpgradeScroll = makeScroll(300, footballPage)
 
 local function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -226,7 +227,8 @@ local toggleScoreGoal = gridRow("Auto Score Goal", 1, footballUpgradeScroll)
 local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
 local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
 local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
-local toggleAutoFootballKicker = gridRow("Auto Kick (Safe Screen-Click Bypass)", 5, footballUpgradeScroll)
+local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick (Unlock Bypass)", 5, footballUpgradeScroll)
+local toggleAutoFootballKicker = gridRow("Auto Kick (Active Loop)", 6, footballUpgradeScroll)
 
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
@@ -319,7 +321,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE
+-- UNIFIED PRIMARY UPGRADE QUEUE (WITH CORRECTED "AutoKick" ARGUMENT)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -367,7 +369,8 @@ local PrimaryUpgradeQueue = {
 
     {F = "AutoGoalsMoreGoals",     T = "UpgradeUpgradeMax", A = {"Goals", "MoreGoals"}},
     {F = "AutoGoalsRuneBulk",      T = "UpgradeUpgradeMax", A = {"Goals", "RuneBulk"}},
-    {F = "AutoGoalsRuneLuck",      T = "UpgradeUpgradeMax", A = {"Goals", "RuneLuck"}}
+    {F = "AutoGoalsRuneLuck",      T = "UpgradeUpgradeMax", A = {"Goals", "RuneLuck"}},
+    {F = "AutoBuyAutoKick",        T = "UpgradeUpgradeMax", A = {"Goals", "AutoKick"}}
 }
 
 task.spawn(function()
@@ -398,7 +401,7 @@ task.spawn(function()
     end
 end)
 
--- SAFE AUTO KICKER LOOP (Fires ScoreGoal + Safely simulates screen click using VirtualUser)
+-- ACTIVE AUTO KICKER LOOP
 task.spawn(function()
     while Running do
         task.wait(0.2)
@@ -407,7 +410,6 @@ task.spawn(function()
                 if NetRemote then
                     NetRemote:FireServer("ScoreGoal")
                 end
-                -- Safely simulate screen click just like a manual click
                 vu:Button1Down(Vector2.new(200, 200))
                 task.wait(0.05)
                 vu:Button1Up(Vector2.new(200, 200))
@@ -568,6 +570,7 @@ toggleScoreGoal.MouseButton1Click:Connect(function() tStateV2(toggleScoreGoal, "
 toggleMoreGoals.MouseButton1Click:Connect(function() tStateV2(toggleMoreGoals, "AutoGoalsMoreGoals") end)
 toggleGoalsRuneBulk.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneBulk, "AutoGoalsRuneBulk") end)
 toggleGoalsRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneLuck, "AutoGoalsRuneLuck") end)
+toggleAutoBuyKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoBuyKicker, "AutoBuyAutoKick") end)
 toggleAutoFootballKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoFootballKicker, "AutoFootballAutoKicker") end)
 
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
@@ -688,11 +691,11 @@ mainFrame.InputBegan:Connect(function(input)
     end
 end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
-game:GetService("UserInputService").InputChanged:Connect(function(input)
+game:nested = game:GetService("UserInputService").InputChanged:Connect(function(input)
     if input == dragInput and dragging then
         local delta = input.Position - dragStart
         mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
 
-print("[Dominate Hub] Auto Kicker VirtualClick Bypass Loaded!")
+print("[Dominate Hub] Auto Kick Argument Corrected!")
