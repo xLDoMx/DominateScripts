@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (MERGED AUTO KICK & SCORE WITH 1.5s DELAYS)
+-- DOMINATE HUB | FULL SCRIPT (DEBUGGED AUTO KICK & SCORE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -66,12 +66,19 @@ player.Idled:Connect(function()
 end)
 
 task.spawn(function()
+    print("[Dominate Hub] Searching for network remotes...")
     repeat
         local netService = ReplicatedStorage:WaitForChild("__Net", 5)
         if netService then
             NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent")
+            if NetRemote then
+                print("[Dominate Hub] Successfully located NetRemote:", NetRemote:GetFullName())
+            end
         end
-        if not NetRemote then task.wait(0.5) end
+        if not NetRemote then 
+            print("[Dominate Hub] NetRemote not found yet, retrying...")
+            task.wait(1) 
+        end
     until NetRemote or not Running
 end)
 
@@ -224,7 +231,7 @@ local toggleRightCenterBack = gridRow("Auto Upgrade RightCenterBack (Max)", 8, f
 local toggleRightDefensiveMid = gridRow("Auto Upgrade RightDefensiveMid (Max)", 9, footballNoobScroll)
 local toggleRightWing = gridRow("Auto Upgrade RightWing (Max)", 10, footballNoobScroll)
 
-local toggleScoreGoal = gridRow("Auto Score Goal & Kick (1.5s)", 1, footballUpgradeScroll)
+local toggleScoreGoal = gridRow("Auto Score & Kick (1.5s Debug)", 1, footballUpgradeScroll)
 local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
 local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
 local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
@@ -390,24 +397,36 @@ task.spawn(function()
     end
 end)
 
--- MERGED AUTO SCORE & KICK LOOP (WITH 1.5s DELAYS)
+-- DEBUGGED AUTO SCORE & KICK LOOP (WITH 1.5s DELAYS & CONSOLE PRINTS)
 task.spawn(function()
     while Running do
         task.wait(0.2)
-        if NetRemote and Running and _G.AutoScoreGoal then
-            pcall(function()
-                local kickArgs = { [1] = "RegisterFootballKick" }
-                NetRemote:FireServer(unpack(kickArgs))
+        if not NetRemote then
+            print("[Dominate Hub Debug] AutoScore: Waiting for NetRemote to load...")
+            task.wait(1.0)
+        elseif not _G.AutoScoreGoal then
+            -- Do nothing while toggled off, avoid spamming console
+            task.wait(0.5)
+        else
+            print("[Dominate Hub Debug] Firing RegisterFootballKick...")
+            local success1, err1 = pcall(function()
+                NetRemote:FireServer("RegisterFootballKick")
             end)
+            if not success1 then
+                print("[Dominate Hub Debug] RegisterFootballKick Error:", err1)
+            end
             
             task.wait(1.5)
             
             if not Running or not _G.AutoScoreGoal then break end
             
-            pcall(function()
-                local goalArgs = { [1] = "ScoreGoal" }
-                NetRemote:FireServer(unpack(goalArgs))
+            print("[Dominate Hub Debug] Firing ScoreGoal...")
+            local success2, err2 = pcall(function()
+                NetRemote:FireServer("ScoreGoal")
             end)
+            if not success2 then
+                print("[Dominate Hub Debug] ScoreGoal Error:", err2)
+            end
             
             task.wait(1.5)
         end
@@ -718,4 +737,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Merged Auto Kick & Score Engine Loaded!")
+print("[Dominate Hub] Debug Engine Fully Loaded! Open F9 to check activity.")
