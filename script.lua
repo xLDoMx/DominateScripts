@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SET)
+-- DOMINATE HUB | FULL SCRIPT (WITH SNOWY RUNE & ENCHANT STATION COORDS SET)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -24,12 +24,6 @@ _G.AutoFireMoreFire, _G.AutoFireMoreBulk, _G.AutoFireMoreOof, _G.AutoFireMoreReb
 _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
-
--- REALM 2 AUTOMATION FLAGS
-_G.AutoRealm2MoreOof, _G.AutoRealm2MoreWalkSpeed = false, false
-_G.AutoRealm2MoreWater, _G.AutoRealm2MoreOofWater, _G.AutoRealm2MorePlanks = false, false, false
-_G.AutoRealm2MoreIce, _G.AutoRealm2WaterPump1, _G.AutoRealm2WaterPump2, _G.AutoRealm2MoreOofIce = false, false, false, false
-_G.AutoFillBucket1, _G.AutoFillBucket2, _G.AutoFillBucket3, _G.AutoFillBucket4, _G.AutoFillBucket5 = false, false, false, false, false
 
 -- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
@@ -62,7 +56,7 @@ _G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMore
 _G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = false, false, false, false
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
-_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune = false, false, false, false, false
+_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune, _G.AutoRollSnowyRune = false, false, false, false, false, false
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 -- CAPSULE AUTOMATION FLAGS
@@ -153,18 +147,6 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- REALM 2 SUB-TABS
-local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
-local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 75, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 0, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnOof.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
-local r2SubBtnWater = Instance.new("TextButton") r2SubBtnWater.Size = UDim2.new(0, 75, 1, 0) r2SubBtnWater.Position = UDim2.new(0, 80, 0, 0) r2SubBtnWater.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWater.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWater.TextSize = 10; r2SubBtnWater.Font = Enum.Font.SourceSansBold; r2SubBtnWater.Text = "Water" r2SubBtnWater.Parent = realm2SubTabList
-local r2SubBtnIce = Instance.new("TextButton") r2SubBtnIce.Size = UDim2.new(0, 75, 1, 0) r2SubBtnIce.Position = UDim2.new(0, 160, 0, 0) r2SubBtnIce.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnIce.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnIce.TextSize = 10; r2SubBtnIce.Font = Enum.Font.SourceSansBold; r2SubBtnIce.Text = "Ice" r2SubBtnIce.Parent = realm2SubTabList
-local r2SubBtnBuckets = Instance.new("TextButton") r2SubBtnBuckets.Size = UDim2.new(0, 95, 1, 0) r2SubBtnBuckets.Position = UDim2.new(0, 240, 0, 0) r2SubBtnBuckets.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnBuckets.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnBuckets.TextSize = 10; r2SubBtnBuckets.Font = Enum.Font.SourceSansBold; r2SubBtnBuckets.Text = "Water Buckets" r2SubBtnBuckets.Parent = realm2SubTabList
-
-Instance.new("UICorner", r2SubBtnOof).CornerRadius = UDim.new(0, 5)
-Instance.new("UICorner", r2SubBtnWater).CornerRadius = UDim.new(0, 5)
-Instance.new("UICorner", r2SubBtnIce).CornerRadius = UDim.new(0, 5)
-Instance.new("UICorner", r2SubBtnBuckets).CornerRadius = UDim.new(0, 5)
-
 -- RUNES SUB-TABS
 local runesSubTabList = Instance.new("Frame") runesSubTabList.Size = UDim2.new(1, 0, 0, 25) runesSubTabList.Position = UDim2.new(0, 0, 0, 0) runesSubTabList.BackgroundTransparency = 1; runesSubTabList.Parent = runesPage
 local runesSubBtn1 = Instance.new("TextButton") runesSubBtn1.Size = UDim2.new(0, 80, 1, 0) runesSubBtn1.Position = UDim2.new(0, 0, 0, 0) runesSubBtn1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) runesSubBtn1.TextColor3 = Color3.fromRGB(15, 15, 15) runesSubBtn1.TextSize = 11; runesSubBtn1.Font = Enum.Font.SourceSansBold; runesSubBtn1.Text = "Realm 1" runesSubBtn1.Parent = runesSubTabList
@@ -194,11 +176,7 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 local realm1HackerScroll = makeScroll(220, realm1MasterPage)
 
--- REALM 2 SCROLL FRAMES
-local realm2OofScroll = makeScroll(110, realm2Page) realm2OofScroll.Visible = true
-local realm2WaterScroll = makeScroll(160, realm2Page)
-local realm2IceScroll = makeScroll(210, realm2Page)
-local realm2BucketScroll = makeScroll(250, realm2Page)
+local realm2Scroll = makeScroll(100, realm2Page) realm2Scroll.Visible = true
 
 local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
@@ -271,25 +249,6 @@ local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScr
 local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
 local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
--- REALM 2 ROWS
-local toggleR2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
-local toggleR2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
-
-local toggleR2MoreWater = gridRow("More Water", 1, realm2WaterScroll)
-local toggleR2WaterOof = gridRow("More Oof (Water)", 2, realm2WaterScroll)
-local toggleR2Planks = gridRow("More Planks", 3, realm2WaterScroll)
-
-local toggleR2MoreIce = gridRow("More Ice", 1, realm2IceScroll)
-local toggleR2WaterPump1 = gridRow("Water Pump Noob Hire (1)", 2, realm2IceScroll)
-local toggleR2WaterPump2 = gridRow("Water From Ice", 3, realm2IceScroll)
-local toggleR2IceOof = gridRow("More Oof (Ice)", 4, realm2IceScroll)
-
-local toggleBucket1 = gridRow("Auto Fill Bucket #1", 1, realm2BucketScroll)
-local toggleBucket2 = gridRow("Auto Fill Bucket #2", 2, realm2BucketScroll)
-local toggleBucket3 = gridRow("Auto Fill Bucket #3", 3, realm2BucketScroll)
-local toggleBucket4 = gridRow("Auto Fill Bucket #4", 4, realm2BucketScroll)
-local toggleBucket5 = gridRow("Auto Fill Bucket #5", 5, realm2BucketScroll)
-
 -- HACKER ROWS (1 to 4)
 local toggleHacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
 local toggleHacker2 = makeSubRow("Auto Upgrade Hacker 2", 2, realm1HackerScroll)
@@ -324,6 +283,9 @@ local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1,
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesScroll1)
 local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
 local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
+
+-- REALM 2 RUNES ROWS (Snowy Rune Added)
+local toggleRollSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle (Realm 2)", 1, runesScroll2)
 
 -- EVENTS RUNES ROWS
 local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
@@ -365,7 +327,9 @@ local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
 local FootballRuneVector = Vector3.new(-2713.26171875, 36.86155319213867, -15.832250595092773)
+local SnowyRuneVector = Vector3.new(1017.366, 5.866, 3262.671) -- Added Snowy Rune Vector
 local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
+-- Updated Enchant Station Vector from your position grabber
 local EnchantStationVector = Vector3.new(1193.1235, 18.7949, -854.0244) 
 
 local function GetWorldRoot()
@@ -381,6 +345,7 @@ task.spawn(function()
             local activeDestination = nil
             if MasterTargetVector then activeDestination = MasterTargetVector
             elseif _G.AutoRollFootballRune then activeDestination = FootballRuneVector
+            elseif _G.AutoRollSnowyRune then activeDestination = SnowyRuneVector
             elseif _G.AutoRollCosmicRune then activeDestination = CosmicRuneVector
             elseif _G.AutoRollAdvancedRune then activeDestination = AdvancedRuneVector
             elseif _G.AutoRollSuperRune then activeDestination = SuperRuneVector
@@ -412,7 +377,7 @@ task.spawn(function()
     end
 end)
 
--- ENCHANTS AUTO-REROLL ENGINE
+-- ENCHANTS AUTO-REROLL ENGINE (TELEPORT TO STATION & REROLL UNLOCKED NOOBS)
 local EnchantQueue = {
     {F = "AutoEnchantStarter",  A = {"Starter"}},
     {F = "AutoEnchantCooker",   A = {"Cooker"}},
@@ -497,7 +462,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING REALM 2)
+-- UNIFIED PRIMARY UPGRADE QUEUE
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -527,16 +492,6 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
     {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
     
-    {F = "AutoRealm2MoreOof",      T = "UpgradeUpgradeMax", A = {"Oof", "MoreOofRealm2"}},
-    {F = "AutoRealm2MoreWalkSpeed",T = "UpgradeUpgradeMax", A = {"Oof", "MoreWalkSpeedRealm2"}},
-    {F = "AutoRealm2MoreWater",    T = "UpgradeUpgradeMax", A = {"Water", "MoreWater"}},
-    {F = "AutoRealm2MoreOofWater", T = "UpgradeUpgradeMax", A = {"Water", "MoreOof"}},
-    {F = "AutoRealm2MorePlanks",   T = "UpgradeUpgradeMax", A = {"Water", "MorePlanks"}},
-    {F = "AutoRealm2MoreIce",      T = "UpgradeUpgradeMax", A = {"Ice", "MoreIce"}},
-    {F = "AutoRealm2WaterPump1",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterPumpNoobHire"}},
-    {F = "AutoRealm2WaterPump2",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterFromIce"}},
-    {F = "AutoRealm2MoreOofIce",   T = "UpgradeUpgradeMax", A = {"Ice", "MoreOof"}},
-
     {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
     {F = "AutoRebirthMoreRebirth",T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreRebirth"}},
     {F = "AutoRebirthMoreFire",   T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreFire"}},
@@ -574,24 +529,7 @@ task.spawn(function()
     end
 end)
 
--- WATER BUCKETS AUTO FILL ENGINE (1 TO 5)
-task.spawn(function()
-    while Running do
-        task.wait(0.5)
-        if NetRemote and Running then
-            for i = 1, 5 do
-                if _G["AutoFillBucket" .. i] then
-                    pcall(function()
-                        NetRemote:FireServer("FillWaterBucket", i)
-                    end)
-                    task.wait(0.2)
-                end
-            end
-        end
-    end
-end)
-
--- AUTO SCORE & KICK LOOP
+-- AUTO SCORE & KICK LOOP (WITH 1.5s DELAYS)
 task.spawn(function()
     while Running do
         task.wait(0.2)
@@ -691,7 +629,7 @@ task.spawn(function()
     end
 end)
 
--- AUTO DEPOSIT WHEAT LOOP
+-- AUTO DEPOSIT WHEAT LOOP (1-MINUTE INTERVAL)
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -781,23 +719,6 @@ toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "Auto
 toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
 
--- REALM 2 TOGGLE CONNECTORS
-toggleR2MoreOof.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreOof, "AutoRealm2MoreOof") end)
-toggleR2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(toggleR2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
-toggleR2MoreWater.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreWater, "AutoRealm2MoreWater") end)
-toggleR2WaterOof.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterOof, "AutoRealm2MoreOofWater") end)
-toggleR2Planks.MouseButton1Click:Connect(function() tStateV2(toggleR2Planks, "AutoRealm2MorePlanks") end)
-toggleR2MoreIce.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreIce, "AutoRealm2MoreIce") end)
-toggleR2WaterPump1.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterPump1, "AutoRealm2WaterPump1") end)
-toggleR2WaterPump2.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterPump2, "AutoRealm2WaterPump2") end)
-toggleR2IceOof.MouseButton1Click:Connect(function() tStateV2(toggleR2IceOof, "AutoRealm2MoreOofIce") end)
-
-toggleBucket1.MouseButton1Click:Connect(function() tStateV2(toggleBucket1, "AutoFillBucket1") end)
-toggleBucket2.MouseButton1Click:Connect(function() tStateV2(toggleBucket2, "AutoFillBucket2") end)
-toggleBucket3.MouseButton1Click:Connect(function() tStateV2(toggleBucket3, "AutoFillBucket3") end)
-toggleBucket4.MouseButton1Click:Connect(function() tStateV2(toggleBucket4, "AutoFillBucket4") end)
-toggleBucket5.MouseButton1Click:Connect(function() tStateV2(toggleBucket5, "AutoFillBucket5") end)
-
 -- HACKER TOGGLE CONNECTORS (1 to 4)
 toggleHacker1.MouseButton1Click:Connect(function() tStateV2(toggleHacker1, "AutoUpgradeHacker1") end)
 toggleHacker2.MouseButton1Click:Connect(function() tStateV2(toggleHacker2, "AutoUpgradeHacker2") end)
@@ -869,6 +790,7 @@ toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRoll
 toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
 toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
+toggleRollSnowyRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSnowyRuneCard, "AutoRollSnowyRune") end)
 toggleFootballRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleFootballRuneCard, "AutoRollFootballRune") end)
 
 toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
@@ -910,24 +832,6 @@ tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end
 tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulesPage, tabCapsules) end)
 tabEnchants.MouseButton1Click:Connect(function() mainRoute(enchantsPage, tabEnchants) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
-
--- Realm 2 Sub-Tab Router
-local function realm2Route(targetScroll, activeBtn)
-    local scrolls = {realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll}
-    local btns = {r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets}
-    for i, s in ipairs(scrolls) do
-        s.Visible = (s == targetScroll)
-        if s == targetScroll then
-            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15)
-        else
-            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170)
-        end
-    end
-end
-r2SubBtnOof.MouseButton1Click:Connect(function() realm2Route(realm2OofScroll, r2SubBtnOof) end)
-r2SubBtnWater.MouseButton1Click:Connect(function() realm2Route(realm2WaterScroll, r2SubBtnWater) end)
-r2SubBtnIce.MouseButton1Click:Connect(function() realm2Route(realm2IceScroll, r2SubBtnIce) end)
-r2SubBtnBuckets.MouseButton1Click:Connect(function() realm2Route(realm2BucketScroll, r2SubBtnBuckets) end)
 
 -- Football Sub-Tab Router
 local function footballRoute(targetScroll, activeBtn)
@@ -1005,4 +909,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Realm 2 & Enchant Station Coordinates Integrated Successfully!")
+print("[Dominate Hub] Snowy Rune & Coordinates Applied Successfully!")
