@@ -312,7 +312,6 @@ task.spawn(function()
     end
 end)
 
--- CAPSULE TELEPORT & AUTO-OPEN ENGINE
 local function teleportToCapsule(capsuleName)
     local hrp = GetWorldRoot()
     if not hrp then return end
@@ -320,12 +319,23 @@ local function teleportToCapsule(capsuleName)
     local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
     local uiZones = gameContent and gameContent:FindFirstChild("UIZones")
     local capsuleFolder = uiZones and uiZones:FindFirstChild("__Capsule" .. capsuleName)
-    local targetPart = capsuleFolder and capsuleFolder:FindFirstChild(capsuleName)
+    local targetObj = capsuleFolder and capsuleFolder:FindFirstChild(capsuleName)
 
-    if targetPart and targetPart:IsA("BasePart") then
-        if (hrp.Position - targetPart.Position).Magnitude > 10 then
-            hrp.CFrame = targetPart.CFrame + Vector3.new(0, 3, 0)
+    if targetObj then
+        local targetCFrame = nil
+        if targetObj:IsA("BasePart") then
+            targetCFrame = targetObj.CFrame
+        elseif targetObj:IsA("Model") then
+            targetCFrame = targetObj:GetPivot()
         end
+
+        if targetCFrame then
+            if (hrp.Position - targetCFrame.Position).Magnitude > 10 then
+                hrp.CFrame = targetCFrame + Vector3.new(0, 3, 0)
+            end
+        end
+    else
+        print("[Dominate Hub Debug] Could not find capsule object for:", capsuleName)
     end
 end
 
