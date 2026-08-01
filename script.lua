@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (1-MINUTE WHEAT DEPOSIT LOOP)
+-- DOMINATE HUB | FULL SCRIPT (EXPANDED BREAD SUB-TAB & ENGINE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -26,6 +26,7 @@ _G.AutoUpgradePharaoh = false
 
 -- BREAD AUTOMATION FLAGS
 _G.AutoBreadMoreBread, _G.AutoBreadMoreWheat, _G.AutoBreadBiggerWheatDeposit, _G.AutoDepositWheat = false, false, false, false
+_G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMoreRuneLuck = false, false, false
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
@@ -96,7 +97,7 @@ local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
 local realm1FireScroll = makeScroll(300)
 local realm1BlazeScroll = makeScroll(360)
-local realm1BreadScroll = makeScroll(210)
+local realm1BreadScroll = makeScroll(360) -- Canvas expanded for new items
 local realm1CashScroll = makeScroll(170)
 
 local function gridRow(txt, pos, page)
@@ -140,11 +141,14 @@ local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
 local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
--- BREAD SUBTAB ROWS
+-- EXPANDED BREAD SUBTAB ROWS
 local toggleDepositWheat = makeSubRow("Auto Deposit Wheat (1m)", 1, realm1BreadScroll)
 local toggleBreadMoreBread = makeSubRow("More Bread (Bread)", 2, realm1BreadScroll)
 local toggleBreadMoreWheat = makeSubRow("More Wheat (Bread)", 3, realm1BreadScroll)
 local toggleBreadBiggerWheatDeposit = makeSubRow("Bigger Wheat Deposit (Bread)", 4, realm1BreadScroll)
+local toggleBreadFasterWheatConversion = makeSubRow("Faster Wheat Conversion (Bread)", 5, realm1BreadScroll)
+local toggleBreadMoreConsumption = makeSubRow("More Consumption (Bread)", 6, realm1BreadScroll)
+local toggleBreadMoreRuneLuck = makeSubRow("More Rune Luck (Bread)", 7, realm1BreadScroll)
 
 local toggleAutoFarmCash = makeSubRow("Auto Pad", 1, realm1CashScroll)
 local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
@@ -243,7 +247,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING BREAD UPGRADES)
+-- UNIFIED PRIMARY UPGRADE QUEUE
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -266,11 +270,6 @@ local PrimaryUpgradeQueue = {
     {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
     {F = "AutoFireMoreTierLuck",  T = "UpgradeUpgradeMax", A = {"Fire", "MoreTierLuck"}},
     {F = "AutoFireMoreCashBonus", T = "UpgradeUpgradeMax", A = {"Fire", "MoreCashBonus"}},
-
-    -- BREAD UPGRADES
-    {F = "AutoBreadMoreBread",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreBread"}},
-    {F = "AutoBreadMoreWheat",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreWheat"}},
-    {F = "AutoBreadBiggerWheatDeposit", T = "UpgradeUpgradeMax", A = {"Bread", "BiggerWheatDeposit"}},
     
     {F = "AutoUpgradeMoreCash",    T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
@@ -288,6 +287,33 @@ task.spawn(function()
                     pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) 
                     task.wait(0.1) 
                 end
+            end
+        end
+    end
+end)
+
+-- DEDICATED BREAD AUTO-UPGRADE ENGINE (ISOLATED FULL QUEUE)
+task.spawn(function()
+    while Running do
+        task.wait(0.4)
+        if NetRemote and Running then
+            if _G.AutoBreadMoreBread then 
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreBread") end) task.wait(0.1) 
+            end
+            if _G.AutoBreadMoreWheat then 
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreWheat") end) task.wait(0.1) 
+            end
+            if _G.AutoBreadBiggerWheatDeposit then 
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "BiggerWheatDeposit") end) task.wait(0.1) 
+            end
+            if _G.AutoBreadFasterWheatConversion then 
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "FasterWheatConversion") end) task.wait(0.1) 
+            end
+            if _G.AutoBreadMoreConsumption then 
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreConsumption") end) task.wait(0.1) 
+            end
+            if _G.AutoBreadMoreRuneLuck then 
+                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreRuneLuck") end) task.wait(0.1) 
             end
         end
     end
@@ -399,6 +425,9 @@ toggleDepositWheat.MouseButton1Click:Connect(function() tStateV2(toggleDepositWh
 toggleBreadMoreBread.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread, "AutoBreadMoreBread") end)
 toggleBreadMoreWheat.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreWheat, "AutoBreadMoreWheat") end)
 toggleBreadBiggerWheatDeposit.MouseButton1Click:Connect(function() tStateV2(toggleBreadBiggerWheatDeposit, "AutoBreadBiggerWheatDeposit") end)
+toggleBreadFasterWheatConversion.MouseButton1Click:Connect(function() tStateV2(toggleBreadFasterWheatConversion, "AutoBreadFasterWheatConversion") end)
+toggleBreadMoreConsumption.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreConsumption, "AutoBreadMoreConsumption") end)
+toggleBreadMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreRuneLuck, "AutoBreadMoreRuneLuck") end)
 
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
@@ -481,4 +510,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] 1-Minute Wheat Deposit Build Loaded!")
+print("[Dominate Hub] Full Bread Suite Engine Loaded!")
