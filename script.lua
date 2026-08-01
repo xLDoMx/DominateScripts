@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (TYPO FIXED)
+-- DOMINATE HUB | FULL SCRIPT (DEDICATED AUTO KICKER FUNCTION)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -402,7 +402,7 @@ task.spawn(function()
     end
 end)
 
--- ACTIVE AUTO KICKER LOOP
+-- ACTIVE AUTO KICKER LOOP (Fires ScoreGoal safely on loop)
 task.spawn(function()
     while Running do
         task.wait(0.2)
@@ -411,9 +411,6 @@ task.spawn(function()
                 if NetRemote then
                     NetRemote:FireServer("ScoreGoal")
                 end
-                vu:Button1Down(Vector2.new(200, 200))
-                task.wait(0.05)
-                vu:Button1Up(Vector2.new(200, 200))
             end)
         end
     end
@@ -699,4 +696,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Typo Fixed & Loaded Successfully!")
+print("[Dominate Hub] Auto Kicker Fully Integrated!")
