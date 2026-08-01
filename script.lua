@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (AUTO KICKER & CLICKER REMOVED)
+-- DOMINATE HUB | FULL SCRIPT (EXTRA SAFE PACED DELAYS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -16,6 +16,7 @@ local Running = true
 local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
+local UIFootballTreeModule = nil
 
 _G.AntiAFK, _G.AutoPrestige = true, false
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
@@ -34,6 +35,7 @@ _G.AutoGoalsMoreGoals = false
 _G.AutoGoalsRuneBulk = false
 _G.AutoGoalsRuneLuck = false
 _G.AutoBuyAutoKick = false
+_G.AutoFootballTree = false
 
 -- FOOTBALL POSITIONS AUTOMATION FLAGS
 _G.AutoUpgradeAttackingMid = false
@@ -55,6 +57,21 @@ _G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = fal
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
+
+-- MASTER FOOTBALL TREE NODE DATABASE
+local FootballTreeNodes = {
+    "TheStart", "GoalsMulti1", "GoalsMulti2", "GoalsMulti3", "BigGoalMulti", "GoalsSpeed", 
+    "RuneLuckNode", "RuneBulkNode", "UnlockSoccerCapsule", "SoccerCapsuleLuck", 
+    "PRuneSpeed", "PRuneBulk", "UnlockNoob2", "UnlockNoob3", "UnlockNoob4", "UnlockNoob5", 
+    "UnlockNoob6", "UnlockNoob7", "UnlockNoob8", "UnlockNoob9", "UnlockNoob10", "UnlockNoob11",
+    "B2_GoalsMul", "B2_TierBulk", "B2_TierBulk2", "B2_TierLuck", "B2_PrismMul", "B2_PrismMul2", 
+    "B2_GemMul", "B2_RuneLuck", "B2_RuneSpeed", "B2_OofMul", "B2_HackPointMul", "B2_RuneBulk",
+    "B3_HackPointMul", "B3_UnlockNoobinials", "B3_TierBulk", "B3_AutoNoob1", "B3_AutoNoob2", 
+    "B3_AutoNoob3", "B3_AutoNoob4", "B3_AutoNoob5", "B3_AutoNoob6", "B3_AutoNoob7", "B3_AutoNoob8", 
+    "B3_AutoNoob9", "B3_AutoNoob10", "B3_AutoNoob11", "B3_RuneLuck", "B3_PlankMulti", "B3_MineralMul", 
+    "B3_OreDamage", "B3_OofMulti", "B3_RuneSpeed", "B3_UnlockSoccerRune", "B3_GemMulti", "B3_PrismMult", 
+    "B3_GoalUpgradesFree", "B3_WaterMulti", "B3_TierLuck", "B3_AuraLuck", "B3_RuneBulk"
+}
 
 player.Idled:Connect(function()
     if Running and _G.AntiAFK then
@@ -120,7 +137,7 @@ Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new
 -- FOOTBALL SUB-TABS
 local footballSubTabList = Instance.new("Frame") footballSubTabList.Size = UDim2.new(1, 0, 0, 25) footballSubTabList.Position = UDim2.new(0, 0, 0, 0) footballSubTabList.BackgroundTransparency = 1; footballSubTabList.Parent = footballPage
 local footballSubBtnNoobs = Instance.new("TextButton") footballSubBtnNoobs.Size = UDim2.new(0, 110, 1, 0) footballSubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) footballSubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) footballSubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) footballSubBtnNoobs.TextSize = 11; footballSubBtnNoobs.Font = Enum.Font.SourceSansBold; footballSubBtnNoobs.Text = "Football Noobs" footballSubBtnNoobs.Parent = footballSubTabList
-local footballSubBtnUpgrades = Instance.new("TextButton") footballSubBtnUpgrades.Size = UDim2.new(0, 130, 1, 0) footballSubBtnUpgrades.Position = UDim2.new(0, 115, 0, 0) footballSubBtnUpgrades.BackgroundColor3 = Color3.fromRGB(45, 45, 45) footballSubBtnUpgrades.TextColor3 = Color3.fromRGB(170, 170, 170) footballSubBtnUpgrades.TextSize = 11; footballSubBtnUpgrades.Font = Enum.Font.SourceSansBold; footballSubBtnUpgrades.Text = "Goals Upgrades" footballSubBtnUpgrades.Parent = footballSubTabList
+local footballSubBtnUpgrades = Instance.new("TextButton") footballSubBtnUpgrades.Size = UDim2.new(0, 130, 1, 0) footballSubBtnUpgrades.Position = UDim2.new(0, 115, 0, 0) footballSubBtnUpgrades.BackgroundColor3 = Color3.fromRGB(45, 45, 45) footballSubBtnUpgrades.TextColor3 = Color3.fromRGB(170, 170, 170) footballSubBtnUpgrades.TextSize = 11; footballSubBtnUpgrades.Font = Enum.Font.SourceSansBold; footballSubBtnUpgrades.Text = "Goals & Tree Upgrades" footballSubBtnUpgrades.Parent = footballSubTabList
 
 Instance.new("UICorner", footballSubBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", footballSubBtnUpgrades).CornerRadius = UDim.new(0, 5)
 
@@ -137,7 +154,7 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 
 local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
-local footballUpgradeScroll = makeScroll(250, footballPage)
+local footballUpgradeScroll = makeScroll(300, footballPage)
 
 local function gridRow(txt, pos, page)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.Position = UDim2.new(0, 5, 0, (pos-1)*41+5) f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = page
@@ -228,6 +245,7 @@ local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeSc
 local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
 local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
 local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScroll)
+local toggleFootballTree = gridRow("Auto Buy Football Tree (Extra Safe)", 6, footballUpgradeScroll)
 
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
@@ -320,7 +338,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE
+-- UNIFIED PRIMARY UPGRADE QUEUE (PACED AT 1.0s LOOP / 0.25s PER ITEM)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -374,24 +392,24 @@ local PrimaryUpgradeQueue = {
 
 task.spawn(function()
     while Running do
-        task.wait(0.3)
+        task.wait(1.0) -- Paced at 1.0s interval
         if NetRemote and Running then
             for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end
                 local item = PrimaryUpgradeQueue[i]
                 if _G[item.F] then 
                     pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) 
-                    task.wait(0.1) 
+                    task.wait(0.25) -- Paced at 0.25s per item
                 end
             end
         end
     end
 end)
 
--- SCORE GOAL LOOP
+-- SCORE GOAL LOOP (SLOWED TO HUMAN 1.0s PACE)
 task.spawn(function()
     while Running do
-        task.wait(0.4)
+        task.wait(1.0)
         if NetRemote and Running and _G.AutoScoreGoal then
             pcall(function()
                 NetRemote:FireServer("ScoreGoal")
@@ -400,7 +418,56 @@ task.spawn(function()
     end
 end)
 
--- INTERLEAVED BREAD & ANIMALS ENGINE (0.8s ROUND-ROBIN PACING)
+-- FOOTBALL TREE AUTOMATION ENGINE (EXTRA SAFE: 6.0s PASSTHROUGH / 0.75s NODE DELAY)
+task.spawn(function()
+    while Running do
+        task.wait(6.0) -- Scan interval increased to 6.0s
+        if NetRemote and Running and _G.AutoFootballTree then
+            if not UIFootballTreeModule then
+                local found = ReplicatedStorage:FindFirstChild("UIFootballTree", true) or ReplicatedStorage:FindFirstChild("UISoccerTree", true)
+                if found and found:IsA("ModuleScript") then
+                    pcall(function() UIFootballTreeModule = require(found) end)
+                end
+            end
+
+            for _, nodeKey in ipairs(FootballTreeNodes) do
+                if not Running or not _G.AutoFootballTree then break end
+
+                local isEligible = true
+
+                -- Local Pre-Verification Check
+                if UIFootballTreeModule then
+                    pcall(function()
+                        if UIFootballTreeModule.IsNodeUnlocked and UIFootballTreeModule:IsNodeUnlocked(nodeKey) then
+                            isEligible = false
+                        end
+                        if isEligible and UIFootballTreeModule.GetRequirements then
+                            local reqs = UIFootballTreeModule:GetRequirements(nodeKey)
+                            if reqs and type(reqs) == "table" then
+                                for _, reqNode in ipairs(reqs) do
+                                    if UIFootballTreeModule.IsNodeUnlocked and not UIFootballTreeModule:IsNodeUnlocked(reqNode) then
+                                        isEligible = false
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                    end)
+                end
+
+                -- Only fire if verified eligible
+                if isEligible then
+                    pcall(function()
+                        NetRemote:FireServer("BuyFootballUITreeNode", nodeKey)
+                    end)
+                    task.wait(0.75) -- Increased node delay to 0.75s
+                end
+            end
+        end
+    end
+end)
+
+-- INTERLEAVED BREAD & ANIMALS ENGINE
 local BreadUpgradeList = {
     {F = "AutoBreadMoreWheat",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreWheat"}},
     {F = "AutoBreadMoreBread",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreBread"}},
@@ -419,7 +486,7 @@ local BreadUpgradeList = {
 task.spawn(function()
     local breadIndex = 1
     while Running do
-        task.wait(0.8)
+        task.wait(1.2) -- Paced at 1.2s interval
         if NetRemote and Running then
             local attempted = 0
             repeat
@@ -453,13 +520,13 @@ end)
 -- BLAZE AUTO-UPGRADE ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.4)
+        task.wait(1.0)
         if NetRemote and Running then
-            if _G.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.1) end
-            if _G.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.1) end
-            if _G.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.1) end
-            if _G.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.1) end
-            if _G.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.1) end
+            if _G.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end
+            if _G.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end
+            if _G.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end
+            if _G.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end
+            if _G.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end
         end
     end
 end)
@@ -467,7 +534,7 @@ end)
 -- CHEST OPENER ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.5)
+        task.wait(1.2)
         if NetRemote and Running then
             if _G.AutoOpenT1Chest then
                 pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end)
@@ -482,7 +549,7 @@ end)
 -- DIRECT PRESTIGE REMOTE LOOP
 task.spawn(function()
     while Running do
-        task.wait(2.0)
+        task.wait(5.0) -- Bumped to 5.0s interval
         if _G.AutoPrestige and NetRemote and Running then
             pcall(function()
                 NetRemote:FireServer("Prestige")
@@ -553,6 +620,7 @@ toggleMoreGoals.MouseButton1Click:Connect(function() tStateV2(toggleMoreGoals, "
 toggleGoalsRuneBulk.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneBulk, "AutoGoalsRuneBulk") end)
 toggleGoalsRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneLuck, "AutoGoalsRuneLuck") end)
 toggleAutoBuyKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoBuyKicker, "AutoBuyAutoKick") end)
+toggleFootballTree.MouseButton1Click:Connect(function() tStateV2(toggleFootballTree, "AutoFootballTree") end)
 
 toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
 toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
@@ -679,4 +747,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Auto Kicker Completely Removed!")
+print("[Dominate Hub] Paced Delays Increased Across All Modules!")
