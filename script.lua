@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (MORE WHEAT PRIORITY FIX)
+-- DOMINATE HUB | FULL SCRIPT (ROUND-ROBIN BREAD ENGINE & BALANCED PACING)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -292,30 +292,34 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED BREAD AUTO-UPGRADE ENGINE (MORE WHEAT PRIORITIZED FIRST)
+-- INTERLEAVED BREAD AUTO-UPGRADE ENGINE (PACED FOR FAIR-SHARE SAVING)
+local BreadUpgradeList = {
+    {F = "AutoBreadMoreWheat",          U = "MoreWheat"},
+    {F = "AutoBreadMoreBread",          U = "MoreBread"},
+    {F = "AutoBreadBiggerWheatDeposit", U = "BiggerWheatDeposit"},
+    {F = "AutoBreadFasterWheatConversion", U = "FasterWheatConversion"},
+    {F = "AutoBreadMoreConsumption",    U = "MoreConsumption"},
+    {F = "AutoBreadMoreRuneLuck",       U = "MoreRuneLuck"}
+}
+
 task.spawn(function()
+    local breadIndex = 1
     while Running do
-        task.wait(0.4)
+        task.wait(0.8) -- Paced at 0.8s to let currency accumulate naturally
         if NetRemote and Running then
-            -- MoreWheat moved to top priority so it grabs currency before MoreBread empties the tank
-            if _G.AutoBreadMoreWheat then 
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreWheat") end) task.wait(0.1) 
-            end
-            if _G.AutoBreadMoreBread then 
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreBread") end) task.wait(0.1) 
-            end
-            if _G.AutoBreadBiggerWheatDeposit then 
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "BiggerWheatDeposit") end) task.wait(0.1) 
-            end
-            if _G.AutoBreadFasterWheatConversion then 
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "FasterWheatConversion") end) task.wait(0.1) 
-            end
-            if _G.AutoBreadMoreConsumption then 
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreConsumption") end) task.wait(0.1) 
-            end
-            if _G.AutoBreadMoreRuneLuck then 
-                pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Bread", "MoreRuneLuck") end) task.wait(0.1) 
-            end
+            local attempted = 0
+            repeat
+                local currentItem = BreadUpgradeList[breadIndex]
+                breadIndex = (breadIndex % #BreadUpgradeList) + 1
+                attempted = attempted + 1
+
+                if _G[currentItem.F] then
+                    pcall(function() 
+                        NetRemote:FireServer("UpgradeUpgradeMax", "Bread", currentItem.U) 
+                    end)
+                    break -- Fired one upgrade turn, yields for 0.8s to let Bread save up for next turn
+                end
+            until attempted >= #BreadUpgradeList
         end
     end
 end)
@@ -511,4 +515,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Prioritized Bread Upgrade Engine Loaded!")
+print("[Dominate Hub] Round-Robin Bread Engine Loaded!")
