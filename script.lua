@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH EXACT "BuyTrophy" AUTOMATION)
+-- DOMINATE HUB | FULL SCRIPT (CLEANED UI & RESTRUCTURED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -25,8 +25,8 @@ _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
 
--- HACKER NOOBS AUTOMATION FLAGS
-_G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4, _G.AutoUpgradeHacker5, _G.AutoUpgradeHacker6 = false, false, false, false, false, false
+-- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
+_G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
 
 -- FOOTBALL & GOALS AUTOMATION FLAGS
 _G.AutoScoreGoal = false
@@ -38,16 +38,16 @@ _G.AutoFootballTree = false
 _G.AutoClaimTrophies = false
 
 -- FOOTBALL POSITIONS AUTOMATION FLAGS
-_G.AutoUpgradeAttackingMid = false
 _G.AutoUpgradeGoalkeeper = false
-_G.AutoUpgradeStriker = false
 _G.AutoUpgradeLeftCenterBack = false
-_G.AutoUpgradeLeftDefensiveMid = false
-_G.AutoUpgradeLeftWing = false
-_G.AutoUpgradeRightBack = false
 _G.AutoUpgradeRightCenterBack = false
+_G.AutoUpgradeRightBack = false
+_G.AutoUpgradeLeftDefensiveMid = false
 _G.AutoUpgradeRightDefensiveMid = false
+_G.AutoUpgradeAttackingMid = false
+_G.AutoUpgradeLeftWing = false
 _G.AutoUpgradeRightWing = false
+_G.AutoUpgradeStriker = false
 
 -- BREAD & ANIMAL AUTOMATION FLAGS
 _G.AutoBreadMoreBread, _G.AutoBreadMoreBread2, _G.AutoBreadMoreWheat, _G.AutoBreadBiggerWheatDeposit, _G.AutoDepositWheat = false, false, false, false, false
@@ -84,11 +84,10 @@ local mainFrame = Instance.new("Frame") mainFrame.Size = UDim2.new(0, 460, 0, 36
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
 local realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new(1, -20, 1, -85) realm1MasterPage.Position = UDim2.new(0, 10, 0, 80) realm1MasterPage.BackgroundTransparency = 1; realm1MasterPage.Visible = true; realm1MasterPage.Parent = mainFrame
+local realm2Page = Instance.new("Frame") realm2Page.Size = UDim2.new(1, -20, 1, -85) realm2Page.Position = UDim2.new(0, 10, 0, 80) realm2Page.BackgroundTransparency = 1; realm2Page.Visible = false; realm2Page.Parent = mainFrame
 local realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
-local hackerPage = Instance.new("Frame") hackerPage.Size = UDim2.new(1, -20, 1, -85) hackerPage.Position = UDim2.new(0, 10, 0, 80) hackerPage.BackgroundTransparency = 1; hackerPage.Visible = false; hackerPage.Parent = mainFrame
 local footballPage = Instance.new("Frame") footballPage.Size = UDim2.new(1, -20, 1, -85) footballPage.Position = UDim2.new(0, 10, 0, 80) footballPage.BackgroundTransparency = 1; footballPage.Visible = false; footballPage.Parent = mainFrame
 local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
-local chestsPage = Instance.new("Frame") chestsPage.Size = UDim2.new(1, -20, 1, -85) chestsPage.Position = UDim2.new(0, 10, 0, 80) chestsPage.BackgroundTransparency = 1; chestsPage.Visible = false; chestsPage.Parent = mainFrame
 local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
 
 -- UI HEADER & TABS
@@ -98,26 +97,36 @@ local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) 
 local minCorner = Instance.new("UICorner") minCorner.CornerRadius = UDim.new(0, 5) minCorner.Parent = minBtn
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
-local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 60, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
-local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 60, 1, 0) tabRealm3.Position = UDim2.new(0, 64, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
-local tabHacker = Instance.new("TextButton") tabHacker.Size = UDim2.new(0, 60, 1, 0) tabHacker.Position = UDim2.new(0, 126, 0, 0) tabHacker.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabHacker.TextColor3 = Color3.fromRGB(170, 170, 170) tabHacker.TextSize = 11; tabHacker.Font = Enum.Font.SourceSansBold; tabHacker.Text = "Hacker" tabHacker.Parent = tabList
-local tabFootball = Instance.new("TextButton") tabFootball.Size = UDim2.new(0, 65, 1, 0) tabFootball.Position = UDim2.new(0, 188, 0, 0) tabFootball.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabFootball.TextColor3 = Color3.fromRGB(170, 170, 170) tabFootball.TextSize = 11; tabFootball.Font = Enum.Font.SourceSansBold; tabFootball.Text = "Football" tabFootball.Parent = tabList
-local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 60, 1, 0) tabRunes.Position = UDim2.new(0, 255, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
-local tabChests = Instance.new("TextButton") tabChests.Size = UDim2.new(0, 60, 1, 0) tabChests.Position = UDim2.new(0, 317, 0, 0) tabChests.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabChests.TextColor3 = Color3.fromRGB(170, 170, 170) tabChests.TextSize = 11; tabChests.Font = Enum.Font.SourceSansBold; tabChests.Text = "Chests" tabChests.Parent = tabList
-local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 68, 1, 0) tabSettings.Position = UDim2.new(0, 380, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
+local tabRealm1 = Instance.new("TextButton") tabRealm1.Size = UDim2.new(0, 70, 1, 0) tabRealm1.Position = UDim2.new(0, 2, 0, 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15) tabRealm1.TextSize = 11; tabRealm1.Font = Enum.Font.SourceSansBold; tabRealm1.Text = "Realm 1" tabRealm1.Parent = tabList
+local tabRealm2 = Instance.new("TextButton") tabRealm2.Size = UDim2.new(0, 70, 1, 0) tabRealm2.Position = UDim2.new(0, 74, 0, 0) tabRealm2.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm2.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm2.TextSize = 11; tabRealm2.Font = Enum.Font.SourceSansBold; tabRealm2.Text = "Realm 2" tabRealm2.Parent = tabList
+local tabRealm3 = Instance.new("TextButton") tabRealm3.Size = UDim2.new(0, 70, 1, 0) tabRealm3.Position = UDim2.new(0, 146, 0, 0) tabRealm3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRealm3.TextColor3 = Color3.fromRGB(170, 170, 170) tabRealm3.TextSize = 11; tabRealm3.Font = Enum.Font.SourceSansBold; tabRealm3.Text = "Realm 3" tabRealm3.Parent = tabList
+local tabFootball = Instance.new("TextButton") tabFootball.Size = UDim2.new(0, 70, 1, 0) tabFootball.Position = UDim2.new(0, 218, 0, 0) tabFootball.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabFootball.TextColor3 = Color3.fromRGB(170, 170, 170) tabFootball.TextSize = 11; tabFootball.Font = Enum.Font.SourceSansBold; tabFootball.Text = "Football" tabFootball.Parent = tabList
+local tabRunes = Instance.new("TextButton") tabRunes.Size = UDim2.new(0, 70, 1, 0) tabRunes.Position = UDim2.new(0, 290, 0, 0) tabRunes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabRunes.TextColor3 = Color3.fromRGB(170, 170, 170) tabRunes.TextSize = 11; tabRunes.Font = Enum.Font.SourceSansBold; tabRunes.Text = "Runes" tabRunes.Parent = tabList
+local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 72, 1, 0) tabSettings.Position = UDim2.new(0, 362, 0, 0) tabSettings.BackgroundColor3 = Color3.fromRGB(45, 45, 45) tabSettings.TextColor3 = Color3.fromRGB(170, 170, 170) tabSettings.TextSize = 11; tabSettings.Font = Enum.Font.SourceSansBold; tabSettings.Text = "Settings" tabSettings.Parent = tabList
 
-Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabHacker).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabFootball).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm2).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabFootball).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
 
+-- REALM 1 SUB-TABS (Noobs, Oof, Rebirth, Fire, Blaze, Farm, Cash, Hacker)
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
-local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 45, 1, 0) subBtnNoobs.Position = UDim2.new(0, 0, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
-local subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 65, 1, 0) subBtnOof.Position = UDim2.new(0, 47, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 10; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof" subBtnOof.Parent = subTabList
-local subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 75, 1, 0) subBtnRebirth.Position = UDim2.new(0, 114, 0, 0) subBtnRebirth.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnRebirth.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnRebirth.TextSize = 10; subBtnRebirth.Font = Enum.Font.SourceSansBold; subBtnRebirth.Text = "Rebirth" subBtnRebirth.Parent = subTabList
-local subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 60, 1, 0) subBtnFire.Position = UDim2.new(0, 191, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 10; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire" subBtnFire.Parent = subTabList
-local subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 45, 1, 0) subBtnBlaze.Position = UDim2.new(0, 253, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
-local subBtnBread = Instance.new("TextButton") subBtnBread.Size = UDim2.new(0, 45, 1, 0) subBtnBread.Position = UDim2.new(0, 300, 0, 0) subBtnBread.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBread.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBread.TextSize = 10; subBtnBread.Font = Enum.Font.SourceSansBold; subBtnBread.Text = "Bread" subBtnBread.Parent = subTabList
-local subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 85, 1, 0) subBtnCash.Position = UDim2.new(0, 347, 0, 0) subBtnCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnCash.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnCash.TextSize = 10; subBtnCash.Font = Enum.Font.SourceSansBold; subBtnCash.Text = "Cash Upgrades" subBtnCash.Parent = subTabList
+local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 42, 1, 0) subBtnNoobs.Position = UDim2.new(0, 0, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 9; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
+local subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 50, 1, 0) subBtnOof.Position = UDim2.new(0, 44, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 9; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof" subBtnOof.Parent = subTabList
+local subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 56, 1, 0) subBtnRebirth.Position = UDim2.new(0, 96, 0, 0) subBtnRebirth.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnRebirth.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnRebirth.TextSize = 9; subBtnRebirth.Font = Enum.Font.SourceSansBold; subBtnRebirth.Text = "Rebirth" subBtnRebirth.Parent = subTabList
+local subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 45, 1, 0) subBtnFire.Position = UDim2.new(0, 154, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 9; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire" subBtnFire.Parent = subTabList
+local subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 45, 1, 0) subBtnBlaze.Position = UDim2.new(0, 201, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 9; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
+local subBtnFarm = Instance.new("TextButton") subBtnFarm.Size = UDim2.new(0, 45, 1, 0) subBtnFarm.Position = UDim2.new(0, 248, 0, 0) subBtnFarm.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFarm.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFarm.TextSize = 9; subBtnFarm.Font = Enum.Font.SourceSansBold; subBtnFarm.Text = "Farm" subBtnFarm.Parent = subTabList
+local subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 45, 1, 0) subBtnCash.Position = UDim2.new(0, 295, 0, 0) subBtnCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnCash.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnCash.TextSize = 9; subBtnCash.Font = Enum.Font.SourceSansBold; subBtnCash.Text = "Cash" subBtnCash.Parent = subTabList
+local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0, 52, 1, 0) subBtnHacker.Position = UDim2.new(0, 342, 0, 0) subBtnHacker.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnHacker.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnHacker.TextSize = 9; subBtnHacker.Font = Enum.Font.SourceSansBold; subBtnHacker.Text = "Hacker" subBtnHacker.Parent = subTabList
 
-Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBread).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
+
+-- RUNES SUB-TABS (Realm 1, Realm 2, Realm 3, Events)
+local runesSubTabList = Instance.new("Frame") runesSubTabList.Size = UDim2.new(1, 0, 0, 25) runesSubTabList.Position = UDim2.new(0, 0, 0, 0) runesSubTabList.BackgroundTransparency = 1; runesSubTabList.Parent = runesPage
+local runesSubBtn1 = Instance.new("TextButton") runesSubBtn1.Size = UDim2.new(0, 80, 1, 0) runesSubBtn1.Position = UDim2.new(0, 0, 0, 0) runesSubBtn1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) runesSubBtn1.TextColor3 = Color3.fromRGB(15, 15, 15) runesSubBtn1.TextSize = 11; runesSubBtn1.Font = Enum.Font.SourceSansBold; runesSubBtn1.Text = "Realm 1" runesSubBtn1.Parent = runesSubTabList
+local runesSubBtn2 = Instance.new("TextButton") runesSubBtn2.Size = UDim2.new(0, 80, 1, 0) runesSubBtn2.Position = UDim2.new(0, 85, 0, 0) runesSubBtn2.BackgroundColor3 = Color3.fromRGB(45, 45, 45) runesSubBtn2.TextColor3 = Color3.fromRGB(170, 170, 170) runesSubBtn2.TextSize = 11; runesSubBtn2.Font = Enum.Font.SourceSansBold; runesSubBtn2.Text = "Realm 2" runesSubBtn2.Parent = runesSubTabList
+local runesSubBtn3 = Instance.new("TextButton") runesSubBtn3.Size = UDim2.new(0, 80, 1, 0) runesSubBtn3.Position = UDim2.new(0, 170, 0, 0) runesSubBtn3.BackgroundColor3 = Color3.fromRGB(45, 45, 45) runesSubBtn3.TextColor3 = Color3.fromRGB(170, 170, 170) runesSubBtn3.TextSize = 11; runesSubBtn3.Font = Enum.Font.SourceSansBold; runesSubBtn3.Text = "Realm 3" runesSubBtn3.Parent = runesSubTabList
+local runesSubBtnEvents = Instance.new("TextButton") runesSubBtnEvents.Size = UDim2.new(0, 80, 1, 0) runesSubBtnEvents.Position = UDim2.new(0, 255, 0, 0) runesSubBtnEvents.BackgroundColor3 = Color3.fromRGB(45, 45, 45) runesSubBtnEvents.TextColor3 = Color3.fromRGB(170, 170, 170) runesSubBtnEvents.TextSize = 11; runesSubBtnEvents.Font = Enum.Font.SourceSansBold; runesSubBtnEvents.Text = "Events" runesSubBtnEvents.Parent = runesSubTabList
+
+Instance.new("UICorner", runesSubBtn1).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", runesSubBtn2).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", runesSubBtn3).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", runesSubBtnEvents).CornerRadius = UDim.new(0, 5)
 
 -- FOOTBALL SUB-TABS
 local footballSubTabList = Instance.new("Frame") footballSubTabList.Size = UDim2.new(1, 0, 0, 25) footballSubTabList.Position = UDim2.new(0, 0, 0, 0) footballSubTabList.BackgroundTransparency = 1; footballSubTabList.Parent = footballPage
@@ -137,6 +146,14 @@ local realm1FireScroll = makeScroll(300, realm1MasterPage)
 local realm1BlazeScroll = makeScroll(360, realm1MasterPage)
 local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
+local realm1HackerScroll = makeScroll(220, realm1MasterPage)
+
+local realm2Scroll = makeScroll(100, realm2Page) realm2Scroll.Visible = true
+
+local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
+local runesScroll2 = makeScroll(100, runesPage)
+local runesScroll3 = makeScroll(100, runesPage)
+local runesScrollEvents = makeScroll(100, runesPage)
 
 local footballNoobScroll = makeScroll(460, footballPage) footballNoobScroll.Visible = true
 local footballUpgradeScroll = makeScroll(380, footballPage)
@@ -201,29 +218,25 @@ local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScr
 local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
 local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
+-- HACKER ROWS (1 to 4) under Realm 1 Hacker subtab
+local toggleHacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
+local toggleHacker2 = makeSubRow("Auto Upgrade Hacker 2", 2, realm1HackerScroll)
+local toggleHacker3 = makeSubRow("Auto Upgrade Hacker 3", 3, realm1HackerScroll)
+local toggleHacker4 = makeSubRow("Auto Upgrade Hacker 4", 4, realm1HackerScroll)
+
 local togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 
--- HACKER ROWS
-local hackerScroll = Instance.new("ScrollingFrame") hackerScroll.Size = UDim2.new(1, 0, 1, 0) hackerScroll.Position = UDim2.new(0, 0, 0, 0) hackerScroll.BackgroundTransparency = 1; hackerScroll.BorderSizePixel = 0; hackerScroll.CanvasSize = UDim2.new(0, 0, 0, 260) hackerScroll.ScrollBarThickness = 3; hackerScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) hackerScroll.Visible = true; hackerScroll.Parent = hackerPage
-
-local toggleHacker1 = gridRow("Auto Upgrade Hacker 1 (Max)", 1, hackerScroll)
-local toggleHacker2 = gridRow("Auto Upgrade Hacker 2 (Max)", 2, hackerScroll)
-local toggleHacker3 = gridRow("Auto Upgrade Hacker 3 (Max)", 3, hackerScroll)
-local toggleHacker4 = gridRow("Auto Upgrade Hacker 4 (Max)", 4, hackerScroll)
-local toggleHacker5 = gridRow("Auto Upgrade Hacker 5 (Max)", 5, hackerScroll)
-local toggleHacker6 = gridRow("Auto Upgrade Hacker 6 (Max)", 6, hackerScroll)
-
--- FOOTBALL ROWS
-local toggleAttackingMid = gridRow("Auto Upgrade AttackingMid (Max)", 1, footballNoobScroll)
-local toggleGoalkeeper = gridRow("Auto Upgrade Goalkeeper (Max)", 2, footballNoobScroll)
-local toggleStriker = gridRow("Auto Upgrade Striker (Max)", 3, footballNoobScroll)
-local toggleLeftCenterBack = gridRow("Auto Upgrade LeftCenterBack (Max)", 4, footballNoobScroll)
-local toggleLeftDefensiveMid = gridRow("Auto Upgrade LeftDefensiveMid (Max)", 5, footballNoobScroll)
-local toggleLeftWing = gridRow("Auto Upgrade LeftWing (Max)", 6, footballNoobScroll)
-local toggleRightBack = gridRow("Auto Upgrade RightBack (Max)", 7, footballNoobScroll)
-local toggleRightCenterBack = gridRow("Auto Upgrade RightCenterBack (Max)", 8, footballNoobScroll)
-local toggleRightDefensiveMid = gridRow("Auto Upgrade RightDefensiveMid (Max)", 9, footballNoobScroll)
-local toggleRightWing = gridRow("Auto Upgrade RightWing (Max)", 10, footballNoobScroll)
+-- FOOTBALL ROWS (Ordered from Goalkeeper to Striker, no Max)
+local toggleGoalkeeper = gridRow("Auto Upgrade Goalkeeper", 1, footballNoobScroll)
+local toggleLeftCenterBack = gridRow("Auto Upgrade Left Center Back", 2, footballNoobScroll)
+local toggleRightCenterBack = gridRow("Auto Upgrade Right Center Back", 3, footballNoobScroll)
+local toggleRightBack = gridRow("Auto Upgrade Right Back", 4, footballNoobScroll)
+local toggleLeftDefensiveMid = gridRow("Auto Upgrade Left Defensive Mid", 5, footballNoobScroll)
+local toggleRightDefensiveMid = gridRow("Auto Upgrade Right Defensive Mid", 6, footballNoobScroll)
+local toggleAttackingMid = gridRow("Auto Upgrade Attacking Mid", 7, footballNoobScroll)
+local toggleLeftWing = gridRow("Auto Upgrade Left Wing", 8, footballNoobScroll)
+local toggleRightWing = gridRow("Auto Upgrade Right Wing", 9, footballNoobScroll)
+local toggleStriker = gridRow("Auto Upgrade Striker", 10, footballNoobScroll)
 
 local toggleScoreGoal = gridRow("Auto Score & Kick (1.5s Debug)", 1, footballUpgradeScroll)
 local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
@@ -233,19 +246,20 @@ local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScro
 local toggleFootballTree = gridRow("Auto Buy Football Tree (Dynamic PlayerGui)", 6, footballUpgradeScroll)
 local toggleClaimTrophies = gridRow("Auto Buy Trophies (1-10)", 7, footballUpgradeScroll)
 
-local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
-local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
-local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesPage)
-local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesPage)
+-- RUNES ROWS (In Realm 1 runes sub-tab)
+local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesScroll1)
+local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesScroll1)
+local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
+local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
 
-local toggleOpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, chestsPage)
-local toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, chestsPage)
-
-local toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 1, settingsPage)
+-- CHESTS MOVED TO SETTINGS
+local toggleOpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, settingsPage)
+local toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, settingsPage)
+local toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 3, settingsPage)
 toggleAFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) toggleAFK.TextColor3 = Color3.fromRGB(120, 255, 120) toggleAFK.Text = "ACTIVE"
-local togglePrestige = gridRow("Auto Prestige", 2, settingsPage)
-local toggleRebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 3, settingsPage)
-local toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 4, settingsPage)
+local togglePrestige = gridRow("Auto Prestige", 4, settingsPage)
+local toggleRebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 5, settingsPage)
+local toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 6, settingsPage)
 toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
 
 --======================================================================================
@@ -338,19 +352,17 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeHacker2",    T = "UpgradeNoobMax",    A = {"Hacker 2"}},
     {F = "AutoUpgradeHacker3",    T = "UpgradeNoobMax",    A = {"Hacker 3"}},
     {F = "AutoUpgradeHacker4",    T = "UpgradeNoobMax",    A = {"Hacker 4"}},
-    {F = "AutoUpgradeHacker5",    T = "UpgradeNoobMax",    A = {"Hacker 5"}},
-    {F = "AutoUpgradeHacker6",    T = "UpgradeNoobMax",    A = {"Hacker 6"}},
 
-    {F = "AutoUpgradeAttackingMid", T = "UpgradeNoobMax",    A = {"AttackingMid"}},
     {F = "AutoUpgradeGoalkeeper",   T = "UpgradeNoobMax",    A = {"Goalkeeper"}},
-    {F = "AutoUpgradeStriker",      T = "UpgradeNoobMax",    A = {"Striker"}},
     {F = "AutoUpgradeLeftCenterBack", T = "UpgradeNoobMax",  A = {"LeftCenterBack"}},
-    {F = "AutoUpgradeLeftDefensiveMid", T = "UpgradeNoobMax",A = {"LeftDefensiveMid"}},
-    {F = "AutoUpgradeLeftWing",   T = "UpgradeNoobMax",    A = {"LeftWing"}},
-    {F = "AutoUpgradeRightBack",  T = "UpgradeNoobMax",    A = {"RightBack"}},
     {F = "AutoUpgradeRightCenterBack", T = "UpgradeNoobMax", A = {"RightCenterBack"}},
+    {F = "AutoUpgradeRightBack",  T = "UpgradeNoobMax",    A = {"RightBack"}},
+    {F = "AutoUpgradeLeftDefensiveMid", T = "UpgradeNoobMax",A = {"LeftDefensiveMid"}},
     {F = "AutoUpgradeRightDefensiveMid", T = "UpgradeNoobMax", A = {"RightDefensiveMid"}},
+    {F = "AutoUpgradeAttackingMid", T = "UpgradeNoobMax",    A = {"AttackingMid"}},
+    {F = "AutoUpgradeLeftWing",   T = "UpgradeNoobMax",    A = {"LeftWing"}},
     {F = "AutoUpgradeRightWing",  T = "UpgradeNoobMax",    A = {"RightWing"}},
+    {F = "AutoUpgradeStriker",      T = "UpgradeNoobMax",    A = {"Striker"}},
     
     {F = "AutoUpgradeMoreOof",    T = "UpgradeUpgradeMax", A = {"Oof", "MoreOof"}},
     {F = "AutoUpgradeFasterNoobs",T = "UpgradeUpgradeMax", A = {"Oof", "FasterNoobs"}},
@@ -582,25 +594,23 @@ toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "Auto
 toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
 toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
 
--- HACKER TOGGLE CONNECTORS
+-- HACKER TOGGLE CONNECTORS (1 to 4)
 toggleHacker1.MouseButton1Click:Connect(function() tStateV2(toggleHacker1, "AutoUpgradeHacker1") end)
 toggleHacker2.MouseButton1Click:Connect(function() tStateV2(toggleHacker2, "AutoUpgradeHacker2") end)
 toggleHacker3.MouseButton1Click:Connect(function() tStateV2(toggleHacker3, "AutoUpgradeHacker3") end)
 toggleHacker4.MouseButton1Click:Connect(function() tStateV2(toggleHacker4, "AutoUpgradeHacker4") end)
-toggleHacker5.MouseButton1Click:Connect(function() tStateV2(toggleHacker5, "AutoUpgradeHacker5") end)
-toggleHacker6.MouseButton1Click:Connect(function() tStateV2(toggleHacker6, "AutoUpgradeHacker6") end)
 
 -- FOOTBALL TOGGLE CONNECTORS
-toggleAttackingMid.MouseButton1Click:Connect(function() tStateV2(toggleAttackingMid, "AutoUpgradeAttackingMid") end)
 toggleGoalkeeper.MouseButton1Click:Connect(function() tStateV2(toggleGoalkeeper, "AutoUpgradeGoalkeeper") end)
-toggleStriker.MouseButton1Click:Connect(function() tStateV2(toggleStriker, "AutoUpgradeStriker") end)
 toggleLeftCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleLeftCenterBack, "AutoUpgradeLeftCenterBack") end)
-toggleLeftDefensiveMid.MouseButton1Click:Connect(function() tStateV2(toggleLeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end)
-toggleLeftWing.MouseButton1Click:Connect(function() tStateV2(toggleLeftWing, "AutoUpgradeLeftWing") end)
-toggleRightBack.MouseButton1Click:Connect(function() tStateV2(toggleRightBack, "AutoUpgradeRightBack") end)
 toggleRightCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleRightCenterBack, "AutoUpgradeRightCenterBack") end)
+toggleRightBack.MouseButton1Click:Connect(function() tStateV2(toggleRightBack, "AutoUpgradeRightBack") end)
+toggleLeftDefensiveMid.MouseButton1Click:Connect(function() tStateV2(toggleLeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end)
 toggleRightDefensiveMid.MouseButton1Click:Connect(function() tStateV2(toggleRightDefensiveMid, "AutoUpgradeRightDefensiveMid") end)
+toggleAttackingMid.MouseButton1Click:Connect(function() tStateV2(toggleAttackingMid, "AutoUpgradeAttackingMid") end)
+toggleLeftWing.MouseButton1Click:Connect(function() tStateV2(toggleLeftWing, "AutoUpgradeLeftWing") end)
 toggleRightWing.MouseButton1Click:Connect(function() tStateV2(toggleRightWing, "AutoUpgradeRightWing") end)
+toggleStriker.MouseButton1Click:Connect(function() tStateV2(toggleStriker, "AutoUpgradeStriker") end)
 
 toggleScoreGoal.MouseButton1Click:Connect(function() tStateV2(toggleScoreGoal, "AutoScoreGoal") end)
 toggleMoreGoals.MouseButton1Click:Connect(function() tStateV2(toggleMoreGoals, "AutoGoalsMoreGoals") end)
@@ -621,7 +631,7 @@ toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirt
 toggleFireTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleFireTierLuck, "AutoFireMoreTierLuck") end)
 toggleFireCashBonus.MouseButton1Click:Connect(function() tStateV2(toggleFireCashBonus, "AutoFireMoreCashBonus") end)
 
--- BREAD & ANIMAL TOGGLES
+-- FARM & ANIMAL TOGGLES
 toggleDepositWheat.MouseButton1Click:Connect(function() tStateV2(toggleDepositWheat, "AutoDepositWheat") end)
 toggleBreadMoreBread.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread, "AutoBreadMoreBread") end)
 toggleBreadMoreBread2.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread2, "AutoBreadMoreBread2") end)
@@ -666,17 +676,16 @@ toggleKillSwitch.MouseButton1Click:Connect(function()
 end)
 
 local function mainRoute(pOpen, bActive) 
-    realm1MasterPage.Visible, realm3Page.Visible, hackerPage.Visible, footballPage.Visible, runesPage.Visible, chestsPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabRealm1, tabRealm3, tabHacker, tabFootball, tabRunes, tabChests, tabSettings}
+    realm1MasterPage.Visible, realm2Page.Visible, realm3Page.Visible, footballPage.Visible, runesPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabRealm1, tabRealm2, tabRealm3, tabFootball, tabRunes, tabSettings}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(220, 220, 225), Color3.fromRGB(15, 15, 15) 
 end
 tabRealm1.MouseButton1Click:Connect(function() mainRoute(realm1MasterPage, tabRealm1) end) 
+tabRealm2.MouseButton1Click:Connect(function() mainRoute(realm2Page, tabRealm2) end) 
 tabRealm3.MouseButton1Click:Connect(function() mainRoute(realm3Page, tabRealm3) end) 
-tabHacker.MouseButton1Click:Connect(function() mainRoute(hackerPage, tabHacker) end)
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end)
 tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
-tabChests.MouseButton1Click:Connect(function() mainRoute(chestsPage, tabChests) end) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 -- Football Sub-Tab Router
@@ -695,9 +704,28 @@ end
 footballSubBtnNoobs.MouseButton1Click:Connect(function() footballRoute(footballNoobScroll, footballSubBtnNoobs) end)
 footballSubBtnUpgrades.MouseButton1Click:Connect(function() footballRoute(footballUpgradeScroll, footballSubBtnUpgrades) end)
 
+-- Runes Sub-Tab Router
+local function runesRoute(targetScroll, activeBtn)
+    local scrolls = {runesScroll1, runesScroll2, runesScroll3, runesScrollEvents}
+    local btns = {runesSubBtn1, runesSubBtn2, runesSubBtn3, runesSubBtnEvents}
+    for i, s in ipairs(scrolls) do
+        s.Visible = (s == targetScroll)
+        if s == targetScroll then
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(230, 230, 235), Color3.fromRGB(15, 15, 15)
+        else
+            btns[i].BackgroundColor3, btns[i].TextColor3 = Color3.fromRGB(45, 45, 45), Color3.fromRGB(170, 170, 170)
+        end
+    end
+end
+runesSubBtn1.MouseButton1Click:Connect(function() runesRoute(runesScroll1, runesSubBtn1) end)
+runesSubBtn2.MouseButton1Click:Connect(function() runesRoute(runesScroll2, runesSubBtn2) end)
+runesSubBtn3.MouseButton1Click:Connect(function() runesRoute(runesScroll3, runesSubBtn3) end)
+runesSubBtnEvents.MouseButton1Click:Connect(function() runesRoute(runesScrollEvents, runesSubBtnEvents) end)
+
+-- Realm 1 Sub-Tab Router
 local function route(targetScroll)
-    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1BreadScroll, realm1CashScroll}
-    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, subBtnBread, subBtnCash}
+    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1BreadScroll, realm1CashScroll, realm1HackerScroll}
+    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, subBtnFarm, subBtnCash, subBtnHacker}
     for i, s in ipairs(scrolls) do
         s.Visible = (s == targetScroll)
         if s == targetScroll then
@@ -712,8 +740,9 @@ subBtnOof.MouseButton1Click:Connect(function() route(realm1UpgradeScroll) end)
 subBtnRebirth.MouseButton1Click:Connect(function() route(realm1RebirthScroll) end)
 subBtnFire.MouseButton1Click:Connect(function() route(realm1FireScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(realm1BlazeScroll) end)
-subBtnBread.MouseButton1Click:Connect(function() route(realm1BreadScroll) end)
+subBtnFarm.MouseButton1Click:Connect(function() route(realm1BreadScroll) end)
 subBtnCash.MouseButton1Click:Connect(function() route(realm1CashScroll) end)
+subBtnHacker.MouseButton1Click:Connect(function() route(realm1HackerScroll) end)
 
 minBtn.MouseButton1Click:Connect(function() 
     mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" 
@@ -735,4 +764,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Exact BuyTrophy Engine Loaded!")
+print("[Dominate Hub] UI Successfully Cleaned and Restructured!")
