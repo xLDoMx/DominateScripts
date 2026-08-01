@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (ATTACKINGMID, GOALKEEPER & STRIKER FOOTBALL NOOBS ADDED)
+-- DOMINATE HUB | FULL SCRIPT (AUTO KICKER FIX & CLICK SIMULATION)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -34,7 +34,7 @@ _G.AutoGoalsRuneBulk = false
 _G.AutoGoalsRuneLuck = false
 _G.AutoFootballAutoKicker = false
 
--- FOOTBALL POSITIONS AUTOMATION FLAGS (UPDATED WITH GOALKEEPER & STRIKER)
+-- FOOTBALL POSITIONS AUTOMATION FLAGS
 _G.AutoUpgradeAttackingMid = false
 _G.AutoUpgradeGoalkeeper = false
 _G.AutoUpgradeStriker = false
@@ -116,7 +116,7 @@ local subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 85,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBread).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
 
--- FOOTBALL SUB-TABS (Noobs vs Upgrades)
+-- FOOTBALL SUB-TABS
 local footballSubTabList = Instance.new("Frame") footballSubTabList.Size = UDim2.new(1, 0, 0, 25) footballSubTabList.Position = UDim2.new(0, 0, 0, 0) footballSubTabList.BackgroundTransparency = 1; footballSubTabList.Parent = footballPage
 local footballSubBtnNoobs = Instance.new("TextButton") footballSubBtnNoobs.Size = UDim2.new(0, 110, 1, 0) footballSubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) footballSubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) footballSubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) footballSubBtnNoobs.TextSize = 11; footballSubBtnNoobs.Font = Enum.Font.SourceSansBold; footballSubBtnNoobs.Text = "Football Noobs" footballSubBtnNoobs.Parent = footballSubTabList
 local footballSubBtnUpgrades = Instance.new("TextButton") footballSubBtnUpgrades.Size = UDim2.new(0, 130, 1, 0) footballSubBtnUpgrades.Position = UDim2.new(0, 115, 0, 0) footballSubBtnUpgrades.BackgroundColor3 = Color3.fromRGB(45, 45, 45) footballSubBtnUpgrades.TextColor3 = Color3.fromRGB(170, 170, 170) footballSubBtnUpgrades.TextSize = 11; footballSubBtnUpgrades.Font = Enum.Font.SourceSansBold; footballSubBtnUpgrades.Text = "Goals & Auto Kicker" footballSubBtnUpgrades.Parent = footballSubTabList
@@ -210,7 +210,7 @@ local toggleHacker4 = gridRow("Auto Upgrade Hacker 4 (Max)", 4, hackerScroll)
 local toggleHacker5 = gridRow("Auto Upgrade Hacker 5 (Max)", 5, hackerScroll)
 local toggleHacker6 = gridRow("Auto Upgrade Hacker 6 (Max)", 6, hackerScroll)
 
--- FOOTBALL ROWS (Noobs and Upgrades/Kicker)
+-- FOOTBALL ROWS
 local toggleAttackingMid = gridRow("Auto Upgrade AttackingMid (Max)", 1, footballNoobScroll)
 local toggleGoalkeeper = gridRow("Auto Upgrade Goalkeeper (Max)", 2, footballNoobScroll)
 local toggleStriker = gridRow("Auto Upgrade Striker (Max)", 3, footballNoobScroll)
@@ -226,7 +226,7 @@ local toggleScoreGoal = gridRow("Auto Score Goal", 1, footballUpgradeScroll)
 local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
 local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
 local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
-local toggleAutoFootballKicker = gridRow("Auto Kick (Built-in Kicker Bypass)", 5, footballUpgradeScroll)
+local toggleAutoFootballKicker = gridRow("Auto Kick (Safe Screen-Click Bypass)", 5, footballUpgradeScroll)
 
 local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesPage)
 local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesPage)
@@ -319,7 +319,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING HACKERS & FOOTBALL NOOBS)
+-- UNIFIED PRIMARY UPGRADE QUEUE
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -398,13 +398,19 @@ task.spawn(function()
     end
 end)
 
--- AUTO FOOTBALL KICKER BYPASS LOOP
+-- SAFE AUTO KICKER LOOP (Fires ScoreGoal + Safely simulates screen click using VirtualUser)
 task.spawn(function()
     while Running do
         task.wait(0.2)
-        if NetRemote and Running and _G.AutoFootballAutoKicker then
+        if Running and _G.AutoFootballAutoKicker then
             pcall(function()
-                NetRemote:FireServer("ScoreGoal")
+                if NetRemote then
+                    NetRemote:FireServer("ScoreGoal")
+                end
+                -- Safely simulate screen click just like a manual click
+                vu:Button1Down(Vector2.new(200, 200))
+                task.wait(0.05)
+                vu:Button1Up(Vector2.new(200, 200))
             end)
         end
     end
@@ -689,4 +695,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] AttackingMid, Goalkeeper & Striker Added!")
+print("[Dominate Hub] Auto Kicker VirtualClick Bypass Loaded!")
