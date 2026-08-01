@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (UPDATED AUTO PAD TIMER & LABEL)
+-- DOMINATE HUB | FULL SCRIPT (1-MINUTE WHEAT DEPOSIT LOOP)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -23,6 +23,9 @@ _G.AutoFireMoreFire, _G.AutoFireMoreBulk, _G.AutoFireMoreOof, _G.AutoFireMoreReb
 _G.AutoRebirthTimer = false
 _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMoreOofs, _G.AutoBlazeMoreBulk, _G.AutoBlazeConvert = false, false, false, false, false, false
 _G.AutoUpgradePharaoh = false
+
+-- BREAD AUTOMATION FLAGS
+_G.AutoBreadMoreBread, _G.AutoBreadMoreWheat, _G.AutoBreadBiggerWheatDeposit, _G.AutoDepositWheat = false, false, false, false
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
 _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune = false, false, false, false
@@ -75,14 +78,15 @@ local tabSettings = Instance.new("TextButton") tabSettings.Size = UDim2.new(0, 9
 Instance.new("UICorner", tabRealm1).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRealm3).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabRunes).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabChests).CornerRadius = UDim.new(0, 16) Instance.new("UICorner", tabSettings).CornerRadius = UDim.new(0, 16)
 
 local subTabList = Instance.new("Frame") subTabList.Size = UDim2.new(1, 0, 0, 25) subTabList.Position = UDim2.new(0, 0, 0, 0) subTabList.BackgroundTransparency = 1; subTabList.Parent = realm1MasterPage
-local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 50, 1, 0) subBtnNoobs.Position = UDim2.new(0, 2, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
-local subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 75, 1, 0) subBtnOof.Position = UDim2.new(0, 54, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 10; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof Upgrades" subBtnOof.Parent = subTabList
-local subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 95, 1, 0) subBtnRebirth.Position = UDim2.new(0, 131, 0, 0) subBtnRebirth.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnRebirth.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnRebirth.TextSize = 10; subBtnRebirth.Font = Enum.Font.SourceSansBold; subBtnRebirth.Text = "Rebirth Upgrades" subBtnRebirth.Parent = subTabList
-local subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 75, 1, 0) subBtnFire.Position = UDim2.new(0, 228, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 10; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire Upgrades" subBtnFire.Parent = subTabList
-local subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 50, 1, 0) subBtnBlaze.Position = UDim2.new(0, 305, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
-local subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 75, 1, 0) subBtnCash.Position = UDim2.new(0, 357, 0, 0) subBtnCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnCash.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnCash.TextSize = 10; subBtnCash.Font = Enum.Font.SourceSansBold; subBtnCash.Text = "Cash Upgrades" subBtnCash.Parent = subTabList
+local subBtnNoobs = Instance.new("TextButton") subBtnNoobs.Size = UDim2.new(0, 45, 1, 0) subBtnNoobs.Position = UDim2.new(0, 0, 0, 0) subBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) subBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) subBtnNoobs.TextSize = 10; subBtnNoobs.Font = Enum.Font.SourceSansBold; subBtnNoobs.Text = "Noobs" subBtnNoobs.Parent = subTabList
+local subBtnOof = Instance.new("TextButton") subBtnOof.Size = UDim2.new(0, 65, 1, 0) subBtnOof.Position = UDim2.new(0, 47, 0, 0) subBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnOof.TextSize = 10; subBtnOof.Font = Enum.Font.SourceSansBold; subBtnOof.Text = "Oof" subBtnOof.Parent = subTabList
+local subBtnRebirth = Instance.new("TextButton") subBtnRebirth.Size = UDim2.new(0, 75, 1, 0) subBtnRebirth.Position = UDim2.new(0, 114, 0, 0) subBtnRebirth.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnRebirth.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnRebirth.TextSize = 10; subBtnRebirth.Font = Enum.Font.SourceSansBold; subBtnRebirth.Text = "Rebirth" subBtnRebirth.Parent = subTabList
+local subBtnFire = Instance.new("TextButton") subBtnFire.Size = UDim2.new(0, 60, 1, 0) subBtnFire.Position = UDim2.new(0, 191, 0, 0) subBtnFire.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnFire.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnFire.TextSize = 10; subBtnFire.Font = Enum.Font.SourceSansBold; subBtnFire.Text = "Fire" subBtnFire.Parent = subTabList
+local subBtnBlaze = Instance.new("TextButton") subBtnBlaze.Size = UDim2.new(0, 45, 1, 0) subBtnBlaze.Position = UDim2.new(0, 253, 0, 0) subBtnBlaze.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBlaze.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBlaze.TextSize = 10; subBtnBlaze.Font = Enum.Font.SourceSansBold; subBtnBlaze.Text = "Blaze" subBtnBlaze.Parent = subTabList
+local subBtnBread = Instance.new("TextButton") subBtnBread.Size = UDim2.new(0, 45, 1, 0) subBtnBread.Position = UDim2.new(0, 300, 0, 0) subBtnBread.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnBread.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnBread.TextSize = 10; subBtnBread.Font = Enum.Font.SourceSansBold; subBtnBread.Text = "Bread" subBtnBread.Parent = subTabList
+local subBtnCash = Instance.new("TextButton") subBtnCash.Size = UDim2.new(0, 85, 1, 0) subBtnCash.Position = UDim2.new(0, 347, 0, 0) subBtnCash.BackgroundColor3 = Color3.fromRGB(45, 45, 45) subBtnCash.TextColor3 = Color3.fromRGB(170, 170, 170) subBtnCash.TextSize = 10; subBtnCash.Font = Enum.Font.SourceSansBold; subBtnCash.Text = "Cash Upgrades" subBtnCash.Parent = subTabList
 
-Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnBread).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 5)
 
 local function makeScroll(canvas) 
     local s = Instance.new("ScrollingFrame") s.Size = UDim2.new(1, 0, 1, -30) s.Position = UDim2.new(0, 0, 0, 30) s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.CanvasSize = UDim2.new(0, 0, 0, canvas) s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255) s.Visible = false; s.Parent = realm1MasterPage return s 
@@ -92,6 +96,7 @@ local realm1UpgradeScroll = makeScroll(110)
 local realm1RebirthScroll = makeScroll(160)
 local realm1FireScroll = makeScroll(300)
 local realm1BlazeScroll = makeScroll(360)
+local realm1BreadScroll = makeScroll(210)
 local realm1CashScroll = makeScroll(170)
 
 local function gridRow(txt, pos, page)
@@ -135,7 +140,12 @@ local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
 local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
 local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
--- RENAMED TO AUTO PAD
+-- BREAD SUBTAB ROWS
+local toggleDepositWheat = makeSubRow("Auto Deposit Wheat (1m)", 1, realm1BreadScroll)
+local toggleBreadMoreBread = makeSubRow("More Bread (Bread)", 2, realm1BreadScroll)
+local toggleBreadMoreWheat = makeSubRow("More Wheat (Bread)", 3, realm1BreadScroll)
+local toggleBreadBiggerWheatDeposit = makeSubRow("Bigger Wheat Deposit (Bread)", 4, realm1BreadScroll)
+
 local toggleAutoFarmCash = makeSubRow("Auto Pad", 1, realm1CashScroll)
 local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
 local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
@@ -191,7 +201,7 @@ task.spawn(function()
     end
 end)
 
--- CONVEYOR CASH PAD AUTO FARM LOOP (SLEEP TIMER UPDATED TO 2 - 3 MINUTES)
+-- CONVEYOR CASH PAD AUTO FARM LOOP
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -224,7 +234,6 @@ task.spawn(function()
                 until false
                 if Running then
                     MasterTargetVector = nil CurrentLoopStateSleep = true 
-                    -- Random sleep timer between 120 and 180 seconds (2 to 3 minutes)
                     local sleepDuration = math.random(120, 180)
                     local sleepEndTime = tick() + sleepDuration
                     repeat task.wait(1) until tick() >= sleepEndTime or not _G.AutoFarmCash or not Running
@@ -234,7 +243,7 @@ task.spawn(function()
     end
 end)
 
--- UNIFIED PRIMARY UPGRADE QUEUE
+-- UNIFIED PRIMARY UPGRADE QUEUE (INCLUDING BREAD UPGRADES)
 local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeStarter",    T = "UpgradeNoob",       A = {"Starter"}},
     {F = "AutoUpgradeCooker",     T = "UpgradeNoobMax",    A = {"Cooker"}},
@@ -257,6 +266,11 @@ local PrimaryUpgradeQueue = {
     {F = "AutoFireMoreRebirth",   T = "UpgradeUpgradeMax", A = {"Fire", "MoreRebirth"}},
     {F = "AutoFireMoreTierLuck",  T = "UpgradeUpgradeMax", A = {"Fire", "MoreTierLuck"}},
     {F = "AutoFireMoreCashBonus", T = "UpgradeUpgradeMax", A = {"Fire", "MoreCashBonus"}},
+
+    -- BREAD UPGRADES
+    {F = "AutoBreadMoreBread",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreBread"}},
+    {F = "AutoBreadMoreWheat",          T = "UpgradeUpgradeMax", A = {"Bread", "MoreWheat"}},
+    {F = "AutoBreadBiggerWheatDeposit", T = "UpgradeUpgradeMax", A = {"Bread", "BiggerWheatDeposit"}},
     
     {F = "AutoUpgradeMoreCash",    T = "UpgradeUpgradeMax", A = {"Cash", "MoreCash"}},
     {F = "AutoUpgradeFasterDropper",T = "UpgradeUpgradeMax", A = {"Cash", "FasterDropper"}},
@@ -275,6 +289,18 @@ task.spawn(function()
                     task.wait(0.1) 
                 end
             end
+        end
+    end
+end)
+
+-- AUTO DEPOSIT WHEAT LOOP (1-MINUTE INTERVAL)
+task.spawn(function()
+    while Running do
+        task.wait(60.0)
+        if _G.AutoDepositWheat and NetRemote and Running then
+            pcall(function()
+                NetRemote:FireServer("DepositWheat")
+            end)
         end
     end
 end)
@@ -368,6 +394,12 @@ toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirt
 toggleFireTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleFireTierLuck, "AutoFireMoreTierLuck") end)
 toggleFireCashBonus.MouseButton1Click:Connect(function() tStateV2(toggleFireCashBonus, "AutoFireMoreCashBonus") end)
 
+-- BREAD SUBTAB TOGGLE CONNECTORS
+toggleDepositWheat.MouseButton1Click:Connect(function() tStateV2(toggleDepositWheat, "AutoDepositWheat") end)
+toggleBreadMoreBread.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread, "AutoBreadMoreBread") end)
+toggleBreadMoreWheat.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreWheat, "AutoBreadMoreWheat") end)
+toggleBreadBiggerWheatDeposit.MouseButton1Click:Connect(function() tStateV2(toggleBreadBiggerWheatDeposit, "AutoBreadBiggerWheatDeposit") end)
+
 toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
 toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
 
@@ -410,8 +442,8 @@ tabChests.MouseButton1Click:Connect(function() mainRoute(chestsPage, tabChests) 
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 local function route(targetScroll)
-    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1CashScroll}
-    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, subBtnCash}
+    local scrolls = {realm1NoobScroll, realm1UpgradeScroll, realm1RebirthScroll, realm1FireScroll, realm1BlazeScroll, realm1BreadScroll, realm1CashScroll}
+    local btns = {subBtnNoobs, subBtnOof, subBtnRebirth, subBtnFire, subBtnBlaze, subBtnBread, subBtnCash}
     for i, s in ipairs(scrolls) do
         s.Visible = (s == targetScroll)
         if s == targetScroll then
@@ -426,6 +458,7 @@ subBtnOof.MouseButton1Click:Connect(function() route(realm1UpgradeScroll) end)
 subBtnRebirth.MouseButton1Click:Connect(function() route(realm1RebirthScroll) end)
 subBtnFire.MouseButton1Click:Connect(function() route(realm1FireScroll) end)
 subBtnBlaze.MouseButton1Click:Connect(function() route(realm1BlazeScroll) end)
+subBtnBread.MouseButton1Click:Connect(function() route(realm1BreadScroll) end)
 subBtnCash.MouseButton1Click:Connect(function() route(realm1CashScroll) end)
 
 minBtn.MouseButton1Click:Connect(function() 
@@ -448,4 +481,4 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Auto Pad Timer Updated!")
+print("[Dominate Hub] 1-Minute Wheat Deposit Build Loaded!")
