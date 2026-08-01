@@ -281,7 +281,7 @@ local toggleR2Planks = gridRow("More Planks", 3, realm2WaterScroll)
 
 local toggleR2MoreIce = gridRow("More Ice", 1, realm2IceScroll)
 local toggleR2WaterPump1 = gridRow("Water Pump Noob Hire (1)", 2, realm2IceScroll)
-local toggleR2WaterPump2 = gridRow("Water Pump Noob Hire (2)", 3, realm2IceScroll)
+local toggleR2WaterPump2 = gridRow("Water From Ice", 3, realm2IceScroll)
 local toggleR2IceOof = gridRow("More Oof (Ice)", 4, realm2IceScroll)
 
 local toggleBucket1 = gridRow("Auto Fill Bucket #1", 1, realm2BucketScroll)
@@ -534,7 +534,7 @@ local PrimaryUpgradeQueue = {
     {F = "AutoRealm2MorePlanks",   T = "UpgradeUpgradeMax", A = {"Water", "MorePlanks"}},
     {F = "AutoRealm2MoreIce",      T = "UpgradeUpgradeMax", A = {"Ice", "MoreIce"}},
     {F = "AutoRealm2WaterPump1",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterPumpNoobHire"}},
-    {F = "AutoRealm2WaterPump2",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterPumpNoobHire"}},
+    {F = "AutoRealm2WaterPump2",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterFromIce"}},
     {F = "AutoRealm2MoreOofIce",   T = "UpgradeUpgradeMax", A = {"Ice", "MoreOof"}},
 
     {F = "AutoRebirthMoreOof",    T = "UpgradeUpgradeMax", A = {"Rebirth", "MoreOof"}},
