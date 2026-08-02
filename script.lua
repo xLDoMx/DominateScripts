@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | MINING
+-- DOMINATE HUB | Better Mining
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -492,7 +492,7 @@ task.spawn(function()
     end
 end)
 
--- AUTO MINING ENGINE (Dynamic Scanner)
+-- AUTO MINING ENGINE (Targeted Folder Scanner)
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
     {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
@@ -516,12 +516,17 @@ task.spawn(function()
                     local bestDist = math.huge
                     local bestOrePart = nil
                     
-                    for _, obj in pairs(workspace:GetDescendants()) do
-                        if obj:IsA("Model") and obj.Name == activeOreName then
-                            local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                            if part and part.Transparency < 1 then
-                                local d = (hrp.Position - part.Position).Magnitude
-                                if d < bestDist then bestDist = d; bestOrePart = part end
+                    local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
+                    local oresFolder = gameContent and gameContent:FindFirstChild("Ores")
+                    
+                    if oresFolder then
+                        for _, obj in ipairs(oresFolder:GetChildren()) do
+                            if obj.Name == activeOreName then
+                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                                if part and part.Transparency < 1 then
+                                    local d = (hrp.Position - part.Position).Magnitude
+                                    if d < bestDist then bestDist = d; bestOrePart = part end
+                                end
                             end
                         end
                     end
@@ -1246,4 +1251,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Gem Exchange Corrected!")
+print("[Dominate Hub] High-Performance Mining Engine Activated!")
