@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN Axe x2
+-- DOMINATE HUB | AXE REMOVED
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -42,9 +42,6 @@ _G.AutoWoodRankUp, _G.AutoWoodMoreWood, _G.AutoWoodSharperAxes, _G.AutoWoodBigge
 _G.AutoWoodFasterConversion, _G.AutoWoodMorePlanks = false, false
 _G.AutoDepositWood = false
 _G.AutoPlanksMorePlanks, _G.AutoPlanksMoreWood, _G.AutoPlanksWaterFromPlanks = false, false, false
-
--- AXE CRAFTING FLAG (Realm 2)
-_G.AutoCraftAxes = false
 
 -- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
@@ -168,7 +165,7 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- REALM 2 SUB-TABS (Updated Layout with Wood, Planks & Axes)
+-- REALM 2 SUB-TABS (Updated Layout with Wood, Planks)
 local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
 local r2SubBtnNoobs = Instance.new("TextButton") r2SubBtnNoobs.Size = UDim2.new(0, 48, 1, 0) r2SubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) r2SubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnNoobs.TextSize = 10; r2SubBtnNoobs.Font = Enum.Font.SourceSansBold; r2SubBtnNoobs.Text = "Noobs" r2SubBtnNoobs.Parent = realm2SubTabList
 local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 40, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 50, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
@@ -177,7 +174,6 @@ local r2SubBtnIce = Instance.new("TextButton") r2SubBtnIce.Size = UDim2.new(0, 4
 local r2SubBtnBuckets = Instance.new("TextButton") r2SubBtnBuckets.Size = UDim2.new(0, 85, 1, 0) r2SubBtnBuckets.Position = UDim2.new(0, 184, 0, 0) r2SubBtnBuckets.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnBuckets.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnBuckets.TextSize = 10; r2SubBtnBuckets.Font = Enum.Font.SourceSansBold; r2SubBtnBuckets.Text = "Water Buckets" r2SubBtnBuckets.Parent = realm2SubTabList
 local r2SubBtnWood = Instance.new("TextButton") r2SubBtnWood.Size = UDim2.new(0, 45, 1, 0) r2SubBtnWood.Position = UDim2.new(0, 271, 0, 0) r2SubBtnWood.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWood.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWood.TextSize = 10; r2SubBtnWood.Font = Enum.Font.SourceSansBold; r2SubBtnWood.Text = "Wood" r2SubBtnWood.Parent = realm2SubTabList
 local r2SubBtnPlanks = Instance.new("TextButton") r2SubBtnPlanks.Size = UDim2.new(0, 50, 1, 0) r2SubBtnPlanks.Position = UDim2.new(0, 318, 0, 0) r2SubBtnPlanks.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnPlanks.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnPlanks.TextSize = 10; r2SubBtnPlanks.Font = Enum.Font.SourceSansBold; r2SubBtnPlanks.Text = "Planks" r2SubBtnPlanks.Parent = realm2SubTabList
-local r2SubBtnAxes = Instance.new("TextButton") r2SubBtnAxes.Size = UDim2.new(0, 45, 1, 0) r2SubBtnAxes.Position = UDim2.new(0, 370, 0, 0) r2SubBtnAxes.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnAxes.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnAxes.TextSize = 10; r2SubBtnAxes.Font = Enum.Font.SourceSansBold; r2SubBtnAxes.Text = "Axes" r2SubBtnAxes.Parent = realm2SubTabList
 
 Instance.new("UICorner", r2SubBtnNoobs).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnOof).CornerRadius = UDim.new(0, 5)
@@ -186,7 +182,6 @@ Instance.new("UICorner", r2SubBtnIce).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnBuckets).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnWood).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnPlanks).CornerRadius = UDim.new(0, 5)
-Instance.new("UICorner", r2SubBtnAxes).CornerRadius = UDim.new(0, 5)
 
 -- RUNES SUB-TABS
 local runesSubTabList = Instance.new("Frame") runesSubTabList.Size = UDim2.new(1, 0, 0, 25) runesSubTabList.Position = UDim2.new(0, 0, 0, 0) runesSubTabList.BackgroundTransparency = 1; runesSubTabList.Parent = runesPage
@@ -225,7 +220,6 @@ local realm2IceScroll = makeScroll(210, realm2Page)
 local realm2BucketScroll = makeScroll(500, realm2Page) 
 local realm2WoodScroll = makeScroll(350, realm2Page)
 local realm2PlanksScroll = makeScroll(160, realm2Page)
-local realm2AxeScroll = makeScroll(110, realm2Page)
 
 local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
@@ -341,8 +335,6 @@ UI.DepositWood = gridRow("Auto Deposit Wood (30s)", 7, realm2WoodScroll)
 UI.PlanksMorePlanks = gridRow("More Planks", 1, realm2PlanksScroll)
 UI.PlanksMoreWood = gridRow("More Wood (Planks)", 2, realm2PlanksScroll)
 UI.PlanksWaterFromPlanks = gridRow("Water From Planks", 3, realm2PlanksScroll)
-
-UI.CraftAxes = gridRow("Auto Craft Axes", 1, realm2AxeScroll)
 
 -- HACKER ROWS (1 to 4)
 UI.Hacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
@@ -666,52 +658,6 @@ task.spawn(function()
     end
 end)
 
--- AUTO CRAFT AXES ENGINE (DYNAMIC UI SCRAPER)
-task.spawn(function()
-    while Running do
-        task.wait(2.0)
-        if NetRemote and Running and _G.AutoCraftAxes then
-            pcall(function()
-                local pGui = player:FindFirstChild("PlayerGui")
-                local axeShop = pGui and pGui:FindFirstChild("AxeShop")
-                local axeScroll = axeShop and axeShop:FindFirstChild("ScrollingFrame", true)
-                
-                if axeScroll then
-                    local axeFrames = {}
-                    for _, child in ipairs(axeScroll:GetChildren()) do
-                        if child:IsA("GuiObject") then
-                            table.insert(axeFrames, child)
-                        end
-                    end
-                    
-                    table.sort(axeFrames, function(a, b)
-                        return (a.LayoutOrder or 0) < (b.LayoutOrder or 0)
-                    end)
-                    
-                    for _, frame in ipairs(axeFrames) do
-                        if not Running or not _G.AutoCraftAxes then break end
-                        
-                        local axeName = frame.Name
-                        local isLocked = false
-                        
-                        for _, desc in ipairs(frame:GetDescendants()) do
-                            if desc:IsA("TextLabel") and desc.Text == "Buy Previous" then
-                                isLocked = true
-                                break
-                            end
-                        end
-                        
-                        if not isLocked then
-                            NetRemote:FireServer("CraftAxe", axeName)
-                            task.wait(0.15)
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
 -- AUTO SCORE & KICK LOOP
 task.spawn(function()
     while Running do
@@ -980,8 +926,6 @@ UI.PlanksMorePlanks.MouseButton1Click:Connect(function() tStateV2(UI.PlanksMoreP
 UI.PlanksMoreWood.MouseButton1Click:Connect(function() tStateV2(UI.PlanksMoreWood, "AutoPlanksMoreWood") end)
 UI.PlanksWaterFromPlanks.MouseButton1Click:Connect(function() tStateV2(UI.PlanksWaterFromPlanks, "AutoPlanksWaterFromPlanks") end)
 
-UI.CraftAxes.MouseButton1Click:Connect(function() tStateV2(UI.CraftAxes, "AutoCraftAxes") end)
-
 -- HACKER TOGGLE CONNECTORS (1 to 4)
 UI.Hacker1.MouseButton1Click:Connect(function() tStateV2(UI.Hacker1, "AutoUpgradeHacker1") end)
 UI.Hacker2.MouseButton1Click:Connect(function() tStateV2(UI.Hacker2, "AutoUpgradeHacker2") end)
@@ -1063,8 +1007,8 @@ tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSett
 
 -- Realm 2 Sub-Tab Router
 local function realm2Route(targetScroll, activeBtn)
-    local scrolls = {realm2NoobScroll, realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll, realm2WoodScroll, realm2PlanksScroll, realm2AxeScroll}
-    local btns = {r2SubBtnNoobs, r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets, r2SubBtnWood, r2SubBtnPlanks, r2SubBtnAxes}
+    local scrolls = {realm2NoobScroll, realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll, realm2WoodScroll, realm2PlanksScroll}
+    local btns = {r2SubBtnNoobs, r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets, r2SubBtnWood, r2SubBtnPlanks}
     for i, s in ipairs(scrolls) do
         s.Visible = (s == targetScroll)
         if s == targetScroll then
@@ -1081,7 +1025,6 @@ r2SubBtnIce.MouseButton1Click:Connect(function() realm2Route(realm2IceScroll, r2
 r2SubBtnBuckets.MouseButton1Click:Connect(function() realm2Route(realm2BucketScroll, r2SubBtnBuckets) end)
 r2SubBtnWood.MouseButton1Click:Connect(function() realm2Route(realm2WoodScroll, r2SubBtnWood) end)
 r2SubBtnPlanks.MouseButton1Click:Connect(function() realm2Route(realm2PlanksScroll, r2SubBtnPlanks) end)
-r2SubBtnAxes.MouseButton1Click:Connect(function() realm2Route(realm2AxeScroll, r2SubBtnAxes) end)
 
 -- Football Sub-Tab Router
 local function footballRoute(targetScroll, activeBtn)
@@ -1159,4 +1102,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Dynamic Auto Craft Axes Successfully Loaded!")
+print("[Dominate Hub] Axe automation fully removed!")
