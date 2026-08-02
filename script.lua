@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN EDITED
+-- DOMINATE HUB | 
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
@@ -200,7 +200,7 @@ local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
 local realm2BucketScroll = makeScroll(250, realm2Page)
 
-local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
+local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true 
 local runesScroll2 = makeScroll(100, runesPage)
 local runesScroll3 = makeScroll(100, runesPage)
 local runesScrollEvents = makeScroll(100, runesPage)
@@ -326,7 +326,7 @@ local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems
 local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
 
 -- REALM 2 RUNES ROWS
-local toggleSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle", 1, runesScroll2)
+local toggleSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle (Realm 2)", 1, runesScroll2)
 
 -- EVENTS RUNES ROWS
 local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
@@ -870,6 +870,7 @@ toggleCashMoreCash.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreC
 toggleCashFasterDropper.MouseButton1Click:Connect(function() tStateV2(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
 toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
 
+-- RUNE CONNECTIONS
 toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollBasicRuneCard, "AutoRollBasicRune") end)
 toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
@@ -1011,4 +1012,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Realm 2 & Enchant Station Coordinates Integrated Successfully!")
+print("[Dominate Hub] Snowy Rune UI Fully Integrated!")
