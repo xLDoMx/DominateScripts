@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V5.5 PRO EDITION (EXPLICIT CONFIG BUTTONS & CLEAN HUD)
+-- DOMINATE HUB | V5.7 PRO EDITION (RENAMEABLE 5-SLOT CONFIGS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -7,7 +7,7 @@ if getgenv().DominateHubLoaded then
         local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
         if oldUI then oldUI:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V5.5 Instance...")
+    print("[Dominate Hub] Reloading V5.7 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -25,11 +25,17 @@ local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
 
--- CONFIG SYSTEM (SAVE / LOAD)
-local CONFIG_FILE = "DominateHub_Config.json"
+-- MULTI-SLOT CONFIG & RENAME SYSTEM
+_G.SelectedConfigSlot = 1
+local slotCustomNames = {[1] = "Slot 1", [2] = "Slot 2", [3] = "Slot 3", [4] = "Slot 4", [5] = "Slot 5"}
 
-local function saveConfig()
-    local configData = {}
+local function getSlotFileName(slot)
+    return "DominateHub_Config_Slot" .. slot .. ".json"
+end
+
+local function saveConfigToSlot(slot, customName)
+    slotCustomNames[slot] = customName
+    local configData = { _SlotCustomName = customName }
     for k, v in pairs(_G) do
         if type(v) == "boolean" or type(v) == "number" or type(v) == "string" then
             configData[k] = v
@@ -37,22 +43,28 @@ local function saveConfig()
     end
     pcall(function()
         if writefile then
-            writefile(CONFIG_FILE, HttpService:JSONEncode(configData))
+            writefile(getSlotFileName(slot), HttpService:JSONEncode(configData))
         end
     end)
 end
 
-local function loadConfig()
+local function loadConfigFromSlot(slot)
     pcall(function()
-        if readfile and isfile and isfile(CONFIG_FILE) then
-            local data = HttpService:JSONDecode(readfile(CONFIG_FILE))
+        local fileName = getSlotFileName(slot)
+        if readfile and isfile and isfile(fileName) then
+            local data = HttpService:JSONDecode(readfile(fileName))
+            if data._SlotCustomName then
+                slotCustomNames[slot] = data._SlotCustomName
+            end
             for k, v in pairs(data) do
-                _G[k] = v
+                if k ~= "_SlotCustomName" then
+                    _G[k] = v
+                end
             end
         end
     end)
 end
-loadConfig()
+loadConfigFromSlot(1) -- Default load slot 1 on startup
 
 _G.AntiAFK, _G.AutoPrestige = true, false
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
@@ -147,7 +159,7 @@ end)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
--- TOAST NOTIFICATION HELPER (NO STROKE)
+-- TOAST NOTIFICATION HELPER
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
@@ -206,7 +218,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT, NO STROKE)
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 170, 0, 84)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -276,7 +288,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.5 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.7 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
@@ -295,7 +307,7 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
--- FLOATING PILL (NO STROKE)
+-- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 105, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
@@ -444,7 +456,7 @@ UI.MiningSpeedSwitch = gridRow("⚡ Glide Speed", r2MiningScroll) UI.MiningSpeed
 UI.MineStone = gridRow("Mine Stone", r2MiningScroll) UI.MineCoal = gridRow("Mine Coal", r2MiningScroll) UI.MineSilver = gridRow("Mine Silver", r2MiningScroll) UI.MineIron = gridRow("Mine Iron", r2MiningScroll) UI.MineCopper = gridRow("Mine Copper", r2MiningScroll) UI.MineGold = gridRow("Mine Gold", r2MiningScroll) UI.MinePlatinum = gridRow("Mine Platinum", r2MiningScroll) UI.MineTitanium = gridRow("Mine Titanium", r2MiningScroll) UI.MineCobalt = gridRow("Mine Cobalt", r2MiningScroll) UI.MineUranium = gridRow("Mine Uranium", r2MiningScroll) UI.MinePalladium = gridRow("Mine Palladium", r2MiningScroll) UI.MineAetherite = gridRow("Mine Aetherite", r2MiningScroll) UI.MineRuby = gridRow("Mine Ruby", r2MiningScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", r2MiningScroll) UI.MineCelestium = gridRow("Mine Celestium", r2MiningScroll)
 
 -- ======================================================================================
--- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (WITH CONFIG BUTTONS)
+-- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (WITH RENAMEABLE CONFIG SLOTS)
 -- ======================================================================================
 local r3Scroll = makeGridScroll(realm3Page, false) r3Scroll.Visible = true
 UI.Pharaoh = gridRow("Auto Upgrade Pharaoh", r3Scroll)
@@ -472,42 +484,73 @@ UI.ClassicCapsule = gridRow("Hatch Classic Capsule", capScroll) UI.FootballCapsu
 local encScroll = makeGridScroll(enchantsPage, false) encScroll.Visible = true
 UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gridRow("Reroll: Cooker", encScroll) UI.EnchantFarmer = gridRow("Reroll: Farmer", encScroll) UI.EnchantMagician = gridRow("Reroll: Magician", encScroll) UI.EnchantArcher = gridRow("Reroll: Archer", encScroll) UI.EnchantSoldier = gridRow("Reroll: Soldier", encScroll) UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", encScroll) UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", encScroll) UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", encScroll) UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", encScroll) UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", encScroll)
 
-local setScroll = makeGridScroll(settingsPage, false) setScroll.Visible = true
-UI.OpenT1ChestCard = gridRow("Mass-Open T1 Chests", setScroll) UI.OpenT2ChestCard = gridRow("Mass-Open T2 Chests", setScroll) 
-UI.AFK = gridRow("Anti-AFK Protection", setScroll) UI.AFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.AFK.TextColor3 = Color3.fromRGB(120, 255, 120) UI.AFK.Text = "ACTIVE"
-UI.Prestige = gridRow("Auto Prestige", setScroll) UI.RebirthTimerCard = gridRow("Auto Rebirth (10m)", setScroll) 
+-- SETTINGS SIDEBAR (GENERAL & CONFIG SUB-TABS)
+local setSidebar = makeSidebar(settingsPage)
+local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(230, 230, 235) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
+local bSetConfig = makeSideBtn("Config", setSidebar)
 
-UI.HUDToggle = gridRow("📊 Stats HUD Overlay", setScroll)
+local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
+local setConfigScroll = makeGridScroll(settingsPage, true)
+
+UI.OpenT1ChestCard = gridRow("Mass-Open T1 Chests", setGenScroll) UI.OpenT2ChestCard = gridRow("Mass-Open T2 Chests", setGenScroll) 
+UI.AFK = gridRow("Anti-AFK Protection", setGenScroll) UI.AFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.AFK.TextColor3 = Color3.fromRGB(120, 255, 120) UI.AFK.Text = "ACTIVE"
+UI.Prestige = gridRow("Auto Prestige", setGenScroll) UI.RebirthTimerCard = gridRow("Auto Rebirth (10m)", setGenScroll) 
+
+UI.HUDToggle = gridRow("📊 Stats HUD Overlay", setGenScroll)
 UI.HUDToggle.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.HUDToggle.TextColor3 = Color3.fromRGB(120, 255, 120) UI.HUDToggle.Text = "ACTIVE"
 
-UI.FPSBoostToggle = gridRow("🚀 FPS Booster Mode", setScroll)
-UI.ThemePicker = gridRow("🎨 Hub Accent Theme", setScroll)
+UI.FPSBoostToggle = gridRow("🚀 FPS Booster Mode", setGenScroll)
+UI.ThemePicker = gridRow("🎨 Hub Accent Theme", setGenScroll)
 UI.ThemePicker.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
 UI.ThemePicker.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.ThemePicker.Text = "Theme: Neon Blue"
 
--- MANUAL CONFIG BUTTONS IN SETTINGS
-UI.SaveConfigBtn = gridRow("💾 Save Config Now", setScroll)
-UI.SaveConfigBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
-UI.SaveConfigBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-UI.SaveConfigBtn.Text = "SAVE"
+UI.KillSwitch = gridRow("EMERGENCY KILL SWITCH", setGenScroll) UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) UI.KillSwitch.Text = "TERMINATE"
 
-UI.LoadConfigBtn = gridRow("📂 Load Config Now", setScroll)
-UI.LoadConfigBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
-UI.LoadConfigBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-UI.LoadConfigBtn.Text = "LOAD"
+-- CONFIG SLOTS (1 TO 5) WITH RENAME BOX IN CONFIG SUB-TAB
+UI.ConfigSlotSwitch = gridRow("📦 Select Slot", setConfigScroll)
+UI.ConfigSlotSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+UI.ConfigSlotSwitch.TextColor3 = Color3.fromRGB(255, 255, 255)
+UI.ConfigSlotSwitch.Text = "Slot #1: " .. slotCustomNames[1]
 
-UI.KillSwitch = gridRow("EMERGENCY KILL SWITCH", setScroll) UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) UI.KillSwitch.Text = "TERMINATE"
+-- Custom Textbox Frame for Renaming
+local renameFrame = Instance.new("Frame") renameFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) renameFrame.BorderSizePixel = 0; renameFrame.Parent = setConfigScroll
+local renameLabel = Instance.new("TextLabel") renameLabel.Size = UDim2.new(0.4, -5, 1, 0) renameLabel.Position = UDim2.new(0, 8, 0, 0) renameLabel.BackgroundTransparency = 1; renameLabel.TextColor3 = Color3.fromRGB(220, 220, 225) renameLabel.TextSize = 11; renameLabel.Font = Enum.Font.SourceSansBold; renameLabel.Text = "Rename Slot"; renameLabel.TextXAlignment = Enum.TextXAlignment.Left; renameLabel.Parent = renameFrame
+local renameBox = Instance.new("TextBox") renameBox.Size = UDim2.new(0.6, -5, 0, 24) renameBox.Position = UDim2.new(0.4, 0, 0.5, -12) renameBox.BackgroundColor3 = Color3.fromRGB(45, 45, 50) renameBox.TextColor3 = Color3.fromRGB(255, 255, 255) renameBox.TextSize = 11; renameBox.Font = Enum.Font.SourceSansBold; renameBox.Text = slotCustomNames[1]; renameBox.Parent = renameFrame
+Instance.new("UICorner", renameFrame).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", renameBox).CornerRadius = UDim.new(0, 5)
 
--- CONFIG BUTTON LOGIC
-UI.SaveConfigBtn.MouseButton1Click:Connect(function()
-    saveConfig()
-    showToast("💾 Config saved successfully!")
+UI.SaveSlotBtn = gridRow("💾 Save Slot", setConfigScroll)
+UI.SaveSlotBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
+UI.SaveSlotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+UI.SaveSlotBtn.Text = "SAVE"
+
+UI.LoadSlotBtn = gridRow("📂 Load Slot", setConfigScroll)
+UI.LoadSlotBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
+UI.LoadSlotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+UI.LoadSlotBtn.Text = "LOAD"
+
+-- CONFIG SLOT SWITCHING & RENAME LOGIC
+UI.ConfigSlotSwitch.MouseButton1Click:Connect(function()
+    _G.SelectedConfigSlot = _G.SelectedConfigSlot + 1
+    if _G.SelectedConfigSlot > 5 then _G.SelectedConfigSlot = 1 end
+    UI.ConfigSlotSwitch.Text = "Slot #" .. _G.SelectedConfigSlot .. ": " .. slotCustomNames[_G.SelectedConfigSlot]
+    renameBox.Text = slotCustomNames[_G.SelectedConfigSlot]
+    showToast("📦 Switched to Config Slot " .. _G.SelectedConfigSlot)
 end)
 
-UI.LoadConfigBtn.MouseButton1Click:Connect(function()
-    loadConfig()
-    showToast("📂 Config loaded successfully!")
+UI.SaveSlotBtn.MouseButton1Click:Connect(function()
+    local newName = renameBox.Text ~= "" and renameBox.Text or ("Slot " .. _G.SelectedConfigSlot)
+    slotCustomNames[_G.SelectedConfigSlot] = newName
+    UI.ConfigSlotSwitch.Text = "Slot #" .. _G.SelectedConfigSlot .. ": " .. newName
+    saveConfigToSlot(_G.SelectedConfigSlot, newName)
+    showToast("💾 Saved to Slot " .. _G.SelectedConfigSlot .. " (" .. newName .. ")")
+end)
+
+UI.LoadSlotBtn.MouseButton1Click:Connect(function()
+    loadConfigFromSlot(_G.SelectedConfigSlot)
+    renameBox.Text = slotCustomNames[_G.SelectedConfigSlot]
+    UI.ConfigSlotSwitch.Text = "Slot #" .. _G.SelectedConfigSlot .. ": " .. slotCustomNames[_G.SelectedConfigSlot]
+    showToast("📂 Loaded Slot " .. _G.SelectedConfigSlot .. " (" .. slotCustomNames[_G.SelectedConfigSlot] .. ")")
 end)
 
 -- FPS BOOSTER LOGIC
@@ -516,7 +559,7 @@ local function toggleFPSBoost(b)
     b.Text = _G.FPSBoostMode and "ACTIVE" or "DISABLED"
     b.BackgroundColor3 = _G.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
     b.TextColor3 = _G.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    saveConfig()
+    saveConfigToSlot(_G.SelectedConfigSlot, slotCustomNames[_G.SelectedConfigSlot])
     
     if _G.FPSBoostMode then
         pcall(function()
@@ -543,7 +586,7 @@ UI.HUDToggle.MouseButton1Click:Connect(function()
     UI.HUDToggle.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
     UI.HUDToggle.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
     UI.HUDToggle.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(60, 20, 20)
-    saveConfig()
+    saveConfigToSlot(_G.SelectedConfigSlot, slotCustomNames[_G.SelectedConfigSlot])
 end)
 
 -- THEME CYCLING LOGIC
@@ -786,7 +829,7 @@ local function tV2(b, v)
     b.Text = _G[v] and "ACTIVE" or "DISABLED" 
     b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
     b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
-    saveConfig()
+    saveConfigToSlot(_G.SelectedConfigSlot, slotCustomNames[_G.SelectedConfigSlot])
 end
 
 UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) UI.Farmer.MouseButton1Click:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) UI.Magician.MouseButton1Click:Connect(function() tV2(UI.Magician, "AutoUpgradeMagician") end) UI.Archer.MouseButton1Click:Connect(function() tV2(UI.Archer, "AutoUpgradeArcher") end) UI.Soldier.MouseButton1Click:Connect(function() tV2(UI.Soldier, "AutoUpgradeSoldier") end) UI.MoreOof.MouseButton1Click:Connect(function() tV2(UI.MoreOof, "AutoUpgradeMoreOof") end) UI.FasterNoobs.MouseButton1Click:Connect(function() tV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
@@ -804,7 +847,7 @@ UI.PlanksMorePlanks.MouseButton1Click:Connect(function() tV2(UI.PlanksMorePlanks
 UI.GemMoreOof.MouseButton1Click:Connect(function() tV2(UI.GemMoreOof, "AutoGemMoreOof") end) UI.GemMoreGems.MouseButton1Click:Connect(function() tV2(UI.GemMoreGems, "AutoGemMoreGems") end) UI.GemStrongerPickaxes.MouseButton1Click:Connect(function() tV2(UI.GemStrongerPickaxes, "AutoGemStrongerPickaxes") end) UI.GemMoreOreStats.MouseButton1Click:Connect(function() tV2(UI.GemMoreOreStats, "AutoGemMoreOreStats") end) UI.GemExchange.MouseButton1Click:Connect(function() tV2(UI.GemExchange, "AutoGemExchange") end)
 
 local ms = {0.3, 0.5, 0.8, 1.2, 2.0} local ml = {"0.3 Studs/s", "0.5 Studs/s", "0.8 Studs/s", "1.2 Studs/s", "2.0 Studs/s"} local mi = 3
-UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] saveConfig() end)
+UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] saveConfigToSlot(_G.SelectedConfigSlot, slotCustomNames[_G.SelectedConfigSlot]) end)
 UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
 
 UI.Hacker1.MouseButton1Click:Connect(function() tV2(UI.Hacker1, "AutoUpgradeHacker1") end) UI.Hacker2.MouseButton1Click:Connect(function() tV2(UI.Hacker2, "AutoUpgradeHacker2") end) UI.Hacker3.MouseButton1Click:Connect(function() tV2(UI.Hacker3, "AutoUpgradeHacker3") end) UI.Hacker4.MouseButton1Click:Connect(function() tV2(UI.Hacker4, "AutoUpgradeHacker4") end)
@@ -848,9 +891,14 @@ bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS,
 local ruS, ruB = {ruScroll1, ruScroll2, ruScroll3, ruScrollE}, {bRu1, bRu2, bRu3, bRuE}
 bRu1.MouseButton1Click:Connect(function() sideRoute(ruScroll1, bRu1, ruS, ruB) end) bRu2.MouseButton1Click:Connect(function() sideRoute(ruScroll2, bRu2, ruS, ruB) end) bRu3.MouseButton1Click:Connect(function() sideRoute(ruScroll3, bRu3, ruS, ruB) end) bRuE.MouseButton1Click:Connect(function() sideRoute(ruScrollE, bRuE, ruS, ruB) end)
 
+-- SETTINGS SUB-TAB ROUTER (General / Config)
+local setS, setB = {setGenScroll, setConfigScroll}, {bSetGen, bSetConfig}
+bSetGen.MouseButton1Click:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
+bSetConfig.MouseButton1Click:Connect(function() sideRoute(setConfigScroll, bSetConfig, setS, setB) end)
+
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V5.5 Pro Edition - Clean Top-Left HUD & Stroke-Free Notification Deployed!")
+print("[Dominate Hub] V5.7 Pro Edition - Renameable 5-Slot Config Sub-Tab Deployed!")
