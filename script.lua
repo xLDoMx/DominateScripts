@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | Super CAP
+-- DOMINATE HUB | MINING
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -43,6 +43,12 @@ _G.AutoWoodRankUp, _G.AutoWoodMoreWood, _G.AutoWoodSharperAxes, _G.AutoWoodBigge
 _G.AutoWoodFasterConversion, _G.AutoWoodMorePlanks = false, false
 _G.AutoDepositWood = false
 _G.AutoPlanksMorePlanks, _G.AutoPlanksMoreWood, _G.AutoPlanksWaterFromPlanks = false, false, false
+
+-- GEMS & MINING AUTOMATION FLAGS (Realm 2)
+_G.AutoGemMoreOof, _G.AutoGemMoreGems, _G.AutoGemStrongerPickaxes, _G.AutoGemMoreOreStats, _G.AutoGemExchange = false, false, false, false, false
+_G.AutoMineStone, _G.AutoMineCoal, _G.AutoMineSilver, _G.AutoMineIron, _G.AutoMineCopper = false, false, false, false, false
+_G.AutoMineGold, _G.AutoMinePlatinum, _G.AutoMineTitanium, _G.AutoMineCobalt, _G.AutoMineUranium = false, false, false, false, false
+_G.AutoMinePalladium, _G.AutoMineAetherite, _G.AutoMineRuby, _G.AutoMineVoidsteel, _G.AutoMineCelestium = false, false, false, false, false
 
 -- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
@@ -125,7 +131,7 @@ local realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new
 local realm2Page = Instance.new("Frame") realm2Page.Size = UDim2.new(1, -20, 1, -85) realm2Page.Position = UDim2.new(0, 10, 0, 80) realm2Page.BackgroundTransparency = 1; realm2Page.Visible = false; realm2Page.Parent = mainFrame
 local realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
 local footballPage = Instance.new("Frame") footballPage.Size = UDim2.new(1, -20, 1, -85) footballPage.Position = UDim2.new(0, 10, 0, 80) footballPage.BackgroundTransparency = 1; footballPage.Visible = false; footballPage.Parent = mainFrame
-local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; realm3Page.Parent = mainFrame
+local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
 local capsulesPage = Instance.new("Frame") capsulesPage.Size = UDim2.new(1, -20, 1, -85) capsulesPage.Position = UDim2.new(0, 10, 0, 80) capsulesPage.BackgroundTransparency = 1; capsulesPage.Visible = false; capsulesPage.Parent = mainFrame
 local enchantsPage = Instance.new("Frame") enchantsPage.Size = UDim2.new(1, -20, 1, -85) enchantsPage.Position = UDim2.new(0, 10, 0, 80) enchantsPage.BackgroundTransparency = 1; enchantsPage.Visible = false; enchantsPage.Parent = mainFrame
 local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
@@ -168,15 +174,17 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- REALM 2 SUB-TABS
+-- REALM 2 SUB-TABS (Updated with Gems & Mining)
 local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
-local r2SubBtnNoobs = Instance.new("TextButton") r2SubBtnNoobs.Size = UDim2.new(0, 48, 1, 0) r2SubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) r2SubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnNoobs.TextSize = 10; r2SubBtnNoobs.Font = Enum.Font.SourceSansBold; r2SubBtnNoobs.Text = "Noobs" r2SubBtnNoobs.Parent = realm2SubTabList
-local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 40, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 50, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
-local r2SubBtnWater = Instance.new("TextButton") r2SubBtnWater.Size = UDim2.new(0, 48, 1, 0) r2SubBtnWater.Position = UDim2.new(0, 92, 0, 0) r2SubBtnWater.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWater.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWater.TextSize = 10; r2SubBtnWater.Font = Enum.Font.SourceSansBold; r2SubBtnWater.Text = "Water" r2SubBtnWater.Parent = realm2SubTabList
-local r2SubBtnIce = Instance.new("TextButton") r2SubBtnIce.Size = UDim2.new(0, 40, 1, 0) r2SubBtnIce.Position = UDim2.new(0, 142, 0, 0) r2SubBtnIce.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnIce.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnIce.TextSize = 10; r2SubBtnIce.Font = Enum.Font.SourceSansBold; r2SubBtnIce.Text = "Ice" r2SubBtnIce.Parent = realm2SubTabList
-local r2SubBtnBuckets = Instance.new("TextButton") r2SubBtnBuckets.Size = UDim2.new(0, 85, 1, 0) r2SubBtnBuckets.Position = UDim2.new(0, 184, 0, 0) r2SubBtnBuckets.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnBuckets.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnBuckets.TextSize = 10; r2SubBtnBuckets.Font = Enum.Font.SourceSansBold; r2SubBtnBuckets.Text = "Water Buckets" r2SubBtnBuckets.Parent = realm2SubTabList
-local r2SubBtnWood = Instance.new("TextButton") r2SubBtnWood.Size = UDim2.new(0, 45, 1, 0) r2SubBtnWood.Position = UDim2.new(0, 271, 0, 0) r2SubBtnWood.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWood.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWood.TextSize = 10; r2SubBtnWood.Font = Enum.Font.SourceSansBold; r2SubBtnWood.Text = "Wood" r2SubBtnWood.Parent = realm2SubTabList
-local r2SubBtnPlanks = Instance.new("TextButton") r2SubBtnPlanks.Size = UDim2.new(0, 50, 1, 0) r2SubBtnPlanks.Position = UDim2.new(0, 318, 0, 0) r2SubBtnPlanks.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnPlanks.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnPlanks.TextSize = 10; r2SubBtnPlanks.Font = Enum.Font.SourceSansBold; r2SubBtnPlanks.Text = "Planks" r2SubBtnPlanks.Parent = realm2SubTabList
+local r2SubBtnNoobs = Instance.new("TextButton") r2SubBtnNoobs.Size = UDim2.new(0, 42, 1, 0) r2SubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) r2SubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnNoobs.TextSize = 10; r2SubBtnNoobs.Font = Enum.Font.SourceSansBold; r2SubBtnNoobs.Text = "Noobs" r2SubBtnNoobs.Parent = realm2SubTabList
+local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 35, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 44, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
+local r2SubBtnWater = Instance.new("TextButton") r2SubBtnWater.Size = UDim2.new(0, 42, 1, 0) r2SubBtnWater.Position = UDim2.new(0, 81, 0, 0) r2SubBtnWater.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWater.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWater.TextSize = 10; r2SubBtnWater.Font = Enum.Font.SourceSansBold; r2SubBtnWater.Text = "Water" r2SubBtnWater.Parent = realm2SubTabList
+local r2SubBtnIce = Instance.new("TextButton") r2SubBtnIce.Size = UDim2.new(0, 30, 1, 0) r2SubBtnIce.Position = UDim2.new(0, 125, 0, 0) r2SubBtnIce.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnIce.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnIce.TextSize = 10; r2SubBtnIce.Font = Enum.Font.SourceSansBold; r2SubBtnIce.Text = "Ice" r2SubBtnIce.Parent = realm2SubTabList
+local r2SubBtnBuckets = Instance.new("TextButton") r2SubBtnBuckets.Size = UDim2.new(0, 70, 1, 0) r2SubBtnBuckets.Position = UDim2.new(0, 157, 0, 0) r2SubBtnBuckets.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnBuckets.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnBuckets.TextSize = 10; r2SubBtnBuckets.Font = Enum.Font.SourceSansBold; r2SubBtnBuckets.Text = "Buckets" r2SubBtnBuckets.Parent = realm2SubTabList
+local r2SubBtnWood = Instance.new("TextButton") r2SubBtnWood.Size = UDim2.new(0, 40, 1, 0) r2SubBtnWood.Position = UDim2.new(0, 229, 0, 0) r2SubBtnWood.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWood.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWood.TextSize = 10; r2SubBtnWood.Font = Enum.Font.SourceSansBold; r2SubBtnWood.Text = "Wood" r2SubBtnWood.Parent = realm2SubTabList
+local r2SubBtnPlanks = Instance.new("TextButton") r2SubBtnPlanks.Size = UDim2.new(0, 42, 1, 0) r2SubBtnPlanks.Position = UDim2.new(0, 271, 0, 0) r2SubBtnPlanks.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnPlanks.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnPlanks.TextSize = 10; r2SubBtnPlanks.Font = Enum.Font.SourceSansBold; r2SubBtnPlanks.Text = "Planks" r2SubBtnPlanks.Parent = realm2SubTabList
+local r2SubBtnGems = Instance.new("TextButton") r2SubBtnGems.Size = UDim2.new(0, 40, 1, 0) r2SubBtnGems.Position = UDim2.new(0, 315, 0, 0) r2SubBtnGems.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnGems.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnGems.TextSize = 10; r2SubBtnGems.Font = Enum.Font.SourceSansBold; r2SubBtnGems.Text = "Gems" r2SubBtnGems.Parent = realm2SubTabList
+local r2SubBtnMine = Instance.new("TextButton") r2SubBtnMine.Size = UDim2.new(0, 45, 1, 0) r2SubBtnMine.Position = UDim2.new(0, 357, 0, 0) r2SubBtnMine.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnMine.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnMine.TextSize = 10; r2SubBtnMine.Font = Enum.Font.SourceSansBold; r2SubBtnMine.Text = "Mining" r2SubBtnMine.Parent = realm2SubTabList
 
 Instance.new("UICorner", r2SubBtnNoobs).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnOof).CornerRadius = UDim.new(0, 5)
@@ -185,6 +193,8 @@ Instance.new("UICorner", r2SubBtnIce).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnBuckets).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnWood).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnPlanks).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", r2SubBtnGems).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", r2SubBtnMine).CornerRadius = UDim.new(0, 5)
 
 -- RUNES SUB-TABS
 local runesSubTabList = Instance.new("Frame") runesSubTabList.Size = UDim2.new(1, 0, 0, 25) runesSubTabList.Position = UDim2.new(0, 0, 0, 0) runesSubTabList.BackgroundTransparency = 1; runesSubTabList.Parent = runesPage
@@ -223,6 +233,8 @@ local realm2IceScroll = makeScroll(210, realm2Page)
 local realm2BucketScroll = makeScroll(500, realm2Page) 
 local realm2WoodScroll = makeScroll(350, realm2Page)
 local realm2PlanksScroll = makeScroll(160, realm2Page)
+local realm2GemsScroll = makeScroll(250, realm2Page)
+local realm2MiningScroll = makeScroll(700, realm2Page)
 
 local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
@@ -340,6 +352,29 @@ UI.PlanksMorePlanks = gridRow("More Planks", 1, realm2PlanksScroll)
 UI.PlanksMoreWood = gridRow("More Wood (Planks)", 2, realm2PlanksScroll)
 UI.PlanksWaterFromPlanks = gridRow("Water From Planks", 3, realm2PlanksScroll)
 
+-- GEMS & MINING ROWS (Realm 2)
+UI.GemMoreOof = gridRow("Upgrade More Oof (Gems)", 1, realm2GemsScroll)
+UI.GemMoreGems = gridRow("Upgrade More Gems (Gems)", 2, realm2GemsScroll)
+UI.GemStrongerPickaxes = gridRow("Upgrade Stronger Pickaxes (Gems)", 3, realm2GemsScroll)
+UI.GemMoreOreStats = gridRow("Upgrade More Ore Stats (Gems)", 4, realm2GemsScroll)
+UI.GemExchange = gridRow("Auto Gem Exchange (Convert All)", 5, realm2GemsScroll)
+
+UI.MineStone = gridRow("Auto Teleport -> Stone", 1, realm2MiningScroll)
+UI.MineCoal = gridRow("Auto Teleport -> Coal", 2, realm2MiningScroll)
+UI.MineSilver = gridRow("Auto Teleport -> Silver", 3, realm2MiningScroll)
+UI.MineIron = gridRow("Auto Teleport -> Iron", 4, realm2MiningScroll)
+UI.MineCopper = gridRow("Auto Teleport -> Copper", 5, realm2MiningScroll)
+UI.MineGold = gridRow("Auto Teleport -> Gold", 6, realm2MiningScroll)
+UI.MinePlatinum = gridRow("Auto Teleport -> Platinum", 7, realm2MiningScroll)
+UI.MineTitanium = gridRow("Auto Teleport -> Titanium", 8, realm2MiningScroll)
+UI.MineCobalt = gridRow("Auto Teleport -> Cobalt", 9, realm2MiningScroll)
+UI.MineUranium = gridRow("Auto Teleport -> Uranium", 10, realm2MiningScroll)
+UI.MinePalladium = gridRow("Auto Teleport -> Palladium", 11, realm2MiningScroll)
+UI.MineAetherite = gridRow("Auto Teleport -> Aetherite", 12, realm2MiningScroll)
+UI.MineRuby = gridRow("Auto Teleport -> Ruby", 13, realm2MiningScroll)
+UI.MineVoidsteel = gridRow("Auto Teleport -> Voidsteel", 14, realm2MiningScroll)
+UI.MineCelestium = gridRow("Auto Teleport -> Celestium", 15, realm2MiningScroll)
+
 -- HACKER ROWS (1 to 4)
 UI.Hacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
 UI.Hacker2 = makeSubRow("Auto Upgrade Hacker 2", 2, realm1HackerScroll)
@@ -413,6 +448,7 @@ UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextC
 -- LOCOMOTION & REMOTE ENGINES
 --======================================================================================
 local MasterTargetVector = nil  
+local MiningTargetVector = nil
 local CurrentLoopStateSleep = false 
 
 -- Vector Grouping
@@ -433,7 +469,7 @@ local function GetWorldRoot()
     return player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 end
 
--- RUNE TELEPORTATION LOOP
+-- MAIN RUNE & MINING TELEPORTATION CASCADE LOOP
 task.spawn(function()
     while Running do
         task.wait(CurrentLoopStateSleep and 1.0 or 0.2)
@@ -441,14 +477,63 @@ task.spawn(function()
         if hrp and Running then
             local activeDestination = nil
             if MasterTargetVector then activeDestination = MasterTargetVector
+            elseif MiningTargetVector then activeDestination = MiningTargetVector
             elseif _G.AutoRollFootballRune then activeDestination = Dest.Football
             elseif _G.AutoRollSnowyRune then activeDestination = Dest.Snowy
             elseif _G.AutoRollCosmicRune then activeDestination = Dest.Cosmic
             elseif _G.AutoRollAdvancedRune then activeDestination = Dest.Advanced
             elseif _G.AutoRollSuperRune then activeDestination = Dest.Super
             elseif _G.AutoRollBasicRune then activeDestination = Dest.Basic end
+            
             if activeDestination and Running and (hrp.Position - activeDestination).Magnitude > 5 then
                 hrp.CFrame = CFrame.new(activeDestination)
+            end
+        end
+    end
+end)
+
+-- AUTO MINING ENGINE (Dynamic Scanner)
+local OrePriorityList = {
+    {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
+    {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
+    {F = "AutoMineCobalt", N = "Cobalt"}, {F = "AutoMineTitanium", N = "Titanium"}, {F = "AutoMinePlatinum", N = "Platinum"},
+    {F = "AutoMineGold", N = "Gold"}, {F = "AutoMineCopper", N = "Copper"}, {F = "AutoMineIron", N = "Iron"},
+    {F = "AutoMineSilver", N = "Silver"}, {F = "AutoMineCoal", N = "Coal"}, {F = "AutoMineStone", N = "Stone"}
+}
+
+task.spawn(function()
+    while Running do
+        task.wait(0.25)
+        if Running then
+            local activeOreName = nil
+            for i = 1, #OrePriorityList do
+                if _G[OrePriorityList[i].F] then activeOreName = OrePriorityList[i].N break end
+            end
+
+            if activeOreName then
+                local hrp = GetWorldRoot()
+                if hrp then
+                    local bestDist = math.huge
+                    local bestOrePart = nil
+                    
+                    for _, obj in pairs(workspace:GetDescendants()) do
+                        if obj:IsA("Model") and obj.Name == activeOreName then
+                            local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                            if part and part.Transparency < 1 then
+                                local d = (hrp.Position - part.Position).Magnitude
+                                if d < bestDist then bestDist = d; bestOrePart = part end
+                            end
+                        end
+                    end
+                    
+                    if bestOrePart then
+                        MiningTargetVector = bestOrePart.Position + Vector3.new(0, 3, 0)
+                    else
+                        MiningTargetVector = nil
+                    end
+                end
+            else
+                MiningTargetVector = nil
             end
         end
     end
@@ -610,6 +695,11 @@ local PrimaryUpgradeQueue = {
     {F = "AutoRealm2WaterPump2",   T = "UpgradeUpgradeMax", A = {"Ice", "WaterFromIce"}},
     {F = "AutoRealm2MoreOofIce",   T = "UpgradeUpgradeMax", A = {"Ice", "MoreOof"}},
     
+    {F = "AutoGemMoreOof",         T = "UpgradeUpgradeMax", A = {"Gem", "MoreOof"}},
+    {F = "AutoGemMoreGems",        T = "UpgradeUpgradeMax", A = {"Gem", "MoreGems"}},
+    {F = "AutoGemStrongerPickaxes",T = "UpgradeUpgradeMax", A = {"Gem", "StrongerPickaxes"}},
+    {F = "AutoGemMoreOreStats",    T = "UpgradeUpgradeMax", A = {"Gem", "MoreOreStats"}},
+    
     {F = "AutoWoodRankUp",         T = "WoodRankUp",        A = {}},
     {F = "AutoWoodMoreWood",       T = "UpgradeUpgradeMax", A = {"Wood", "MoreWood"}},
     {F = "AutoWoodSharperAxes",    T = "UpgradeUpgradeMax", A = {"Wood", "SharperAxes"}},
@@ -671,6 +761,16 @@ task.spawn(function()
                     task.wait(0.2)
                 end
             end
+        end
+    end
+end)
+
+-- AUTO GEM EXCHANGE ENGINE
+task.spawn(function()
+    while Running do
+        task.wait(20.0)
+        if NetRemote and Running and _G.AutoGemExchange then
+            pcall(function() NetRemote:FireServer("ExchangeAllMinerals") end)
         end
     end
 end)
@@ -944,6 +1044,28 @@ UI.PlanksMorePlanks.MouseButton1Click:Connect(function() tStateV2(UI.PlanksMoreP
 UI.PlanksMoreWood.MouseButton1Click:Connect(function() tStateV2(UI.PlanksMoreWood, "AutoPlanksMoreWood") end)
 UI.PlanksWaterFromPlanks.MouseButton1Click:Connect(function() tStateV2(UI.PlanksWaterFromPlanks, "AutoPlanksWaterFromPlanks") end)
 
+UI.GemMoreOof.MouseButton1Click:Connect(function() tStateV2(UI.GemMoreOof, "AutoGemMoreOof") end)
+UI.GemMoreGems.MouseButton1Click:Connect(function() tStateV2(UI.GemMoreGems, "AutoGemMoreGems") end)
+UI.GemStrongerPickaxes.MouseButton1Click:Connect(function() tStateV2(UI.GemStrongerPickaxes, "AutoGemStrongerPickaxes") end)
+UI.GemMoreOreStats.MouseButton1Click:Connect(function() tStateV2(UI.GemMoreOreStats, "AutoGemMoreOreStats") end)
+UI.GemExchange.MouseButton1Click:Connect(function() tStateV2(UI.GemExchange, "AutoGemExchange") end)
+
+UI.MineStone.MouseButton1Click:Connect(function() tStateV2(UI.MineStone, "AutoMineStone") end)
+UI.MineCoal.MouseButton1Click:Connect(function() tStateV2(UI.MineCoal, "AutoMineCoal") end)
+UI.MineSilver.MouseButton1Click:Connect(function() tStateV2(UI.MineSilver, "AutoMineSilver") end)
+UI.MineIron.MouseButton1Click:Connect(function() tStateV2(UI.MineIron, "AutoMineIron") end)
+UI.MineCopper.MouseButton1Click:Connect(function() tStateV2(UI.MineCopper, "AutoMineCopper") end)
+UI.MineGold.MouseButton1Click:Connect(function() tStateV2(UI.MineGold, "AutoMineGold") end)
+UI.MinePlatinum.MouseButton1Click:Connect(function() tStateV2(UI.MinePlatinum, "AutoMinePlatinum") end)
+UI.MineTitanium.MouseButton1Click:Connect(function() tStateV2(UI.MineTitanium, "AutoMineTitanium") end)
+UI.MineCobalt.MouseButton1Click:Connect(function() tStateV2(UI.MineCobalt, "AutoMineCobalt") end)
+UI.MineUranium.MouseButton1Click:Connect(function() tStateV2(UI.MineUranium, "AutoMineUranium") end)
+UI.MinePalladium.MouseButton1Click:Connect(function() tStateV2(UI.MinePalladium, "AutoMinePalladium") end)
+UI.MineAetherite.MouseButton1Click:Connect(function() tStateV2(UI.MineAetherite, "AutoMineAetherite") end)
+UI.MineRuby.MouseButton1Click:Connect(function() tStateV2(UI.MineRuby, "AutoMineRuby") end)
+UI.MineVoidsteel.MouseButton1Click:Connect(function() tStateV2(UI.MineVoidsteel, "AutoMineVoidsteel") end)
+UI.MineCelestium.MouseButton1Click:Connect(function() tStateV2(UI.MineCelestium, "AutoMineCelestium") end)
+
 -- HACKER TOGGLE CONNECTORS (1 to 4)
 UI.Hacker1.MouseButton1Click:Connect(function() tStateV2(UI.Hacker1, "AutoUpgradeHacker1") end)
 UI.Hacker2.MouseButton1Click:Connect(function() tStateV2(UI.Hacker2, "AutoUpgradeHacker2") end)
@@ -1027,8 +1149,8 @@ tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSett
 
 -- Realm 2 Sub-Tab Router
 local function realm2Route(targetScroll, activeBtn)
-    local scrolls = {realm2NoobScroll, realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll, realm2WoodScroll, realm2PlanksScroll}
-    local btns = {r2SubBtnNoobs, r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets, r2SubBtnWood, r2SubBtnPlanks}
+    local scrolls = {realm2NoobScroll, realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll, realm2WoodScroll, realm2PlanksScroll, realm2GemsScroll, realm2MiningScroll}
+    local btns = {r2SubBtnNoobs, r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets, r2SubBtnWood, r2SubBtnPlanks, r2SubBtnGems, r2SubBtnMine}
     for i, s in ipairs(scrolls) do
         s.Visible = (s == targetScroll)
         if s == targetScroll then
@@ -1045,6 +1167,8 @@ r2SubBtnIce.MouseButton1Click:Connect(function() realm2Route(realm2IceScroll, r2
 r2SubBtnBuckets.MouseButton1Click:Connect(function() realm2Route(realm2BucketScroll, r2SubBtnBuckets) end)
 r2SubBtnWood.MouseButton1Click:Connect(function() realm2Route(realm2WoodScroll, r2SubBtnWood) end)
 r2SubBtnPlanks.MouseButton1Click:Connect(function() realm2Route(realm2PlanksScroll, r2SubBtnPlanks) end)
+r2SubBtnGems.MouseButton1Click:Connect(function() realm2Route(realm2GemsScroll, r2SubBtnGems) end)
+r2SubBtnMine.MouseButton1Click:Connect(function() realm2Route(realm2MiningScroll, r2SubBtnMine) end)
 
 -- Football Sub-Tab Router
 local function footballRoute(targetScroll, activeBtn)
@@ -1122,4 +1246,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Super Capsule & Ancient Capsule Spam Logic Synced Successfully!")
+print("[Dominate Hub] Gem Exchange Corrected!")
