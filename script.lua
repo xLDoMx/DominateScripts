@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | Knight Noob added
+-- DOMINATE HUB | Football Cap
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -80,6 +80,7 @@ _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 -- CAPSULE AUTOMATION FLAGS
 _G.AutoOpenClassicCapsule = false
+_G.AutoOpenFootballCapsule = false
 
 -- ENCHANT AUTO-REROLL FLAGS (Realm 1, 2, 3 Noobs)
 _G.AutoEnchantStarter = false
@@ -227,7 +228,7 @@ local runesScroll2 = makeScroll(100, runesPage)
 local runesScroll3 = makeScroll(100, runesPage)
 local runesScrollEvents = makeScroll(100, runesPage)
 
-local capsulesScroll = makeScroll(100, capsulesPage) capsulesScroll.Visible = true
+local capsulesScroll = makeScroll(150, capsulesPage) capsulesScroll.Visible = true
 local enchantsScroll = makeScroll(480, enchantsPage) enchantsScroll.Visible = true
 
 local footballNoobScroll = makeScroll(500, footballPage) footballNoobScroll.Visible = true
@@ -381,6 +382,7 @@ UI.FootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, rune
 
 -- CAPSULES ROWS
 UI.ClassicCapsule = gridRow("Auto Teleport & Open Classic Capsule", 1, capsulesScroll)
+UI.FootballCapsule = gridRow("Auto Teleport & Open Football Capsule", 2, capsulesScroll)
 
 -- ENCHANTS ROWS 
 UI.EnchantStarter = gridRow("Auto Reroll Enchants: Starter", 1, enchantsScroll)
@@ -420,6 +422,7 @@ local Dest = {
     Football = Vector3.new(-2713.261, 36.861, -15.832),
     Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105),
+    FootballCap = Vector3.new(-2603.007, 36.295, -31.061),
     Enchant = Vector3.new(1193.1235, 18.7949, -854.0244)
 }
 
@@ -448,22 +451,25 @@ task.spawn(function()
     end
 end)
 
--- HARDCODED CLASSIC CAPSULE TELEPORT & AUTO-OPEN ENGINE
+-- HARDCODED CAPSULE TELEPORT & AUTO-OPEN ENGINE
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if NetRemote and Running and _G.AutoOpenClassicCapsule then
+        if NetRemote and Running then
             local hrp = GetWorldRoot()
-            if hrp and (hrp.Position - Dest.ClassicCap).Magnitude > 10 then
-                hrp.CFrame = CFrame.new(Dest.ClassicCap + Vector3.new(0, 3, 0))
+            if hrp then
+                if _G.AutoOpenClassicCapsule then
+                    if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then
+                        hrp.CFrame = CFrame.new(Dest.ClassicCap + Vector3.new(0, 3, 0))
+                    end
+                    pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Classic") end)
+                elseif _G.AutoOpenFootballCapsule then
+                    if (hrp.Position - Dest.FootballCap).Magnitude > 10 then
+                        hrp.CFrame = CFrame.new(Dest.FootballCap + Vector3.new(0, 3, 0))
+                    end
+                    pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Football") end)
+                end
             end
-            pcall(function()
-                local args = {
-                    [1] = "ToggleMinionAutoOpen",
-                    [2] = "Classic"
-                }
-                NetRemote:FireServer(unpack(args))
-            end)
         end
     end
 end)
@@ -967,6 +973,7 @@ UI.RollSnowyRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.RollSnowyR
 UI.FootballRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.FootballRuneCard, "AutoRollFootballRune") end)
 
 UI.ClassicCapsule.MouseButton1Click:Connect(function() tStateV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end)
+UI.FootballCapsule.MouseButton1Click:Connect(function() tStateV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end)
 
 -- ENCHANT TOGGLE CONNECTORS
 UI.EnchantStarter.MouseButton1Click:Connect(function() tStateV2(UI.EnchantStarter, "AutoEnchantStarter") end)
@@ -1106,4 +1113,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Knight Noob Auto Upgrade Added Successfully!")
+print("[Dominate Hub] Football Capsule Auto-Open Added Successfully!")
