@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V9.5 PRO EDITION (SLEEK MINES & FULL-WIDTH STACKED SETTINGS)
+-- DOMINATE HUB | V9.6 PRO EDITION (FIXED TABLES, GLIDE SPEED IN GENERAL & BEST TIER BUTTON)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V9.5 Instance...")
+    print("[Dominate Hub] Reloading V9.6 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -26,6 +26,9 @@ local Running = true
 local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
+
+-- MASTER UI ELEMENTS TABLE
+local UI = {}
 
 -- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
@@ -294,7 +297,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.5 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.6 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -518,22 +521,62 @@ local bNoobR2 = makeSideBtn("Realm 2 Noobs", noobSidebar)
 local noobScrollR1 = makeGridScroll(noobsPage, true) noobScrollR1.Visible = true
 local noobScrollR2 = makeGridScroll(noobsPage, true)
 
-local UI = {}
 UI.Starter = gridRow("Starter Auto Upgrade", noobScrollR1) UI.Cooker = gridRow("Cooker Auto Upgrade", noobScrollR1) UI.Farmer = gridRow("Farmer Auto Upgrade", noobScrollR1) UI.Magician = gridRow("Magician Auto Upgrade", noobScrollR1) UI.Archer = gridRow("Archer Auto Upgrade", noobScrollR1) UI.Soldier = gridRow("Soldier Auto Upgrade", noobScrollR1)
 UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1) UI.FasterNoobs = gridRow("Faster Noobs Upgrade", noobScrollR1)
 
 UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2) UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2) UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2)
 
 -- ======================================================================================
--- MINES PAGE (SLEEK BORDERLESS CATEGORIZED TEXT LISTING)
+-- MINES PAGE (SLEEK BORDERLESS TEXT LISTING & BEST TIER ONLY RED BUTTON)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
 
+-- Best Tier Only Red Button at the top middle
+local bestTierBtn = Instance.new("TextButton")
+bestTierBtn.Size = UDim2.new(1, -6, 0, 28)
+bestTierBtn.BackgroundColor3 = Color3.fromRGB(160, 30, 30)
+bestTierBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+bestTierBtn.TextSize = 11
+bestTierBtn.Font = Enum.Font.SourceSansBold
+bestTierBtn.Text = "Best Tier Only"
+bestTierBtn.Parent = minesScroll
+Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 5)
+
+bestTierBtn.MouseButton1Click:Connect(function()
+    local topOres = {"AutoMineVoidsteel", "AutoMineCelestium", "AutoMineRuby"}
+    local allOres = {
+        "AutoMineStone", "AutoMineCoal", "AutoMineSilver", "AutoMineIron", "AutoMineCopper",
+        "AutoMineGold", "AutoMinePlatinum", "AutoMineTitanium", "AutoMineCobalt", "AutoMineUranium",
+        "AutoMinePalladium", "AutoMineAetherite", "AutoMineRuby", "AutoMineVoidsteel", "AutoMineCelestium"
+    }
+    for _, ore in ipairs(allOres) do
+        _G[ore] = false
+    end
+    for _, ore in ipairs(topOres) do
+        _G[ore] = true
+    end
+    
+    -- Update UI button states if referenced
+    for _, oreName in ipairs(allOres) do
+        local btn = UI[oreName]
+        if btn then
+            local isActive = _G[oreName]
+            btn.Text = isActive and "ACTIVE" or "DISABLED"
+            btn.BackgroundColor3 = isActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+            btn.TextColor3 = isActive and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+            local dot = btn.Parent:FindFirstChild("StatusDot")
+            if dot then dot.BackgroundColor3 = isActive and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
+        end
+    end
+    saveConfigToSlot(_G.SelectedConfigSlot)
+    showToast("Best Tier Only ores activated (Ruby, Voidsteel, Celestium)!")
+end)
+
 local function mineSectionHeader(txt, scr)
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, -6, 0, 24)
+    lbl.Size = UDim2.new(1, -6, 0, 22)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(130, 130, 145)
+    lbl.TextColor3 = Color3.fromRGB(140, 140, 155)
     lbl.TextSize = 10
     lbl.Font = Enum.Font.SourceSansBold
     lbl.Text = txt
@@ -549,7 +592,7 @@ local function sleekMineRow(txt, scr, vKey)
     f.Parent = scr
 
     local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(0.60, -8, 1, 0)
+    l.Size = UDim2.new(0.58, -8, 1, 0)
     l.Position = UDim2.new(0, 6, 0, 0)
     l.BackgroundTransparency = 1
     l.TextColor3 = Color3.fromRGB(180, 180, 195)
@@ -559,9 +602,18 @@ local function sleekMineRow(txt, scr, vKey)
     l.TextXAlignment = Enum.TextXAlignment.Left
     l.Parent = f
 
+    local dot = Instance.new("Frame")
+    dot.Name = "StatusDot"
+    dot.Size = UDim2.new(0, 4, 0, 4)
+    dot.Position = UDim2.new(0, 0, 0.5, -2)
+    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+    dot.BorderSizePixel = 0
+    dot.Parent = f
+    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
     local b = Instance.new("TextButton")
-    b.Size = UDim2.new(0.35, -4, 0, 20)
-    b.Position = UDim2.new(0.62, 0, 0.5, -10)
+    b.Size = UDim2.new(0.40, -4, 0, 20)
+    b.Position = UDim2.new(0.58, 0, 0.5, -10)
     b.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
     b.TextColor3 = Color3.fromRGB(255, 120, 120)
     b.TextSize = 9
@@ -570,37 +622,39 @@ local function sleekMineRow(txt, scr, vKey)
     b.Parent = f
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
+    UI[vKey] = b
+
     b.MouseButton1Click:Connect(function()
-        tV2(b, vKey)
+        _G[vKey] = not _G[vKey]
+        b.Text = _G[vKey] and "ACTIVE" or "DISABLED"
+        b.BackgroundColor3 = _G[vKey] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+        b.TextColor3 = _G[vKey] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+        dot.BackgroundColor3 = _G[vKey] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        saveConfigToSlot(_G.SelectedConfigSlot)
     end)
     return b
 end
 
-UI.MiningSpeedSwitch = gridRow("Glide Speed", minesScroll) 
-UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) 
-UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) 
-UI.MiningSpeedSwitch.Text = "0.8 S/s"
-
 mineSectionHeader("Basic Ores", minesScroll)
-UI.MineStone = sleekMineRow("Stone", minesScroll, "AutoMineStone")
-UI.MineCoal = sleekMineRow("Coal", minesScroll, "AutoMineCoal")
-UI.MineSilver = sleekMineRow("Silver", minesScroll, "AutoMineSilver")
-UI.MineIron = sleekMineRow("Iron", minesScroll, "AutoMineIron")
-UI.MineCopper = sleekMineRow("Copper", minesScroll, "AutoMineCopper")
+sleekMineRow("Stone", minesScroll, "AutoMineStone")
+sleekMineRow("Coal", minesScroll, "AutoMineCoal")
+sleekMineRow("Silver", minesScroll, "AutoMineSilver")
+sleekMineRow("Iron", minesScroll, "AutoMineIron")
+sleekMineRow("Copper", minesScroll, "AutoMineCopper")
 
 mineSectionHeader("Advanced Ores", minesScroll)
-UI.MineGold = sleekMineRow("Gold", minesScroll, "AutoMineGold")
-UI.MinePlatinum = sleekMineRow("Platinum", minesScroll, "AutoMinePlatinum")
-UI.MineTitanium = sleekMineRow("Titanium", minesScroll, "AutoMineTitanium")
-UI.MineCobalt = sleekMineRow("Cobalt", minesScroll, "AutoMineCobalt")
-UI.MineUranium = sleekMineRow("Uranium", minesScroll, "AutoMineUranium")
+sleekMineRow("Gold", minesScroll, "AutoMineGold")
+sleekMineRow("Platinum", minesScroll, "AutoMinePlatinum")
+sleekMineRow("Titanium", minesScroll, "AutoMineTitanium")
+sleekMineRow("Cobalt", minesScroll, "AutoMineCobalt")
+sleekMineRow("Uranium", minesScroll, "AutoMineUranium")
 
 mineSectionHeader("End-Game Ores", minesScroll)
-UI.MinePalladium = sleekMineRow("Palladium", minesScroll, "AutoMinePalladium")
-UI.MineAetherite = sleekMineRow("Aetherite", minesScroll, "AutoMineAetherite")
-UI.MineRuby = sleekMineRow("Ruby", minesScroll, "AutoMineRuby")
-UI.MineVoidsteel = sleekMineRow("Voidsteel", minesScroll, "AutoMineVoidsteel")
-UI.MineCelestium = sleekMineRow("Celestium", minesScroll, "AutoMineCelestium")
+sleekMineRow("Palladium", minesScroll, "AutoMinePalladium")
+sleekMineRow("Aetherite", minesScroll, "AutoMineAetherite")
+sleekMineRow("Ruby", minesScroll, "AutoMineRuby")
+sleekMineRow("Voidsteel", minesScroll, "AutoMineVoidsteel")
+sleekMineRow("Celestium", minesScroll, "AutoMineCelestium")
 
 -- ======================================================================================
 -- FOOTBALL PAGE
@@ -787,6 +841,47 @@ UI.RebirthTimerCard = genRow("Auto Rebirth", function(b) tV2(b, "AutoRebirthTime
 UI.Prestige = genRow("Auto Prestige", function(b) tV2(b, "AutoPrestige") end)
 UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
 UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
+
+-- Glide Speed row in General Settings
+local speedRow = Instance.new("Frame")
+speedRow.Size = UDim2.new(1, -6, 0, 32)
+speedRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+speedRow.BorderSizePixel = 0
+speedRow.Parent = setGenScroll
+Instance.new("UICorner", speedRow).CornerRadius = UDim.new(0, 5)
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0.58, -8, 1, 0)
+speedLabel.Position = UDim2.new(0, 16, 0, 0)
+speedLabel.BackgroundTransparency = 1
+speedLabel.TextColor3 = Color3.fromRGB(230, 230, 235)
+speedLabel.TextSize = 10
+speedLabel.Font = Enum.Font.SourceSansBold
+speedLabel.Text = "Glide Speed"
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = speedRow
+
+UI.MiningSpeedSwitch = Instance.new("TextButton")
+UI.MiningSpeedSwitch.Size = UDim2.new(0.40, -4, 0, 20)
+UI.MiningSpeedSwitch.Position = UDim2.new(0.58, 0, 0.5, -10)
+UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255)
+UI.MiningSpeedSwitch.TextSize = 10
+UI.MiningSpeedSwitch.Font = Enum.Font.SourceSansBold
+UI.MiningSpeedSwitch.Text = "0.8 S/s"
+UI.MiningSpeedSwitch.Parent = speedRow
+Instance.new("UICorner", UI.MiningSpeedSwitch).CornerRadius = UDim.new(0, 4)
+
+local ms = {0.3, 0.5, 0.8, 1.2, 2.0} 
+local ml = {"0.3 S/s", "0.5 S/s", "0.8 S/s", "1.2 S/s", "2.0 S/s"} 
+local mi = 3
+UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() 
+    mi = mi + 1 
+    if mi > #ms then mi = 1 end 
+    _G.MiningJumpSpeed = ms[mi] 
+    UI.MiningSpeedSwitch.Text = ml[mi] 
+    saveConfigToSlot(_G.SelectedConfigSlot) 
+end)
 
 -- Hub Theme Row
 local themeRow = Instance.new("Frame")
@@ -1150,11 +1245,6 @@ UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "A
 UI.EnchantStarter.MouseButton1Click:Connect(function() tV2(UI.EnchantStarter, "AutoEnchantStarter") end) UI.EnchantCooker.MouseButton1Click:Connect(function() tV2(UI.EnchantCooker, "AutoEnchantCooker") end) UI.EnchantFarmer.MouseButton1Click:Connect(function() tV2(UI.EnchantFarmer, "AutoEnchantFarmer") end) UI.EnchantMagician.MouseButton1Click:Connect(function() tV2(UI.EnchantMagician, "AutoEnchantMagician") end) UI.EnchantArcher.MouseButton1Click:Connect(function() tV2(UI.EnchantArcher, "AutoEnchantArcher") end) UI.EnchantSoldier.MouseButton1Click:Connect(function() tV2(UI.EnchantSoldier, "AutoEnchantSoldier") end) UI.EnchantHacker1.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker1, "AutoEnchantHacker1") end) UI.EnchantHacker2.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker2, "AutoEnchantHacker2") end) UI.EnchantHacker3.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker3, "AutoEnchantHacker3") end) UI.EnchantHacker4.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker4, "AutoEnchantHacker4") end) UI.EnchantPharaoh.MouseButton1Click:Connect(function() tV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
 UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT1ChestCard, "AutoOpenT1Chest") end) UI.OpenT2ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT2ChestCard, "AutoOpenT2Chest") end) UI.AFK.MouseButton1Click:Connect(function() tV2(UI.AFK, "AntiAFK") end) UI.Prestige.MouseButton1Click:Connect(function() tV2(UI.Prestige, "AutoPrestige") end) UI.RebirthTimerCard.MouseButton1Click:Connect(function() tV2(UI.RebirthTimerCard, "AutoRebirthTimer") end) 
 
-UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
-
-local ms = {0.3, 0.5, 0.8, 1.2, 2.0} local ml = {"0.3 S/s", "0.5 S/s", "0.8 S/s", "1.2 S/s", "2.0 S/s"} local mi = 3
-UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] saveConfigToSlot(_G.SelectedConfigSlot) end)
-
 -- TAB ROUTERS
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, runesPage.Visible, capsulesPage.Visible, enchantsPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false, false; pOpen.Visible = true; 
@@ -1200,4 +1290,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V9.5 Pro Edition - Sleek Vertical Layout Deployed!")
+print("[Dominate Hub] V9.6 Pro Edition - Fully Resolved & Aligned Deployed!")
