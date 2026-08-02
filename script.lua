@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V2 MODERN UI REWRITE
+-- DOMINATE HUB | V4 ULTIMATE PRO EDITION
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -7,7 +7,7 @@ if getgenv().DominateHubLoaded then
         local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
         if oldUI then oldUI:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V2 UI Instance...")
+    print("[Dominate Hub] Reloading V4 Pro Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -15,11 +15,43 @@ local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local HttpService = game:GetService("HttpService")
 
 local Running = true
 local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
+
+-- CONFIG SYSTEM (SAVE / LOAD)
+local CONFIG_FILE = "DominateHub_Config.json"
+
+local function saveConfig()
+    local configData = {}
+    for k, v in pairs(_G) do
+        if type(v) == "boolean" or type(v) == "number" or type(v) == "string" then
+            configData[k] = v
+        end
+    end
+    pcall(function()
+        if writefile then
+            writefile(CONFIG_FILE, HttpService:JSONEncode(configData))
+        end
+    end)
+end
+
+local function loadConfig()
+    pcall(function()
+        if readfile and isfile and isfile(CONFIG_FILE) then
+            local data = HttpService:JSONDecode(readfile(CONFIG_FILE))
+            for k, v in pairs(data) do
+                _G[k] = v
+            end
+        end
+    end)
+end
+loadConfig()
 
 _G.AntiAFK, _G.AutoPrestige = true, false
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
@@ -90,6 +122,9 @@ _G.AutoOpenClassicCapsule, _G.AutoOpenFootballCapsule, _G.AutoOpenSuperCapsule =
 _G.AutoEnchantStarter, _G.AutoEnchantCooker, _G.AutoEnchantFarmer, _G.AutoEnchantMagician, _G.AutoEnchantArcher, _G.AutoEnchantSoldier = false, false, false, false, false, false
 _G.AutoEnchantHacker1, _G.AutoEnchantHacker2, _G.AutoEnchantHacker3, _G.AutoEnchantHacker4, _G.AutoEnchantPharaoh = false, false, false, false, false
 
+_G.FPSBoostMode = false
+_G.DiscordWebhookURL = _G.DiscordWebhookURL or ""
+
 player.Idled:Connect(function()
     if Running and _G.AntiAFK then
         local cam = workspace.CurrentCamera
@@ -110,14 +145,64 @@ end)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
+-- TOAST NOTIFICATION HELPER
+local function showToast(msg)
+    task.spawn(function()
+        local toast = Instance.new("Frame")
+        toast.Size = UDim2.new(0, 230, 0, 42)
+        toast.Position = UDim2.new(1, 10, 1, -65)
+        toast.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+        toast.BorderSizePixel = 0
+        toast.Parent = sg
+        Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 8)
+        
+        local stroke = Instance.new("UIStroke")
+        stroke.Color = Color3.fromRGB(0, 136, 255)
+        stroke.Thickness = 1.5
+        stroke.Parent = toast
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, -12, 1, 0)
+        label.Position = UDim2.new(0, 6, 0, 0)
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.fromRGB(245, 245, 255)
+        label.TextSize = 12
+        label.Font = Enum.Font.SourceSansBold
+        label.Text = msg
+        label.Parent = toast
+
+        toast:TweenPosition(UDim2.new(1, -240, 1, -65), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+        task.wait(3.0)
+        toast:TweenPosition(UDim2.new(1, 10, 1, -65), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
+        task.wait(0.3)
+        toast:Destroy()
+    end)
+end
+
+local function sendDiscordWebhook(message)
+    if _G.DiscordWebhookURL ~= "" then
+        pcall(function()
+            local requestFunc = syn and syn.request or http_request or request
+            if requestFunc then
+                requestFunc({
+                    Url = _G.DiscordWebhookURL,
+                    Method = "POST",
+                    Headers = {["Content-Type"] = "application/json"},
+                    Body = HttpService:JSONEncode({content = message})
+                })
+            end
+        end)
+    end
+end
+
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 580, 0, 420) -- WIDER FRAME FOR 2-COLUMN GRID
+mainFrame.Size = UDim2.new(0, 580, 0, 420) 
 mainFrame.Position = UDim2.new(0.5, -290, 0.5, -210) 
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) 
 mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub V2" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V4 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
@@ -136,8 +221,49 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
-local minBtn = Instance.new("TextButton") minBtn.Size = UDim2.new(0, 95, 0, 24) minBtn.Position = UDim2.new(0.5, -47, 0.01, 0) minBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25) minBtn.TextColor3 = Color3.fromRGB(0, 136, 255) minBtn.TextSize = 12; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "Hide UI" minBtn.Parent = sg
-Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 5) 
+-- FLOATING DRAGGABLE LOGO PILL
+local minBtn = Instance.new("TextButton") 
+minBtn.Size = UDim2.new(0, 130, 0, 32) 
+minBtn.Position = UDim2.new(0.5, -65, 0.01, 0) 
+minBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 30) 
+minBtn.TextColor3 = Color3.fromRGB(0, 136, 255) 
+minBtn.TextSize = 12; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "🔥 Dominate Hub" 
+minBtn.Parent = sg
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 16)
+local minStroke = Instance.new("UIStroke") minStroke.Color = Color3.fromRGB(0, 136, 255) minStroke.Thickness = 1.5 minStroke.Parent = minBtn
+
+local pDragging, pDragInput, pDragStart, pStartPos
+minBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        pDragging = true pDragStart = input.Position pStartPos = minBtn.Position
+        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then pDragging = false end end)
+    end
+end)
+minBtn.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then pDragInput = input end end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == pDragInput and pDragging then
+        local delta = input.Position - pDragStart
+        minBtn.Position = UDim2.new(pStartPos.X.Scale, pStartPos.X.Offset + delta.X, pStartPos.Y.Scale, pStartPos.Y.Offset + delta.Y)
+    end
+end)
+
+minBtn.MouseButton1Click:Connect(function()
+    local isVisible = mainFrame.Visible
+    if isVisible then
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1})
+        tween:Play()
+        task.wait(0.25)
+        mainFrame.Visible = false
+        minBtn.TextColor3 = Color3.fromRGB(0, 215, 110)
+    else
+        mainFrame.Size = UDim2.new(0, 0, 0, 0)
+        mainFrame.BackgroundTransparency = 1
+        mainFrame.Visible = true
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 420), BackgroundTransparency = 0.15})
+        tween:Play()
+        minBtn.TextColor3 = Color3.fromRGB(0, 136, 255)
+    end
+end)
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 
@@ -195,7 +321,7 @@ local function gridRow(txt, scr)
 end
 
 -- ======================================================================================
--- REALM 1 SIDEBAR & GRIDS
+-- REALM 1 SIDEBAR & GRIDS (Cleaned Fire Tab Labels)
 -- ======================================================================================
 local r1Sidebar = makeSidebar(realm1MasterPage)
 local b1Noobs = makeSideBtn("Noobs", r1Sidebar) b1Noobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) b1Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -208,7 +334,14 @@ local UI = {}
 UI.Starter = gridRow("Starter Auto Upgrade", r1NoobScroll) UI.Cooker = gridRow("Cooker Auto Upgrade", r1NoobScroll) UI.Farmer = gridRow("Farmer Auto Upgrade", r1NoobScroll) UI.Magician = gridRow("Magician Auto Upgrade", r1NoobScroll) UI.Archer = gridRow("Archer Auto Upgrade", r1NoobScroll) UI.Soldier = gridRow("Soldier Auto Upgrade", r1NoobScroll)
 UI.MoreOof = gridRow("More Oof Auto Upgrade", r1OofScroll) UI.FasterNoobs = gridRow("Faster Noobs Upgrade", r1OofScroll)
 UI.RebirthOof = gridRow("More Oof (Rebirth)", r1RebirthScroll) UI.RebirthRebirth = gridRow("More Rebirth (Rebirth)", r1RebirthScroll) UI.RebirthFire = gridRow("More Fire (Rebirth)", r1RebirthScroll)
-UI.FireFire = gridRow("More Fire (Fire)", r1FireScroll) UI.FireBulk = gridRow("More Bulk (Fire)", r1FireScroll) UI.FireOof = gridRow("More Oof (Fire)", r1FireScroll) UI.FireRebirth = gridRow("More Rebirth (Fire)", r1FireScroll) UI.FireTierLuck = gridRow("More Tier Luck", r1FireScroll) UI.FireCashBonus = gridRow("More Cash", r1FireScroll)
+
+UI.FireFire = gridRow("More Fire", r1FireScroll) 
+UI.FireBulk = gridRow("More Bulk", r1FireScroll) 
+UI.FireOof = gridRow("More Oof", r1FireScroll) 
+UI.FireRebirth = gridRow("More Rebirth", r1FireScroll) 
+UI.FireTierLuck = gridRow("More Tier Luck", r1FireScroll) 
+UI.FireCashBonus = gridRow("More Cash", r1FireScroll)
+
 UI.AutoBlazeConvert = gridRow("Auto Convert to Blaze", r1BlazeScroll) UI.BlazeMoreBlaze = gridRow("More Blaze", r1BlazeScroll) UI.BlazeMoreFire = gridRow("More Fire", r1BlazeScroll) UI.BlazeMoreOof = gridRow("More Oof", r1BlazeScroll) UI.BlazeMoreOofs = gridRow("More Oofs", r1BlazeScroll) UI.BlazeMoreBulk = gridRow("More Bulk", r1BlazeScroll)
 UI.DepositWheat = gridRow("Auto Deposit Wheat", r1BreadScroll) UI.BreadMoreBread = gridRow("More Bread", r1BreadScroll) UI.BreadMoreBread2 = gridRow("More Bread 2", r1BreadScroll) UI.BreadMoreWheat = gridRow("More Wheat", r1BreadScroll) UI.BreadBiggerWheatDeposit = gridRow("Bigger Wheat Deposit", r1BreadScroll) UI.BreadFasterWheatConversion = gridRow("Fast Wheat Conversion", r1BreadScroll) UI.BreadMoreConsumption = gridRow("More Consumption", r1BreadScroll) UI.BreadMoreRuneLuck = gridRow("More Rune Luck", r1BreadScroll) UI.BreadMoreTierLuck = gridRow("More Tier Luck", r1BreadScroll) UI.UpgradeCow = gridRow("Upgrade Cow", r1BreadScroll) UI.UpgradeChicken = gridRow("Upgrade Chicken", r1BreadScroll) UI.BuyCow = gridRow("Buy Cow", r1BreadScroll) UI.BuyChicken = gridRow("Buy Chicken", r1BreadScroll)
 UI.AutoFarmCash = gridRow("Auto Pad Tycoon", r1CashScroll) UI.CashMoreCash = gridRow("More Cash Upgrade", r1CashScroll) UI.CashFasterDropper = gridRow("Faster Dropper", r1CashScroll) UI.CashMoreRuneLuck = gridRow("More Rune Luck", r1CashScroll)
@@ -237,7 +370,7 @@ UI.MiningSpeedSwitch = gridRow("⚡ Glide Speed", r2MiningScroll) UI.MiningSpeed
 UI.MineStone = gridRow("Mine Stone", r2MiningScroll) UI.MineCoal = gridRow("Mine Coal", r2MiningScroll) UI.MineSilver = gridRow("Mine Silver", r2MiningScroll) UI.MineIron = gridRow("Mine Iron", r2MiningScroll) UI.MineCopper = gridRow("Mine Copper", r2MiningScroll) UI.MineGold = gridRow("Mine Gold", r2MiningScroll) UI.MinePlatinum = gridRow("Mine Platinum", r2MiningScroll) UI.MineTitanium = gridRow("Mine Titanium", r2MiningScroll) UI.MineCobalt = gridRow("Mine Cobalt", r2MiningScroll) UI.MineUranium = gridRow("Mine Uranium", r2MiningScroll) UI.MinePalladium = gridRow("Mine Palladium", r2MiningScroll) UI.MineAetherite = gridRow("Mine Aetherite", r2MiningScroll) UI.MineRuby = gridRow("Mine Ruby", r2MiningScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", r2MiningScroll) UI.MineCelestium = gridRow("Mine Celestium", r2MiningScroll)
 
 -- ======================================================================================
--- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (Grid Auto-Sort)
+-- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (With Theme, FPS Boost, Config)
 -- ======================================================================================
 local r3Scroll = makeGridScroll(realm3Page, false) r3Scroll.Visible = true
 UI.Pharaoh = gridRow("Auto Upgrade Pharaoh", r3Scroll)
@@ -269,7 +402,61 @@ local setScroll = makeGridScroll(settingsPage, false) setScroll.Visible = true
 UI.OpenT1ChestCard = gridRow("Mass-Open T1 Chests", setScroll) UI.OpenT2ChestCard = gridRow("Mass-Open T2 Chests", setScroll) 
 UI.AFK = gridRow("Anti-AFK Protection", setScroll) UI.AFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.AFK.TextColor3 = Color3.fromRGB(120, 255, 120) UI.AFK.Text = "ACTIVE"
 UI.Prestige = gridRow("Auto Prestige", setScroll) UI.RebirthTimerCard = gridRow("Auto Rebirth (10m)", setScroll) 
+
+-- NEW SETTINGS ADDITIONS (FPS Booster & Theme Picker)
+UI.FPSBoostToggle = gridRow("🚀 FPS Booster Mode", setScroll)
+UI.ThemePicker = gridRow("🎨 Hub Accent Theme", setScroll)
+UI.ThemePicker.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
+UI.ThemePicker.TextColor3 = Color3.fromRGB(255, 255, 255)
+UI.ThemePicker.Text = "Theme: Neon Blue"
+
 UI.KillSwitch = gridRow("EMERGENCY KILL SWITCH", setScroll) UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) UI.KillSwitch.Text = "TERMINATE"
+
+-- FPS BOOSTER LOGIC
+local function toggleFPSBoost(b)
+    _G.FPSBoostMode = not _G.FPSBoostMode
+    b.Text = _G.FPSBoostMode and "ACTIVE" or "DISABLED"
+    b.BackgroundColor3 = _G.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = _G.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    
+    if _G.FPSBoostMode then
+        pcall(function()
+            Lighting.GlobalShadows = false
+            Lighting.FogEnd = 9e9
+            for _, v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Material = Enum.Material.SmoothPlastic
+                    v.Reflectance = 0
+                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+                    v.Enabled = false
+                end
+            end
+        end)
+        showToast("🚀 FPS Booster Enabled!")
+    else
+        showToast("🚀 FPS Booster Disabled!")
+    end
+end
+UI.FPSBoostToggle.MouseButton1Click:Connect(function() toggleFPSBoost(UI.FPSBoostToggle) end)
+
+-- THEME CYCLING LOGIC
+local themes = {
+    {Name = "Neon Blue", Color = Color3.fromRGB(0, 136, 255)},
+    {Name = "Purple Glow", Color = Color3.fromRGB(138, 43, 226)},
+    {Name = "Emerald Green", Color = Color3.fromRGB(0, 200, 100)},
+    {Name = "Crimson Red", Color = Color3.fromRGB(220, 20, 60)}
+}
+local currentThemeIdx = 1
+
+UI.ThemePicker.MouseButton1Click:Connect(function()
+    currentThemeIdx = currentThemeIdx + 1
+    if currentThemeIdx > #themes then currentThemeIdx = 1 end
+    local th = themes[currentThemeIdx]
+    UI.ThemePicker.Text = "Theme: " .. th.Name
+    minStroke.Color = th.Color
+    minBtn.TextColor3 = th.Color
+    showToast("🎨 Theme changed to " .. th.Name)
+end)
 
 --======================================================================================
 -- LOCOMOTION & REMOTE ENGINES
@@ -444,7 +631,18 @@ task.spawn(function()
 end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if _G["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
-task.spawn(function() while Running do task.wait(20.0) if NetRemote and Running and _G.AutoGemExchange then pcall(function() NetRemote:FireServer("ExchangeAllMinerals") end) end end end)
+
+task.spawn(function()
+    while Running do
+        task.wait(20.0)
+        if NetRemote and Running and _G.AutoGemExchange then
+            pcall(function() NetRemote:FireServer("ExchangeAllMinerals") end)
+            showToast("💎 Successfully exchanged minerals for gems!")
+            sendDiscordWebhook("💎 Dominate Hub: Successfully exchanged all minerals for gems!")
+        end
+    end
+end)
+
 task.spawn(function() while Running do task.wait(0.2) if NetRemote and Running and _G.AutoScoreGoal then pcall(function() NetRemote:FireServer("RegisterFootballKick") end) task.wait(1.5) if not Running or not _G.AutoScoreGoal then break end pcall(function() NetRemote:FireServer("ScoreGoal") end) task.wait(1.5) end end end)
 
 task.spawn(function()
@@ -476,7 +674,13 @@ task.spawn(function() local tc = math.random(270, 330) local se = 0 while Runnin
 --======================================================================================
 -- CONNECTORS, KILL SWITCH & DRAG CONTROLLER
 --======================================================================================
-local function tV2(b, v) _G[v] = not _G[v] b.Text = _G[v] and "ACTIVE" or "DISABLED" b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) end
+local function tV2(b, v) 
+    _G[v] = not _G[v] 
+    b.Text = _G[v] and "ACTIVE" or "DISABLED" 
+    b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
+    b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    saveConfig() -- Auto save config on toggle change
+end
 
 UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) UI.Farmer.MouseButton1Click:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) UI.Magician.MouseButton1Click:Connect(function() tV2(UI.Magician, "AutoUpgradeMagician") end) UI.Archer.MouseButton1Click:Connect(function() tV2(UI.Archer, "AutoUpgradeArcher") end) UI.Soldier.MouseButton1Click:Connect(function() tV2(UI.Soldier, "AutoUpgradeSoldier") end) UI.MoreOof.MouseButton1Click:Connect(function() tV2(UI.MoreOof, "AutoUpgradeMoreOof") end) UI.FasterNoobs.MouseButton1Click:Connect(function() tV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
 UI.RebirthOof.MouseButton1Click:Connect(function() tV2(UI.RebirthOof, "AutoRebirthMoreOof") end) UI.RebirthRebirth.MouseButton1Click:Connect(function() tV2(UI.RebirthRebirth, "AutoRebirthMoreRebirth") end) UI.RebirthFire.MouseButton1Click:Connect(function() tV2(UI.RebirthFire, "AutoRebirthMoreFire") end)
@@ -491,8 +695,9 @@ UI.Bucket1.MouseButton1Click:Connect(function() tV2(UI.Bucket1, "AutoFillBucket1
 UI.WoodRankUp.MouseButton1Click:Connect(function() tV2(UI.WoodRankUp, "AutoWoodRankUp") end) UI.WoodMoreWood.MouseButton1Click:Connect(function() tV2(UI.WoodMoreWood, "AutoWoodMoreWood") end) UI.WoodSharperAxes.MouseButton1Click:Connect(function() tV2(UI.WoodSharperAxes, "AutoWoodSharperAxes") end) UI.WoodBiggerDeposit.MouseButton1Click:Connect(function() tV2(UI.WoodBiggerDeposit, "AutoWoodBiggerDeposit") end) UI.WoodFasterConversion.MouseButton1Click:Connect(function() tV2(UI.WoodFasterConversion, "AutoWoodFasterConversion") end) UI.WoodMorePlanks.MouseButton1Click:Connect(function() tV2(UI.WoodMorePlanks, "AutoWoodMorePlanks") end) UI.DepositWood.MouseButton1Click:Connect(function() tV2(UI.DepositWood, "AutoDepositWood") end)
 UI.PlanksMorePlanks.MouseButton1Click:Connect(function() tV2(UI.PlanksMorePlanks, "AutoPlanksMorePlanks") end) UI.PlanksMoreWood.MouseButton1Click:Connect(function() tV2(UI.PlanksMoreWood, "AutoPlanksMoreWood") end) UI.PlanksWaterFromPlanks.MouseButton1Click:Connect(function() tV2(UI.PlanksWaterFromPlanks, "AutoPlanksWaterFromPlanks") end)
 UI.GemMoreOof.MouseButton1Click:Connect(function() tV2(UI.GemMoreOof, "AutoGemMoreOof") end) UI.GemMoreGems.MouseButton1Click:Connect(function() tV2(UI.GemMoreGems, "AutoGemMoreGems") end) UI.GemStrongerPickaxes.MouseButton1Click:Connect(function() tV2(UI.GemStrongerPickaxes, "AutoGemStrongerPickaxes") end) UI.GemMoreOreStats.MouseButton1Click:Connect(function() tV2(UI.GemMoreOreStats, "AutoGemMoreOreStats") end) UI.GemExchange.MouseButton1Click:Connect(function() tV2(UI.GemExchange, "AutoGemExchange") end)
+
 local ms = {0.3, 0.5, 0.8, 1.2, 2.0} local ml = {"0.3 Studs/s", "0.5 Studs/s", "0.8 Studs/s", "1.2 Studs/s", "2.0 Studs/s"} local mi = 3
-UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] end)
+UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] saveConfig() end)
 UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
 
 UI.Hacker1.MouseButton1Click:Connect(function() tV2(UI.Hacker1, "AutoUpgradeHacker1") end) UI.Hacker2.MouseButton1Click:Connect(function() tV2(UI.Hacker2, "AutoUpgradeHacker2") end) UI.Hacker3.MouseButton1Click:Connect(function() tV2(UI.Hacker3, "AutoUpgradeHacker3") end) UI.Hacker4.MouseButton1Click:Connect(function() tV2(UI.Hacker4, "AutoUpgradeHacker4") end)
@@ -536,11 +741,9 @@ bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS,
 local ruS, ruB = {ruScroll1, ruScroll2, ruScroll3, ruScrollE}, {bRu1, bRu2, bRu3, bRuE}
 bRu1.MouseButton1Click:Connect(function() sideRoute(ruScroll1, bRu1, ruS, ruB) end) bRu2.MouseButton1Click:Connect(function() sideRoute(ruScroll2, bRu2, ruS, ruB) end) bRu3.MouseButton1Click:Connect(function() sideRoute(ruScroll3, bRu3, ruS, ruB) end) bRuE.MouseButton1Click:Connect(function() sideRoute(ruScrollE, bRuE, ruS, ruB) end)
 
-minBtn.MouseButton1Click:Connect(function() mainFrame.Visible = not mainFrame.Visible minBtn.Text = mainFrame.Visible and "Hide UI" or "Lukes Script" minBtn.TextColor3 = mainFrame.Visible and Color3.fromRGB(0, 136, 255) or Color3.fromRGB(0, 215, 110) end)
-
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V2 Grid Layout UI & Live Search Deployed!")
+print("[Dominate Hub] V4 Pro Edition Successfully Deployed!")
