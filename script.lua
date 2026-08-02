@@ -62,7 +62,7 @@ _G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMore
 _G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = false, false, false, false
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
-_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune = false, false, false, false, false
+_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune, _G.AutoRollSnowyRune = false, false, false, false, false, false
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 -- CAPSULE AUTOMATION FLAGS
@@ -325,6 +325,9 @@ local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, 
 local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
 local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
 
+-- REALM 2 RUNES ROWS
+local toggleSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle", 1, runesScroll2)
+
 -- EVENTS RUNES ROWS
 local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
 
@@ -365,6 +368,7 @@ local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
 local FootballRuneVector = Vector3.new(-2713.26171875, 36.86155319213867, -15.832250595092773)
+local SnowyRuneVector = Vector3.new(1017.366, 5.866, 3262.671)
 local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
 local EnchantStationVector = Vector3.new(1193.1235, 18.7949, -854.0244) 
 
@@ -381,6 +385,7 @@ task.spawn(function()
             local activeDestination = nil
             if MasterTargetVector then activeDestination = MasterTargetVector
             elseif _G.AutoRollFootballRune then activeDestination = FootballRuneVector
+            elseif _G.AutoRollSnowyRune then activeDestination = SnowyRuneVector
             elseif _G.AutoRollCosmicRune then activeDestination = CosmicRuneVector
             elseif _G.AutoRollAdvancedRune then activeDestination = AdvancedRuneVector
             elseif _G.AutoRollSuperRune then activeDestination = SuperRuneVector
@@ -869,6 +874,7 @@ toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRoll
 toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
 toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
+toggleSnowyRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleSnowyRuneCard, "AutoRollSnowyRune") end)
 toggleFootballRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleFootballRuneCard, "AutoRollFootballRune") end)
 
 toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
