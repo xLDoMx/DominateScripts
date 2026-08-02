@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V9.1 PRO EDITION (VERTICAL STACKED CONFIGS & ORGANIZED GENERAL TAB)
+-- DOMINATE HUB | V9.2 PRO EDITION (FIXED CONNECTIONS & COMPACT LAYOUT)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V9.1 Instance...")
+    print("[Dominate Hub] Reloading V9.2 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -294,7 +294,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -559,7 +559,7 @@ local encScroll = makeGridScroll(enchantsPage, false) encScroll.Visible = true
 UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gridRow("Reroll: Cooker", encScroll) UI.EnchantFarmer = gridRow("Reroll: Farmer", encScroll) UI.EnchantMagician = gridRow("Reroll: Magician", encScroll) UI.EnchantArcher = gridRow("Reroll: Archer", encScroll) UI.EnchantSoldier = gridRow("Reroll: Soldier", encScroll) UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", encScroll) UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", encScroll) UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", encScroll) UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", encScroll) UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", encScroll)
 
 -- ======================================================================================
--- SETTINGS PAGE (GENERAL & FULLY VERTICALLY STACKED CONFIG SLOTS)
+-- SETTINGS PAGE (GENERAL & STACKED FULL-WIDTH CONFIG SLOTS)
 -- ======================================================================================
 local setSidebar = makeSidebar(settingsPage)
 local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -568,8 +568,7 @@ local bSetConfig = makeSideBtn("Config", setSidebar)
 local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
 local setConfigScroll = makeGridScroll(settingsPage, true)
 
--- UPDATED CONFIG PAGE LAYOUT (1 Slot per row, stacked downwards, matching user request)
-setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 220)
+setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 210)
 local configLayout = Instance.new("UIListLayout")
 configLayout.Padding = UDim.new(0, 6)
 configLayout.Parent = setConfigScroll
@@ -645,14 +644,14 @@ for i = 1, 5 do
 end
 
 -- ======================================================================================
--- GENERAL SETTINGS TAB (ORGANIZED IN 1 LINE GOING DOWN AS REQUESTED)
+-- GENERAL SETTINGS TAB (RENAMED & ORDERED ACCORDING TO USER SPECIFICATIONS)
 -- ======================================================================================
 setGenScroll.CanvasSize = UDim2.new(0, 0, 0, 310)
 local genLayout = Instance.new("UIListLayout")
 genLayout.Padding = UDim.new(0, 6)
 genLayout.Parent = setGenScroll
 
-local function genRow(txt, isToggle, callback)
+local function genRow(txt, callback)
     local f = Instance.new("Frame")
     f.Size = UDim2.new(1, -10, 0, 32)
     f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
@@ -660,20 +659,29 @@ local function genRow(txt, isToggle, callback)
     f.Parent = setGenScroll
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5)
 
+    local dot = Instance.new("Frame")
+    dot.Name = "StatusDot"
+    dot.Size = UDim2.new(0, 5, 0, 5)
+    dot.Position = UDim2.new(0, 6, 0.5, -2)
+    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+    dot.BorderSizePixel = 0
+    dot.Parent = f
+    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
     local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(0.60, -10, 1, 0)
-    l.Position = UDim2.new(0, 10, 0, 0)
+    l.Size = UDim2.new(0.58, -8, 1, 0)
+    l.Position = UDim2.new(0, 16, 0, 0)
     l.BackgroundTransparency = 1
     l.TextColor3 = Color3.fromRGB(230, 230, 235)
-    l.TextSize = 11
+    l.TextSize = 10
     l.Font = Enum.Font.SourceSansBold
     l.Text = txt
     l.TextXAlignment = Enum.TextXAlignment.Left
     l.Parent = f
 
     local b = Instance.new("TextButton")
-    b.Size = UDim2.new(0.35, -4, 0, 20)
-    b.Position = UDim2.new(0.62, 0, 0.5, -10)
+    b.Size = UDim2.new(0.40, -4, 0, 20)
+    b.Position = UDim2.new(0.58, 0, 0.5, -10)
     b.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
     b.TextColor3 = Color3.fromRGB(255, 120, 120)
     b.TextSize = 10
@@ -690,19 +698,22 @@ local function genRow(txt, isToggle, callback)
     return b
 end
 
-genRow("Anti  AFK Protection", true, function(b) tV2(b, "AntiAFK") end)
-genRow("FPS Booster Mode", true, function(b) toggleFPSBoost(b) end)
-genRow("Stats HUD Ovrlay", true, function(b)
+genRow("Anti  AFK Protection", function(b) tV2(b, "AntiAFK") end)
+genRow("FPS Booster Mode", function(b) toggleFPSBoost(b) end)
+genRow("Stats HUD Ovrlay", function(b)
     _G.ShowStatsHUD = not _G.ShowStatsHUD
     b.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
     b.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
     b.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    local dot = b.Parent:FindFirstChild("StatusDot")
+    if dot then dot.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
     saveConfigToSlot(_G.SelectedConfigSlot)
 end)
-genRow("Auto Rebirth", true, function(b) tV2(b, "AutoRebirthTimer") end)
-genRow("Auto Prestige", true, function(b) tV2(b, "AutoPrestige") end)
-genRow("Mass Open T1 Chest", true, function(b) tV2(b, "AutoOpenT1Chest") end)
-genRow("Mass Open T2 Chest", true, function(b) tV2(b, "AutoOpenT2Chest") end)
+
+genRow("Auto Rebirth", function(b) tV2(b, "AutoRebirthTimer") end)
+genRow("Auto Prestige", function(b) tV2(b, "AutoPrestige") end)
+genRow("Mass Open T1 Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
+genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
 
 -- Hub Theme Row
 local themeRow = Instance.new("Frame")
@@ -713,22 +724,22 @@ themeRow.Parent = setGenScroll
 Instance.new("UICorner", themeRow).CornerRadius = UDim.new(0, 5)
 
 local themeLabel = Instance.new("TextLabel")
-themeLabel.Size = UDim2.new(0.60, -10, 1, 0)
-themeLabel.Position = UDim2.new(0, 10, 0, 0)
+themeLabel.Size = UDim2.new(0.58, -8, 1, 0)
+themeLabel.Position = UDim2.new(0, 16, 0, 0)
 themeLabel.BackgroundTransparency = 1
 themeLabel.TextColor3 = Color3.fromRGB(230, 230, 235)
-themeLabel.TextSize = 11
+themeLabel.TextSize = 10
 themeLabel.Font = Enum.Font.SourceSansBold
 themeLabel.Text = "Hub Theme"
 themeLabel.TextXAlignment = Enum.TextXAlignment.Left
 themeLabel.Parent = themeRow
 
 local themeBtn = Instance.new("TextButton")
-themeBtn.Size = UDim2.new(0.35, -4, 0, 20)
-themeBtn.Position = UDim2.new(0.62, 0, 0.5, -10)
+themeBtn.Size = UDim2.new(0.40, -4, 0, 20)
+themeBtn.Position = UDim2.new(0.58, 0, 0.5, -10)
 themeBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
 themeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-themeBtn.TextSize = 10
+themeBtn.TextSize = 9
 themeBtn.Font = Enum.Font.SourceSansBold
 themeBtn.Text = "Theme: Neon Blue"
 themeBtn.Parent = themeRow
@@ -761,11 +772,11 @@ killRow.Parent = setGenScroll
 Instance.new("UICorner", killRow).CornerRadius = UDim.new(0, 5)
 
 local killLabel = Instance.new("TextLabel")
-killLabel.Size = UDim2.new(0.55, -10, 1, 0)
-killLabel.Position = UDim2.new(0, 10, 0, 0)
+killLabel.Size = UDim2.new(0.58, -8, 1, 0)
+killLabel.Position = UDim2.new(0, 16, 0, 0)
 killLabel.BackgroundTransparency = 1
 killLabel.TextColor3 = Color3.fromRGB(255, 200, 200)
-killLabel.TextSize = 11
+killLabel.TextSize = 10
 killLabel.Font = Enum.Font.SourceSansBold
 killLabel.Text = "Enermency Kill Switch"
 killLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -776,7 +787,7 @@ UI.KillSwitch.Size = UDim2.new(0.40, -4, 0, 20)
 UI.KillSwitch.Position = UDim2.new(0.58, 0, 0.5, -10)
 UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20)
 UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200)
-UI.KillSwitch.TextSize = 10
+UI.KillSwitch.TextSize = 9
 UI.KillSwitch.Font = Enum.Font.SourceSansBold
 UI.KillSwitch.Text = "TERMINATE"
 UI.KillSwitch.Parent = killRow
@@ -798,6 +809,8 @@ local function toggleFPSBoost(b)
     b.Text = _G.FPSBoostMode and "ACTIVE" or "DISABLED"
     b.BackgroundColor3 = _G.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
     b.TextColor3 = _G.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    local dot = b.Parent:FindFirstChild("StatusDot")
+    if dot then dot.BackgroundColor3 = _G.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
     saveConfigToSlot(_G.SelectedConfigSlot)
     
     if _G.FPSBoostMode then
@@ -1062,23 +1075,11 @@ UI.RollBasicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollBasicRuneCa
 UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end) UI.FootballCapsule.MouseButton1Click:Connect(function() tV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end) UI.SuperCapsule.MouseButton1Click:Connect(function() tV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
 
 UI.EnchantStarter.MouseButton1Click:Connect(function() tV2(UI.EnchantStarter, "AutoEnchantStarter") end) UI.EnchantCooker.MouseButton1Click:Connect(function() tV2(UI.EnchantCooker, "AutoEnchantCooker") end) UI.EnchantFarmer.MouseButton1Click:Connect(function() tV2(UI.EnchantFarmer, "AutoEnchantFarmer") end) UI.EnchantMagician.MouseButton1Click:Connect(function() tV2(UI.EnchantMagician, "AutoEnchantMagician") end) UI.EnchantArcher.MouseButton1Click:Connect(function() tV2(UI.EnchantArcher, "AutoEnchantArcher") end) UI.EnchantSoldier.MouseButton1Click:Connect(function() tV2(UI.EnchantSoldier, "AutoEnchantSoldier") end) UI.EnchantHacker1.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker1, "AutoEnchantHacker1") end) UI.EnchantHacker2.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker2, "AutoEnchantHacker2") end) UI.EnchantHacker3.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker3, "AutoEnchantHacker3") end) UI.EnchantHacker4.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker4, "AutoEnchantHacker4") end) UI.EnchantPharaoh.MouseButton1Click:Connect(function() tV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
-UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT1ChestCard, "AutoOpenT1Chest") end) UI.OpenT2ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT2ChestCard, "AutoOpenT2Chest") end) UI.AFK.MouseButton1Click:Connect(function() tV2(UI.AFK, "AntiAFK") end) UI.Prestige.MouseButton1Click:Connect(function() tV2(UI.Prestige, "AutoPrestige") end) UI.RebirthTimerCard.MouseButton1Click:Connect(function() tV2(UI.RebirthTimerCard, "AutoRebirthTimer") end) 
 
 UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
 
 local ms = {0.3, 0.5, 0.8, 1.2, 2.0} local ml = {"0.3 S/s", "0.5 S/s", "0.8 S/s", "1.2 S/s", "2.0 S/s"} local mi = 3
 UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] saveConfigToSlot(_G.SelectedConfigSlot) end)
-
-UI.KillSwitch.MouseButton1Click:Connect(function()
-    Running = false getgenv().DominateHubLoaded = nil 
-    for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
-    pcall(function() 
-        local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end 
-        local blur = Lighting:FindFirstChild("DominateHubBlur")
-        if blur then blur:Destroy() end
-    end) 
-    sg:Destroy()
-end)
 
 -- TAB ROUTERS
 local function mainRoute(pOpen, bActive) 
@@ -1125,4 +1126,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V9.1 Pro Edition - Scrolling Tabs & Stacked Full-Width Configs Deployed!")
+print("[Dominate Hub] V9.2 Pro Edition - Fully Resolved & Cleanly Organized Deployed!")
