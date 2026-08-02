@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V9.3 PRO EDITION (FULL-WIDTH VERTICAL STACKED CONFIGS & GENERAL)
+-- DOMINATE HUB | V9.4 PRO EDITION (SLEEK CATEGORIZED MINES & VERTICAL FULL-WIDTH STACKS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V9.3 Instance...")
+    print("[Dominate Hub] Reloading V9.4 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -294,7 +294,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.3 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.4 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -426,7 +426,7 @@ local function makeGridScroll(parent, hasSidebar)
     return s 
 end
 
--- SINGLE-COLUMN STACKED SCROLL GENERATOR (For Settings - General & Config)
+-- SINGLE-COLUMN STACKED VERTICAL SCROLL GENERATOR (For Settings - General & Config)
 local function makeVerticalScroll(parent, hasSidebar)
     local s = Instance.new("ScrollingFrame")
     if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
@@ -525,11 +525,92 @@ UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1) UI.FasterNoobs = gri
 UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2) UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2) UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2)
 
 -- ======================================================================================
--- MINES PAGE
+-- MINES PAGE (CLEAN CATEGORIZED VERTICAL STACKS AS REQUESTED)
 -- ======================================================================================
-local minesScroll = makeGridScroll(minesPage, false) minesScroll.Visible = true
-UI.MiningSpeedSwitch = gridRow("Glide Speed", minesScroll) UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) UI.MiningSpeedSwitch.Text = "0.8 S/s"
-UI.MineStone = gridRow("Mine Stone", minesScroll) UI.MineCoal = gridRow("Mine Coal", minesScroll) UI.MineSilver = gridRow("Mine Silver", minesScroll) UI.MineIron = gridRow("Mine Iron", minesScroll) UI.MineCopper = gridRow("Mine Copper", minesScroll) UI.MineGold = gridRow("Mine Gold", minesScroll) UI.MinePlatinum = gridRow("Mine Platinum", minesScroll) UI.MineTitanium = gridRow("Mine Titanium", minesScroll) UI.MineCobalt = gridRow("Mine Cobalt", minesScroll) UI.MineUranium = gridRow("Mine Uranium", minesScroll) UI.MinePalladium = gridRow("Mine Palladium", minesScroll) UI.MineAetherite = gridRow("Mine Aetherite", minesScroll) UI.MineRuby = gridRow("Mine Ruby", minesScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", minesScroll) UI.MineCelestium = gridRow("Mine Celestium", minesScroll)
+local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
+
+local function mineSectionHeader(txt, scr)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -6, 0, 22)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.fromRGB(140, 140, 155)
+    lbl.TextSize = 10
+    lbl.Font = Enum.Font.SourceSansBold
+    lbl.Text = "--- " .. txt .. " ---"
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = scr
+end
+
+local function mineRow(txt, scr, vKey)
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(1, -6, 0, 30)
+    f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    f.BorderSizePixel = 0
+    f.Parent = scr
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5)
+
+    local dot = Instance.new("Frame")
+    dot.Name = "StatusDot"
+    dot.Size = UDim2.new(0, 5, 0, 5)
+    dot.Position = UDim2.new(0, 6, 0.5, -2)
+    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+    dot.BorderSizePixel = 0
+    dot.Parent = f
+    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(0.55, -8, 1, 0)
+    l.Position = UDim2.new(0, 16, 0, 0)
+    l.BackgroundTransparency = 1
+    l.TextColor3 = Color3.fromRGB(230, 230, 235)
+    l.TextSize = 10
+    l.Font = Enum.Font.SourceSansBold
+    l.Text = txt
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.Parent = f
+
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(0.40, -4, 0, 20)
+    b.Position = UDim2.new(0.58, 0, 0.5, -10)
+    b.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = Color3.fromRGB(255, 120, 120)
+    b.TextSize = 10
+    b.Font = Enum.Font.SourceSansBold
+    b.Text = "DISABLED"
+    b.Parent = f
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
+
+    b.MouseButton1Click:Connect(function()
+        tV2(b, vKey)
+    end)
+    return b
+end
+
+UI.MiningSpeedSwitch = gridRow("Glide Speed", minesScroll) 
+UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) 
+UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) 
+UI.MiningSpeedSwitch.Text = "0.8 S/s"
+
+mineSectionHeader("Basic Ores", minesScroll)
+mineRow("Mine Stone", minesScroll, "AutoMineStone")
+mineRow("Mine Coal", minesScroll, "AutoMineCoal")
+mineRow("Mine Silver", minesScroll, "AutoMineSilver")
+mineRow("Mine Iron", minesScroll, "AutoMineIron")
+mineRow("Mine Copper", minesScroll, "AutoMineCopper")
+
+mineSectionHeader("Advanced Ores", minesScroll)
+mineRow("Mine Gold", minesScroll, "AutoMineGold")
+mineRow("Mine Platinum", minesScroll, "AutoMinePlatinum")
+mineRow("Mine Titanium", minesScroll, "AutoMineTitanium")
+mineRow("Mine Cobalt", minesScroll, "AutoMineCobalt")
+mineRow("Mine Uranium", minesScroll, "AutoMineUranium")
+
+mineSectionHeader("End-Game Ores", minesScroll)
+mineRow("Mine Palladium", minesScroll, "AutoMinePalladium")
+mineRow("Mine Aetherite", minesScroll, "AutoMineAetherite")
+mineRow("Mine Ruby", minesScroll, "AutoMineRuby")
+mineRow("Mine Voidsteel", minesScroll, "AutoMineVoidsteel")
+mineRow("Mine Celestium", minesScroll, "AutoMineCelestium")
 
 -- ======================================================================================
 -- FOOTBALL PAGE
@@ -1077,6 +1158,7 @@ UI.RollBasicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollBasicRuneCa
 UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end) UI.FootballCapsule.MouseButton1Click:Connect(function() tV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end) UI.SuperCapsule.MouseButton1Click:Connect(function() tV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
 
 UI.EnchantStarter.MouseButton1Click:Connect(function() tV2(UI.EnchantStarter, "AutoEnchantStarter") end) UI.EnchantCooker.MouseButton1Click:Connect(function() tV2(UI.EnchantCooker, "AutoEnchantCooker") end) UI.EnchantFarmer.MouseButton1Click:Connect(function() tV2(UI.EnchantFarmer, "AutoEnchantFarmer") end) UI.EnchantMagician.MouseButton1Click:Connect(function() tV2(UI.EnchantMagician, "AutoEnchantMagician") end) UI.EnchantArcher.MouseButton1Click:Connect(function() tV2(UI.EnchantArcher, "AutoEnchantArcher") end) UI.EnchantSoldier.MouseButton1Click:Connect(function() tV2(UI.EnchantSoldier, "AutoEnchantSoldier") end) UI.EnchantHacker1.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker1, "AutoEnchantHacker1") end) UI.EnchantHacker2.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker2, "AutoEnchantHacker2") end) UI.EnchantHacker3.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker3, "AutoEnchantHacker3") end) UI.EnchantHacker4.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker4, "AutoEnchantHacker4") end) UI.EnchantPharaoh.MouseButton1Click:Connect(function() tV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
+UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT1ChestCard, "AutoOpenT1Chest") end) UI.OpenT2ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT2ChestCard, "AutoOpenT2Chest") end) UI.AFK.MouseButton1Click:Connect(function() tV2(UI.AFK, "AntiAFK") end) UI.Prestige.MouseButton1Click:Connect(function() tV2(UI.Prestige, "AutoPrestige") end) UI.RebirthTimerCard.MouseButton1Click:Connect(function() tV2(UI.RebirthTimerCard, "AutoRebirthTimer") end) 
 
 UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
 
