@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V5.2 PRO EDITION (SLEEK & TRANSPARENT NOTIFICATIONS)
+-- DOMINATE HUB | V5.3 PRO EDITION (CLEAN TOP-LEFT HUD & NO STROKES)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -7,7 +7,7 @@ if getgenv().DominateHubLoaded then
         local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
         if oldUI then oldUI:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V5.2 Instance...")
+    print("[Dominate Hub] Reloading V5.3 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -146,23 +146,17 @@ end)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
--- SLEEK & TRANSPARENT TOAST NOTIFICATION HELPER
+-- SLEEK & TRANSPARENT TOAST NOTIFICATION HELPER (NO STROKE)
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
         toast.Size = UDim2.new(0, 210, 0, 36)
         toast.Position = UDim2.new(1, 10, 1, -60)
         toast.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-        toast.BackgroundTransparency = 0.35 -- Slick and semi-transparent
+        toast.BackgroundTransparency = 0.35 
         toast.BorderSizePixel = 0
         toast.Parent = sg
         Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 10)
-        
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = Color3.fromRGB(0, 136, 255)
-        stroke.Transparency = 0.3
-        stroke.Thickness = 1.2
-        stroke.Parent = toast
 
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(1, -10, 1, 0)
@@ -198,30 +192,29 @@ local function sendDiscordWebhook(message)
     end
 end
 
--- REAL-TIME PERFORMANCE & FARMING HUD OVERLAY
+-- REAL-TIME PERFORMANCE & FARMING HUD OVERLAY (MOVED TO TOP LEFT, NO STROKE)
 local statsHud = Instance.new("Frame")
-statsHud.Size = UDim2.new(0, 180, 0, 75)
-statsHud.Position = UDim2.new(0, 15, 0.5, -37)
+statsHud.Size = UDim2.new(0, 170, 0, 68)
+statsHud.Position = UDim2.new(0, 15, 0, 15) -- Moved to top left
 statsHud.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-statsHud.BackgroundTransparency = 0.3
+statsHud.BackgroundTransparency = 0.35
 statsHud.BorderSizePixel = 0
 statsHud.Parent = sg
-Instance.new("UICorner", statsHud).CornerRadius = UDim.new(0, 6)
-local hudStroke = Instance.new("UIStroke") hudStroke.Color = Color3.fromRGB(0, 136, 255) hudStroke.Thickness = 1.2 hudStroke.Parent = statsHud
+Instance.new("UICorner", statsHud).CornerRadius = UDim.new(0, 8)
 
 local hudTitle = Instance.new("TextLabel")
-hudTitle.Size = UDim2.new(1, 0, 0, 22)
+hudTitle.Size = UDim2.new(1, 0, 0, 20)
 hudTitle.Position = UDim2.new(0, 0, 0, 2)
 hudTitle.BackgroundTransparency = 1
 hudTitle.TextColor3 = Color3.fromRGB(0, 136, 255)
-hudTitle.TextSize = 11
+hudTitle.TextSize = 10
 hudTitle.Font = Enum.Font.SourceSansBold
 hudTitle.Text = "📊 PERFORMANCE HUD"
 hudTitle.Parent = statsHud
 
 local hudText = Instance.new("TextLabel")
-hudText.Size = UDim2.new(1, -10, 1, -26)
-hudText.Position = UDim2.new(0, 5, 0, 24)
+hudText.Size = UDim2.new(1, -10, 1, -22)
+hudText.Position = UDim2.new(0, 5, 0, 22)
 hudText.BackgroundTransparency = 1
 hudText.TextColor3 = Color3.fromRGB(220, 220, 225)
 hudText.TextSize = 10
@@ -264,7 +257,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.3 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
@@ -283,7 +276,7 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
--- SLEEK SMALLER & 70% TRANSPARENT FLOATING PILL
+-- SLEEK SMALLER & 70% TRANSPARENT FLOATING PILL (NO STROKE)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 105, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
@@ -293,7 +286,6 @@ minBtn.TextColor3 = Color3.fromRGB(0, 136, 255)
 minBtn.TextSize = 11; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "🔥 Dominate Hub" 
 minBtn.Parent = sg
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 13)
-local minStroke = Instance.new("UIStroke") minStroke.Color = Color3.fromRGB(0, 136, 255) minStroke.Thickness = 1.2 minStroke.Parent = minBtn
 
 local pDragging, pDragInput, pDragStart, pStartPos
 minBtn.InputBegan:Connect(function(input)
@@ -509,7 +501,7 @@ UI.HUDToggle.MouseButton1Click:Connect(function()
     _G.ShowStatsHUD = not _G.ShowStatsHUD
     UI.HUDToggle.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
     UI.HUDToggle.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    UI.HUDToggle.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    UI.HUDToggle.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(60, 20, 20)
     saveConfig()
 end)
 
@@ -527,9 +519,7 @@ UI.ThemePicker.MouseButton1Click:Connect(function()
     if currentThemeIdx > #themes then currentThemeIdx = 1 end
     local th = themes[currentThemeIdx]
     UI.ThemePicker.Text = "Theme: " .. th.Name
-    minStroke.Color = th.Color
     minBtn.TextColor3 = th.Color
-    hudStroke.Color = th.Color
     hudTitle.TextColor3 = th.Color
     showToast("🎨 Theme changed to " .. th.Name)
 end)
@@ -822,4 +812,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V5.2 Pro Edition with Sleek Transparent Toast Notifications Deployed!")
+print("[Dominate Hub] V5.3 Pro Edition - Clean Top-Left HUD Deployed!")
