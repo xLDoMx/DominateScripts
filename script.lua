@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN
+-- DOMINATE HUB | BAD MAN NOOB UPDATE
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -30,6 +30,7 @@ _G.AutoBlazeMoreBlaze, _G.AutoBlazeMoreFire, _G.AutoBlazeMoreOof, _G.AutoBlazeMo
 _G.AutoUpgradePharaoh = false
 
 -- REALM 2 AUTOMATION FLAGS
+_G.AutoUpgradeFishermanNoob = false
 _G.AutoRealm2MoreOof, _G.AutoRealm2MoreWalkSpeed = false, false
 _G.AutoRealm2MoreWater, _G.AutoRealm2MoreOofWater, _G.AutoRealm2MorePlanks = false, false, false
 _G.AutoRealm2MoreIce, _G.AutoRealm2WaterPump1, _G.AutoRealm2WaterPump2, _G.AutoRealm2MoreOofIce = false, false, false, false
@@ -157,13 +158,15 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- REALM 2 SUB-TABS
+-- REALM 2 SUB-TABS (Updated Layout)
 local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
-local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 75, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 0, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnOof.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
-local r2SubBtnWater = Instance.new("TextButton") r2SubBtnWater.Size = UDim2.new(0, 75, 1, 0) r2SubBtnWater.Position = UDim2.new(0, 80, 0, 0) r2SubBtnWater.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWater.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWater.TextSize = 10; r2SubBtnWater.Font = Enum.Font.SourceSansBold; r2SubBtnWater.Text = "Water" r2SubBtnWater.Parent = realm2SubTabList
-local r2SubBtnIce = Instance.new("TextButton") r2SubBtnIce.Size = UDim2.new(0, 75, 1, 0) r2SubBtnIce.Position = UDim2.new(0, 160, 0, 0) r2SubBtnIce.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnIce.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnIce.TextSize = 10; r2SubBtnIce.Font = Enum.Font.SourceSansBold; r2SubBtnIce.Text = "Ice" r2SubBtnIce.Parent = realm2SubTabList
-local r2SubBtnBuckets = Instance.new("TextButton") r2SubBtnBuckets.Size = UDim2.new(0, 95, 1, 0) r2SubBtnBuckets.Position = UDim2.new(0, 240, 0, 0) r2SubBtnBuckets.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnBuckets.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnBuckets.TextSize = 10; r2SubBtnBuckets.Font = Enum.Font.SourceSansBold; r2SubBtnBuckets.Text = "Water Buckets" r2SubBtnBuckets.Parent = realm2SubTabList
+local r2SubBtnNoobs = Instance.new("TextButton") r2SubBtnNoobs.Size = UDim2.new(0, 60, 1, 0) r2SubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) r2SubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnNoobs.TextSize = 10; r2SubBtnNoobs.Font = Enum.Font.SourceSansBold; r2SubBtnNoobs.Text = "Noobs" r2SubBtnNoobs.Parent = realm2SubTabList
+local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 50, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 65, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
+local r2SubBtnWater = Instance.new("TextButton") r2SubBtnWater.Size = UDim2.new(0, 60, 1, 0) r2SubBtnWater.Position = UDim2.new(0, 120, 0, 0) r2SubBtnWater.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnWater.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnWater.TextSize = 10; r2SubBtnWater.Font = Enum.Font.SourceSansBold; r2SubBtnWater.Text = "Water" r2SubBtnWater.Parent = realm2SubTabList
+local r2SubBtnIce = Instance.new("TextButton") r2SubBtnIce.Size = UDim2.new(0, 50, 1, 0) r2SubBtnIce.Position = UDim2.new(0, 185, 0, 0) r2SubBtnIce.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnIce.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnIce.TextSize = 10; r2SubBtnIce.Font = Enum.Font.SourceSansBold; r2SubBtnIce.Text = "Ice" r2SubBtnIce.Parent = realm2SubTabList
+local r2SubBtnBuckets = Instance.new("TextButton") r2SubBtnBuckets.Size = UDim2.new(0, 85, 1, 0) r2SubBtnBuckets.Position = UDim2.new(0, 240, 0, 0) r2SubBtnBuckets.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnBuckets.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnBuckets.TextSize = 10; r2SubBtnBuckets.Font = Enum.Font.SourceSansBold; r2SubBtnBuckets.Text = "Water Buckets" r2SubBtnBuckets.Parent = realm2SubTabList
 
+Instance.new("UICorner", r2SubBtnNoobs).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnOof).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnWater).CornerRadius = UDim.new(0, 5)
 Instance.new("UICorner", r2SubBtnIce).CornerRadius = UDim.new(0, 5)
@@ -199,7 +202,8 @@ local realm1CashScroll = makeScroll(170, realm1MasterPage)
 local realm1HackerScroll = makeScroll(220, realm1MasterPage)
 
 -- REALM 2 SCROLL FRAMES
-local realm2OofScroll = makeScroll(110, realm2Page) realm2OofScroll.Visible = true
+local realm2NoobScroll = makeScroll(110, realm2Page) realm2NoobScroll.Visible = true
+local realm2OofScroll = makeScroll(110, realm2Page)
 local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
 local realm2BucketScroll = makeScroll(250, realm2Page)
@@ -281,6 +285,8 @@ UI.CashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashSc
 UI.CashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
 -- REALM 2 ROWS
+UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", 1, realm2NoobScroll)
+
 UI.R2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
 UI.R2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
 
@@ -528,6 +534,8 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeHacker2",    T = "UpgradeNoobMax",    A = {"Hacker 2"}},
     {F = "AutoUpgradeHacker3",    T = "UpgradeNoobMax",    A = {"Hacker 3"}},
     {F = "AutoUpgradeHacker4",    T = "UpgradeNoobMax",    A = {"Hacker 4"}},
+    
+    {F = "AutoUpgradeFishermanNoob",T = "UpgradeNoobMax",  A = {"Fisherman"}},
 
     {F = "AutoUpgradeGoalkeeper",   T = "UpgradeNoobMax",    A = {"Goalkeeper"}},
     {F = "AutoUpgradeLeftBack",     T = "UpgradeNoobMax",    A = {"LeftBack"}},
@@ -799,6 +807,7 @@ UI.MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.MoreOof, "AutoUpgrad
 UI.FasterNoobs.MouseButton1Click:Connect(function() tStateV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
 
 -- REALM 2 TOGGLE CONNECTORS
+UI.R2Fisherman.MouseButton1Click:Connect(function() tStateV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end)
 UI.R2MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreOof, "AutoRealm2MoreOof") end)
 UI.R2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(UI.R2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
 UI.R2MoreWater.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreWater, "AutoRealm2MoreWater") end)
@@ -932,8 +941,8 @@ tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSett
 
 -- Realm 2 Sub-Tab Router
 local function realm2Route(targetScroll, activeBtn)
-    local scrolls = {realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll}
-    local btns = {r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets}
+    local scrolls = {realm2NoobScroll, realm2OofScroll, realm2WaterScroll, realm2IceScroll, realm2BucketScroll}
+    local btns = {r2SubBtnNoobs, r2SubBtnOof, r2SubBtnWater, r2SubBtnIce, r2SubBtnBuckets}
     for i, s in ipairs(scrolls) do
         s.Visible = (s == targetScroll)
         if s == targetScroll then
@@ -943,6 +952,7 @@ local function realm2Route(targetScroll, activeBtn)
         end
     end
 end
+r2SubBtnNoobs.MouseButton1Click:Connect(function() realm2Route(realm2NoobScroll, r2SubBtnNoobs) end)
 r2SubBtnOof.MouseButton1Click:Connect(function() realm2Route(realm2OofScroll, r2SubBtnOof) end)
 r2SubBtnWater.MouseButton1Click:Connect(function() realm2Route(realm2WaterScroll, r2SubBtnWater) end)
 r2SubBtnIce.MouseButton1Click:Connect(function() realm2Route(realm2IceScroll, r2SubBtnIce) end)
@@ -1024,4 +1034,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Snowy Rune UI Fully Integrated & Max Locals Bypassed!")
+print("[Dominate Hub] Fisherman Noob Successfully Added!")
