@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SETa)
+-- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SET1)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
