@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN NOOB UPDATE
+-- DOMINATE HUB | BAD MAN
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -35,6 +35,7 @@ _G.AutoRealm2MoreOof, _G.AutoRealm2MoreWalkSpeed = false, false
 _G.AutoRealm2MoreWater, _G.AutoRealm2MoreOofWater, _G.AutoRealm2MorePlanks = false, false, false
 _G.AutoRealm2MoreIce, _G.AutoRealm2WaterPump1, _G.AutoRealm2WaterPump2, _G.AutoRealm2MoreOofIce = false, false, false, false
 _G.AutoFillBucket1, _G.AutoFillBucket2, _G.AutoFillBucket3, _G.AutoFillBucket4, _G.AutoFillBucket5 = false, false, false, false, false
+_G.AutoFillBucket6, _G.AutoFillBucket7, _G.AutoFillBucket8, _G.AutoFillBucket9, _G.AutoFillBucket10, _G.AutoFillBucket11 = false, false, false, false, false, false
 
 -- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
@@ -206,7 +207,7 @@ local realm2NoobScroll = makeScroll(110, realm2Page) realm2NoobScroll.Visible = 
 local realm2OofScroll = makeScroll(110, realm2Page)
 local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
-local realm2BucketScroll = makeScroll(250, realm2Page)
+local realm2BucketScroll = makeScroll(500, realm2Page) -- Increased canvas size to fit all 11 buckets
 
 local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
@@ -304,6 +305,12 @@ UI.Bucket2 = gridRow("Auto Fill Bucket #2", 2, realm2BucketScroll)
 UI.Bucket3 = gridRow("Auto Fill Bucket #3", 3, realm2BucketScroll)
 UI.Bucket4 = gridRow("Auto Fill Bucket #4", 4, realm2BucketScroll)
 UI.Bucket5 = gridRow("Auto Fill Bucket #5", 5, realm2BucketScroll)
+UI.Bucket6 = gridRow("Auto Fill Bucket #6", 6, realm2BucketScroll)
+UI.Bucket7 = gridRow("Auto Fill Bucket #7", 7, realm2BucketScroll)
+UI.Bucket8 = gridRow("Auto Fill Bucket #8", 8, realm2BucketScroll)
+UI.Bucket9 = gridRow("Auto Fill Bucket #9", 9, realm2BucketScroll)
+UI.Bucket10 = gridRow("Auto Fill Bucket #10", 10, realm2BucketScroll)
+UI.Bucket11 = gridRow("Auto Fill Bucket #11", 11, realm2BucketScroll)
 
 -- HACKER ROWS (1 to 4)
 UI.Hacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
@@ -599,12 +606,12 @@ task.spawn(function()
     end
 end)
 
--- WATER BUCKETS AUTO FILL ENGINE (1 TO 5)
+-- WATER BUCKETS AUTO FILL ENGINE (1 TO 11)
 task.spawn(function()
     while Running do
         task.wait(0.5)
         if NetRemote and Running then
-            for i = 1, 5 do
+            for i = 1, 11 do
                 if _G["AutoFillBucket" .. i] then
                     pcall(function()
                         NetRemote:FireServer("FillWaterBucket", i)
@@ -823,6 +830,12 @@ UI.Bucket2.MouseButton1Click:Connect(function() tStateV2(UI.Bucket2, "AutoFillBu
 UI.Bucket3.MouseButton1Click:Connect(function() tStateV2(UI.Bucket3, "AutoFillBucket3") end)
 UI.Bucket4.MouseButton1Click:Connect(function() tStateV2(UI.Bucket4, "AutoFillBucket4") end)
 UI.Bucket5.MouseButton1Click:Connect(function() tStateV2(UI.Bucket5, "AutoFillBucket5") end)
+UI.Bucket6.MouseButton1Click:Connect(function() tStateV2(UI.Bucket6, "AutoFillBucket6") end)
+UI.Bucket7.MouseButton1Click:Connect(function() tStateV2(UI.Bucket7, "AutoFillBucket7") end)
+UI.Bucket8.MouseButton1Click:Connect(function() tStateV2(UI.Bucket8, "AutoFillBucket8") end)
+UI.Bucket9.MouseButton1Click:Connect(function() tStateV2(UI.Bucket9, "AutoFillBucket9") end)
+UI.Bucket10.MouseButton1Click:Connect(function() tStateV2(UI.Bucket10, "AutoFillBucket10") end)
+UI.Bucket11.MouseButton1Click:Connect(function() tStateV2(UI.Bucket11, "AutoFillBucket11") end)
 
 -- HACKER TOGGLE CONNECTORS (1 to 4)
 UI.Hacker1.MouseButton1Click:Connect(function() tStateV2(UI.Hacker1, "AutoUpgradeHacker1") end)
@@ -1034,4 +1047,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Fisherman Noob Successfully Added!")
+print("[Dominate Hub] Buckets 6-11 Successfully Added!")
