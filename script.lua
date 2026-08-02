@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V9.4 PRO EDITION (SLEEK CATEGORIZED MINES & VERTICAL FULL-WIDTH STACKS)
+-- DOMINATE HUB | V9.5 PRO EDITION (SLEEK MINES & FULL-WIDTH STACKED SETTINGS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V9.4 Instance...")
+    print("[Dominate Hub] Reloading V9.5 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -294,7 +294,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.4 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.5 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -426,7 +426,7 @@ local function makeGridScroll(parent, hasSidebar)
     return s 
 end
 
--- SINGLE-COLUMN STACKED VERTICAL SCROLL GENERATOR (For Settings - General & Config)
+-- SINGLE-COLUMN STACKED VERTICAL SCROLL GENERATOR (For Settings & Mines)
 local function makeVerticalScroll(parent, hasSidebar)
     local s = Instance.new("ScrollingFrame")
     if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
@@ -525,56 +525,46 @@ UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1) UI.FasterNoobs = gri
 UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2) UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2) UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2)
 
 -- ======================================================================================
--- MINES PAGE (CLEAN CATEGORIZED VERTICAL STACKS AS REQUESTED)
+-- MINES PAGE (SLEEK BORDERLESS CATEGORIZED TEXT LISTING)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
 
 local function mineSectionHeader(txt, scr)
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, -6, 0, 22)
+    lbl.Size = UDim2.new(1, -6, 0, 24)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(140, 140, 155)
+    lbl.TextColor3 = Color3.fromRGB(130, 130, 145)
     lbl.TextSize = 10
     lbl.Font = Enum.Font.SourceSansBold
-    lbl.Text = "--- " .. txt .. " ---"
+    lbl.Text = txt
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = scr
 end
 
-local function mineRow(txt, scr, vKey)
+local function sleekMineRow(txt, scr, vKey)
     local f = Instance.new("Frame")
-    f.Size = UDim2.new(1, -6, 0, 30)
-    f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    f.Size = UDim2.new(1, -6, 0, 26)
+    f.BackgroundTransparency = 1
     f.BorderSizePixel = 0
     f.Parent = scr
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5)
-
-    local dot = Instance.new("Frame")
-    dot.Name = "StatusDot"
-    dot.Size = UDim2.new(0, 5, 0, 5)
-    dot.Position = UDim2.new(0, 6, 0.5, -2)
-    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-    dot.BorderSizePixel = 0
-    dot.Parent = f
-    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
 
     local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(0.55, -8, 1, 0)
-    l.Position = UDim2.new(0, 16, 0, 0)
+    l.Size = UDim2.new(0.60, -8, 1, 0)
+    l.Position = UDim2.new(0, 6, 0, 0)
     l.BackgroundTransparency = 1
-    l.TextColor3 = Color3.fromRGB(230, 230, 235)
+    l.TextColor3 = Color3.fromRGB(180, 180, 195)
     l.TextSize = 10
-    l.Font = Enum.Font.SourceSansBold
+    l.Font = Enum.Font.SourceSans
     l.Text = txt
     l.TextXAlignment = Enum.TextXAlignment.Left
     l.Parent = f
 
     local b = Instance.new("TextButton")
-    b.Size = UDim2.new(0.40, -4, 0, 20)
-    b.Position = UDim2.new(0.58, 0, 0.5, -10)
+    b.Size = UDim2.new(0.35, -4, 0, 20)
+    b.Position = UDim2.new(0.62, 0, 0.5, -10)
     b.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
     b.TextColor3 = Color3.fromRGB(255, 120, 120)
-    b.TextSize = 10
+    b.TextSize = 9
     b.Font = Enum.Font.SourceSansBold
     b.Text = "DISABLED"
     b.Parent = f
@@ -592,25 +582,25 @@ UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.MiningSpeedSwitch.Text = "0.8 S/s"
 
 mineSectionHeader("Basic Ores", minesScroll)
-mineRow("Mine Stone", minesScroll, "AutoMineStone")
-mineRow("Mine Coal", minesScroll, "AutoMineCoal")
-mineRow("Mine Silver", minesScroll, "AutoMineSilver")
-mineRow("Mine Iron", minesScroll, "AutoMineIron")
-mineRow("Mine Copper", minesScroll, "AutoMineCopper")
+UI.MineStone = sleekMineRow("Stone", minesScroll, "AutoMineStone")
+UI.MineCoal = sleekMineRow("Coal", minesScroll, "AutoMineCoal")
+UI.MineSilver = sleekMineRow("Silver", minesScroll, "AutoMineSilver")
+UI.MineIron = sleekMineRow("Iron", minesScroll, "AutoMineIron")
+UI.MineCopper = sleekMineRow("Copper", minesScroll, "AutoMineCopper")
 
 mineSectionHeader("Advanced Ores", minesScroll)
-mineRow("Mine Gold", minesScroll, "AutoMineGold")
-mineRow("Mine Platinum", minesScroll, "AutoMinePlatinum")
-mineRow("Mine Titanium", minesScroll, "AutoMineTitanium")
-mineRow("Mine Cobalt", minesScroll, "AutoMineCobalt")
-mineRow("Mine Uranium", minesScroll, "AutoMineUranium")
+UI.MineGold = sleekMineRow("Gold", minesScroll, "AutoMineGold")
+UI.MinePlatinum = sleekMineRow("Platinum", minesScroll, "AutoMinePlatinum")
+UI.MineTitanium = sleekMineRow("Titanium", minesScroll, "AutoMineTitanium")
+UI.MineCobalt = sleekMineRow("Cobalt", minesScroll, "AutoMineCobalt")
+UI.MineUranium = sleekMineRow("Uranium", minesScroll, "AutoMineUranium")
 
 mineSectionHeader("End-Game Ores", minesScroll)
-mineRow("Mine Palladium", minesScroll, "AutoMinePalladium")
-mineRow("Mine Aetherite", minesScroll, "AutoMineAetherite")
-mineRow("Mine Ruby", minesScroll, "AutoMineRuby")
-mineRow("Mine Voidsteel", minesScroll, "AutoMineVoidsteel")
-mineRow("Mine Celestium", minesScroll, "AutoMineCelestium")
+UI.MinePalladium = sleekMineRow("Palladium", minesScroll, "AutoMinePalladium")
+UI.MineAetherite = sleekMineRow("Aetherite", minesScroll, "AutoMineAetherite")
+UI.MineRuby = sleekMineRow("Ruby", minesScroll, "AutoMineRuby")
+UI.MineVoidsteel = sleekMineRow("Voidsteel", minesScroll, "AutoMineVoidsteel")
+UI.MineCelestium = sleekMineRow("Celestium", minesScroll, "AutoMineCelestium")
 
 -- ======================================================================================
 -- FOOTBALL PAGE
@@ -781,9 +771,9 @@ local function genRow(txt, callback)
     return b
 end
 
-genRow("Anti  AFK Protection", function(b) tV2(b, "AntiAFK") end)
-genRow("FPS Booster Mode", function(b) toggleFPSBoost(b) end)
-genRow("Stats HUD Ovrlay", function(b)
+UI.AFK = genRow("Anti  AFK Protection", function(b) tV2(b, "AntiAFK") end)
+UI.FPSBoostToggle = genRow("FPS Booster Mode", function(b) toggleFPSBoost(b) end)
+UI.HUDToggle = genRow("Stats HUD Ovrlay", function(b)
     _G.ShowStatsHUD = not _G.ShowStatsHUD
     b.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
     b.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
@@ -793,10 +783,10 @@ genRow("Stats HUD Ovrlay", function(b)
     saveConfigToSlot(_G.SelectedConfigSlot)
 end)
 
-genRow("Auto Rebirth", function(b) tV2(b, "AutoRebirthTimer") end)
-genRow("Auto Prestige", function(b) tV2(b, "AutoPrestige") end)
-genRow("Mass Open T1 Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
-genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
+UI.RebirthTimerCard = genRow("Auto Rebirth", function(b) tV2(b, "AutoRebirthTimer") end)
+UI.Prestige = genRow("Auto Prestige", function(b) tV2(b, "AutoPrestige") end)
+UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
+UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
 
 -- Hub Theme Row
 local themeRow = Instance.new("Frame")
@@ -1210,4 +1200,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V9.3 Pro Edition - Vertical Full-Width Stacks Deployed!")
+print("[Dominate Hub] V9.5 Pro Edition - Sleek Vertical Layout Deployed!")
