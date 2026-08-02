@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN
+-- DOMINATE HUB | BAD MAN REALM 2 UPDATE
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
