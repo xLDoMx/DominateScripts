@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V7.0 PRO EDITION (FROSTED GLASS & STROKE-FREE CLEAN UI)
+-- DOMINATE HUB | V7.1 PRO EDITION (CARD-BASED MODULES & LIVE STATUS BADGES)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V7.0 Instance...")
+    print("[Dominate Hub] Reloading V7.1 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -27,7 +27,7 @@ local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
 
--- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
+-- ADD FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
     local blur = Instance.new("BlurEffect")
     blur.Name = "DominateHubBlur"
@@ -163,7 +163,7 @@ end)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
--- TOAST NOTIFICATION HELPER (NO STROKE)
+-- TOAST NOTIFICATION HELPER
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
@@ -222,7 +222,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT, NO STROKE)
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 170, 0, 84)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -285,7 +285,6 @@ task.spawn(function()
     end
 end)
 
--- FROSTED GLASS MAIN FRAME (NO STROKE)
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 580, 0, 420) 
 mainFrame.Position = UDim2.new(0.5, -290, 0.5, -210) 
@@ -293,7 +292,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V7.0 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V7.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
@@ -312,7 +311,7 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
--- FLOATING PILL (NO STROKE, NO FIRE ICON)
+-- FLOATING PILL (NO STROKE)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 105, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
@@ -358,7 +357,6 @@ end)
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 
--- HIGH-VISIBILITY TEXT-ONLY MAIN TABS
 local function makeMainTab(txt, pos)
     local t = Instance.new("TextButton") t.Size = UDim2.new(0, 65, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(55, 55, 65) t.TextColor3 = Color3.fromRGB(210, 210, 220) t.TextSize = 11; t.Font = Enum.Font.SourceSansBold; t.Text = txt; t.Parent = tabList
     Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
@@ -406,17 +404,27 @@ local function makeGridScroll(parent, hasSidebar)
     return s 
 end
 
--- GRID ROW TOGGLE GENERATOR (NO STROKE)
+-- CARD-BASED MODULE LAYOUT WITH LIVE STATUS BADGE DOTS (NO STROKE)
 local function gridRow(txt, scr)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
 
-    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.65, -5, 1, 0) l.Position = UDim2.new(0, 8, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
+    -- Live Status Indicator Badge (Green = Active, Red = Disabled)
+    local dot = Instance.new("Frame")
+    dot.Name = "StatusDot"
+    dot.Size = UDim2.new(0, 6, 0, 6)
+    dot.Position = UDim2.new(0, 8, 0.5, -3)
+    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+    dot.BorderSizePixel = 0
+    dot.Parent = f
+    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
+    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.60, -10, 1, 0) l.Position = UDim2.new(0, 20, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.35, -5, 0, 24) b.Position = UDim2.new(0.65, 0, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 11; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 6) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
 end
 
 -- ======================================================================================
--- REALM 1 SIDEBAR & GRIDS (TEXT-ONLY)
+-- REALM 1 SIDEBAR & GRIDS
 -- ======================================================================================
 local r1Sidebar = makeSidebar(realm1MasterPage)
 local b1Noobs = makeSideBtn("Noobs", r1Sidebar) b1Noobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) b1Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -449,7 +457,7 @@ UI.AutoFarmCash = gridRow("Auto Pad Tycoon", r1CashScroll) UI.CashMoreCash = gri
 UI.Hacker1 = gridRow("Auto Upgrade Hacker 1", r1HackerScroll) UI.Hacker2 = gridRow("Auto Upgrade Hacker 2", r1HackerScroll) UI.Hacker3 = gridRow("Auto Upgrade Hacker 3", r1HackerScroll) UI.Hacker4 = gridRow("Auto Upgrade Hacker 4", r1HackerScroll)
 
 -- ======================================================================================
--- REALM 2 SIDEBAR & GRIDS (TEXT-ONLY)
+-- REALM 2 SIDEBAR & GRIDS
 -- ======================================================================================
 local r2Sidebar = makeSidebar(realm2Page)
 local b2Noobs = makeSideBtn("Noobs", r2Sidebar) b2Noobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) b2Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -478,7 +486,7 @@ UI.MiningSpeedSwitch = gridRow("Glide Speed", r2MiningScroll) UI.MiningSpeedSwit
 UI.MineStone = gridRow("Mine Stone", r2MiningScroll) UI.MineCoal = gridRow("Mine Coal", r2MiningScroll) UI.MineSilver = gridRow("Mine Silver", r2MiningScroll) UI.MineIron = gridRow("Mine Iron", r2MiningScroll) UI.MineCopper = gridRow("Mine Copper", r2MiningScroll) UI.MineGold = gridRow("Mine Gold", r2MiningScroll) UI.MinePlatinum = gridRow("Mine Platinum", r2MiningScroll) UI.MineTitanium = gridRow("Mine Titanium", r2MiningScroll) UI.MineCobalt = gridRow("Mine Cobalt", r2MiningScroll) UI.MineUranium = gridRow("Mine Uranium", r2MiningScroll) UI.MinePalladium = gridRow("Mine Palladium", r2MiningScroll) UI.MineAetherite = gridRow("Mine Aetherite", r2MiningScroll) UI.MineRuby = gridRow("Mine Ruby", r2MiningScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", r2MiningScroll) UI.MineCelestium = gridRow("Mine Celestium", r2MiningScroll)
 
 -- ======================================================================================
--- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (TEXT-ONLY)
+-- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS
 -- ======================================================================================
 local r3Scroll = makeGridScroll(realm3Page, false) r3Scroll.Visible = true
 UI.Pharaoh = gridRow("Auto Upgrade Pharaoh", r3Scroll)
@@ -611,10 +619,10 @@ UI.ThemePicker.MouseButton1Click:Connect(function()
     currentThemeIdx = currentThemeIdx + 1
     if currentThemeIdx > #themes then currentThemeIdx = 1 end
     local th = themes[currentThemeIdx]
-    UI.ThemePicker.Text = "Theme: " .. th.Name
+    UI.ThemePicker.Text = "Theme: " + th.Name
     minBtn.TextColor3 = th.Color
     hudTitle.TextColor3 = th.Color
-    showToast("Theme changed to " .. th.Name)
+    showToast("Theme changed to " + th.Name)
 end)
 
 --======================================================================================
@@ -838,6 +846,15 @@ local function tV2(b, v)
     b.Text = _G[v] and "ACTIVE" or "DISABLED" 
     b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
     b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    
+    local card = b.Parent
+    if card and card:IsA("Frame") then
+        local dot = card:FindFirstChild("StatusDot")
+        if dot then
+            dot.BackgroundColor3 = _G[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        end
+    end
+    
     saveConfigToSlot(_G.SelectedConfigSlot)
 end
 
@@ -915,4 +932,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V7.0 Pro Edition - Frosted Glass & Clean UI Successfully Deployed!")
+print("[Dominate Hub] V7.1 Pro Edition - Frosted Glass & Card Modules Deployed!")
