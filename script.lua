@@ -1,13 +1,15 @@
 --======================================================================================
--- DOMINATE HUB | V6.2 PRO EDITION (CLEAN STROKE-FREE & HIGH VISIBILITY)
+-- DOMINATE HUB | V7.0 PRO EDITION (FROSTED GLASS & STROKE-FREE CLEAN UI)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
         local parentTarget = (gethui and gethui()) or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
         local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
         if oldUI then oldUI:Destroy() end
+        local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
+        if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V6.2 Instance...")
+    print("[Dominate Hub] Reloading V7.0 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -24,6 +26,14 @@ local Running = true
 local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
+
+-- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
+pcall(function()
+    local blur = Instance.new("BlurEffect")
+    blur.Name = "DominateHubBlur"
+    blur.Size = 6
+    blur.Parent = Lighting
+end)
 
 -- MULTI-SLOT CONFIG SYSTEM
 _G.SelectedConfigSlot = 1
@@ -229,7 +239,7 @@ hudTitle.BackgroundTransparency = 1
 hudTitle.TextColor3 = Color3.fromRGB(0, 136, 255)
 hudTitle.TextSize = 10
 hudTitle.Font = Enum.Font.SourceSansBold
-hudTitle.Text = "📊 PERFORMANCE HUD"
+hudTitle.Text = "PERFORMANCE HUD"
 hudTitle.Parent = statsHud
 
 local hudText = Instance.new("TextLabel")
@@ -275,26 +285,19 @@ task.spawn(function()
     end
 end)
 
+-- FROSTED GLASS MAIN FRAME (NO STROKE)
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 580, 0, 420) 
 mainFrame.Position = UDim2.new(0.5, -290, 0.5, -210) 
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) 
-mainFrame.BackgroundTransparency = 0.10; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25) 
+mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local mainGrad = Instance.new("UIGradient")
-mainGrad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 38)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
-}
-mainGrad.Rotation = 45
-mainGrad.Parent = mainFrame
-
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V6.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V7.0 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(0, 150, 0, 26) searchBox.Position = UDim2.new(1, -160, 0, 8) searchBox.BackgroundColor3 = Color3.fromRGB(35, 35, 40) searchBox.TextColor3 = Color3.fromRGB(255, 255, 255) searchBox.PlaceholderText = "🔍 Search Hub..." searchBox.TextSize = 13; searchBox.Font = Enum.Font.SourceSansBold; searchBox.Parent = mainFrame
+searchBox.Size = UDim2.new(0, 150, 0, 26) searchBox.Position = UDim2.new(1, -160, 0, 8) searchBox.BackgroundColor3 = Color3.fromRGB(35, 35, 40) searchBox.TextColor3 = Color3.fromRGB(255, 255, 255) searchBox.PlaceholderText = "Search Hub..." searchBox.TextSize = 13; searchBox.Font = Enum.Font.SourceSansBold; searchBox.Parent = mainFrame
 Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 6)
 
 searchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -347,7 +350,7 @@ minBtn.MouseButton1Click:Connect(function()
         mainFrame.Size = UDim2.new(0, 0, 0, 0)
         mainFrame.BackgroundTransparency = 1
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 420), BackgroundTransparency = 0.10})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 420), BackgroundTransparency = 0.35})
         tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(0, 136, 255)
     end
@@ -355,21 +358,21 @@ end)
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 
--- HIGH-VISIBILITY MAIN TABS
-local function makeMainTab(icon, txt, pos)
-    local t = Instance.new("TextButton") t.Size = UDim2.new(0, 65, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(55, 55, 65) t.TextColor3 = Color3.fromRGB(210, 210, 220) t.TextSize = 10; t.Font = Enum.Font.SourceSansBold; t.Text = icon .. " " .. txt; t.Parent = tabList
+-- HIGH-VISIBILITY TEXT-ONLY MAIN TABS
+local function makeMainTab(txt, pos)
+    local t = Instance.new("TextButton") t.Size = UDim2.new(0, 65, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(55, 55, 65) t.TextColor3 = Color3.fromRGB(210, 210, 220) t.TextSize = 11; t.Font = Enum.Font.SourceSansBold; t.Text = txt; t.Parent = tabList
     Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
     return t
 end
 
-local tabRealm1 = makeMainTab("🏠", "R1", 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15)
-local tabRealm2 = makeMainTab("🌍", "R2", 70)
-local tabRealm3 = makeMainTab("🪐", "R3", 140)
-local tabFootball = makeMainTab("⚽", "Ball", 210)
-local tabRunes = makeMainTab("🔮", "Rune", 280)
-local tabCapsules = makeMainTab("📦", "Caps", 350)
-local tabEnchants = makeMainTab("✨", "Ench", 420)
-local tabSettings = makeMainTab("⚙️", "Set", 490)
+local tabRealm1 = makeMainTab("Realm 1", 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15)
+local tabRealm2 = makeMainTab("Realm 2", 70)
+local tabRealm3 = makeMainTab("Realm 3", 140)
+local tabFootball = makeMainTab("Football", 210)
+local tabRunes = makeMainTab("Runes", 280)
+local tabCapsules = makeMainTab("Capsules", 350)
+local tabEnchants = makeMainTab("Enchants", 420)
+local tabSettings = makeMainTab("Settings", 490)
 
 -- PAGE CONTAINERS
 local function makePage()
@@ -413,17 +416,17 @@ local function gridRow(txt, scr)
 end
 
 -- ======================================================================================
--- REALM 1 SIDEBAR & GRIDS
+-- REALM 1 SIDEBAR & GRIDS (TEXT-ONLY)
 -- ======================================================================================
 local r1Sidebar = makeSidebar(realm1MasterPage)
-local b1Noobs = makeSideBtn("🌿 Noobs", r1Sidebar) b1Noobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) b1Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
-local b1Oof = makeSideBtn("⚡ OoF", r1Sidebar) 
-local b1Rebirth = makeSideBtn("🔄 Rebirth", r1Sidebar) 
-local b1Fire = makeSideBtn("🔥 Fire", r1Sidebar) 
-local b1Blaze = makeSideBtn("🎆 Blaze", r1Sidebar) 
-local b1Farm = makeSideBtn("🌾 Farm", r1Sidebar) 
-local b1Cash = makeSideBtn("💵 Cash", r1Sidebar) 
-local b1Hacker = makeSideBtn("💻 Hacker", r1Sidebar)
+local b1Noobs = makeSideBtn("Noobs", r1Sidebar) b1Noobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) b1Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
+local b1Oof = makeSideBtn("Oof", r1Sidebar) 
+local b1Rebirth = makeSideBtn("Rebirth", r1Sidebar) 
+local b1Fire = makeSideBtn("Fire", r1Sidebar) 
+local b1Blaze = makeSideBtn("Blaze", r1Sidebar) 
+local b1Farm = makeSideBtn("Farm", r1Sidebar) 
+local b1Cash = makeSideBtn("Cash", r1Sidebar) 
+local b1Hacker = makeSideBtn("Hacker", r1Sidebar)
 
 local r1NoobScroll = makeGridScroll(realm1MasterPage, true) r1NoobScroll.Visible = true
 local r1OofScroll = makeGridScroll(realm1MasterPage, true) local r1RebirthScroll = makeGridScroll(realm1MasterPage, true) local r1FireScroll = makeGridScroll(realm1MasterPage, true) local r1BlazeScroll = makeGridScroll(realm1MasterPage, true) local r1BreadScroll = makeGridScroll(realm1MasterPage, true) local r1CashScroll = makeGridScroll(realm1MasterPage, true) local r1HackerScroll = makeGridScroll(realm1MasterPage, true)
@@ -446,18 +449,18 @@ UI.AutoFarmCash = gridRow("Auto Pad Tycoon", r1CashScroll) UI.CashMoreCash = gri
 UI.Hacker1 = gridRow("Auto Upgrade Hacker 1", r1HackerScroll) UI.Hacker2 = gridRow("Auto Upgrade Hacker 2", r1HackerScroll) UI.Hacker3 = gridRow("Auto Upgrade Hacker 3", r1HackerScroll) UI.Hacker4 = gridRow("Auto Upgrade Hacker 4", r1HackerScroll)
 
 -- ======================================================================================
--- REALM 2 SIDEBAR & GRIDS
+-- REALM 2 SIDEBAR & GRIDS (TEXT-ONLY)
 -- ======================================================================================
 local r2Sidebar = makeSidebar(realm2Page)
-local b2Noobs = makeSideBtn("🌿 Noobs", r2Sidebar) b2Noobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) b2Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
-local b2Oof = makeSideBtn("⚡ OoF", r2Sidebar) 
-local b2Water = makeSideBtn("💧 Water", r2Sidebar) 
-local b2Ice = makeSideBtn("🧊 Ice", r2Sidebar) 
-local b2Buckets = makeSideBtn("🪣 Buckets", r2Sidebar) 
-local b2Wood = makeSideBtn("🪵 Wood", r2Sidebar) 
-local b2Planks = makeSideBtn("🪵 Planks", r2Sidebar) 
-local b2Gems = makeSideBtn("💎 Gems", r2Sidebar) 
-local b2Mine = makeSideBtn("⛏️ Mining", r2Sidebar)
+local b2Noobs = makeSideBtn("Noobs", r2Sidebar) b2Noobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) b2Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
+local b2Oof = makeSideBtn("OoF", r2Sidebar) 
+local b2Water = makeSideBtn("Water", r2Sidebar) 
+local b2Ice = makeSideBtn("Ice", r2Sidebar) 
+local b2Buckets = makeSideBtn("Buckets", r2Sidebar) 
+local b2Wood = makeSideBtn("Wood", r2Sidebar) 
+local b2Planks = makeSideBtn("Planks", r2Sidebar) 
+local b2Gems = makeSideBtn("Gems", r2Sidebar) 
+local b2Mine = makeSideBtn("Mining", r2Sidebar)
 
 local r2NoobScroll = makeGridScroll(realm2Page, true) r2NoobScroll.Visible = true
 local r2OofScroll = makeGridScroll(realm2Page, true) local r2WaterScroll = makeGridScroll(realm2Page, true) local r2IceScroll = makeGridScroll(realm2Page, true) local r2BucketScroll = makeGridScroll(realm2Page, true) local r2WoodScroll = makeGridScroll(realm2Page, true) local r2PlanksScroll = makeGridScroll(realm2Page, true) local r2GemsScroll = makeGridScroll(realm2Page, true) local r2MiningScroll = makeGridScroll(realm2Page, true)
@@ -471,28 +474,28 @@ UI.WoodRankUp = gridRow("Auto Wood Rank Up", r2WoodScroll) UI.WoodMoreWood = gri
 UI.PlanksMorePlanks = gridRow("More Planks", r2PlanksScroll) UI.PlanksMoreWood = gridRow("More Wood", r2PlanksScroll) UI.PlanksWaterFromPlanks = gridRow("Water From Planks", r2PlanksScroll)
 UI.GemMoreOof = gridRow("Upgrade More Oof (Gems)", r2GemsScroll) UI.GemMoreGems = gridRow("Upgrade More Gems", r2GemsScroll) UI.GemStrongerPickaxes = gridRow("Stronger Pickaxes", r2GemsScroll) UI.GemMoreOreStats = gridRow("More Ore Stats", r2GemsScroll) UI.GemExchange = gridRow("Auto Gem Exchange", r2GemsScroll)
 
-UI.MiningSpeedSwitch = gridRow("⚡ Glide Speed", r2MiningScroll) UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) UI.MiningSpeedSwitch.Text = "0.8 Studs/sec"
+UI.MiningSpeedSwitch = gridRow("Glide Speed", r2MiningScroll) UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) UI.MiningSpeedSwitch.Text = "0.8 Studs/sec"
 UI.MineStone = gridRow("Mine Stone", r2MiningScroll) UI.MineCoal = gridRow("Mine Coal", r2MiningScroll) UI.MineSilver = gridRow("Mine Silver", r2MiningScroll) UI.MineIron = gridRow("Mine Iron", r2MiningScroll) UI.MineCopper = gridRow("Mine Copper", r2MiningScroll) UI.MineGold = gridRow("Mine Gold", r2MiningScroll) UI.MinePlatinum = gridRow("Mine Platinum", r2MiningScroll) UI.MineTitanium = gridRow("Mine Titanium", r2MiningScroll) UI.MineCobalt = gridRow("Mine Cobalt", r2MiningScroll) UI.MineUranium = gridRow("Mine Uranium", r2MiningScroll) UI.MinePalladium = gridRow("Mine Palladium", r2MiningScroll) UI.MineAetherite = gridRow("Mine Aetherite", r2MiningScroll) UI.MineRuby = gridRow("Mine Ruby", r2MiningScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", r2MiningScroll) UI.MineCelestium = gridRow("Mine Celestium", r2MiningScroll)
 
 -- ======================================================================================
--- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS
+-- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (TEXT-ONLY)
 -- ======================================================================================
 local r3Scroll = makeGridScroll(realm3Page, false) r3Scroll.Visible = true
 UI.Pharaoh = gridRow("Auto Upgrade Pharaoh", r3Scroll)
 
 local fSidebar = makeSidebar(footballPage)
-local bFNoobs = makeSideBtn("🌿 Noobs", fSidebar) bFNoobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bFNoobs.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bFUpgrades = makeSideBtn("📈 Upgrades", fSidebar)
+local bFNoobs = makeSideBtn("Noobs", fSidebar) bFNoobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bFNoobs.TextColor3 = Color3.fromRGB(15, 15, 15)
+local bFUpgrades = makeSideBtn("Upgrades", fSidebar)
 local fNoobScroll = makeGridScroll(footballPage, true) fNoobScroll.Visible = true
 local fUpgradeScroll = makeGridScroll(footballPage, true)
 UI.Goalkeeper = gridRow("Upgrade Goalkeeper", fNoobScroll) UI.LeftBack = gridRow("Upgrade Left Back", fNoobScroll) UI.LeftCenterBack = gridRow("Upgrade L-Center Back", fNoobScroll) UI.RightCenterBack = gridRow("Upgrade R-Center Back", fNoobScroll) UI.RightBack = gridRow("Upgrade Right Back", fNoobScroll) UI.LeftDefensiveMid = gridRow("Upgrade L-Defensive Mid", fNoobScroll) UI.RightDefensiveMid = gridRow("Upgrade R-Defensive Mid", fNoobScroll) UI.AttackingMid = gridRow("Upgrade Attacking Mid", fNoobScroll) UI.LeftWing = gridRow("Upgrade Left Wing", fNoobScroll) UI.RightWing = gridRow("Upgrade Right Wing", fNoobScroll) UI.Striker = gridRow("Upgrade Striker", fNoobScroll)
 UI.ScoreGoal = gridRow("Auto Score Goal", fUpgradeScroll) UI.MoreGoals = gridRow("More Goals Upgrade", fUpgradeScroll) UI.GoalsRuneBulk = gridRow("Goals Rune Bulk", fUpgradeScroll) UI.GoalsRuneLuck = gridRow("Goals Rune Luck", fUpgradeScroll) UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", fUpgradeScroll) UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll) UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll)
 
 local ruSidebar = makeSidebar(runesPage)
-local bRu1 = makeSideBtn("1️⃣ Realm 1", ruSidebar) bRu1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bRu1.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bRu2 = makeSideBtn("2️⃣ Realm 2", ruSidebar) 
-local bRu3 = makeSideBtn("3️⃣ Realm 3", ruSidebar) 
-local bRuE = makeSideBtn("🎉 Events", ruSidebar)
+local bRu1 = makeSideBtn("Realm 1", ruSidebar) bRu1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bRu1.TextColor3 = Color3.fromRGB(15, 15, 15)
+local bRu2 = makeSideBtn("Realm 2", ruSidebar) 
+local bRu3 = makeSideBtn("Realm 3", ruSidebar) 
+local bRuE = makeSideBtn("Events", ruSidebar)
 local ruScroll1 = makeGridScroll(runesPage, true) ruScroll1.Visible = true
 local ruScroll2 = makeGridScroll(runesPage, true) local ruScroll3 = makeGridScroll(runesPage, true) local ruScrollE = makeGridScroll(runesPage, true)
 UI.RollBasicRuneCard = gridRow("Auto Basic Rune Circle", ruScroll1) UI.RollSuperRuneCard = gridRow("Auto Super Rune Circle", ruScroll1) UI.RollAdvancedRuneCard = gridRow("Auto Advanced Rune", ruScroll1) UI.RollCosmicRuneCard = gridRow("Auto Cosmic Prism", ruScroll1)
@@ -507,8 +510,8 @@ UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gri
 
 -- SETTINGS SIDEBAR (GENERAL & CONFIG SUB-TABS)
 local setSidebar = makeSidebar(settingsPage)
-local bSetGen = makeSideBtn("⚙️ General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bSetConfig = makeSideBtn("💾 Config", setSidebar)
+local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
+local bSetConfig = makeSideBtn("Config", setSidebar)
 
 local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
 local setConfigScroll = makeGridScroll(settingsPage, true)
@@ -517,29 +520,29 @@ UI.OpenT1ChestCard = gridRow("Mass-Open T1 Chests", setGenScroll) UI.OpenT2Chest
 UI.AFK = gridRow("Anti-AFK Protection", setGenScroll) UI.AFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.AFK.TextColor3 = Color3.fromRGB(120, 255, 120) UI.AFK.Text = "ACTIVE"
 UI.Prestige = gridRow("Auto Prestige", setGenScroll) UI.RebirthTimerCard = gridRow("Auto Rebirth (10m)", setGenScroll) 
 
-UI.HUDToggle = gridRow("📊 Stats HUD Overlay", setGenScroll)
+UI.HUDToggle = gridRow("Stats HUD Overlay", setGenScroll)
 UI.HUDToggle.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.HUDToggle.TextColor3 = Color3.fromRGB(120, 255, 120) UI.HUDToggle.Text = "ACTIVE"
 
-UI.FPSBoostToggle = gridRow("🚀 FPS Booster Mode", setGenScroll)
-UI.ThemePicker = gridRow("🎨 Hub Accent Theme", setGenScroll)
+UI.FPSBoostToggle = gridRow("FPS Booster Mode", setGenScroll)
+UI.ThemePicker = gridRow("Hub Accent Theme", setGenScroll)
 UI.ThemePicker.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
 UI.ThemePicker.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.ThemePicker.Text = "Theme: Neon Blue"
 
 UI.KillSwitch = gridRow("EMERGENCY KILL SWITCH", setGenScroll) UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) UI.KillSwitch.Text = "TERMINATE"
 
--- CONFIG SLOTS (1 TO 5) IN CONFIG SUB-TAB (NO TEXTBOX)
-UI.ConfigSlotSwitch = gridRow("📦 Select Slot", setConfigScroll)
+-- CONFIG SLOTS (1 TO 5) IN CONFIG SUB-TAB
+UI.ConfigSlotSwitch = gridRow("Select Slot", setConfigScroll)
 UI.ConfigSlotSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 UI.ConfigSlotSwitch.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.ConfigSlotSwitch.Text = "Slot #" .. _G.SelectedConfigSlot .. ": " .. slotCustomNames[1]
 
-UI.SaveSlotBtn = gridRow("💾 Save Slot", setConfigScroll)
+UI.SaveSlotBtn = gridRow("Save Slot", setConfigScroll)
 UI.SaveSlotBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
 UI.SaveSlotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.SaveSlotBtn.Text = "SAVE"
 
-UI.LoadSlotBtn = gridRow("📂 Load Slot", setConfigScroll)
+UI.LoadSlotBtn = gridRow("Load Slot", setConfigScroll)
 UI.LoadSlotBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
 UI.LoadSlotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.LoadSlotBtn.Text = "LOAD"
@@ -548,17 +551,17 @@ UI.ConfigSlotSwitch.MouseButton1Click:Connect(function()
     _G.SelectedConfigSlot = _G.SelectedConfigSlot + 1
     if _G.SelectedConfigSlot > 5 then _G.SelectedConfigSlot = 1 end
     UI.ConfigSlotSwitch.Text = "Slot #" .. _G.SelectedConfigSlot .. ": " .. slotCustomNames[_G.SelectedConfigSlot]
-    showToast("📦 Switched to Config Slot " .. _G.SelectedConfigSlot)
+    showToast("Switched to Config Slot " .. _G.SelectedConfigSlot)
 end)
 
 UI.SaveSlotBtn.MouseButton1Click:Connect(function()
     saveConfigToSlot(_G.SelectedConfigSlot)
-    showToast("💾 Saved to Slot " .. _G.SelectedConfigSlot)
+    showToast("Saved to Slot " .. _G.SelectedConfigSlot)
 end)
 
 UI.LoadSlotBtn.MouseButton1Click:Connect(function()
     loadConfigFromSlot(_G.SelectedConfigSlot)
-    showToast("📂 Loaded Slot " .. _G.SelectedConfigSlot)
+    showToast("Loaded Slot " .. _G.SelectedConfigSlot)
 end)
 
 local function toggleFPSBoost(b)
@@ -581,9 +584,9 @@ local function toggleFPSBoost(b)
                 end
             end
         end)
-        showToast("🚀 FPS Booster Enabled!")
+        showToast("FPS Booster Enabled!")
     else
-        showToast("🚀 FPS Booster Disabled!")
+        showToast("FPS Booster Disabled!")
     end
 end
 UI.FPSBoostToggle.MouseButton1Click:Connect(function() toggleFPSBoost(UI.FPSBoostToggle) end)
@@ -611,7 +614,7 @@ UI.ThemePicker.MouseButton1Click:Connect(function()
     UI.ThemePicker.Text = "Theme: " .. th.Name
     minBtn.TextColor3 = th.Color
     hudTitle.TextColor3 = th.Color
-    showToast("🎨 Theme changed to " .. th.Name)
+    showToast("Theme changed to " .. th.Name)
 end)
 
 --======================================================================================
@@ -793,8 +796,8 @@ task.spawn(function()
         task.wait(20.0)
         if NetRemote and Running and _G.AutoGemExchange then
             pcall(function() NetRemote:FireServer("ExchangeAllMinerals") end)
-            showToast("💎 Successfully exchanged minerals for gems!")
-            sendDiscordWebhook("💎 Dominate Hub: Successfully exchanged all minerals for gems!")
+            showToast("Successfully exchanged minerals for gems!")
+            sendDiscordWebhook("Dominate Hub: Successfully exchanged all minerals for gems!")
         end
     end
 end)
@@ -868,7 +871,12 @@ UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT1ChestCard, 
 UI.KillSwitch.MouseButton1Click:Connect(function()
     Running = false getgenv().DominateHubLoaded = nil 
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
-    pcall(function() local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end end) sg:Destroy()
+    pcall(function() 
+        local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end 
+        local blur = Lighting:FindFirstChild("DominateHubBlur")
+        if blur then blur:Destroy() end
+    end) 
+    sg:Destroy()
 end)
 
 -- TAB ROUTERS
@@ -907,4 +915,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V6.2 Pro Edition - Stroke-Free & High Visibility Deployed!")
+print("[Dominate Hub] V7.0 Pro Edition - Frosted Glass & Clean UI Successfully Deployed!")
