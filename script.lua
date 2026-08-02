@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN NOOB UPDATE
+-- DOMINATE HUB | BAD MAN new noob.
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -33,6 +33,7 @@ _G.AutoUpgradePharaoh = false
 _G.AutoUpgradeFishermanNoob = false
 _G.AutoUpgradeKnightNoob = false
 _G.AutoUpgradeExplorerNoob = false
+_G.AutoUpgradeMagicianNoob = false
 _G.AutoRealm2MoreOof, _G.AutoRealm2MoreWalkSpeed = false, false
 _G.AutoRealm2MoreWater, _G.AutoRealm2MoreOofWater, _G.AutoRealm2MorePlanks = false, false, false
 _G.AutoRealm2MoreIce, _G.AutoRealm2WaterPump1, _G.AutoRealm2WaterPump2, _G.AutoRealm2MoreOofIce = false, false, false, false
@@ -50,6 +51,7 @@ _G.AutoGemMoreOof, _G.AutoGemMoreGems, _G.AutoGemStrongerPickaxes, _G.AutoGemMor
 _G.AutoMineStone, _G.AutoMineCoal, _G.AutoMineSilver, _G.AutoMineIron, _G.AutoMineCopper = false, false, false, false, false
 _G.AutoMineGold, _G.AutoMinePlatinum, _G.AutoMineTitanium, _G.AutoMineCobalt, _G.AutoMineUranium = false, false, false, false, false
 _G.AutoMinePalladium, _G.AutoMineAetherite, _G.AutoMineRuby, _G.AutoMineVoidsteel, _G.AutoMineCelestium = false, false, false, false, false
+_G.MiningJumpSpeed = 0.8 -- Default fast bounce speed
 
 -- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
@@ -175,7 +177,7 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- REALM 2 SUB-TABS (Updated with Explorer Noob)
+-- REALM 2 SUB-TABS (Updated with Magician Noob)
 local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
 local r2SubBtnNoobs = Instance.new("TextButton") r2SubBtnNoobs.Size = UDim2.new(0, 42, 1, 0) r2SubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) r2SubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnNoobs.TextSize = 10; r2SubBtnNoobs.Font = Enum.Font.SourceSansBold; r2SubBtnNoobs.Text = "Noobs" r2SubBtnNoobs.Parent = realm2SubTabList
 local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 35, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 44, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
@@ -226,8 +228,8 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 local realm1HackerScroll = makeScroll(220, realm1MasterPage)
 
--- REALM 2 SCROLL FRAMES (Increased height for Noobs to fit Explorer)
-local realm2NoobScroll = makeScroll(220, realm2Page) realm2NoobScroll.Visible = true
+-- REALM 2 SCROLL FRAMES (Increased height for Noobs to fit Magician)
+local realm2NoobScroll = makeScroll(260, realm2Page) realm2NoobScroll.Visible = true
 local realm2OofScroll = makeScroll(110, realm2Page)
 local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
@@ -313,10 +315,11 @@ UI.CashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
 UI.CashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
 UI.CashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
--- REALM 2 ROWS (Including Explorer Noob)
+-- REALM 2 ROWS (Including Fisherman, Knight, Explorer, Magician)
 UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", 1, realm2NoobScroll)
 UI.R2Knight = gridRow("Auto Upgrade Knight", 2, realm2NoobScroll)
 UI.R2Explorer = gridRow("Auto Upgrade Explorer", 3, realm2NoobScroll)
+UI.R2Magician = gridRow("Auto Upgrade Magician", 4, realm2NoobScroll)
 
 UI.R2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
 UI.R2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
@@ -721,6 +724,7 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeFishermanNoob",T = "UpgradeNoobMax",  A = {"Fisherman"}},
     {F = "AutoUpgradeKnightNoob",   T = "UpgradeNoobMax",  A = {"Knight"}},
     {F = "AutoUpgradeExplorerNoob", T = "UpgradeNoobMax",  A = {"Explorer"}},
+    {F = "AutoUpgradeMagicianNoob", T = "UpgradeNoobMax",  A = {"Magician"}},
 
     {F = "AutoUpgradeGoalkeeper",   T = "UpgradeNoobMax",    A = {"Goalkeeper"}},
     {F = "AutoUpgradeLeftBack",     T = "UpgradeNoobMax",    A = {"LeftBack"}},
@@ -1063,6 +1067,7 @@ UI.CashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.CashMoreRun
 UI.R2Fisherman.MouseButton1Click:Connect(function() tStateV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end)
 UI.R2Knight.MouseButton1Click:Connect(function() tStateV2(UI.R2Knight, "AutoUpgradeKnightNoob") end)
 UI.R2Explorer.MouseButton1Click:Connect(function() tStateV2(UI.R2Explorer, "AutoUpgradeExplorerNoob") end)
+UI.R2Magician.MouseButton1Click:Connect(function() tStateV2(UI.R2Magician, "AutoUpgradeMagicianNoob") end)
 UI.R2MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreOof, "AutoRealm2MoreOof") end)
 UI.R2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(UI.R2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
 UI.R2MoreWater.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreWater, "AutoRealm2MoreWater") end)
@@ -1299,4 +1304,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Explorer Noob Added & Fast Miner Synced!")
+print("[Dominate Hub] Magician Noob Added Successfully!")
