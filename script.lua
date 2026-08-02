@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | MINE UPDATED
+-- DOMINATE HUB | BAD MAN NOOB UPDATE
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -32,6 +32,7 @@ _G.AutoUpgradePharaoh = false
 -- REALM 2 AUTOMATION FLAGS
 _G.AutoUpgradeFishermanNoob = false
 _G.AutoUpgradeKnightNoob = false
+_G.AutoUpgradeExplorerNoob = false
 _G.AutoRealm2MoreOof, _G.AutoRealm2MoreWalkSpeed = false, false
 _G.AutoRealm2MoreWater, _G.AutoRealm2MoreOofWater, _G.AutoRealm2MorePlanks = false, false, false
 _G.AutoRealm2MoreIce, _G.AutoRealm2WaterPump1, _G.AutoRealm2WaterPump2, _G.AutoRealm2MoreOofIce = false, false, false, false
@@ -174,7 +175,7 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- REALM 2 SUB-TABS (Updated with Gems & Mining)
+-- REALM 2 SUB-TABS (Updated with Explorer Noob)
 local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
 local r2SubBtnNoobs = Instance.new("TextButton") r2SubBtnNoobs.Size = UDim2.new(0, 42, 1, 0) r2SubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) r2SubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnNoobs.TextSize = 10; r2SubBtnNoobs.Font = Enum.Font.SourceSansBold; r2SubBtnNoobs.Text = "Noobs" r2SubBtnNoobs.Parent = realm2SubTabList
 local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 35, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 44, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
@@ -225,8 +226,8 @@ local realm1BreadScroll = makeScroll(650, realm1MasterPage)
 local realm1CashScroll = makeScroll(170, realm1MasterPage)
 local realm1HackerScroll = makeScroll(220, realm1MasterPage)
 
--- REALM 2 SCROLL FRAMES
-local realm2NoobScroll = makeScroll(160, realm2Page) realm2NoobScroll.Visible = true
+-- REALM 2 SCROLL FRAMES (Increased height for Noobs to fit Explorer)
+local realm2NoobScroll = makeScroll(220, realm2Page) realm2NoobScroll.Visible = true
 local realm2OofScroll = makeScroll(110, realm2Page)
 local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
@@ -234,7 +235,7 @@ local realm2BucketScroll = makeScroll(500, realm2Page)
 local realm2WoodScroll = makeScroll(350, realm2Page)
 local realm2PlanksScroll = makeScroll(160, realm2Page)
 local realm2GemsScroll = makeScroll(250, realm2Page)
-local realm2MiningScroll = makeScroll(650, realm2Page)
+local realm2MiningScroll = makeScroll(750, realm2Page)
 
 local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
@@ -312,9 +313,10 @@ UI.CashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
 UI.CashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
 UI.CashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
--- REALM 2 ROWS
+-- REALM 2 ROWS (Including Explorer Noob)
 UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", 1, realm2NoobScroll)
 UI.R2Knight = gridRow("Auto Upgrade Knight", 2, realm2NoobScroll)
+UI.R2Explorer = gridRow("Auto Upgrade Explorer", 3, realm2NoobScroll)
 
 UI.R2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
 UI.R2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
@@ -538,7 +540,7 @@ task.spawn(function()
                     needsNewTarget = true
                 elseif currentTargetPart.Parent and isOreRespawning(currentTargetPart.Parent) then
                     needsNewTarget = true
-                elseif tick() - lastOreJumpTick >= 0.8 then -- Fast 0.8s cycling speed
+                elseif tick() - lastOreJumpTick >= 0.8 then
                     needsNewTarget = true
                 end
 
@@ -718,6 +720,7 @@ local PrimaryUpgradeQueue = {
     
     {F = "AutoUpgradeFishermanNoob",T = "UpgradeNoobMax",  A = {"Fisherman"}},
     {F = "AutoUpgradeKnightNoob",   T = "UpgradeNoobMax",  A = {"Knight"}},
+    {F = "AutoUpgradeExplorerNoob", T = "UpgradeNoobMax",  A = {"Explorer"}},
 
     {F = "AutoUpgradeGoalkeeper",   T = "UpgradeNoobMax",    A = {"Goalkeeper"}},
     {F = "AutoUpgradeLeftBack",     T = "UpgradeNoobMax",    A = {"LeftBack"}},
@@ -1059,6 +1062,7 @@ UI.CashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.CashMoreRun
 -- REALM 2 CONNECTORS
 UI.R2Fisherman.MouseButton1Click:Connect(function() tStateV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end)
 UI.R2Knight.MouseButton1Click:Connect(function() tStateV2(UI.R2Knight, "AutoUpgradeKnightNoob") end)
+UI.R2Explorer.MouseButton1Click:Connect(function() tStateV2(UI.R2Explorer, "AutoUpgradeExplorerNoob") end)
 UI.R2MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreOof, "AutoRealm2MoreOof") end)
 UI.R2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(UI.R2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
 UI.R2MoreWater.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreWater, "AutoRealm2MoreWater") end)
@@ -1295,4 +1299,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] High-Speed Multi-Ore Miner Activated!")
+print("[Dominate Hub] Explorer Noob Added & Fast Miner Synced!")
