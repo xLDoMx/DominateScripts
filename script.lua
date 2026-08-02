@@ -1,9 +1,13 @@
 --======================================================================================
--- DOMINATE HUB | 
+-- DOMINATE HUB | BAD MAN
 --======================================================================================
 if getgenv().DominateHubLoaded then 
-    print("[Dominate Hub] Already running! Aborting duplicate instance.")
-    return 
+    pcall(function()
+        local parentTarget = (gethui and gethui()) or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+        local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
+        if oldUI then oldUI:Destroy() end
+    end)
+    print("[Dominate Hub] Reloading updated instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -200,7 +204,7 @@ local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
 local realm2BucketScroll = makeScroll(250, realm2Page)
 
-local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true 
+local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
 local runesScroll3 = makeScroll(100, runesPage)
 local runesScrollEvents = makeScroll(100, runesPage)
@@ -225,137 +229,142 @@ local function makeSubRow(label, idx, scr)
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
 end
 
-local toggleStarter = makeSubRow("Starter Noob Auto Upgrade", 1, realm1NoobScroll)
-local toggleCooker = makeSubRow("Cooker Noob Auto Upgrade", 2, realm1NoobScroll)
-local toggleFarmer = makeSubRow("Farmer Noob Auto Upgrade", 3, realm1NoobScroll)
-local toggleMagician = makeSubRow("Magician Noob Auto Upgrade", 4, realm1NoobScroll)
-local toggleArcher = makeSubRow("Archer Noob Auto Upgrade", 5, realm1NoobScroll)
-local toggleSoldier = makeSubRow("Soldier Noob Auto Upgrade", 6, realm1NoobScroll)
+-- ======================================================================================
+-- UI TOGGLES TABLE (Bypasses Lua 200 Max Local Variable Limit)
+-- ======================================================================================
+local UI = {}
 
-local toggleMoreOof = makeSubRow("More Oof Auto Upgrade", 1, realm1UpgradeScroll)
-local toggleFasterNoobs = makeSubRow("Faster Noobs Auto Upgrade", 2, realm1UpgradeScroll)
-local toggleRebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll)
-local toggleRebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
-local toggleRebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
+UI.Starter = makeSubRow("Starter Noob Auto Upgrade", 1, realm1NoobScroll)
+UI.Cooker = makeSubRow("Cooker Noob Auto Upgrade", 2, realm1NoobScroll)
+UI.Farmer = makeSubRow("Farmer Noob Auto Upgrade", 3, realm1NoobScroll)
+UI.Magician = makeSubRow("Magician Noob Auto Upgrade", 4, realm1NoobScroll)
+UI.Archer = makeSubRow("Archer Noob Auto Upgrade", 5, realm1NoobScroll)
+UI.Soldier = makeSubRow("Soldier Noob Auto Upgrade", 6, realm1NoobScroll)
 
-local toggleFireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
-local toggleFireBulk = makeSubRow("More Bulk (Fire)", 2, realm1FireScroll)
-local toggleFireOof = makeSubRow("More Oof (Fire)", 3, realm1FireScroll)
-local toggleFireRebirth = makeSubRow("More Rebirth (Fire)", 4, realm1FireScroll)
-local toggleFireTierLuck = makeSubRow("More Tier Luck (Fire)", 5, realm1FireScroll)
-local toggleFireCashBonus = makeSubRow("More Cash (Fire)", 6, realm1FireScroll)
+UI.MoreOof = makeSubRow("More Oof Auto Upgrade", 1, realm1UpgradeScroll)
+UI.FasterNoobs = makeSubRow("Faster Noobs Auto Upgrade", 2, realm1UpgradeScroll)
+UI.RebirthOof = makeSubRow("More Oof (Rebirth)", 1, realm1RebirthScroll)
+UI.RebirthRebirth = makeSubRow("More Rebirth (Rebirth)", 2, realm1RebirthScroll)
+UI.RebirthFire = makeSubRow("More Fire (Rebirth)", 3, realm1RebirthScroll)
 
-local toggleAutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
-local toggleBlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
-local toggleBlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
-local toggleBlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
-local toggleBlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
-local toggleBlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
+UI.FireFire = makeSubRow("More Fire (Fire)", 1, realm1FireScroll)
+UI.FireBulk = makeSubRow("More Bulk (Fire)", 2, realm1FireScroll)
+UI.FireOof = makeSubRow("More Oof (Fire)", 3, realm1FireScroll)
+UI.FireRebirth = makeSubRow("More Rebirth (Fire)", 4, realm1FireScroll)
+UI.FireTierLuck = makeSubRow("More Tier Luck (Fire)", 5, realm1FireScroll)
+UI.FireCashBonus = makeSubRow("More Cash (Fire)", 6, realm1FireScroll)
 
-local toggleDepositWheat = makeSubRow("Auto Deposit Wheat (1m)", 1, realm1BreadScroll)
-local toggleBreadMoreBread = makeSubRow("More Bread (Bread)", 2, realm1BreadScroll)
-local toggleBreadMoreBread2 = makeSubRow("More Bread 2 (Bread)", 3, realm1BreadScroll)
-local toggleBreadMoreWheat = makeSubRow("More Wheat (Bread)", 4, realm1BreadScroll)
-local toggleBreadBiggerWheatDeposit = makeSubRow("Bigger Wheat Deposit (Bread)", 5, realm1BreadScroll)
-local toggleBreadFasterWheatConversion = makeSubRow("Faster Wheat Conversion (Bread)", 6, realm1BreadScroll)
-local toggleBreadMoreConsumption = makeSubRow("More Consumption (Bread)", 7, realm1BreadScroll)
-local toggleBreadMoreRuneLuck = makeSubRow("More Rune Luck (Bread)", 8, realm1BreadScroll)
-local toggleBreadMoreTierLuck = makeSubRow("More Tier Luck (Bread)", 9, realm1BreadScroll)
-local toggleUpgradeCow = makeSubRow("Upgrade Cow (Level)", 10, realm1BreadScroll)
-local toggleUpgradeChicken = makeSubRow("Upgrade Chicken (Level)", 11, realm1BreadScroll)
-local toggleBuyCow = makeSubRow("Buy Cow (Max)", 12, realm1BreadScroll)
-local toggleBuyChicken = makeSubRow("Buy Chicken (Max)", 13, realm1BreadScroll)
+UI.AutoBlazeConvert = makeSubRow("Auto Convert Fire to Blaze (5m)", 1, realm1BlazeScroll)
+UI.BlazeMoreBlaze = makeSubRow("More Blaze (Blaze)", 2, realm1BlazeScroll)
+UI.BlazeMoreFire = makeSubRow("More Fire (Blaze)", 3, realm1BlazeScroll)
+UI.BlazeMoreOof = makeSubRow("More Oof (Blaze)", 4, realm1BlazeScroll)
+UI.BlazeMoreOofs = makeSubRow("More Oofs (Blaze)", 5, realm1BlazeScroll)
+UI.BlazeMoreBulk = makeSubRow("More Bulk (Blaze)", 6, realm1BlazeScroll)
 
-local toggleAutoFarmCash = makeSubRow("Auto Pad", 1, realm1CashScroll)
-local toggleCashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
-local toggleCashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
-local toggleCashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
+UI.DepositWheat = makeSubRow("Auto Deposit Wheat (1m)", 1, realm1BreadScroll)
+UI.BreadMoreBread = makeSubRow("More Bread (Bread)", 2, realm1BreadScroll)
+UI.BreadMoreBread2 = makeSubRow("More Bread 2 (Bread)", 3, realm1BreadScroll)
+UI.BreadMoreWheat = makeSubRow("More Wheat (Bread)", 4, realm1BreadScroll)
+UI.BreadBiggerWheatDeposit = makeSubRow("Bigger Wheat Deposit (Bread)", 5, realm1BreadScroll)
+UI.BreadFasterWheatConversion = makeSubRow("Faster Wheat Conversion (Bread)", 6, realm1BreadScroll)
+UI.BreadMoreConsumption = makeSubRow("More Consumption (Bread)", 7, realm1BreadScroll)
+UI.BreadMoreRuneLuck = makeSubRow("More Rune Luck (Bread)", 8, realm1BreadScroll)
+UI.BreadMoreTierLuck = makeSubRow("More Tier Luck (Bread)", 9, realm1BreadScroll)
+UI.UpgradeCow = makeSubRow("Upgrade Cow (Level)", 10, realm1BreadScroll)
+UI.UpgradeChicken = makeSubRow("Upgrade Chicken (Level)", 11, realm1BreadScroll)
+UI.BuyCow = makeSubRow("Buy Cow (Max)", 12, realm1BreadScroll)
+UI.BuyChicken = makeSubRow("Buy Chicken (Max)", 13, realm1BreadScroll)
+
+UI.AutoFarmCash = makeSubRow("Auto Pad", 1, realm1CashScroll)
+UI.CashMoreCash = makeSubRow("More Cash Auto Upgrade", 2, realm1CashScroll)
+UI.CashFasterDropper = makeSubRow("Faster Dropper Auto Upgrade", 3, realm1CashScroll)
+UI.CashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScroll)
 
 -- REALM 2 ROWS
-local toggleR2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
-local toggleR2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
+UI.R2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
+UI.R2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
 
-local toggleR2MoreWater = gridRow("More Water", 1, realm2WaterScroll)
-local toggleR2WaterOof = gridRow("More Oof (Water)", 2, realm2WaterScroll)
-local toggleR2Planks = gridRow("More Planks", 3, realm2WaterScroll)
+UI.R2MoreWater = gridRow("More Water", 1, realm2WaterScroll)
+UI.R2WaterOof = gridRow("More Oof (Water)", 2, realm2WaterScroll)
+UI.R2Planks = gridRow("More Planks", 3, realm2WaterScroll)
 
-local toggleR2MoreIce = gridRow("More Ice", 1, realm2IceScroll)
-local toggleR2WaterPump1 = gridRow("Water Pump Noob Hire (1)", 2, realm2IceScroll)
-local toggleR2WaterPump2 = gridRow("Water From Ice", 3, realm2IceScroll)
-local toggleR2IceOof = gridRow("More Oof (Ice)", 4, realm2IceScroll)
+UI.R2MoreIce = gridRow("More Ice", 1, realm2IceScroll)
+UI.R2WaterPump1 = gridRow("Water Pump Noob Hire (1)", 2, realm2IceScroll)
+UI.R2WaterPump2 = gridRow("Water From Ice", 3, realm2IceScroll)
+UI.R2IceOof = gridRow("More Oof (Ice)", 4, realm2IceScroll)
 
-local toggleBucket1 = gridRow("Auto Fill Bucket #1", 1, realm2BucketScroll)
-local toggleBucket2 = gridRow("Auto Fill Bucket #2", 2, realm2BucketScroll)
-local toggleBucket3 = gridRow("Auto Fill Bucket #3", 3, realm2BucketScroll)
-local toggleBucket4 = gridRow("Auto Fill Bucket #4", 4, realm2BucketScroll)
-local toggleBucket5 = gridRow("Auto Fill Bucket #5", 5, realm2BucketScroll)
+UI.Bucket1 = gridRow("Auto Fill Bucket #1", 1, realm2BucketScroll)
+UI.Bucket2 = gridRow("Auto Fill Bucket #2", 2, realm2BucketScroll)
+UI.Bucket3 = gridRow("Auto Fill Bucket #3", 3, realm2BucketScroll)
+UI.Bucket4 = gridRow("Auto Fill Bucket #4", 4, realm2BucketScroll)
+UI.Bucket5 = gridRow("Auto Fill Bucket #5", 5, realm2BucketScroll)
 
 -- HACKER ROWS (1 to 4)
-local toggleHacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
-local toggleHacker2 = makeSubRow("Auto Upgrade Hacker 2", 2, realm1HackerScroll)
-local toggleHacker3 = makeSubRow("Auto Upgrade Hacker 3", 3, realm1HackerScroll)
-local toggleHacker4 = makeSubRow("Auto Upgrade Hacker 4", 4, realm1HackerScroll)
+UI.Hacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
+UI.Hacker2 = makeSubRow("Auto Upgrade Hacker 2", 2, realm1HackerScroll)
+UI.Hacker3 = makeSubRow("Auto Upgrade Hacker 3", 3, realm1HackerScroll)
+UI.Hacker4 = makeSubRow("Auto Upgrade Hacker 4", 4, realm1HackerScroll)
 
-local togglePharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
+UI.Pharaoh = gridRow("Auto Upgrade Pharaoh (Max)", 1, realm3Page)
 
--- FOOTBALL ROWS (Ordered from Goalkeeper to Striker)
-local toggleGoalkeeper = gridRow("Auto Upgrade Goalkeeper", 1, footballNoobScroll)
-local toggleLeftBack = gridRow("Auto Upgrade Left Back", 2, footballNoobScroll)
-local toggleLeftCenterBack = gridRow("Auto Upgrade Left Center Back", 3, footballNoobScroll)
-local toggleRightCenterBack = gridRow("Auto Upgrade Right Center Back", 4, footballNoobScroll)
-local toggleRightBack = gridRow("Auto Upgrade Right Back", 5, footballNoobScroll)
-local toggleLeftDefensiveMid = gridRow("Auto Upgrade Left Defensive Mid", 6, footballNoobScroll)
-local toggleRightDefensiveMid = gridRow("Auto Upgrade Right Defensive Mid", 7, footballNoobScroll)
-local toggleAttackingMid = gridRow("Auto Upgrade Attacking Mid", 8, footballNoobScroll)
-local toggleLeftWing = gridRow("Auto Upgrade Left Wing", 9, footballNoobScroll)
-local toggleRightWing = gridRow("Auto Upgrade Right Wing", 10, footballNoobScroll)
-local toggleStriker = gridRow("Auto Upgrade Striker", 11, footballNoobScroll)
+-- FOOTBALL ROWS 
+UI.Goalkeeper = gridRow("Auto Upgrade Goalkeeper", 1, footballNoobScroll)
+UI.LeftBack = gridRow("Auto Upgrade Left Back", 2, footballNoobScroll)
+UI.LeftCenterBack = gridRow("Auto Upgrade Left Center Back", 3, footballNoobScroll)
+UI.RightCenterBack = gridRow("Auto Upgrade Right Center Back", 4, footballNoobScroll)
+UI.RightBack = gridRow("Auto Upgrade Right Back", 5, footballNoobScroll)
+UI.LeftDefensiveMid = gridRow("Auto Upgrade Left Defensive Mid", 6, footballNoobScroll)
+UI.RightDefensiveMid = gridRow("Auto Upgrade Right Defensive Mid", 7, footballNoobScroll)
+UI.AttackingMid = gridRow("Auto Upgrade Attacking Mid", 8, footballNoobScroll)
+UI.LeftWing = gridRow("Auto Upgrade Left Wing", 9, footballNoobScroll)
+UI.RightWing = gridRow("Auto Upgrade Right Wing", 10, footballNoobScroll)
+UI.Striker = gridRow("Auto Upgrade Striker", 11, footballNoobScroll)
 
-local toggleScoreGoal = gridRow("Auto Score & Kick (1.5s Debug)", 1, footballUpgradeScroll)
-local toggleMoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
-local toggleGoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
-local toggleGoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
-local toggleAutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScroll)
-local toggleFootballTree = gridRow("Auto Buy Football Tree (Dynamic PlayerGui)", 6, footballUpgradeScroll)
-local toggleClaimTrophies = gridRow("Auto Buy Trophies (1-10)", 7, footballUpgradeScroll)
+UI.ScoreGoal = gridRow("Auto Score & Kick (1.5s Debug)", 1, footballUpgradeScroll)
+UI.MoreGoals = gridRow("More Goals Upgrade (Max)", 2, footballUpgradeScroll)
+UI.GoalsRuneBulk = gridRow("Goals Rune Bulk (Max)", 3, footballUpgradeScroll)
+UI.GoalsRuneLuck = gridRow("Goals Rune Luck (Max)", 4, footballUpgradeScroll)
+UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", 5, footballUpgradeScroll)
+UI.FootballTree = gridRow("Auto Buy Football Tree (Dynamic PlayerGui)", 6, footballUpgradeScroll)
+UI.ClaimTrophies = gridRow("Auto Buy Trophies (1-10)", 7, footballUpgradeScroll)
 
 -- RUNES ROWS
-local toggleRollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesScroll1)
-local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesScroll1)
-local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
-local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
+UI.RollBasicRuneCard = gridRow("Auto Roll Basic Rune Circle (Fire)", 1, runesScroll1)
+UI.RollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, runesScroll1)
+UI.RollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
+UI.RollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
 
 -- REALM 2 RUNES ROWS
-local toggleSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle (Realm 2)", 1, runesScroll2)
+UI.RollSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle", 1, runesScroll2)
 
 -- EVENTS RUNES ROWS
-local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
+UI.FootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
 
 -- CAPSULES ROWS
-local toggleClassicCapsule = gridRow("Auto Teleport & Open Classic Capsule", 1, capsulesScroll)
+UI.ClassicCapsule = gridRow("Auto Teleport & Open Classic Capsule", 1, capsulesScroll)
 
--- ENCHANTS ROWS (Realm 1, 2, 3 Noobs Auto-Reroll)
-local toggleEnchantStarter = gridRow("Auto Reroll Enchants: Starter", 1, enchantsScroll)
-local toggleEnchantCooker = gridRow("Auto Reroll Enchants: Cooker", 2, enchantsScroll)
-local toggleEnchantFarmer = gridRow("Auto Reroll Enchants: Farmer", 3, enchantsScroll)
-local toggleEnchantMagician = gridRow("Auto Reroll Enchants: Magician", 4, enchantsScroll)
-local toggleEnchantArcher = gridRow("Auto Reroll Enchants: Archer", 5, enchantsScroll)
-local toggleEnchantSoldier = gridRow("Auto Reroll Enchants: Soldier", 6, enchantsScroll)
-local toggleEnchantHacker1 = gridRow("Auto Reroll Enchants: Hacker 1", 7, enchantsScroll)
-local toggleEnchantHacker2 = gridRow("Auto Reroll Enchants: Hacker 2", 8, enchantsScroll)
-local toggleEnchantHacker3 = gridRow("Auto Reroll Enchants: Hacker 3", 9, enchantsScroll)
-local toggleEnchantHacker4 = gridRow("Auto Reroll Enchants: Hacker 4", 10, enchantsScroll)
-local toggleEnchantPharaoh = gridRow("Auto Reroll Enchants: Pharaoh", 11, enchantsScroll)
+-- ENCHANTS ROWS 
+UI.EnchantStarter = gridRow("Auto Reroll Enchants: Starter", 1, enchantsScroll)
+UI.EnchantCooker = gridRow("Auto Reroll Enchants: Cooker", 2, enchantsScroll)
+UI.EnchantFarmer = gridRow("Auto Reroll Enchants: Farmer", 3, enchantsScroll)
+UI.EnchantMagician = gridRow("Auto Reroll Enchants: Magician", 4, enchantsScroll)
+UI.EnchantArcher = gridRow("Auto Reroll Enchants: Archer", 5, enchantsScroll)
+UI.EnchantSoldier = gridRow("Auto Reroll Enchants: Soldier", 6, enchantsScroll)
+UI.EnchantHacker1 = gridRow("Auto Reroll Enchants: Hacker 1", 7, enchantsScroll)
+UI.EnchantHacker2 = gridRow("Auto Reroll Enchants: Hacker 2", 8, enchantsScroll)
+UI.EnchantHacker3 = gridRow("Auto Reroll Enchants: Hacker 3", 9, enchantsScroll)
+UI.EnchantHacker4 = gridRow("Auto Reroll Enchants: Hacker 4", 10, enchantsScroll)
+UI.EnchantPharaoh = gridRow("Auto Reroll Enchants: Pharaoh", 11, enchantsScroll)
 
 -- SETTINGS / CHESTS
-local toggleOpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, settingsPage)
-local toggleOpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, settingsPage)
-local toggleAFK = gridRow("Anti-AFK Safety Disconnect Protection", 3, settingsPage)
-toggleAFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) toggleAFK.TextColor3 = Color3.fromRGB(120, 255, 120) toggleAFK.Text = "ACTIVE"
-local togglePrestige = gridRow("Auto Prestige", 4, settingsPage)
-local toggleRebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 5, settingsPage)
-local toggleKillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 6, settingsPage)
-toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) toggleKillSwitch.Text = "TERMINATE"
+UI.OpenT1ChestCard = gridRow("Auto Mass-Open T1 Trial Chests", 1, settingsPage)
+UI.OpenT2ChestCard = gridRow("Auto Mass-Open T2 Trial Chests", 2, settingsPage)
+UI.AFK = gridRow("Anti-AFK Safety Disconnect Protection", 3, settingsPage)
+UI.AFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.AFK.TextColor3 = Color3.fromRGB(120, 255, 120) UI.AFK.Text = "ACTIVE"
+UI.Prestige = gridRow("Auto Prestige", 4, settingsPage)
+UI.RebirthTimerCard = gridRow("Auto Rebirth (Every 10-Minute Loop Interval)", 5, settingsPage)
+UI.KillSwitch = gridRow("EMERGENCY SYSTEM KILL SWITCH", 6, settingsPage)
+UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) UI.KillSwitch.Text = "TERMINATE"
 
 --======================================================================================
 -- LOCOMOTION & REMOTE ENGINES
@@ -363,14 +372,17 @@ toggleKillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) toggleKillSwitch
 local MasterTargetVector = nil  
 local CurrentLoopStateSleep = false 
 
-local BasicRuneVector = Vector3.new(1114.7530517578125, 10.3100004196167, -644.1510009765625)
-local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782.02197265625)
-local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
-local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
-local FootballRuneVector = Vector3.new(-2713.26171875, 36.86155319213867, -15.832250595092773)
-local SnowyRuneVector = Vector3.new(1017.366, 5.866, 3262.671)
-local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
-local EnchantStationVector = Vector3.new(1193.1235, 18.7949, -854.0244) 
+-- Vector Grouping
+local Dest = {
+    Basic = Vector3.new(1114.753, 10.310, -644.151),
+    Super = Vector3.new(1082.093, 16.661, -782.021),
+    Advanced = Vector3.new(1293.495, 16.515, -883.312),
+    Cosmic = Vector3.new(783.450, 16.655, -855.972),
+    Football = Vector3.new(-2713.261, 36.861, -15.832),
+    Snowy = Vector3.new(1017.366, 5.866, 3262.671),
+    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105),
+    Enchant = Vector3.new(1193.1235, 18.7949, -854.0244)
+}
 
 local function GetWorldRoot()
     return player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -384,12 +396,12 @@ task.spawn(function()
         if hrp and Running then
             local activeDestination = nil
             if MasterTargetVector then activeDestination = MasterTargetVector
-            elseif _G.AutoRollFootballRune then activeDestination = FootballRuneVector
-            elseif _G.AutoRollSnowyRune then activeDestination = SnowyRuneVector
-            elseif _G.AutoRollCosmicRune then activeDestination = CosmicRuneVector
-            elseif _G.AutoRollAdvancedRune then activeDestination = AdvancedRuneVector
-            elseif _G.AutoRollSuperRune then activeDestination = SuperRuneVector
-            elseif _G.AutoRollBasicRune then activeDestination = BasicRuneVector end
+            elseif _G.AutoRollFootballRune then activeDestination = Dest.Football
+            elseif _G.AutoRollSnowyRune then activeDestination = Dest.Snowy
+            elseif _G.AutoRollCosmicRune then activeDestination = Dest.Cosmic
+            elseif _G.AutoRollAdvancedRune then activeDestination = Dest.Advanced
+            elseif _G.AutoRollSuperRune then activeDestination = Dest.Super
+            elseif _G.AutoRollBasicRune then activeDestination = Dest.Basic end
             if activeDestination and Running and (hrp.Position - activeDestination).Magnitude > 5 then
                 hrp.CFrame = CFrame.new(activeDestination)
             end
@@ -403,8 +415,8 @@ task.spawn(function()
         task.wait(1.0)
         if NetRemote and Running and _G.AutoOpenClassicCapsule then
             local hrp = GetWorldRoot()
-            if hrp and (hrp.Position - ClassicCapsuleVector).Magnitude > 10 then
-                hrp.CFrame = CFrame.new(ClassicCapsuleVector + Vector3.new(0, 3, 0))
+            if hrp and (hrp.Position - Dest.ClassicCap).Magnitude > 10 then
+                hrp.CFrame = CFrame.new(Dest.ClassicCap + Vector3.new(0, 3, 0))
             end
             pcall(function()
                 local args = {
@@ -442,8 +454,8 @@ task.spawn(function()
 
         if NetRemote and Running and anyEnchantActive then
             local hrp = GetWorldRoot()
-            if hrp and (hrp.Position - EnchantStationVector).Magnitude > 10 then
-                hrp.CFrame = CFrame.new(EnchantStationVector + Vector3.new(0, 3, 0))
+            if hrp and (hrp.Position - Dest.Enchant).Magnitude > 10 then
+                hrp.CFrame = CFrame.new(Dest.Enchant + Vector3.new(0, 3, 0))
             end
 
             for i = 1, #EnchantQueue do
@@ -774,129 +786,129 @@ local function tStateV2(b, v)
     b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
 end
 
-togglePharaoh.MouseButton1Click:Connect(function() tStateV2(togglePharaoh, "AutoUpgradePharaoh") end) 
-toggleAFK.MouseButton1Click:Connect(function() tStateV2(toggleAFK, "AntiAFK") end) 
-togglePrestige.MouseButton1Click:Connect(function() tStateV2(togglePrestige, "AutoPrestige") end)
-toggleStarter.MouseButton1Click:Connect(function() tStateV2(toggleStarter, "AutoUpgradeStarter") end) 
-toggleCooker.MouseButton1Click:Connect(function() tStateV2(toggleCooker, "AutoUpgradeCooker") end) 
-toggleFarmer.MouseButton1Click:Connect(function() tStateV2(toggleFarmer, "AutoUpgradeFarmer") end) 
-toggleMagician.MouseButton1Click:Connect(function() tStateV2(toggleMagician, "AutoUpgradeMagician") end) 
-toggleArcher.MouseButton1Click:Connect(function() tStateV2(toggleArcher, "AutoUpgradeArcher") end) 
-toggleSoldier.MouseButton1Click:Connect(function() tStateV2(toggleSoldier, "AutoUpgradeSoldier") end) 
-toggleMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleMoreOof, "AutoUpgradeMoreOof") end) 
-toggleFasterNoobs.MouseButton1Click:Connect(function() tStateV2(toggleFasterNoobs, "AutoUpgradeFasterNoobs") end)
+UI.Pharaoh.MouseButton1Click:Connect(function() tStateV2(UI.Pharaoh, "AutoUpgradePharaoh") end) 
+UI.AFK.MouseButton1Click:Connect(function() tStateV2(UI.AFK, "AntiAFK") end) 
+UI.Prestige.MouseButton1Click:Connect(function() tStateV2(UI.Prestige, "AutoPrestige") end)
+UI.Starter.MouseButton1Click:Connect(function() tStateV2(UI.Starter, "AutoUpgradeStarter") end) 
+UI.Cooker.MouseButton1Click:Connect(function() tStateV2(UI.Cooker, "AutoUpgradeCooker") end) 
+UI.Farmer.MouseButton1Click:Connect(function() tStateV2(UI.Farmer, "AutoUpgradeFarmer") end) 
+UI.Magician.MouseButton1Click:Connect(function() tStateV2(UI.Magician, "AutoUpgradeMagician") end) 
+UI.Archer.MouseButton1Click:Connect(function() tStateV2(UI.Archer, "AutoUpgradeArcher") end) 
+UI.Soldier.MouseButton1Click:Connect(function() tStateV2(UI.Soldier, "AutoUpgradeSoldier") end) 
+UI.MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.MoreOof, "AutoUpgradeMoreOof") end) 
+UI.FasterNoobs.MouseButton1Click:Connect(function() tStateV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
 
 -- REALM 2 TOGGLE CONNECTORS
-toggleR2MoreOof.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreOof, "AutoRealm2MoreOof") end)
-toggleR2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(toggleR2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
-toggleR2MoreWater.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreWater, "AutoRealm2MoreWater") end)
-toggleR2WaterOof.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterOof, "AutoRealm2MoreOofWater") end)
-toggleR2Planks.MouseButton1Click:Connect(function() tStateV2(toggleR2Planks, "AutoRealm2MorePlanks") end)
-toggleR2MoreIce.MouseButton1Click:Connect(function() tStateV2(toggleR2MoreIce, "AutoRealm2MoreIce") end)
-toggleR2WaterPump1.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterPump1, "AutoRealm2WaterPump1") end)
-toggleR2WaterPump2.MouseButton1Click:Connect(function() tStateV2(toggleR2WaterPump2, "AutoRealm2WaterPump2") end)
-toggleR2IceOof.MouseButton1Click:Connect(function() tStateV2(toggleR2IceOof, "AutoRealm2MoreOofIce") end)
+UI.R2MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreOof, "AutoRealm2MoreOof") end)
+UI.R2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(UI.R2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
+UI.R2MoreWater.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreWater, "AutoRealm2MoreWater") end)
+UI.R2WaterOof.MouseButton1Click:Connect(function() tStateV2(UI.R2WaterOof, "AutoRealm2MoreOofWater") end)
+UI.R2Planks.MouseButton1Click:Connect(function() tStateV2(UI.R2Planks, "AutoRealm2MorePlanks") end)
+UI.R2MoreIce.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreIce, "AutoRealm2MoreIce") end)
+UI.R2WaterPump1.MouseButton1Click:Connect(function() tStateV2(UI.R2WaterPump1, "AutoRealm2WaterPump1") end)
+UI.R2WaterPump2.MouseButton1Click:Connect(function() tStateV2(UI.R2WaterPump2, "AutoRealm2WaterPump2") end)
+UI.R2IceOof.MouseButton1Click:Connect(function() tStateV2(UI.R2IceOof, "AutoRealm2MoreOofIce") end)
 
-toggleBucket1.MouseButton1Click:Connect(function() tStateV2(toggleBucket1, "AutoFillBucket1") end)
-toggleBucket2.MouseButton1Click:Connect(function() tStateV2(toggleBucket2, "AutoFillBucket2") end)
-toggleBucket3.MouseButton1Click:Connect(function() tStateV2(toggleBucket3, "AutoFillBucket3") end)
-toggleBucket4.MouseButton1Click:Connect(function() tStateV2(toggleBucket4, "AutoFillBucket4") end)
-toggleBucket5.MouseButton1Click:Connect(function() tStateV2(toggleBucket5, "AutoFillBucket5") end)
+UI.Bucket1.MouseButton1Click:Connect(function() tStateV2(UI.Bucket1, "AutoFillBucket1") end)
+UI.Bucket2.MouseButton1Click:Connect(function() tStateV2(UI.Bucket2, "AutoFillBucket2") end)
+UI.Bucket3.MouseButton1Click:Connect(function() tStateV2(UI.Bucket3, "AutoFillBucket3") end)
+UI.Bucket4.MouseButton1Click:Connect(function() tStateV2(UI.Bucket4, "AutoFillBucket4") end)
+UI.Bucket5.MouseButton1Click:Connect(function() tStateV2(UI.Bucket5, "AutoFillBucket5") end)
 
 -- HACKER TOGGLE CONNECTORS (1 to 4)
-toggleHacker1.MouseButton1Click:Connect(function() tStateV2(toggleHacker1, "AutoUpgradeHacker1") end)
-toggleHacker2.MouseButton1Click:Connect(function() tStateV2(toggleHacker2, "AutoUpgradeHacker2") end)
-toggleHacker3.MouseButton1Click:Connect(function() tStateV2(toggleHacker3, "AutoUpgradeHacker3") end)
-toggleHacker4.MouseButton1Click:Connect(function() tStateV2(toggleHacker4, "AutoUpgradeHacker4") end)
+UI.Hacker1.MouseButton1Click:Connect(function() tStateV2(UI.Hacker1, "AutoUpgradeHacker1") end)
+UI.Hacker2.MouseButton1Click:Connect(function() tStateV2(UI.Hacker2, "AutoUpgradeHacker2") end)
+UI.Hacker3.MouseButton1Click:Connect(function() tStateV2(UI.Hacker3, "AutoUpgradeHacker3") end)
+UI.Hacker4.MouseButton1Click:Connect(function() tStateV2(UI.Hacker4, "AutoUpgradeHacker4") end)
 
 -- FOOTBALL TOGGLE CONNECTORS
-toggleGoalkeeper.MouseButton1Click:Connect(function() tStateV2(toggleGoalkeeper, "AutoUpgradeGoalkeeper") end)
-toggleLeftBack.MouseButton1Click:Connect(function() tStateV2(toggleLeftBack, "AutoUpgradeLeftBack") end)
-toggleLeftCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleLeftCenterBack, "AutoUpgradeLeftCenterBack") end)
-toggleRightCenterBack.MouseButton1Click:Connect(function() tStateV2(toggleRightCenterBack, "AutoUpgradeRightCenterBack") end)
-toggleRightBack.MouseButton1Click:Connect(function() tStateV2(toggleRightBack, "AutoUpgradeRightBack") end)
-toggleLeftDefensiveMid.MouseButton1Click:Connect(function() tStateV2(toggleLeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end)
-toggleRightDefensiveMid.MouseButton1Click:Connect(function() tStateV2(toggleRightDefensiveMid, "AutoUpgradeRightDefensiveMid") end)
-toggleAttackingMid.MouseButton1Click:Connect(function() tStateV2(toggleAttackingMid, "AutoUpgradeAttackingMid") end)
-toggleLeftWing.MouseButton1Click:Connect(function() tStateV2(toggleLeftWing, "AutoUpgradeLeftWing") end)
-toggleRightWing.MouseButton1Click:Connect(function() tStateV2(toggleRightWing, "AutoUpgradeRightWing") end)
-toggleStriker.MouseButton1Click:Connect(function() tStateV2(toggleStriker, "AutoUpgradeStriker") end)
+UI.Goalkeeper.MouseButton1Click:Connect(function() tStateV2(UI.Goalkeeper, "AutoUpgradeGoalkeeper") end)
+UI.LeftBack.MouseButton1Click:Connect(function() tStateV2(UI.LeftBack, "AutoUpgradeLeftBack") end)
+UI.LeftCenterBack.MouseButton1Click:Connect(function() tStateV2(UI.LeftCenterBack, "AutoUpgradeLeftCenterBack") end)
+UI.RightCenterBack.MouseButton1Click:Connect(function() tStateV2(UI.RightCenterBack, "AutoUpgradeRightCenterBack") end)
+UI.RightBack.MouseButton1Click:Connect(function() tStateV2(UI.RightBack, "AutoUpgradeRightBack") end)
+UI.LeftDefensiveMid.MouseButton1Click:Connect(function() tStateV2(UI.LeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end)
+UI.RightDefensiveMid.MouseButton1Click:Connect(function() tStateV2(UI.RightDefensiveMid, "AutoUpgradeRightDefensiveMid") end)
+UI.AttackingMid.MouseButton1Click:Connect(function() tStateV2(UI.AttackingMid, "AutoUpgradeAttackingMid") end)
+UI.LeftWing.MouseButton1Click:Connect(function() tStateV2(UI.LeftWing, "AutoUpgradeLeftWing") end)
+UI.RightWing.MouseButton1Click:Connect(function() tStateV2(UI.RightWing, "AutoUpgradeRightWing") end)
+UI.Striker.MouseButton1Click:Connect(function() tStateV2(UI.Striker, "AutoUpgradeStriker") end)
 
-toggleScoreGoal.MouseButton1Click:Connect(function() tStateV2(toggleScoreGoal, "AutoScoreGoal") end)
-toggleMoreGoals.MouseButton1Click:Connect(function() tStateV2(toggleMoreGoals, "AutoGoalsMoreGoals") end)
-toggleGoalsRuneBulk.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneBulk, "AutoGoalsRuneBulk") end)
-toggleGoalsRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleGoalsRuneLuck, "AutoGoalsRuneLuck") end)
-toggleAutoBuyKicker.MouseButton1Click:Connect(function() tStateV2(toggleAutoBuyKicker, "AutoBuyAutoKick") end)
-toggleFootballTree.MouseButton1Click:Connect(function() tStateV2(toggleFootballTree, "AutoFootballTree") end)
-toggleClaimTrophies.MouseButton1Click:Connect(function() tStateV2(toggleClaimTrophies, "AutoClaimTrophies") end)
+UI.ScoreGoal.MouseButton1Click:Connect(function() tStateV2(UI.ScoreGoal, "AutoScoreGoal") end)
+UI.MoreGoals.MouseButton1Click:Connect(function() tStateV2(UI.MoreGoals, "AutoGoalsMoreGoals") end)
+UI.GoalsRuneBulk.MouseButton1Click:Connect(function() tStateV2(UI.GoalsRuneBulk, "AutoGoalsRuneBulk") end)
+UI.GoalsRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.GoalsRuneLuck, "AutoGoalsRuneLuck") end)
+UI.AutoBuyKicker.MouseButton1Click:Connect(function() tStateV2(UI.AutoBuyKicker, "AutoBuyAutoKick") end)
+UI.FootballTree.MouseButton1Click:Connect(function() tStateV2(UI.FootballTree, "AutoFootballTree") end)
+UI.ClaimTrophies.MouseButton1Click:Connect(function() tStateV2(UI.ClaimTrophies, "AutoClaimTrophies") end)
 
-toggleRebirthOof.MouseButton1Click:Connect(function() tStateV2(toggleRebirthOof, "AutoRebirthMoreOof") end) 
-toggleRebirthRebirth.MouseButton1Click:Connect(function() tStateV2(toggleRebirthRebirth, "AutoRebirthMoreRebirth") end) 
-toggleRebirthFire.MouseButton1Click:Connect(function() tStateV2(toggleRebirthFire, "AutoRebirthMoreFire") end)
+UI.RebirthOof.MouseButton1Click:Connect(function() tStateV2(UI.RebirthOof, "AutoRebirthMoreOof") end) 
+UI.RebirthRebirth.MouseButton1Click:Connect(function() tStateV2(UI.RebirthRebirth, "AutoRebirthMoreRebirth") end) 
+UI.RebirthFire.MouseButton1Click:Connect(function() tStateV2(UI.RebirthFire, "AutoRebirthMoreFire") end)
 
-toggleFireFire.MouseButton1Click:Connect(function() tStateV2(toggleFireFire, "AutoFireMoreFire") end)
-toggleFireBulk.MouseButton1Click:Connect(function() tStateV2(toggleFireBulk, "AutoFireMoreBulk") end)
-toggleFireOof.MouseButton1Click:Connect(function() tStateV2(toggleFireOof, "AutoFireMoreOof") end)
-toggleFireRebirth.MouseButton1Click:Connect(function() tStateV2(toggleFireRebirth, "AutoFireMoreRebirth") end)
-toggleFireTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleFireTierLuck, "AutoFireMoreTierLuck") end)
-toggleFireCashBonus.MouseButton1Click:Connect(function() tStateV2(toggleFireCashBonus, "AutoFireMoreCashBonus") end)
+UI.FireFire.MouseButton1Click:Connect(function() tStateV2(UI.FireFire, "AutoFireMoreFire") end)
+UI.FireBulk.MouseButton1Click:Connect(function() tStateV2(UI.FireBulk, "AutoFireMoreBulk") end)
+UI.FireOof.MouseButton1Click:Connect(function() tStateV2(UI.FireOof, "AutoFireMoreOof") end)
+UI.FireRebirth.MouseButton1Click:Connect(function() tStateV2(UI.FireRebirth, "AutoFireMoreRebirth") end)
+UI.FireTierLuck.MouseButton1Click:Connect(function() tStateV2(UI.FireTierLuck, "AutoFireMoreTierLuck") end)
+UI.FireCashBonus.MouseButton1Click:Connect(function() tStateV2(UI.FireCashBonus, "AutoFireMoreCashBonus") end)
 
 -- FARM & ANIMAL TOGGLES
-toggleDepositWheat.MouseButton1Click:Connect(function() tStateV2(toggleDepositWheat, "AutoDepositWheat") end)
-toggleBreadMoreBread.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread, "AutoBreadMoreBread") end)
-toggleBreadMoreBread2.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreBread2, "AutoBreadMoreBread2") end)
-toggleBreadMoreWheat.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreWheat, "AutoBreadMoreWheat") end)
-toggleBreadBiggerWheatDeposit.MouseButton1Click:Connect(function() tStateV2(toggleBreadBiggerWheatDeposit, "AutoBreadBiggerWheatDeposit") end)
-toggleBreadFasterWheatConversion.MouseButton1Click:Connect(function() tStateV2(toggleBreadFasterWheatConversion, "AutoBreadFasterWheatConversion") end)
-toggleBreadMoreConsumption.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreConsumption, "AutoBreadMoreConsumption") end)
-toggleBreadMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreRuneLuck, "AutoBreadMoreRuneLuck") end)
-toggleBreadMoreTierLuck.MouseButton1Click:Connect(function() tStateV2(toggleBreadMoreTierLuck, "AutoBreadMoreTierLuck") end)
-toggleUpgradeCow.MouseButton1Click:Connect(function() tStateV2(toggleUpgradeCow, "AutoUpgradeCow") end)
-toggleUpgradeChicken.MouseButton1Click:Connect(function() tStateV2(toggleUpgradeChicken, "AutoUpgradeChicken") end)
-toggleBuyCow.MouseButton1Click:Connect(function() tStateV2(toggleBuyCow, "AutoBuyCow") end)
-toggleBuyChicken.MouseButton1Click:Connect(function() tStateV2(toggleBuyChicken, "AutoBuyChicken") end)
+UI.DepositWheat.MouseButton1Click:Connect(function() tStateV2(UI.DepositWheat, "AutoDepositWheat") end)
+UI.BreadMoreBread.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreBread, "AutoBreadMoreBread") end)
+UI.BreadMoreBread2.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreBread2, "AutoBreadMoreBread2") end)
+UI.BreadMoreWheat.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreWheat, "AutoBreadMoreWheat") end)
+UI.BreadBiggerWheatDeposit.MouseButton1Click:Connect(function() tStateV2(UI.BreadBiggerWheatDeposit, "AutoBreadBiggerWheatDeposit") end)
+UI.BreadFasterWheatConversion.MouseButton1Click:Connect(function() tStateV2(UI.BreadFasterWheatConversion, "AutoBreadFasterWheatConversion") end)
+UI.BreadMoreConsumption.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreConsumption, "AutoBreadMoreConsumption") end)
+UI.BreadMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreRuneLuck, "AutoBreadMoreRuneLuck") end)
+UI.BreadMoreTierLuck.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreTierLuck, "AutoBreadMoreTierLuck") end)
+UI.UpgradeCow.MouseButton1Click:Connect(function() tStateV2(UI.UpgradeCow, "AutoUpgradeCow") end)
+UI.UpgradeChicken.MouseButton1Click:Connect(function() tStateV2(UI.UpgradeChicken, "AutoUpgradeChicken") end)
+UI.BuyCow.MouseButton1Click:Connect(function() tStateV2(UI.BuyCow, "AutoBuyCow") end)
+UI.BuyChicken.MouseButton1Click:Connect(function() tStateV2(UI.BuyChicken, "AutoBuyChicken") end)
 
-toggleRebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(toggleRebirthTimerCard, "AutoRebirthTimer") end) 
-toggleAutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(toggleAutoBlazeConvert, "AutoBlazeConvert") end)
+UI.RebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(UI.RebirthTimerCard, "AutoRebirthTimer") end) 
+UI.AutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(UI.AutoBlazeConvert, "AutoBlazeConvert") end)
 
-toggleBlazeMoreBlaze.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
-toggleBlazeMoreFire.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreFire, "AutoBlazeMoreFire") end) 
-toggleBlazeMoreOof.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreOof, "AutoBlazeMoreOof") end)
-toggleBlazeMoreOofs.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreOofs, "AutoBlazeMoreOofs") end)
-toggleBlazeMoreBulk.MouseButton1Click:Connect(function() tStateV2(toggleBlazeMoreBulk, "AutoBlazeMoreBulk") end)
+UI.BlazeMoreBlaze.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
+UI.BlazeMoreFire.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreFire, "AutoBlazeMoreFire") end) 
+UI.BlazeMoreOof.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreOof, "AutoBlazeMoreOof") end)
+UI.BlazeMoreOofs.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreOofs, "AutoBlazeMoreOofs") end)
+UI.BlazeMoreBulk.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreBulk, "AutoBlazeMoreBulk") end)
 
-toggleAutoFarmCash.MouseButton1Click:Connect(function() tStateV2(toggleAutoFarmCash, "AutoFarmCash") end)
-toggleCashMoreCash.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreCash, "AutoUpgradeMoreCash") end)
-toggleCashFasterDropper.MouseButton1Click:Connect(function() tStateV2(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
-toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
+UI.AutoFarmCash.MouseButton1Click:Connect(function() tStateV2(UI.AutoFarmCash, "AutoFarmCash") end)
+UI.CashMoreCash.MouseButton1Click:Connect(function() tStateV2(UI.CashMoreCash, "AutoUpgradeMoreCash") end)
+UI.CashFasterDropper.MouseButton1Click:Connect(function() tStateV2(UI.CashFasterDropper, "AutoUpgradeFasterDropper") end)
+UI.CashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.CashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
 
 -- RUNE CONNECTIONS
-toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollBasicRuneCard, "AutoRollBasicRune") end)
-toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
-toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
-toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
-toggleSnowyRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleSnowyRuneCard, "AutoRollSnowyRune") end)
-toggleFootballRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleFootballRuneCard, "AutoRollFootballRune") end)
+UI.RollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.RollBasicRuneCard, "AutoRollBasicRune") end)
+UI.RollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.RollSuperRuneCard, "AutoRollSuperRune") end)
+UI.RollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.RollAdvancedRuneCard, "AutoRollAdvancedRune") end)
+UI.RollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.RollCosmicRuneCard, "AutoRollCosmicRune") end)
+UI.RollSnowyRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.RollSnowyRuneCard, "AutoRollSnowyRune") end)
+UI.FootballRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.FootballRuneCard, "AutoRollFootballRune") end)
 
-toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
+UI.ClassicCapsule.MouseButton1Click:Connect(function() tStateV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end)
 
 -- ENCHANT TOGGLE CONNECTORS
-toggleEnchantStarter.MouseButton1Click:Connect(function() tStateV2(toggleEnchantStarter, "AutoEnchantStarter") end)
-toggleEnchantCooker.MouseButton1Click:Connect(function() tStateV2(toggleEnchantCooker, "AutoEnchantCooker") end)
-toggleEnchantFarmer.MouseButton1Click:Connect(function() tStateV2(toggleEnchantFarmer, "AutoEnchantFarmer") end)
-toggleEnchantMagician.MouseButton1Click:Connect(function() tStateV2(toggleEnchantMagician, "AutoEnchantMagician") end)
-toggleEnchantArcher.MouseButton1Click:Connect(function() tStateV2(toggleEnchantArcher, "AutoEnchantArcher") end)
-toggleEnchantSoldier.MouseButton1Click:Connect(function() tStateV2(toggleEnchantSoldier, "AutoEnchantSoldier") end)
-toggleEnchantHacker1.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker1, "AutoEnchantHacker1") end)
-toggleEnchantHacker2.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker2, "AutoEnchantHacker2") end)
-toggleEnchantHacker3.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker3, "AutoEnchantHacker3") end)
-toggleEnchantHacker4.MouseButton1Click:Connect(function() tStateV2(toggleEnchantHacker4, "AutoEnchantHacker4") end)
-toggleEnchantPharaoh.MouseButton1Click:Connect(function() tStateV2(toggleEnchantPharaoh, "AutoEnchantPharaoh") end)
+UI.EnchantStarter.MouseButton1Click:Connect(function() tStateV2(UI.EnchantStarter, "AutoEnchantStarter") end)
+UI.EnchantCooker.MouseButton1Click:Connect(function() tStateV2(UI.EnchantCooker, "AutoEnchantCooker") end)
+UI.EnchantFarmer.MouseButton1Click:Connect(function() tStateV2(UI.EnchantFarmer, "AutoEnchantFarmer") end)
+UI.EnchantMagician.MouseButton1Click:Connect(function() tStateV2(UI.EnchantMagician, "AutoEnchantMagician") end)
+UI.EnchantArcher.MouseButton1Click:Connect(function() tStateV2(UI.EnchantArcher, "AutoEnchantArcher") end)
+UI.EnchantSoldier.MouseButton1Click:Connect(function() tStateV2(UI.EnchantSoldier, "AutoEnchantSoldier") end)
+UI.EnchantHacker1.MouseButton1Click:Connect(function() tStateV2(UI.EnchantHacker1, "AutoEnchantHacker1") end)
+UI.EnchantHacker2.MouseButton1Click:Connect(function() tStateV2(UI.EnchantHacker2, "AutoEnchantHacker2") end)
+UI.EnchantHacker3.MouseButton1Click:Connect(function() tStateV2(UI.EnchantHacker3, "AutoEnchantHacker3") end)
+UI.EnchantHacker4.MouseButton1Click:Connect(function() tStateV2(UI.EnchantHacker4, "AutoEnchantHacker4") end)
+UI.EnchantPharaoh.MouseButton1Click:Connect(function() tStateV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
 
-toggleOpenT1ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT1ChestCard, "AutoOpenT1Chest") end)
-toggleOpenT2ChestCard.MouseButton1Click:Connect(function() tStateV2(toggleOpenT2ChestCard, "AutoOpenT2Chest") end)
+UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tStateV2(UI.OpenT1ChestCard, "AutoOpenT1Chest") end)
+UI.OpenT2ChestCard.MouseButton1Click:Connect(function() tStateV2(UI.OpenT2ChestCard, "AutoOpenT2Chest") end)
 
-toggleKillSwitch.MouseButton1Click:Connect(function()
+UI.KillSwitch.MouseButton1Click:Connect(function()
     Running = false 
     getgenv().DominateHubLoaded = nil 
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
@@ -1012,4 +1024,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Snowy Rune UI Fully Integrated!")
+print("[Dominate Hub] Snowy Rune UI Fully Integrated & Max Locals Bypassed!")
