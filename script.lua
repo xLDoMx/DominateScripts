@@ -1,11 +1,11 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SETx)
+-- DOMINATE HUB | FULL SCRIPT (FULL VERISON)
 --======================================================================================
-if _G.DominateHubLoaded then 
+if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
     return 
 end
-_G.DominateHubLoaded = true
+getgenv().DominateHubLoaded = true
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
@@ -62,7 +62,7 @@ _G.AutoBreadFasterWheatConversion, _G.AutoBreadMoreConsumption, _G.AutoBreadMore
 _G.AutoUpgradeCow, _G.AutoUpgradeChicken, _G.AutoBuyCow, _G.AutoBuyChicken = false, false, false, false
 
 _G.AutoFarmCash, _G.AutoUpgradeMoreCash, _G.AutoUpgradeFasterDropper, _G.AutoUpgradeMoreRuneLuck = false, false, false, false
-_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune, _G.AutoRollSnowyRune = false, false, false, false, false, false
+_G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRollCosmicRune, _G.AutoRollFootballRune = false, false, false, false, false
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 
 -- CAPSULE AUTOMATION FLAGS
@@ -325,8 +325,6 @@ local toggleRollSuperRuneCard = gridRow("Auto Roll Super Rune Circle (Oof)", 2, 
 local toggleRollAdvancedRuneCard = gridRow("Auto Roll Advanced Rune Circle (Gems)", 3, runesScroll1)
 local toggleRollCosmicRuneCard = gridRow("Auto Roll Cosmic Prism Circle (Prisms)", 4, runesScroll1)
 
-local toggleRollSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle", 1, runesScroll2)
-
 -- EVENTS RUNES ROWS
 local toggleFootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
 
@@ -367,7 +365,6 @@ local SuperRuneVector = Vector3.new(1082.0938720703125, 16.661418914794922, -782
 local AdvancedRuneVector = Vector3.new(1293.495361328125, 16.515989303588867, -883.3126220703125)
 local CosmicRuneVector = Vector3.new(783.4507446289062, 16.65555763244629, -855.9728393554688)
 local FootballRuneVector = Vector3.new(-2713.26171875, 36.86155319213867, -15.832250595092773)
-local SnowyRuneVector = Vector3.new(1017.366, 5.866, 3262.671)
 local ClassicCapsuleVector = Vector3.new(-2586.923828125, 43.317691802978516, -659.1055297851562)
 local EnchantStationVector = Vector3.new(1193.1235, 18.7949, -854.0244) 
 
@@ -387,9 +384,7 @@ task.spawn(function()
             elseif _G.AutoRollCosmicRune then activeDestination = CosmicRuneVector
             elseif _G.AutoRollAdvancedRune then activeDestination = AdvancedRuneVector
             elseif _G.AutoRollSuperRune then activeDestination = SuperRuneVector
-            elseif _G.AutoRollBasicRune then activeDestination = BasicRuneVector 
-            elseif _G.AutoRollSnowyRune then activeDestination = SnowyRuneVector end
-            
+            elseif _G.AutoRollBasicRune then activeDestination = BasicRuneVector end
             if activeDestination and Running and (hrp.Position - activeDestination).Magnitude > 5 then
                 hrp.CFrame = CFrame.new(activeDestination)
             end
@@ -870,12 +865,10 @@ toggleCashMoreCash.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreC
 toggleCashFasterDropper.MouseButton1Click:Connect(function() tStateV2(toggleCashFasterDropper, "AutoUpgradeFasterDropper") end)
 toggleCashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(toggleCashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
 
--- RUNES TOGGLE CONNECTORS
 toggleRollBasicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollBasicRuneCard, "AutoRollBasicRune") end)
 toggleRollSuperRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSuperRuneCard, "AutoRollSuperRune") end)
 toggleRollAdvancedRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollAdvancedRuneCard, "AutoRollAdvancedRune") end)
 toggleRollCosmicRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollCosmicRuneCard, "AutoRollCosmicRune") end)
-toggleRollSnowyRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleRollSnowyRuneCard, "AutoRollSnowyRune") end)
 toggleFootballRuneCard.MouseButton1Click:Connect(function() tStateV2(toggleFootballRuneCard, "AutoRollFootballRune") end)
 
 toggleClassicCapsule.MouseButton1Click:Connect(function() tStateV2(toggleClassicCapsule, "AutoOpenClassicCapsule") end)
