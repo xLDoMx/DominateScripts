@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BETTER MINE v2
+-- DOMINATE HUB | Improved logic MINING
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -49,7 +49,6 @@ _G.AutoGemMoreOof, _G.AutoGemMoreGems, _G.AutoGemStrongerPickaxes, _G.AutoGemMor
 _G.AutoMineStone, _G.AutoMineCoal, _G.AutoMineSilver, _G.AutoMineIron, _G.AutoMineCopper = false, false, false, false, false
 _G.AutoMineGold, _G.AutoMinePlatinum, _G.AutoMineTitanium, _G.AutoMineCobalt, _G.AutoMineUranium = false, false, false, false, false
 _G.AutoMinePalladium, _G.AutoMineAetherite, _G.AutoMineRuby, _G.AutoMineVoidsteel, _G.AutoMineCelestium = false, false, false, false, false
-_G.MiningTeleportSpeed = 1.5 -- Default Bounce Speed
 
 -- HACKER NOOBS AUTOMATION FLAGS (1 to 4)
 _G.AutoUpgradeHacker1, _G.AutoUpgradeHacker2, _G.AutoUpgradeHacker3, _G.AutoUpgradeHacker4 = false, false, false, false
@@ -235,7 +234,7 @@ local realm2BucketScroll = makeScroll(500, realm2Page)
 local realm2WoodScroll = makeScroll(350, realm2Page)
 local realm2PlanksScroll = makeScroll(160, realm2Page)
 local realm2GemsScroll = makeScroll(250, realm2Page)
-local realm2MiningScroll = makeScroll(750, realm2Page) -- Extended to fit speed toggle
+local realm2MiningScroll = makeScroll(650, realm2Page)
 
 local runesScroll1 = makeScroll(200, runesPage) runesScroll1.Visible = true
 local runesScroll2 = makeScroll(100, runesPage)
@@ -360,24 +359,21 @@ UI.GemStrongerPickaxes = gridRow("Upgrade Stronger Pickaxes (Gems)", 3, realm2Ge
 UI.GemMoreOreStats = gridRow("Upgrade More Ore Stats (Gems)", 4, realm2GemsScroll)
 UI.GemExchange = gridRow("Auto Gem Exchange (Convert All)", 5, realm2GemsScroll)
 
-UI.MiningSpeedBtn = gridRow("Mining Teleport Cycle Speed", 1, realm2MiningScroll)
-UI.MiningSpeedBtn.Text = "1.5s" UI.MiningSpeedBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 150) UI.MiningSpeedBtn.TextColor3 = Color3.fromRGB(150, 200, 255)
-
-UI.MineStone = gridRow("Auto Teleport -> Stone", 2, realm2MiningScroll)
-UI.MineCoal = gridRow("Auto Teleport -> Coal", 3, realm2MiningScroll)
-UI.MineSilver = gridRow("Auto Teleport -> Silver", 4, realm2MiningScroll)
-UI.MineIron = gridRow("Auto Teleport -> Iron", 5, realm2MiningScroll)
-UI.MineCopper = gridRow("Auto Teleport -> Copper", 6, realm2MiningScroll)
-UI.MineGold = gridRow("Auto Teleport -> Gold", 7, realm2MiningScroll)
-UI.MinePlatinum = gridRow("Auto Teleport -> Platinum", 8, realm2MiningScroll)
-UI.MineTitanium = gridRow("Auto Teleport -> Titanium", 9, realm2MiningScroll)
-UI.MineCobalt = gridRow("Auto Teleport -> Cobalt", 10, realm2MiningScroll)
-UI.MineUranium = gridRow("Auto Teleport -> Uranium", 11, realm2MiningScroll)
-UI.MinePalladium = gridRow("Auto Teleport -> Palladium", 12, realm2MiningScroll)
-UI.MineAetherite = gridRow("Auto Teleport -> Aetherite", 13, realm2MiningScroll)
-UI.MineRuby = gridRow("Auto Teleport -> Ruby", 14, realm2MiningScroll)
-UI.MineVoidsteel = gridRow("Auto Teleport -> Voidsteel", 15, realm2MiningScroll)
-UI.MineCelestium = gridRow("Auto Teleport -> Celestium", 16, realm2MiningScroll)
+UI.MineStone = gridRow("Auto Teleport -> Stone", 1, realm2MiningScroll)
+UI.MineCoal = gridRow("Auto Teleport -> Coal", 2, realm2MiningScroll)
+UI.MineSilver = gridRow("Auto Teleport -> Silver", 3, realm2MiningScroll)
+UI.MineIron = gridRow("Auto Teleport -> Iron", 4, realm2MiningScroll)
+UI.MineCopper = gridRow("Auto Teleport -> Copper", 5, realm2MiningScroll)
+UI.MineGold = gridRow("Auto Teleport -> Gold", 6, realm2MiningScroll)
+UI.MinePlatinum = gridRow("Auto Teleport -> Platinum", 7, realm2MiningScroll)
+UI.MineTitanium = gridRow("Auto Teleport -> Titanium", 8, realm2MiningScroll)
+UI.MineCobalt = gridRow("Auto Teleport -> Cobalt", 9, realm2MiningScroll)
+UI.MineUranium = gridRow("Auto Teleport -> Uranium", 10, realm2MiningScroll)
+UI.MinePalladium = gridRow("Auto Teleport -> Palladium", 11, realm2MiningScroll)
+UI.MineAetherite = gridRow("Auto Teleport -> Aetherite", 12, realm2MiningScroll)
+UI.MineRuby = gridRow("Auto Teleport -> Ruby", 13, realm2MiningScroll)
+UI.MineVoidsteel = gridRow("Auto Teleport -> Voidsteel", 14, realm2MiningScroll)
+UI.MineCelestium = gridRow("Auto Teleport -> Celestium", 15, realm2MiningScroll)
 
 -- HACKER ROWS (1 to 4)
 UI.Hacker1 = makeSubRow("Auto Upgrade Hacker 1", 1, realm1HackerScroll)
@@ -496,7 +492,7 @@ task.spawn(function()
     end
 end)
 
--- AUTO MINING ENGINE (Cyclical Folder Bouncer)
+-- AUTO MINING ENGINE (State-Aware Cyclical Bouncer)
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
     {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
@@ -506,7 +502,8 @@ local OrePriorityList = {
 }
 
 local currentOreIndex = 1
-local lastMiningTeleportTick = 0
+local lastMiningStartTick = 0
+local currentTargetPart = nil
 
 task.spawn(function()
     while Running do
@@ -518,39 +515,53 @@ task.spawn(function()
             end
 
             if activeOreName then
-                local freshList = {}
-                local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-                local oresFolder = gameContent and gameContent:FindFirstChild("Ores")
-                
-                if oresFolder then
-                    for _, obj in ipairs(oresFolder:GetChildren()) do
-                        if obj.Name == activeOreName then
-                            local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                            if part then table.insert(freshList, part) end
+                local needsNewTarget = false
+                if not currentTargetPart or not currentTargetPart.Parent then
+                    needsNewTarget = true
+                elseif currentTargetPart.Transparency >= 1 then
+                    needsNewTarget = true
+                elseif tick() - lastMiningStartTick > 15 then 
+                    needsNewTarget = true
+                end
+
+                if needsNewTarget then
+                    local freshList = {}
+                    local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
+                    local oresFolder = gameContent and gameContent:FindFirstChild("Ores")
+                    
+                    if oresFolder then
+                        for _, obj in ipairs(oresFolder:GetChildren()) do
+                            if obj.Name == activeOreName then
+                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                                if part and part.Transparency < 1 then 
+                                    table.insert(freshList, part) 
+                                end
+                            end
                         end
+                    end
+                    
+                    if #freshList > 0 then
+                        table.sort(freshList, function(a, b)
+                            return a.Position.X < b.Position.X
+                        end)
+
+                        currentOreIndex = currentOreIndex + 1
+                        if currentOreIndex > #freshList then currentOreIndex = 1 end
+                        
+                        currentTargetPart = freshList[currentOreIndex]
+                        lastMiningStartTick = tick()
+                    else
+                        currentTargetPart = nil
                     end
                 end
                 
-                if #freshList > 0 then
-                    table.sort(freshList, function(a, b)
-                        return a.Position.X < b.Position.X
-                    end)
-
-                    if tick() - lastMiningTeleportTick >= (_G.MiningTeleportSpeed or 1.5) then
-                        lastMiningTeleportTick = tick()
-                        currentOreIndex = currentOreIndex + 1
-                    end
-                    
-                    if currentOreIndex > #freshList then currentOreIndex = 1 end
-                    
-                    local targetPart = freshList[currentOreIndex]
-                    if targetPart then
-                        MiningTargetVector = targetPart.Position + Vector3.new(0, 3, 0)
-                    end
+                if currentTargetPart and currentTargetPart.Parent and currentTargetPart.Transparency < 1 then
+                    MiningTargetVector = currentTargetPart.Position + Vector3.new(0, 3, 0)
                 else
                     MiningTargetVector = nil
                 end
             else
+                currentTargetPart = nil
                 MiningTargetVector = nil
             end
         end
@@ -1068,15 +1079,6 @@ UI.GemStrongerPickaxes.MouseButton1Click:Connect(function() tStateV2(UI.GemStron
 UI.GemMoreOreStats.MouseButton1Click:Connect(function() tStateV2(UI.GemMoreOreStats, "AutoGemMoreOreStats") end)
 UI.GemExchange.MouseButton1Click:Connect(function() tStateV2(UI.GemExchange, "AutoGemExchange") end)
 
-local miningSpeeds = {0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 10.0}
-local currentSpeedIndex = 3
-UI.MiningSpeedBtn.MouseButton1Click:Connect(function()
-    currentSpeedIndex = currentSpeedIndex + 1
-    if currentSpeedIndex > #miningSpeeds then currentSpeedIndex = 1 end
-    _G.MiningTeleportSpeed = miningSpeeds[currentSpeedIndex]
-    UI.MiningSpeedBtn.Text = tostring(_G.MiningTeleportSpeed) .. "s"
-end)
-
 UI.MineStone.MouseButton1Click:Connect(function() tStateV2(UI.MineStone, "AutoMineStone") end)
 UI.MineCoal.MouseButton1Click:Connect(function() tStateV2(UI.MineCoal, "AutoMineCoal") end)
 UI.MineSilver.MouseButton1Click:Connect(function() tStateV2(UI.MineSilver, "AutoMineSilver") end)
@@ -1273,4 +1275,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Cyclical Bouncer Mining Engine Successfully Integrated!")
+print("[Dominate Hub] State-Aware Mining Engine Deployed Successfully!")
