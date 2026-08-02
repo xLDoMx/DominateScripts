@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN
+-- DOMINATE HUB | BAD MAN1
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
