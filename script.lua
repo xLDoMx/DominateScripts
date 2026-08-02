@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | AXE REMOVED
+-- DOMINATE HUB | Knight Noob added
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -31,6 +31,7 @@ _G.AutoUpgradePharaoh = false
 
 -- REALM 2 AUTOMATION FLAGS
 _G.AutoUpgradeFishermanNoob = false
+_G.AutoUpgradeKnightNoob = false
 _G.AutoRealm2MoreOof, _G.AutoRealm2MoreWalkSpeed = false, false
 _G.AutoRealm2MoreWater, _G.AutoRealm2MoreOofWater, _G.AutoRealm2MorePlanks = false, false, false
 _G.AutoRealm2MoreIce, _G.AutoRealm2WaterPump1, _G.AutoRealm2WaterPump2, _G.AutoRealm2MoreOofIce = false, false, false, false
@@ -213,7 +214,7 @@ local realm1CashScroll = makeScroll(170, realm1MasterPage)
 local realm1HackerScroll = makeScroll(220, realm1MasterPage)
 
 -- REALM 2 SCROLL FRAMES
-local realm2NoobScroll = makeScroll(110, realm2Page) realm2NoobScroll.Visible = true
+local realm2NoobScroll = makeScroll(160, realm2Page) realm2NoobScroll.Visible = true
 local realm2OofScroll = makeScroll(110, realm2Page)
 local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
@@ -299,6 +300,7 @@ UI.CashMoreRuneLuck = makeSubRow("More Rune Luck Auto Upgrade", 4, realm1CashScr
 
 -- REALM 2 ROWS
 UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", 1, realm2NoobScroll)
+UI.R2Knight = gridRow("Auto Upgrade Knight", 2, realm2NoobScroll)
 
 UI.R2MoreOof = gridRow("More Oof (Realm 2)", 1, realm2OofScroll)
 UI.R2WalkSpeed = gridRow("More Walk Speed (Realm 2)", 2, realm2OofScroll)
@@ -567,6 +569,7 @@ local PrimaryUpgradeQueue = {
     {F = "AutoUpgradeHacker4",    T = "UpgradeNoobMax",    A = {"Hacker 4"}},
     
     {F = "AutoUpgradeFishermanNoob",T = "UpgradeNoobMax",  A = {"Fisherman"}},
+    {F = "AutoUpgradeKnightNoob",   T = "UpgradeNoobMax",  A = {"Knight"}},
 
     {F = "AutoUpgradeGoalkeeper",   T = "UpgradeNoobMax",    A = {"Goalkeeper"}},
     {F = "AutoUpgradeLeftBack",     T = "UpgradeNoobMax",    A = {"LeftBack"}},
@@ -892,6 +895,7 @@ UI.CashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.CashMoreRun
 
 -- REALM 2 CONNECTORS
 UI.R2Fisherman.MouseButton1Click:Connect(function() tStateV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end)
+UI.R2Knight.MouseButton1Click:Connect(function() tStateV2(UI.R2Knight, "AutoUpgradeKnightNoob") end)
 UI.R2MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreOof, "AutoRealm2MoreOof") end)
 UI.R2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(UI.R2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
 UI.R2MoreWater.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreWater, "AutoRealm2MoreWater") end)
@@ -1102,4 +1106,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Axe automation fully removed!")
+print("[Dominate Hub] Knight Noob Auto Upgrade Added Successfully!")
