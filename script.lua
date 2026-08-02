@@ -1,11 +1,11 @@
 --======================================================================================
--- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SET2)
+-- DOMINATE HUB | FULL SCRIPT (WITH REALM 2 & ENCHANT STATION COORDS SET1)
 --======================================================================================
-if getgenv().DominateHubLoaded then 
+if _G.DominateHubLoaded then 
     print("[Dominate Hub] Already running! Aborting duplicate instance.")
     return 
 end
-getgenv().DominateHubLoaded = true
+_G.DominateHubLoaded = true
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
