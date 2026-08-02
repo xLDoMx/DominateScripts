@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V9.0 PRO EDITION (SCROLLING TOP TABS, COMPACT UI & STACKED SLOTS)
+-- DOMINATE HUB | V9.1 PRO EDITION (VERTICAL STACKED CONFIGS & ORGANIZED GENERAL TAB)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V9.0 Instance...")
+    print("[Dominate Hub] Reloading V9.1 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -288,13 +288,13 @@ task.spawn(function()
 end)
 
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 540, 0, 350) -- Compacted height and width
+mainFrame.Size = UDim2.new(0, 540, 0, 350) 
 mainFrame.Position = UDim2.new(0.5, -270, 0.5, -175) 
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25) 
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.0 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -559,7 +559,7 @@ local encScroll = makeGridScroll(enchantsPage, false) encScroll.Visible = true
 UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gridRow("Reroll: Cooker", encScroll) UI.EnchantFarmer = gridRow("Reroll: Farmer", encScroll) UI.EnchantMagician = gridRow("Reroll: Magician", encScroll) UI.EnchantArcher = gridRow("Reroll: Archer", encScroll) UI.EnchantSoldier = gridRow("Reroll: Soldier", encScroll) UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", encScroll) UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", encScroll) UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", encScroll) UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", encScroll) UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", encScroll)
 
 -- ======================================================================================
--- SETTINGS PAGE (GENERAL & COMPACT STACKED 1-LINE CONFIG SLOTS)
+-- SETTINGS PAGE (GENERAL & FULLY VERTICALLY STACKED CONFIG SLOTS)
 -- ======================================================================================
 local setSidebar = makeSidebar(settingsPage)
 local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -568,14 +568,15 @@ local bSetConfig = makeSideBtn("Config", setSidebar)
 local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
 local setConfigScroll = makeGridScroll(settingsPage, true)
 
-setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 210)
+-- UPDATED CONFIG PAGE LAYOUT (1 Slot per row, stacked downwards, matching user request)
+setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 220)
 local configLayout = Instance.new("UIListLayout")
 configLayout.Padding = UDim.new(0, 6)
 configLayout.Parent = setConfigScroll
 
 for i = 1, 5 do
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -10, 0, 32) -- Full width stacked layout
+    row.Size = UDim2.new(1, -10, 0, 32)
     row.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     row.BorderSizePixel = 0
     row.Parent = setConfigScroll
@@ -591,31 +592,8 @@ for i = 1, 5 do
     label.Text = "Slot " .. i
     label.Parent = row
 
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(1, -210, 0, 22) -- Automatically stretches across available space
-    box.Position = UDim2.new(0, 60, 0.5, -11)
-    box.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    box.TextColor3 = Color3.fromRGB(255, 255, 255)
-    box.TextSize = 10
-    box.Font = Enum.Font.SourceSansBold
-    box.Text = slotCustomNames[i]
-    box.Parent = row
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
-
-    local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0, 60, 0, 22)
-    saveBtn.AnchorPoint = Vector2.new(1, 0.5)
-    saveBtn.Position = UDim2.new(1, -68, 0.5, 0)
-    saveBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
-    saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    saveBtn.TextSize = 9
-    saveBtn.Font = Enum.Font.SourceSansBold
-    saveBtn.Text = "SAVE"
-    saveBtn.Parent = row
-    Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 4)
-
     local loadBtn = Instance.new("TextButton")
-    loadBtn.Size = UDim2.new(0, 60, 0, 22)
+    loadBtn.Size = UDim2.new(0, 55, 0, 22)
     loadBtn.AnchorPoint = Vector2.new(1, 0.5)
     loadBtn.Position = UDim2.new(1, -4, 0.5, 0)
     loadBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
@@ -625,6 +603,29 @@ for i = 1, 5 do
     loadBtn.Text = "LOAD"
     loadBtn.Parent = row
     Instance.new("UICorner", loadBtn).CornerRadius = UDim.new(0, 4)
+
+    local saveBtn = Instance.new("TextButton")
+    saveBtn.Size = UDim2.new(0, 55, 0, 22)
+    saveBtn.AnchorPoint = Vector2.new(1, 0.5)
+    saveBtn.Position = UDim2.new(1, -63, 0.5, 0)
+    saveBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
+    saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    saveBtn.TextSize = 9
+    saveBtn.Font = Enum.Font.SourceSansBold
+    saveBtn.Text = "SAVE"
+    saveBtn.Parent = row
+    Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 4)
+
+    local box = Instance.new("TextBox")
+    box.Size = UDim2.new(1, -180, 0, 22)
+    box.Position = UDim2.new(0, 58, 0.5, -11)
+    box.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+    box.TextColor3 = Color3.fromRGB(255, 255, 255)
+    box.TextSize = 10
+    box.Font = Enum.Font.SourceSansBold
+    box.Text = slotCustomNames[i]
+    box.Parent = row
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
 
     box:GetPropertyChangedSignal("Text"):Connect(function()
         slotCustomNames[i] = box.Text
@@ -643,20 +644,154 @@ for i = 1, 5 do
     end)
 end
 
-UI.OpenT1ChestCard = gridRow("Mass-Open T1 Chests", setGenScroll) UI.OpenT2ChestCard = gridRow("Mass-Open T2 Chests", setGenScroll) 
-UI.AFK = gridRow("Anti-AFK Protection", setGenScroll) UI.AFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.AFK.TextColor3 = Color3.fromRGB(120, 255, 120) UI.AFK.Text = "ACTIVE"
-UI.Prestige = gridRow("Auto Prestige", setGenScroll) UI.RebirthTimerCard = gridRow("Auto Rebirth (10m)", setGenScroll) 
+-- ======================================================================================
+-- GENERAL SETTINGS TAB (ORGANIZED IN 1 LINE GOING DOWN AS REQUESTED)
+-- ======================================================================================
+setGenScroll.CanvasSize = UDim2.new(0, 0, 0, 310)
+local genLayout = Instance.new("UIListLayout")
+genLayout.Padding = UDim.new(0, 6)
+genLayout.Parent = setGenScroll
 
-UI.HUDToggle = gridRow("Stats HUD Overlay", setGenScroll)
-UI.HUDToggle.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.HUDToggle.TextColor3 = Color3.fromRGB(120, 255, 120) UI.HUDToggle.Text = "ACTIVE"
+local function genRow(txt, isToggle, callback)
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(1, -10, 0, 32)
+    f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    f.BorderSizePixel = 0
+    f.Parent = setGenScroll
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5)
 
-UI.FPSBoostToggle = gridRow("FPS Booster Mode", setGenScroll)
-UI.ThemePicker = gridRow("Hub Accent Theme", setGenScroll)
-UI.ThemePicker.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
-UI.ThemePicker.TextColor3 = Color3.fromRGB(255, 255, 255)
-UI.ThemePicker.Text = "Theme: Neon Blue"
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(0.60, -10, 1, 0)
+    l.Position = UDim2.new(0, 10, 0, 0)
+    l.BackgroundTransparency = 1
+    l.TextColor3 = Color3.fromRGB(230, 230, 235)
+    l.TextSize = 11
+    l.Font = Enum.Font.SourceSansBold
+    l.Text = txt
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.Parent = f
 
-UI.KillSwitch = gridRow("EMERGENCY KILL SWITCH", setGenScroll) UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) UI.KillSwitch.Text = "TERMINATE"
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(0.35, -4, 0, 20)
+    b.Position = UDim2.new(0.62, 0, 0.5, -10)
+    b.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = Color3.fromRGB(255, 120, 120)
+    b.TextSize = 10
+    b.Font = Enum.Font.SourceSansBold
+    b.Text = "DISABLED"
+    b.Parent = f
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
+
+    if callback then
+        b.MouseButton1Click:Connect(function()
+            callback(b)
+        end)
+    end
+    return b
+end
+
+genRow("Anti  AFK Protection", true, function(b) tV2(b, "AntiAFK") end)
+genRow("FPS Booster Mode", true, function(b) toggleFPSBoost(b) end)
+genRow("Stats HUD Ovrlay", true, function(b)
+    _G.ShowStatsHUD = not _G.ShowStatsHUD
+    b.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
+    b.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    saveConfigToSlot(_G.SelectedConfigSlot)
+end)
+genRow("Auto Rebirth", true, function(b) tV2(b, "AutoRebirthTimer") end)
+genRow("Auto Prestige", true, function(b) tV2(b, "AutoPrestige") end)
+genRow("Mass Open T1 Chest", true, function(b) tV2(b, "AutoOpenT1Chest") end)
+genRow("Mass Open T2 Chest", true, function(b) tV2(b, "AutoOpenT2Chest") end)
+
+-- Hub Theme Row
+local themeRow = Instance.new("Frame")
+themeRow.Size = UDim2.new(1, -10, 0, 32)
+themeRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+themeRow.BorderSizePixel = 0
+themeRow.Parent = setGenScroll
+Instance.new("UICorner", themeRow).CornerRadius = UDim.new(0, 5)
+
+local themeLabel = Instance.new("TextLabel")
+themeLabel.Size = UDim2.new(0.60, -10, 1, 0)
+themeLabel.Position = UDim2.new(0, 10, 0, 0)
+themeLabel.BackgroundTransparency = 1
+themeLabel.TextColor3 = Color3.fromRGB(230, 230, 235)
+themeLabel.TextSize = 11
+themeLabel.Font = Enum.Font.SourceSansBold
+themeLabel.Text = "Hub Theme"
+themeLabel.TextXAlignment = Enum.TextXAlignment.Left
+themeLabel.Parent = themeRow
+
+local themeBtn = Instance.new("TextButton")
+themeBtn.Size = UDim2.new(0.35, -4, 0, 20)
+themeBtn.Position = UDim2.new(0.62, 0, 0.5, -10)
+themeBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
+themeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+themeBtn.TextSize = 10
+themeBtn.Font = Enum.Font.SourceSansBold
+themeBtn.Text = "Theme: Neon Blue"
+themeBtn.Parent = themeRow
+Instance.new("UICorner", themeBtn).CornerRadius = UDim.new(0, 4)
+
+local themes = {
+    {Name = "Neon Blue", Color = Color3.fromRGB(0, 136, 255)},
+    {Name = "Purple Glow", Color = Color3.fromRGB(138, 43, 226)},
+    {Name = "Emerald Green", Color = Color3.fromRGB(0, 200, 100)},
+    {Name = "Crimson Red", Color = Color3.fromRGB(220, 20, 60)}
+}
+local currentThemeIdx = 1
+
+themeBtn.MouseButton1Click:Connect(function()
+    currentThemeIdx = currentThemeIdx + 1
+    if currentThemeIdx > #themes then currentThemeIdx = 1 end
+    local th = themes[currentThemeIdx]
+    themeBtn.Text = "Theme: " .. th.Name
+    minBtn.TextColor3 = th.Color
+    hudTitle.TextColor3 = th.Color
+    showToast("Theme changed to " .. th.Name)
+end)
+
+-- Emergency Kill Switch at the bottom
+local killRow = Instance.new("Frame")
+killRow.Size = UDim2.new(1, -10, 0, 32)
+killRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+killRow.BorderSizePixel = 0
+killRow.Parent = setGenScroll
+Instance.new("UICorner", killRow).CornerRadius = UDim.new(0, 5)
+
+local killLabel = Instance.new("TextLabel")
+killLabel.Size = UDim2.new(0.55, -10, 1, 0)
+killLabel.Position = UDim2.new(0, 10, 0, 0)
+killLabel.BackgroundTransparency = 1
+killLabel.TextColor3 = Color3.fromRGB(255, 200, 200)
+killLabel.TextSize = 11
+killLabel.Font = Enum.Font.SourceSansBold
+killLabel.Text = "Enermency Kill Switch"
+killLabel.TextXAlignment = Enum.TextXAlignment.Left
+killLabel.Parent = killRow
+
+UI.KillSwitch = Instance.new("TextButton")
+UI.KillSwitch.Size = UDim2.new(0.40, -4, 0, 20)
+UI.KillSwitch.Position = UDim2.new(0.58, 0, 0.5, -10)
+UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20)
+UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200)
+UI.KillSwitch.TextSize = 10
+UI.KillSwitch.Font = Enum.Font.SourceSansBold
+UI.KillSwitch.Text = "TERMINATE"
+UI.KillSwitch.Parent = killRow
+Instance.new("UICorner", UI.KillSwitch).CornerRadius = UDim.new(0, 4)
+
+UI.KillSwitch.MouseButton1Click:Connect(function()
+    Running = false getgenv().DominateHubLoaded = nil 
+    for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
+    pcall(function() 
+        local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end 
+        local blur = Lighting:FindFirstChild("DominateHubBlur")
+        if blur then blur:Destroy() end
+    end) 
+    sg:Destroy()
+end)
 
 local function toggleFPSBoost(b)
     _G.FPSBoostMode = not _G.FPSBoostMode
@@ -683,33 +818,6 @@ local function toggleFPSBoost(b)
         showToast("FPS Booster Disabled!")
     end
 end
-UI.FPSBoostToggle.MouseButton1Click:Connect(function() toggleFPSBoost(UI.FPSBoostToggle) end)
-
-UI.HUDToggle.MouseButton1Click:Connect(function()
-    _G.ShowStatsHUD = not _G.ShowStatsHUD
-    UI.HUDToggle.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
-    UI.HUDToggle.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    UI.HUDToggle.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    saveConfigToSlot(_G.SelectedConfigSlot)
-end)
-
-local themes = {
-    {Name = "Neon Blue", Color = Color3.fromRGB(0, 136, 255)},
-    {Name = "Purple Glow", Color = Color3.fromRGB(138, 43, 226)},
-    {Name = "Emerald Green", Color = Color3.fromRGB(0, 200, 100)},
-    {Name = "Crimson Red", Color = Color3.fromRGB(220, 20, 60)}
-}
-local currentThemeIdx = 1
-
-UI.ThemePicker.MouseButton1Click:Connect(function()
-    currentThemeIdx = currentThemeIdx + 1
-    if currentThemeIdx > #themes then currentThemeIdx = 1 end
-    local th = themes[currentThemeIdx]
-    UI.ThemePicker.Text = "Theme: " .. th.Name
-    minBtn.TextColor3 = th.Color
-    hudTitle.TextColor3 = th.Color
-    showToast("Theme changed to " .. th.Name)
-end)
 
 --======================================================================================
 -- LOCOMOTION & REMOTE ENGINES
@@ -1017,4 +1125,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V9.0 Pro Edition - Compact Scrolling Layout Deployed!")
+print("[Dominate Hub] V9.1 Pro Edition - Scrolling Tabs & Stacked Full-Width Configs Deployed!")
