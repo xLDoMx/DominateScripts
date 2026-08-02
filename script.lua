@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | cAPSULE UPGRADE
+-- DOMINATE HUB | Super CAP
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -81,6 +81,7 @@ _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 -- CAPSULE AUTOMATION FLAGS
 _G.AutoOpenClassicCapsule = false
 _G.AutoOpenFootballCapsule = false
+_G.AutoOpenSuperCapsule = false
 
 -- ENCHANT AUTO-REROLL FLAGS (Realm 1, 2, 3 Noobs)
 _G.AutoEnchantStarter = false
@@ -124,7 +125,7 @@ local realm1MasterPage = Instance.new("Frame") realm1MasterPage.Size = UDim2.new
 local realm2Page = Instance.new("Frame") realm2Page.Size = UDim2.new(1, -20, 1, -85) realm2Page.Position = UDim2.new(0, 10, 0, 80) realm2Page.BackgroundTransparency = 1; realm2Page.Visible = false; realm2Page.Parent = mainFrame
 local realm3Page = Instance.new("Frame") realm3Page.Size = UDim2.new(1, -20, 1, -85) realm3Page.Position = UDim2.new(0, 10, 0, 80) realm3Page.BackgroundTransparency = 1; realm3Page.Visible = false; realm3Page.Parent = mainFrame
 local footballPage = Instance.new("Frame") footballPage.Size = UDim2.new(1, -20, 1, -85) footballPage.Position = UDim2.new(0, 10, 0, 80) footballPage.BackgroundTransparency = 1; footballPage.Visible = false; footballPage.Parent = mainFrame
-local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; runesPage.Parent = mainFrame
+local runesPage = Instance.new("Frame") runesPage.Size = UDim2.new(1, -20, 1, -85) runesPage.Position = UDim2.new(0, 10, 0, 80) runesPage.BackgroundTransparency = 1; runesPage.Visible = false; realm3Page.Parent = mainFrame
 local capsulesPage = Instance.new("Frame") capsulesPage.Size = UDim2.new(1, -20, 1, -85) capsulesPage.Position = UDim2.new(0, 10, 0, 80) capsulesPage.BackgroundTransparency = 1; capsulesPage.Visible = false; capsulesPage.Parent = mainFrame
 local enchantsPage = Instance.new("Frame") enchantsPage.Size = UDim2.new(1, -20, 1, -85) enchantsPage.Position = UDim2.new(0, 10, 0, 80) enchantsPage.BackgroundTransparency = 1; enchantsPage.Visible = false; enchantsPage.Parent = mainFrame
 local settingsPage = Instance.new("Frame") settingsPage.Size = UDim2.new(1, -20, 1, -85) settingsPage.Position = UDim2.new(0, 10, 0, 80) settingsPage.BackgroundTransparency = 1; settingsPage.Visible = false; settingsPage.Parent = mainFrame
@@ -228,7 +229,7 @@ local runesScroll2 = makeScroll(100, runesPage)
 local runesScroll3 = makeScroll(100, runesPage)
 local runesScrollEvents = makeScroll(100, runesPage)
 
-local capsulesScroll = makeScroll(150, capsulesPage) capsulesScroll.Visible = true
+local capsulesScroll = makeScroll(200, capsulesPage) capsulesScroll.Visible = true
 local enchantsScroll = makeScroll(480, enchantsPage) enchantsScroll.Visible = true
 
 local footballNoobScroll = makeScroll(500, footballPage) footballNoobScroll.Visible = true
@@ -383,6 +384,7 @@ UI.FootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, rune
 -- CAPSULES ROWS
 UI.ClassicCapsule = gridRow("Auto Mass Hatch Classic Capsule", 1, capsulesScroll)
 UI.FootballCapsule = gridRow("Auto Mass Hatch Football Capsule", 2, capsulesScroll)
+UI.SuperCapsule = gridRow("Auto Mass Hatch Super Capsule", 3, capsulesScroll)
 
 -- ENCHANTS ROWS 
 UI.EnchantStarter = gridRow("Auto Reroll Enchants: Starter", 1, enchantsScroll)
@@ -423,6 +425,7 @@ local Dest = {
     Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105),
     FootballCap = Vector3.new(-2603.007, 36.295, -31.061),
+    SuperCap = Vector3.new(618.032, 9.653, 3172.149),
     Enchant = Vector3.new(1193.1235, 18.7949, -854.0244)
 }
 
@@ -468,6 +471,11 @@ task.spawn(function()
                         hrp.CFrame = CFrame.new(Dest.FootballCap + Vector3.new(0, 3, 0))
                     end
                     pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Football") end)
+                elseif _G.AutoOpenSuperCapsule then
+                    if (hrp.Position - Dest.SuperCap).Magnitude > 10 then
+                        hrp.CFrame = CFrame.new(Dest.SuperCap + Vector3.new(0, 3, 0))
+                    end
+                    pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Super") end)
                 end
             end
         end
@@ -974,6 +982,7 @@ UI.FootballRuneCard.MouseButton1Click:Connect(function() tStateV2(UI.FootballRun
 
 UI.ClassicCapsule.MouseButton1Click:Connect(function() tStateV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end)
 UI.FootballCapsule.MouseButton1Click:Connect(function() tStateV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end)
+UI.SuperCapsule.MouseButton1Click:Connect(function() tStateV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
 
 -- ENCHANT TOGGLE CONNECTORS
 UI.EnchantStarter.MouseButton1Click:Connect(function() tStateV2(UI.EnchantStarter, "AutoEnchantStarter") end)
@@ -1113,4 +1122,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Capsule Mass Hatch Engine Activated!")
+print("[Dominate Hub] Super Capsule & Ancient Capsule Spam Logic Synced Successfully!")
