@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | Improved logic MINING
+-- DOMINATE HUB | NEW LOGIC
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -492,7 +492,7 @@ task.spawn(function()
     end
 end)
 
--- AUTO MINING ENGINE (State-Aware Cyclical Bouncer)
+-- AUTO MINING ENGINE (State-Aware Cyclical Bouncer FIX)
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
     {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
@@ -516,10 +516,11 @@ task.spawn(function()
 
             if activeOreName then
                 local needsNewTarget = false
-                if not currentTargetPart or not currentTargetPart.Parent then
+                
+                -- IF the part no longer exists in workspace, it has been successfully mined
+                if not currentTargetPart or not currentTargetPart.Parent or not currentTargetPart:IsDescendantOf(workspace) then
                     needsNewTarget = true
-                elseif currentTargetPart.Transparency >= 1 then
-                    needsNewTarget = true
+                -- 15 Second Failsafe in case a rock glitches out
                 elseif tick() - lastMiningStartTick > 15 then 
                     needsNewTarget = true
                 end
@@ -533,7 +534,7 @@ task.spawn(function()
                         for _, obj in ipairs(oresFolder:GetChildren()) do
                             if obj.Name == activeOreName then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                                if part and part.Transparency < 1 then 
+                                if part then 
                                     table.insert(freshList, part) 
                                 end
                             end
@@ -555,7 +556,7 @@ task.spawn(function()
                     end
                 end
                 
-                if currentTargetPart and currentTargetPart.Parent and currentTargetPart.Transparency < 1 then
+                if currentTargetPart and currentTargetPart.Parent then
                     MiningTargetVector = currentTargetPart.Position + Vector3.new(0, 3, 0)
                 else
                     MiningTargetVector = nil
