@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | Updated Logic
+-- DOMINATE HUB | MINE UPDATED
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -492,7 +492,7 @@ task.spawn(function()
     end
 end)
 
--- AUTO MINING ENGINE (Multi-Ore Enabled & Fast Hybrid Switcher)
+-- AUTO MINING ENGINE (Multi-Ore + Smart Respawn Bypass + Fast Hybrid Switcher)
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
     {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
@@ -505,11 +505,19 @@ local currentOreIndex = 1
 local lastOreJumpTick = 0
 local currentTargetPart = nil
 
+local function isOreRespawning(oreModel)
+    for _, desc in ipairs(oreModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text:lower():find("respawning") then
+            return true
+        end
+    end
+    return false
+end
+
 task.spawn(function()
     while Running do
-        task.wait(0.15)
+        task.wait(0.1)
         if Running then
-            -- 1. Collect ALL enabled ore names simultaneously
             local enabledOreNames = {}
             for i = 1, #OrePriorityList do
                 if _G[OrePriorityList[i].F] then
@@ -526,10 +534,11 @@ task.spawn(function()
             if hasAnyEnabled then
                 local needsNewTarget = false
                 
-                -- Switch instantly if the current ore is destroyed/respawning, or if 2.5s have elapsed
                 if not currentTargetPart or not currentTargetPart.Parent or not currentTargetPart:IsDescendantOf(workspace) then
                     needsNewTarget = true
-                elseif tick() - lastOreJumpTick >= 2.5 then
+                elseif currentTargetPart.Parent and isOreRespawning(currentTargetPart.Parent) then
+                    needsNewTarget = true
+                elseif tick() - lastOreJumpTick >= 0.8 then -- Fast 0.8s cycling speed
                     needsNewTarget = true
                 end
 
@@ -540,10 +549,12 @@ task.spawn(function()
                     
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] then
-                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                                if part then 
-                                    table.insert(freshList, part) 
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") then
+                                if not isOreRespawning(obj) then
+                                    local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                                    if part then 
+                                        table.insert(freshList, part) 
+                                    end
                                 end
                             end
                         end
@@ -1284,4 +1295,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Multi-Ore Fast Hybrid Bouncer Deployed!")
+print("[Dominate Hub] High-Speed Multi-Ore Miner Activated!")
