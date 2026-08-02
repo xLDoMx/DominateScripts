@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V4 ULTIMATE PRO EDITION
+-- DOMINATE HUB | V5.2 PRO EDITION (SLEEK & TRANSPARENT NOTIFICATIONS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -7,7 +7,7 @@ if getgenv().DominateHubLoaded then
         local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
         if oldUI then oldUI:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V4 Pro Instance...")
+    print("[Dominate Hub] Reloading V5.2 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -123,6 +123,7 @@ _G.AutoEnchantStarter, _G.AutoEnchantCooker, _G.AutoEnchantFarmer, _G.AutoEnchan
 _G.AutoEnchantHacker1, _G.AutoEnchantHacker2, _G.AutoEnchantHacker3, _G.AutoEnchantHacker4, _G.AutoEnchantPharaoh = false, false, false, false, false
 
 _G.FPSBoostMode = false
+_G.ShowStatsHUD = true
 _G.DiscordWebhookURL = _G.DiscordWebhookURL or ""
 
 player.Idled:Connect(function()
@@ -145,36 +146,38 @@ end)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
--- TOAST NOTIFICATION HELPER
+-- SLEEK & TRANSPARENT TOAST NOTIFICATION HELPER
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
-        toast.Size = UDim2.new(0, 230, 0, 42)
-        toast.Position = UDim2.new(1, 10, 1, -65)
-        toast.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+        toast.Size = UDim2.new(0, 210, 0, 36)
+        toast.Position = UDim2.new(1, 10, 1, -60)
+        toast.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        toast.BackgroundTransparency = 0.35 -- Slick and semi-transparent
         toast.BorderSizePixel = 0
         toast.Parent = sg
-        Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 8)
+        Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 10)
         
         local stroke = Instance.new("UIStroke")
         stroke.Color = Color3.fromRGB(0, 136, 255)
-        stroke.Thickness = 1.5
+        stroke.Transparency = 0.3
+        stroke.Thickness = 1.2
         stroke.Parent = toast
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -12, 1, 0)
-        label.Position = UDim2.new(0, 6, 0, 0)
+        label.Size = UDim2.new(1, -10, 1, 0)
+        label.Position = UDim2.new(0, 5, 0, 0)
         label.BackgroundTransparency = 1
-        label.TextColor3 = Color3.fromRGB(245, 245, 255)
-        label.TextSize = 12
+        label.TextColor3 = Color3.fromRGB(240, 240, 245)
+        label.TextSize = 11
         label.Font = Enum.Font.SourceSansBold
         label.Text = msg
         label.Parent = toast
 
-        toast:TweenPosition(UDim2.new(1, -240, 1, -65), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
-        task.wait(3.0)
-        toast:TweenPosition(UDim2.new(1, 10, 1, -65), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
-        task.wait(0.3)
+        toast:TweenPosition(UDim2.new(1, -225, 1, -60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
+        task.wait(2.8)
+        toast:TweenPosition(UDim2.new(1, 10, 1, -60), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.25, true)
+        task.wait(0.25)
         toast:Destroy()
     end)
 end
@@ -195,6 +198,65 @@ local function sendDiscordWebhook(message)
     end
 end
 
+-- REAL-TIME PERFORMANCE & FARMING HUD OVERLAY
+local statsHud = Instance.new("Frame")
+statsHud.Size = UDim2.new(0, 180, 0, 75)
+statsHud.Position = UDim2.new(0, 15, 0.5, -37)
+statsHud.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+statsHud.BackgroundTransparency = 0.3
+statsHud.BorderSizePixel = 0
+statsHud.Parent = sg
+Instance.new("UICorner", statsHud).CornerRadius = UDim.new(0, 6)
+local hudStroke = Instance.new("UIStroke") hudStroke.Color = Color3.fromRGB(0, 136, 255) hudStroke.Thickness = 1.2 hudStroke.Parent = statsHud
+
+local hudTitle = Instance.new("TextLabel")
+hudTitle.Size = UDim2.new(1, 0, 0, 22)
+hudTitle.Position = UDim2.new(0, 0, 0, 2)
+hudTitle.BackgroundTransparency = 1
+hudTitle.TextColor3 = Color3.fromRGB(0, 136, 255)
+hudTitle.TextSize = 11
+hudTitle.Font = Enum.Font.SourceSansBold
+hudTitle.Text = "📊 PERFORMANCE HUD"
+hudTitle.Parent = statsHud
+
+local hudText = Instance.new("TextLabel")
+hudText.Size = UDim2.new(1, -10, 1, -26)
+hudText.Position = UDim2.new(0, 5, 0, 24)
+hudText.BackgroundTransparency = 1
+hudText.TextColor3 = Color3.fromRGB(220, 220, 225)
+hudText.TextSize = 10
+hudText.Font = Enum.Font.SourceSans
+hudText.TextXAlignment = Enum.TextXAlignment.Left
+hudText.TextYAlignment = Enum.TextYAlignment.Top
+hudText.TextWrapped = true
+hudText.Text = "Uptime: 00:00:00\nActive Features: 0"
+hudText.Parent = statsHud
+
+local sessionStartTime = tick()
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if _G.ShowStatsHUD then
+            statsHud.Visible = true
+            local elapsed = math.floor(tick() - sessionStartTime)
+            local hours = math.floor(elapsed / 3600)
+            local mins = math.floor((elapsed % 3600) / 60)
+            local secs = elapsed % 60
+            
+            local activeCount = 0
+            for k, v in pairs(_G) do
+                if type(v) == "boolean" and v == true and k ~= "AntiAFK" and k ~= "FPSBoostMode" and k ~= "ShowStatsHUD" then
+                    activeCount = activeCount + 1
+                end
+            end
+            
+            hudText.Text = string.format("Uptime: %02d:%02d:%02d\nActive Features: %d", hours, mins, secs, activeCount)
+        else
+            statsHud.Visible = false
+        end
+    end
+end)
+
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 580, 0, 420) 
 mainFrame.Position = UDim2.new(0.5, -290, 0.5, -210) 
@@ -202,7 +264,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V4 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
@@ -221,16 +283,17 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
--- FLOATING DRAGGABLE LOGO PILL
+-- SLEEK SMALLER & 70% TRANSPARENT FLOATING PILL
 local minBtn = Instance.new("TextButton") 
-minBtn.Size = UDim2.new(0, 130, 0, 32) 
-minBtn.Position = UDim2.new(0.5, -65, 0.01, 0) 
-minBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 30) 
+minBtn.Size = UDim2.new(0, 105, 0, 26) 
+minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
+minBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 20) 
+minBtn.BackgroundTransparency = 0.70 
 minBtn.TextColor3 = Color3.fromRGB(0, 136, 255) 
-minBtn.TextSize = 12; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "🔥 Dominate Hub" 
+minBtn.TextSize = 11; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "🔥 Dominate Hub" 
 minBtn.Parent = sg
-Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 16)
-local minStroke = Instance.new("UIStroke") minStroke.Color = Color3.fromRGB(0, 136, 255) minStroke.Thickness = 1.5 minStroke.Parent = minBtn
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 13)
+local minStroke = Instance.new("UIStroke") minStroke.Color = Color3.fromRGB(0, 136, 255) minStroke.Thickness = 1.2 minStroke.Parent = minBtn
 
 local pDragging, pDragInput, pDragStart, pStartPos
 minBtn.InputBegan:Connect(function(input)
@@ -321,7 +384,7 @@ local function gridRow(txt, scr)
 end
 
 -- ======================================================================================
--- REALM 1 SIDEBAR & GRIDS (Cleaned Fire Tab Labels)
+-- REALM 1 SIDEBAR & GRIDS
 -- ======================================================================================
 local r1Sidebar = makeSidebar(realm1MasterPage)
 local b1Noobs = makeSideBtn("Noobs", r1Sidebar) b1Noobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) b1Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -370,7 +433,7 @@ UI.MiningSpeedSwitch = gridRow("⚡ Glide Speed", r2MiningScroll) UI.MiningSpeed
 UI.MineStone = gridRow("Mine Stone", r2MiningScroll) UI.MineCoal = gridRow("Mine Coal", r2MiningScroll) UI.MineSilver = gridRow("Mine Silver", r2MiningScroll) UI.MineIron = gridRow("Mine Iron", r2MiningScroll) UI.MineCopper = gridRow("Mine Copper", r2MiningScroll) UI.MineGold = gridRow("Mine Gold", r2MiningScroll) UI.MinePlatinum = gridRow("Mine Platinum", r2MiningScroll) UI.MineTitanium = gridRow("Mine Titanium", r2MiningScroll) UI.MineCobalt = gridRow("Mine Cobalt", r2MiningScroll) UI.MineUranium = gridRow("Mine Uranium", r2MiningScroll) UI.MinePalladium = gridRow("Mine Palladium", r2MiningScroll) UI.MineAetherite = gridRow("Mine Aetherite", r2MiningScroll) UI.MineRuby = gridRow("Mine Ruby", r2MiningScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", r2MiningScroll) UI.MineCelestium = gridRow("Mine Celestium", r2MiningScroll)
 
 -- ======================================================================================
--- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (With Theme, FPS Boost, Config)
+-- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS
 -- ======================================================================================
 local r3Scroll = makeGridScroll(realm3Page, false) r3Scroll.Visible = true
 UI.Pharaoh = gridRow("Auto Upgrade Pharaoh", r3Scroll)
@@ -403,7 +466,9 @@ UI.OpenT1ChestCard = gridRow("Mass-Open T1 Chests", setScroll) UI.OpenT2ChestCar
 UI.AFK = gridRow("Anti-AFK Protection", setScroll) UI.AFK.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.AFK.TextColor3 = Color3.fromRGB(120, 255, 120) UI.AFK.Text = "ACTIVE"
 UI.Prestige = gridRow("Auto Prestige", setScroll) UI.RebirthTimerCard = gridRow("Auto Rebirth (10m)", setScroll) 
 
--- NEW SETTINGS ADDITIONS (FPS Booster & Theme Picker)
+UI.HUDToggle = gridRow("📊 Stats HUD Overlay", setScroll)
+UI.HUDToggle.BackgroundColor3 = Color3.fromRGB(20, 60, 20) UI.HUDToggle.TextColor3 = Color3.fromRGB(120, 255, 120) UI.HUDToggle.Text = "ACTIVE"
+
 UI.FPSBoostToggle = gridRow("🚀 FPS Booster Mode", setScroll)
 UI.ThemePicker = gridRow("🎨 Hub Accent Theme", setScroll)
 UI.ThemePicker.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
@@ -418,6 +483,7 @@ local function toggleFPSBoost(b)
     b.Text = _G.FPSBoostMode and "ACTIVE" or "DISABLED"
     b.BackgroundColor3 = _G.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
     b.TextColor3 = _G.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    saveConfig()
     
     if _G.FPSBoostMode then
         pcall(function()
@@ -439,6 +505,14 @@ local function toggleFPSBoost(b)
 end
 UI.FPSBoostToggle.MouseButton1Click:Connect(function() toggleFPSBoost(UI.FPSBoostToggle) end)
 
+UI.HUDToggle.MouseButton1Click:Connect(function()
+    _G.ShowStatsHUD = not _G.ShowStatsHUD
+    UI.HUDToggle.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
+    UI.HUDToggle.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+    UI.HUDToggle.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    saveConfig()
+end)
+
 -- THEME CYCLING LOGIC
 local themes = {
     {Name = "Neon Blue", Color = Color3.fromRGB(0, 136, 255)},
@@ -455,6 +529,8 @@ UI.ThemePicker.MouseButton1Click:Connect(function()
     UI.ThemePicker.Text = "Theme: " .. th.Name
     minStroke.Color = th.Color
     minBtn.TextColor3 = th.Color
+    hudStroke.Color = th.Color
+    hudTitle.TextColor3 = th.Color
     showToast("🎨 Theme changed to " .. th.Name)
 end)
 
@@ -679,7 +755,7 @@ local function tV2(b, v)
     b.Text = _G[v] and "ACTIVE" or "DISABLED" 
     b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
     b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
-    saveConfig() -- Auto save config on toggle change
+    saveConfig()
 end
 
 UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) UI.Farmer.MouseButton1Click:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) UI.Magician.MouseButton1Click:Connect(function() tV2(UI.Magician, "AutoUpgradeMagician") end) UI.Archer.MouseButton1Click:Connect(function() tV2(UI.Archer, "AutoUpgradeArcher") end) UI.Soldier.MouseButton1Click:Connect(function() tV2(UI.Soldier, "AutoUpgradeSoldier") end) UI.MoreOof.MouseButton1Click:Connect(function() tV2(UI.MoreOof, "AutoUpgradeMoreOof") end) UI.FasterNoobs.MouseButton1Click:Connect(function() tV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
@@ -746,4 +822,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V4 Pro Edition Successfully Deployed!")
+print("[Dominate Hub] V5.2 Pro Edition with Sleek Transparent Toast Notifications Deployed!")
