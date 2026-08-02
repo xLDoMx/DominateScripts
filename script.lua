@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V8.1 PRO EDITION (DEDICATED MINES TAB & STREAMLINED LAYOUT)
+-- DOMINATE HUB | V8.2 PRO EDITION (COMPACT STACKED CONFIGS & FADED GRADIENTS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V8.1 Instance...")
+    print("[Dominate Hub] Reloading V8.2 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -294,9 +294,9 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V8.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V8.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
--- FLOATING PILL (NO STROKE)
+-- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 105, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
@@ -342,13 +342,22 @@ end)
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 
+-- MAIN TABS WITH SMOOTH FADE GRADIENTS
 local function makeMainTab(txt, pos, width)
     local t = Instance.new("TextButton") t.Size = UDim2.new(0, width or 68, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(55, 55, 65) t.TextColor3 = Color3.fromRGB(210, 210, 220) t.TextSize = 10; t.Font = Enum.Font.SourceSansBold; t.Text = txt; t.Parent = tabList
     Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
+    
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 160, 175))
+    }
+    grad.Rotation = 90
+    grad.Parent = t
     return t
 end
 
-local tabUpgrades = makeMainTab("Upgrades", 0, 68) tabUpgrades.BackgroundColor3 = Color3.fromRGB(240, 240, 245) tabUpgrades.TextColor3 = Color3.fromRGB(15, 15, 15)
+local tabUpgrades = makeMainTab("Upgrades", 0, 68) tabUpgrades.TextColor3 = Color3.fromRGB(15, 15, 15)
 local tabNoobs = makeMainTab("Noobs", 72, 68)
 local tabMines = makeMainTab("Mines", 144, 68)
 local tabFootball = makeMainTab("Football", 216, 68)
@@ -364,7 +373,7 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, runesPage, capsulesPage, enchantsPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- SIDEBAR GENERATOR
+-- SIDEBAR GENERATOR WITH FADE GRADIENT
 local function makeSidebar(parent)
     local sb = Instance.new("ScrollingFrame") sb.Size = UDim2.new(0, 95, 1, -5) sb.Position = UDim2.new(0, 0, 0, 5) sb.BackgroundTransparency = 1; sb.BorderSizePixel = 0; sb.ScrollBarThickness = 2; sb.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); sb.Parent = parent
     local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 4) list.Parent = sb
@@ -375,6 +384,14 @@ end
 local function makeSideBtn(txt, parent)
     local b = Instance.new("TextButton") b.Size = UDim2.new(1, -5, 0, 28) b.BackgroundColor3 = Color3.fromRGB(55, 55, 65) b.TextColor3 = Color3.fromRGB(210, 210, 220) b.Font = Enum.Font.SourceSansBold; b.TextSize = 10; b.Text = txt; b.Parent = parent
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
+    
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 170, 185))
+    }
+    grad.Rotation = 90
+    grad.Parent = b
     return b
 end
 
@@ -384,31 +401,31 @@ local function makeGridScroll(parent, hasSidebar)
     if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
     s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); s.Visible = false; s.Parent = parent 
     
-    local grid = Instance.new("UIGridLayout") grid.CellSize = UDim2.new(0.5, -6, 0, 36) grid.CellPadding = UDim2.new(0, 8, 0, 8) grid.SortOrder = Enum.SortOrder.LayoutOrder; grid.Parent = s
+    local grid = Instance.new("UIGridLayout") grid.CellSize = UDim2.new(0.5, -6, 0, 32) grid.CellPadding = UDim2.new(0, 6, 0, 6) grid.SortOrder = Enum.SortOrder.LayoutOrder; grid.Parent = s
     grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, grid.AbsoluteContentSize.Y + 10) end)
     return s 
 end
 
--- GRID ROW TOGGLE GENERATOR (NO STROKE)
+-- MORE COMPACT GRID ROW TOGGLE GENERATOR
 local function gridRow(txt, scr)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
 
     local dot = Instance.new("Frame")
     dot.Name = "StatusDot"
-    dot.Size = UDim2.new(0, 6, 0, 6)
-    dot.Position = UDim2.new(0, 8, 0.5, -3)
+    dot.Size = UDim2.new(0, 5, 0, 5)
+    dot.Position = UDim2.new(0, 6, 0.5, -2)
     dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
     dot.BorderSizePixel = 0
     dot.Parent = f
     Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
 
-    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.60, -10, 1, 0) l.Position = UDim2.new(0, 20, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
-    local b = Instance.new("TextButton") b.Size = UDim2.new(0.35, -5, 0, 24) b.Position = UDim2.new(0.65, 0, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 11; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 6) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
+    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.58, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
+    local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -4, 0, 22) b.Position = UDim2.new(0.58, 0, 0.5, -11) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) return b
 end
 
 -- ======================================================================================
--- UPGRADES PAGE (REALM 1, 2, 3 MASTER SWITCHES)
+-- UPGRADES PAGE
 -- ======================================================================================
 local upSidebar = makeSidebar(upgradesPage)
 local bUpR1 = makeSideBtn("Realm 1", upSidebar) bUpR1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bUpR1.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -421,11 +438,11 @@ local upScrollR3 = makeGridScroll(upgradesPage, true)
 
 local function masterToggle(txt, flagsTable, scr)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
-    local dot = Instance.new("Frame") dot.Name = "StatusDot" dot.Size = UDim2.new(0, 6, 0, 6) dot.Position = UDim2.new(0, 8, 0.5, -3) dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80) dot.BorderSizePixel = 0; dot.Parent = f
+    local dot = Instance.new("Frame") dot.Name = "StatusDot" dot.Size = UDim2.new(0, 5, 0, 5) dot.Position = UDim2.new(0, 6, 0.5, -2) dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80) dot.BorderSizePixel = 0; dot.Parent = f
     Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.55, -10, 1, 0) l.Position = UDim2.new(0, 20, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
-    local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -5, 0, 24) b.Position = UDim2.new(0.60, 0, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 6) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5)
+    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.55, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
+    local b = Instance.new("TextButton") b.Size = UDim2.new(0.42, -4, 0, 22) b.Position = UDim2.new(0.57, 0, 0.5, -11) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 9; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
     b.MouseButton1Click:Connect(function()
         local activeState = false
@@ -444,27 +461,24 @@ local function masterToggle(txt, flagsTable, scr)
     return b
 end
 
--- Realm 1 Master Upgrades
-masterToggle("Fire Upgrades Toggle", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScrollR1)
-masterToggle("Rebirth Upgrades Toggle", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScrollR1)
-masterToggle("Blaze Upgrades Toggle", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScrollR1)
-masterToggle("Bread Upgrades Toggle", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScrollR1)
-masterToggle("Cash Upgrades Toggle", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScrollR1)
-masterToggle("Hacker Upgrades Toggle", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScrollR1)
+masterToggle("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScrollR1)
+masterToggle("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScrollR1)
+masterToggle("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScrollR1)
+masterToggle("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScrollR1)
+masterToggle("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScrollR1)
+masterToggle("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScrollR1)
 
--- Realm 2 Master Upgrades
-masterToggle("Ice Upgrades Toggle", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScrollR2)
+masterToggle("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScrollR2)
 masterToggle("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, upScrollR2)
-masterToggle("Water Upgrades Toggle", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScrollR2)
-masterToggle("Wood Upgrades Toggle", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScrollR2)
-masterToggle("Planks Upgrades Toggle", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScrollR2)
-masterToggle("Gem Upgrades Toggle", {"AutoGemMoreOof", "AutoGemMoreGems", "AutoGemStrongerPickaxes", "AutoGemMoreOreStats", "AutoGemExchange"}, upScrollR2)
+masterToggle("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScrollR2)
+masterToggle("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScrollR2)
+masterToggle("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScrollR2)
+masterToggle("Gem Upgrades", {"AutoGemMoreOof", "AutoGemMoreGems", "AutoGemStrongerPickaxes", "AutoGemMoreOreStats", "AutoGemExchange"}, upScrollR2)
 
--- Realm 3 Master Upgrades
-masterToggle("Pharaoh Upgrades Toggle", {"AutoUpgradePharaoh"}, upScrollR3)
+masterToggle("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScrollR3)
 
 -- ======================================================================================
--- NOOBS PAGE (REALM 1 & REALM 2 NOOBS)
+-- NOOBS PAGE
 -- ======================================================================================
 local noobSidebar = makeSidebar(noobsPage)
 local bNoobR1 = makeSideBtn("Realm 1 Noobs", noobSidebar) bNoobR1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bNoobR1.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -483,7 +497,7 @@ UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) UI.R2Knight = g
 -- MINES PAGE
 -- ======================================================================================
 local minesScroll = makeGridScroll(minesPage, false) minesScroll.Visible = true
-UI.MiningSpeedSwitch = gridRow("Glide Speed", minesScroll) UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) UI.MiningSpeedSwitch.Text = "0.8 Studs/sec"
+UI.MiningSpeedSwitch = gridRow("Glide Speed", minesScroll) UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) UI.MiningSpeedSwitch.Text = "0.8 S/s"
 UI.MineStone = gridRow("Mine Stone", minesScroll) UI.MineCoal = gridRow("Mine Coal", minesScroll) UI.MineSilver = gridRow("Mine Silver", minesScroll) UI.MineIron = gridRow("Mine Iron", minesScroll) UI.MineCopper = gridRow("Mine Copper", minesScroll) UI.MineGold = gridRow("Mine Gold", minesScroll) UI.MinePlatinum = gridRow("Mine Platinum", minesScroll) UI.MineTitanium = gridRow("Mine Titanium", minesScroll) UI.MineCobalt = gridRow("Mine Cobalt", minesScroll) UI.MineUranium = gridRow("Mine Uranium", minesScroll) UI.MinePalladium = gridRow("Mine Palladium", minesScroll) UI.MineAetherite = gridRow("Mine Aetherite", minesScroll) UI.MineRuby = gridRow("Mine Ruby", minesScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", minesScroll) UI.MineCelestium = gridRow("Mine Celestium", minesScroll)
 
 -- ======================================================================================
@@ -525,7 +539,7 @@ local encScroll = makeGridScroll(enchantsPage, false) encScroll.Visible = true
 UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gridRow("Reroll: Cooker", encScroll) UI.EnchantFarmer = gridRow("Reroll: Farmer", encScroll) UI.EnchantMagician = gridRow("Reroll: Magician", encScroll) UI.EnchantArcher = gridRow("Reroll: Archer", encScroll) UI.EnchantSoldier = gridRow("Reroll: Soldier", encScroll) UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", encScroll) UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", encScroll) UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", encScroll) UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", encScroll) UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", encScroll)
 
 -- ======================================================================================
--- SETTINGS PAGE (GENERAL & CONFIG SUB-TABS WITH 1-LINE CONFIG SLOTS)
+-- SETTINGS PAGE (GENERAL & COMPACT 1-LINE CONFIG SLOTS)
 -- ======================================================================================
 local setSidebar = makeSidebar(settingsPage)
 local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -536,55 +550,55 @@ local setConfigScroll = makeGridScroll(settingsPage, true)
 
 setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 230)
 local configLayout = Instance.new("UIListLayout")
-configLayout.Padding = UDim.new(0, 8)
+configLayout.Padding = UDim.new(0, 6)
 configLayout.Parent = setConfigScroll
 
 for i = 1, 5 do
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -10, 0, 36)
+    row.Size = UDim2.new(1, -10, 0, 30)
     row.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     row.BorderSizePixel = 0
     row.Parent = setConfigScroll
-    Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", row).CornerRadius = UDim.new(0, 5)
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 45, 1, 0)
-    label.Position = UDim2.new(0, 8, 0, 0)
+    label.Size = UDim2.new(0, 42, 1, 0)
+    label.Position = UDim2.new(0, 6, 0, 0)
     label.BackgroundTransparency = 1
     label.TextColor3 = Color3.fromRGB(220, 220, 225)
-    label.TextSize = 11
+    label.TextSize = 10
     label.Font = Enum.Font.SourceSansBold
     label.Text = "Slot " .. i
     label.Parent = row
 
     local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 150, 0, 24)
-    box.Position = UDim2.new(0, 55, 0.5, -12)
+    box.Size = UDim2.new(0, 140, 0, 22)
+    box.Position = UDim2.new(0, 48, 0.5, -11)
     box.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
     box.TextColor3 = Color3.fromRGB(255, 255, 255)
-    box.TextSize = 11
+    box.TextSize = 10
     box.Font = Enum.Font.SourceSansBold
     box.Text = slotCustomNames[i]
     box.Parent = row
     Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
 
     local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0, 55, 0, 24)
-    saveBtn.Position = UDim2.new(0, 215, 0.5, -12)
+    saveBtn.Size = UDim2.new(0, 48, 0, 22)
+    saveBtn.Position = UDim2.new(0, 193, 0.5, -11)
     saveBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
     saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    saveBtn.TextSize = 10
+    saveBtn.TextSize = 9
     saveBtn.Font = Enum.Font.SourceSansBold
     saveBtn.Text = "SAVE"
     saveBtn.Parent = row
     Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 4)
 
     local loadBtn = Instance.new("TextButton")
-    loadBtn.Size = UDim2.new(0, 55, 0, 24)
-    loadBtn.Position = UDim2.new(0, 275, 0.5, -12)
+    loadBtn.Size = UDim2.new(0, 48, 0, 22)
+    loadBtn.Position = UDim2.new(0, 245, 0.5, -11)
     loadBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
     loadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    loadBtn.TextSize = 10
+    loadBtn.TextSize = 9
     loadBtn.Font = Enum.Font.SourceSansBold
     loadBtn.Text = "LOAD"
     loadBtn.Parent = row
@@ -653,7 +667,7 @@ UI.HUDToggle.MouseButton1Click:Connect(function()
     _G.ShowStatsHUD = not _G.ShowStatsHUD
     UI.HUDToggle.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
     UI.HUDToggle.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    UI.HUDToggle.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(60, 20, 20)
+    UI.HUDToggle.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
     saveConfigToSlot(_G.SelectedConfigSlot)
 end)
 
@@ -922,7 +936,7 @@ UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT1ChestCard, 
 
 UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
 
-local ms = {0.3, 0.5, 0.8, 1.2, 2.0} local ml = {"0.3 Studs/s", "0.5 Studs/s", "0.8 Studs/s", "1.2 Studs/s", "2.0 Studs/s"} local mi = 3
+local ms = {0.3, 0.5, 0.8, 1.2, 2.0} local ml = {"0.3 S/s", "0.5 S/s", "0.8 S/s", "1.2 S/s", "2.0 S/s"} local mi = 3
 UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] saveConfigToSlot(_G.SelectedConfigSlot) end)
 
 UI.KillSwitch.MouseButton1Click:Connect(function()
@@ -981,4 +995,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V8.1 Pro Edition - Dedicated Mines Tab & Clean Master Toggles Deployed!")
+print("[Dominate Hub] V8.2 Pro Edition - Compact Stacked Configs & Faded Tabs Deployed!")
