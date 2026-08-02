@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | NEW LOGIC
+-- DOMINATE HUB | Updated Logic
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -492,7 +492,7 @@ task.spawn(function()
     end
 end)
 
--- AUTO MINING ENGINE (State-Aware Cyclical Bouncer FIX)
+-- AUTO MINING ENGINE (Multi-Ore Enabled & Fast Hybrid Switcher)
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
     {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
@@ -502,26 +502,34 @@ local OrePriorityList = {
 }
 
 local currentOreIndex = 1
-local lastMiningStartTick = 0
+local lastOreJumpTick = 0
 local currentTargetPart = nil
 
 task.spawn(function()
     while Running do
-        task.wait(0.2)
+        task.wait(0.15)
         if Running then
-            local activeOreName = nil
+            -- 1. Collect ALL enabled ore names simultaneously
+            local enabledOreNames = {}
             for i = 1, #OrePriorityList do
-                if _G[OrePriorityList[i].F] then activeOreName = OrePriorityList[i].N break end
+                if _G[OrePriorityList[i].F] then
+                    enabledOreNames[OrePriorityList[i].N] = true
+                end
             end
 
-            if activeOreName then
+            local hasAnyEnabled = false
+            for _, _ in pairs(enabledOreNames) do
+                hasAnyEnabled = true
+                break
+            end
+
+            if hasAnyEnabled then
                 local needsNewTarget = false
                 
-                -- IF the part no longer exists in workspace, it has been successfully mined
+                -- Switch instantly if the current ore is destroyed/respawning, or if 2.5s have elapsed
                 if not currentTargetPart or not currentTargetPart.Parent or not currentTargetPart:IsDescendantOf(workspace) then
                     needsNewTarget = true
-                -- 15 Second Failsafe in case a rock glitches out
-                elseif tick() - lastMiningStartTick > 15 then 
+                elseif tick() - lastOreJumpTick >= 2.5 then
                     needsNewTarget = true
                 end
 
@@ -532,7 +540,7 @@ task.spawn(function()
                     
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if obj.Name == activeOreName then
+                            if enabledOreNames[obj.Name] then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then 
                                     table.insert(freshList, part) 
@@ -550,7 +558,7 @@ task.spawn(function()
                         if currentOreIndex > #freshList then currentOreIndex = 1 end
                         
                         currentTargetPart = freshList[currentOreIndex]
-                        lastMiningStartTick = tick()
+                        lastOreJumpTick = tick()
                     else
                         currentTargetPart = nil
                     end
@@ -1276,4 +1284,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] State-Aware Mining Engine Deployed Successfully!")
+print("[Dominate Hub] Multi-Ore Fast Hybrid Bouncer Deployed!")
