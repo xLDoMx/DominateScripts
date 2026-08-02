@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN 123
+-- DOMINATE HUB | Axe Update
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -666,19 +666,44 @@ task.spawn(function()
     end
 end)
 
--- AUTO CRAFT AXES ENGINE
-local AxeTiers = {"Stone", "Iron", "Gold", "Diamond", "Emerald", "Ruby", "Amethyst", "Obsidian", "Void"}
+-- AUTO CRAFT AXES ENGINE (PlayerGui Safety Inspected)
+local AxeTiers = {"Void", "Obsidian", "Amethyst", "Ruby", "Emerald", "Diamond", "Gold", "Iron", "Stone"}
 task.spawn(function()
     while Running do
-        task.wait(1.5)
+        task.wait(2.5)
         if NetRemote and Running and _G.AutoCraftAxes then
-            for i = 1, #AxeTiers do
-                if not Running or not _G.AutoCraftAxes then break end
-                pcall(function()
-                    NetRemote:FireServer("CraftAxe", AxeTiers[i])
-                end)
-                task.wait(0.1)
-            end
+            pcall(function()
+                local pGui = player:FindFirstChild("PlayerGui")
+                local axeScroll = pGui and pGui:FindFirstChild("AxeShop") 
+                    and pGui.AxeShop:FindFirstChild("Main") 
+                    and pGui.AxeShop.Main:FindFirstChild("Frame") 
+                    and pGui.AxeShop.Main.Frame:FindFirstChild("Axes") 
+                    and pGui.AxeShop.Main.Frame.Axes:FindFirstChild("ScrollingFrame")
+                
+                if axeScroll then
+                    for i = 1, #AxeTiers do
+                        local axeName = AxeTiers[i]
+                        local axeFrame = axeScroll:FindFirstChild(axeName)
+                        
+                        if axeFrame then
+                            local isLocked = false
+                            -- Check if the frame contains the "Buy Previous" lock text
+                            for _, desc in pairs(axeFrame:GetDescendants()) do
+                                if desc:IsA("TextLabel") and desc.Text == "Buy Previous" then
+                                    isLocked = true
+                                    break
+                                end
+                            end
+                            
+                            if not isLocked then
+                                -- Found the highest tier axe that is unlocked!
+                                NetRemote:FireServer("CraftAxe", axeName)
+                                break -- Stop the loop so we only craft one per cycle
+                            end
+                        end
+                    end
+                end
+            end)
         end
     end
 end)
@@ -1130,4 +1155,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Realm 1 Connectors Restored & Fully Operational!")
+print("[Dominate Hub] Auto Craft Axes (PlayerGui Mode) Successfully Added!")
