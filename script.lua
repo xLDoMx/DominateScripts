@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | Football Cap
+-- DOMINATE HUB | cAPSULE UPGRADE
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -167,7 +167,7 @@ local subBtnHacker = Instance.new("TextButton") subBtnHacker.Size = UDim2.new(0,
 
 Instance.new("UICorner", subBtnNoobs).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnOof).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnRebirth).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFire).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnBlaze).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnFarm).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnCash).CornerRadius = UDim.new(0, 4) Instance.new("UICorner", subBtnHacker).CornerRadius = UDim.new(0, 4)
 
--- REALM 2 SUB-TABS (Updated Layout with Wood, Planks)
+-- REALM 2 SUB-TABS
 local realm2SubTabList = Instance.new("Frame") realm2SubTabList.Size = UDim2.new(1, 0, 0, 25) realm2SubTabList.Position = UDim2.new(0, 0, 0, 0) realm2SubTabList.BackgroundTransparency = 1; realm2SubTabList.Parent = realm2Page
 local r2SubBtnNoobs = Instance.new("TextButton") r2SubBtnNoobs.Size = UDim2.new(0, 48, 1, 0) r2SubBtnNoobs.Position = UDim2.new(0, 0, 0, 0) r2SubBtnNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) r2SubBtnNoobs.TextColor3 = Color3.fromRGB(15, 15, 15) r2SubBtnNoobs.TextSize = 10; r2SubBtnNoobs.Font = Enum.Font.SourceSansBold; r2SubBtnNoobs.Text = "Noobs" r2SubBtnNoobs.Parent = realm2SubTabList
 local r2SubBtnOof = Instance.new("TextButton") r2SubBtnOof.Size = UDim2.new(0, 40, 1, 0) r2SubBtnOof.Position = UDim2.new(0, 50, 0, 0) r2SubBtnOof.BackgroundColor3 = Color3.fromRGB(45, 45, 45) r2SubBtnOof.TextColor3 = Color3.fromRGB(170, 170, 170) r2SubBtnOof.TextSize = 10; r2SubBtnOof.Font = Enum.Font.SourceSansBold; r2SubBtnOof.Text = "OoF" r2SubBtnOof.Parent = realm2SubTabList
@@ -381,8 +381,8 @@ UI.RollSnowyRuneCard = gridRow("Auto Roll Snowy Rune Circle", 1, runesScroll2)
 UI.FootballRuneCard = gridRow("Auto Roll Football Rune Circle (Events)", 1, runesScrollEvents)
 
 -- CAPSULES ROWS
-UI.ClassicCapsule = gridRow("Auto Teleport & Open Classic Capsule", 1, capsulesScroll)
-UI.FootballCapsule = gridRow("Auto Teleport & Open Football Capsule", 2, capsulesScroll)
+UI.ClassicCapsule = gridRow("Auto Mass Hatch Classic Capsule", 1, capsulesScroll)
+UI.FootballCapsule = gridRow("Auto Mass Hatch Football Capsule", 2, capsulesScroll)
 
 -- ENCHANTS ROWS 
 UI.EnchantStarter = gridRow("Auto Reroll Enchants: Starter", 1, enchantsScroll)
@@ -451,10 +451,10 @@ task.spawn(function()
     end
 end)
 
--- HARDCODED CAPSULE TELEPORT & AUTO-OPEN ENGINE
+-- HARDCODED CAPSULE TELEPORT & SAFE MASS HATCH ENGINE (Via Toggle Spam)
 task.spawn(function()
     while Running do
-        task.wait(1.0)
+        task.wait(0.12)
         if NetRemote and Running then
             local hrp = GetWorldRoot()
             if hrp then
@@ -1113,4 +1113,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Football Capsule Auto-Open Added Successfully!")
+print("[Dominate Hub] Capsule Mass Hatch Engine Activated!")
