@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V5.7 PRO EDITION (RENAMEABLE 5-SLOT CONFIGS)
+-- DOMINATE HUB | V6.1 PRO EDITION (SMOOTH GRADIENTS & SOFT ACCENT GLOWS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -7,7 +7,7 @@ if getgenv().DominateHubLoaded then
         local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
         if oldUI then oldUI:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V5.7 Instance...")
+    print("[Dominate Hub] Reloading V6.1 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -64,7 +64,7 @@ local function loadConfigFromSlot(slot)
         end
     end)
 end
-loadConfigFromSlot(1) -- Default load slot 1 on startup
+loadConfigFromSlot(1)
 
 _G.AntiAFK, _G.AutoPrestige = true, false
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
@@ -228,6 +228,12 @@ statsHud.BorderSizePixel = 0
 statsHud.Parent = sg
 Instance.new("UICorner", statsHud).CornerRadius = UDim.new(0, 8)
 
+local hudStroke = Instance.new("UIStroke")
+hudStroke.Color = Color3.fromRGB(0, 136, 255)
+hudStroke.Transparency = 0.4
+hudStroke.Thickness = 1.2
+hudStroke.Parent = statsHud
+
 local hudTitle = Instance.new("TextLabel")
 hudTitle.Size = UDim2.new(1, 0, 0, 20)
 hudTitle.Position = UDim2.new(0, 0, 0, 2)
@@ -285,10 +291,26 @@ local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 580, 0, 420) 
 mainFrame.Position = UDim2.new(0.5, -290, 0.5, -210) 
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) 
-mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
+mainFrame.BackgroundTransparency = 0.10; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.7 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+-- Soft Accent Glow on Main Window
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(0, 136, 255)
+mainStroke.Transparency = 0.3
+mainStroke.Thickness = 1.5
+mainStroke.Parent = mainFrame
+
+-- Smooth Gradient for Main Window Background
+local mainGrad = Instance.new("UIGradient")
+mainGrad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 30, 38)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20))
+}
+mainGrad.Rotation = 45
+mainGrad.Parent = mainFrame
+
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V6.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
@@ -318,6 +340,12 @@ minBtn.TextSize = 11; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "�
 minBtn.Parent = sg
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 13)
 
+local minStroke = Instance.new("UIStroke")
+minStroke.Color = Color3.fromRGB(0, 136, 255)
+minStroke.Transparency = 0.3
+minStroke.Thickness = 1.2
+minStroke.Parent = minBtn
+
 local pDragging, pDragInput, pDragStart, pStartPos
 minBtn.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -345,7 +373,7 @@ minBtn.MouseButton1Click:Connect(function()
         mainFrame.Size = UDim2.new(0, 0, 0, 0)
         mainFrame.BackgroundTransparency = 1
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 420), BackgroundTransparency = 0.15})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 420), BackgroundTransparency = 0.10})
         tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(0, 136, 255)
     end
@@ -353,19 +381,29 @@ end)
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 
-local function makeMainTab(txt, pos)
-    local t = Instance.new("TextButton") t.Size = UDim2.new(0, 65, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(45, 45, 45) t.TextColor3 = Color3.fromRGB(170, 170, 170) t.TextSize = 11; t.Font = Enum.Font.SourceSansBold; t.Text = txt; t.Parent = tabList
-    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6) return t
+-- ICON-DRIVEN MAIN TABS WITH SMOOTH GRADIENTS
+local function makeMainTab(icon, txt, pos)
+    local t = Instance.new("TextButton") t.Size = UDim2.new(0, 65, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(45, 45, 45) t.TextColor3 = Color3.fromRGB(170, 170, 170) t.TextSize = 10; t.Font = Enum.Font.SourceSansBold; t.Text = icon .. " " .. txt; t.Parent = tabList
+    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
+    
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 50, 55)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 40))
+    }
+    grad.Rotation = 90
+    grad.Parent = t
+    return t
 end
 
-local tabRealm1 = makeMainTab("Realm 1", 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15)
-local tabRealm2 = makeMainTab("Realm 2", 70)
-local tabRealm3 = makeMainTab("Realm 3", 140)
-local tabFootball = makeMainTab("Football", 210)
-local tabRunes = makeMainTab("Runes", 280)
-local tabCapsules = makeMainTab("Capsules", 350)
-local tabEnchants = makeMainTab("Enchants", 420)
-local tabSettings = makeMainTab("Settings", 490)
+local tabRealm1 = makeMainTab("🏠", "R1", 0) tabRealm1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) tabRealm1.TextColor3 = Color3.fromRGB(15, 15, 15)
+local tabRealm2 = makeMainTab("🌍", "R2", 70)
+local tabRealm3 = makeMainTab("🪐", "R3", 140)
+local tabFootball = makeMainTab("⚽", "Ball", 210)
+local tabRunes = makeMainTab("🔮", "Rune", 280)
+local tabCapsules = makeMainTab("📦", "Caps", 350)
+local tabEnchants = makeMainTab("✨", "Ench", 420)
+local tabSettings = makeMainTab("⚙️", "Set", 490)
 
 -- PAGE CONTAINERS
 local function makePage()
@@ -384,7 +422,16 @@ end
 
 local function makeSideBtn(txt, parent)
     local b = Instance.new("TextButton") b.Size = UDim2.new(1, -5, 0, 28) b.BackgroundColor3 = Color3.fromRGB(45, 45, 45) b.TextColor3 = Color3.fromRGB(170, 170, 170) b.Font = Enum.Font.SourceSansBold; b.TextSize = 10; b.Text = txt; b.Parent = parent
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) return b
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
+    
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 30, 35))
+    }
+    grad.Rotation = 90
+    grad.Parent = b
+    return b
 end
 
 -- 2-COLUMN SCROLL GENERATOR
@@ -398,20 +445,41 @@ local function makeGridScroll(parent, hasSidebar)
     return s 
 end
 
--- GRID ROW TOGGLE GENERATOR
+-- GRID ROW TOGGLE GENERATOR WITH SOFT ACCENT GLOW
 local function gridRow(txt, scr)
-    local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = scr
+    local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(30, 30, 38) f.BorderSizePixel = 0; f.Parent = scr
+    
+    local fStroke = Instance.new("UIStroke")
+    fStroke.Color = Color3.fromRGB(70, 70, 80)
+    fStroke.Transparency = 0.5
+    fStroke.Thickness = 1
+    fStroke.Parent = f
+
+    local fGrad = Instance.new("UIGradient")
+    fGrad.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 35, 45)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 25))
+    }
+    fGrad.Rotation = 90
+    fGrad.Parent = f
+
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.65, -5, 1, 0) l.Position = UDim2.new(0, 8, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(220, 220, 225) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.35, -5, 0, 24) b.Position = UDim2.new(0.65, 0, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 11; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
 end
 
 -- ======================================================================================
--- REALM 1 SIDEBAR & GRIDS
+-- REALM 1 SIDEBAR & GRIDS (ICON-DRIVEN)
 -- ======================================================================================
 local r1Sidebar = makeSidebar(realm1MasterPage)
-local b1Noobs = makeSideBtn("Noobs", r1Sidebar) b1Noobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) b1Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
-local b1Oof = makeSideBtn("Oof", r1Sidebar) local b1Rebirth = makeSideBtn("Rebirth", r1Sidebar) local b1Fire = makeSideBtn("Fire", r1Sidebar) local b1Blaze = makeSideBtn("Blaze", r1Sidebar) local b1Farm = makeSideBtn("Farm", r1Sidebar) local b1Cash = makeSideBtn("Cash", r1Sidebar) local b1Hacker = makeSideBtn("Hacker", r1Sidebar)
+local b1Noobs = makeSideBtn("🌿 Noobs", r1Sidebar) b1Noobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) b1Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
+local b1Oof = makeSideBtn("⚡ OoF", r1Sidebar) 
+local b1Rebirth = makeSideBtn("🔄 Rebirth", r1Sidebar) 
+local b1Fire = makeSideBtn("🔥 Fire", r1Sidebar) 
+local b1Blaze = makeSideBtn("🎆 Blaze", r1Sidebar) 
+local b1Farm = makeSideBtn("🌾 Farm", r1Sidebar) 
+local b1Cash = makeSideBtn("💵 Cash", r1Sidebar) 
+local b1Hacker = makeSideBtn("💻 Hacker", r1Sidebar)
 
 local r1NoobScroll = makeGridScroll(realm1MasterPage, true) r1NoobScroll.Visible = true
 local r1OofScroll = makeGridScroll(realm1MasterPage, true) local r1RebirthScroll = makeGridScroll(realm1MasterPage, true) local r1FireScroll = makeGridScroll(realm1MasterPage, true) local r1BlazeScroll = makeGridScroll(realm1MasterPage, true) local r1BreadScroll = makeGridScroll(realm1MasterPage, true) local r1CashScroll = makeGridScroll(realm1MasterPage, true) local r1HackerScroll = makeGridScroll(realm1MasterPage, true)
@@ -434,11 +502,18 @@ UI.AutoFarmCash = gridRow("Auto Pad Tycoon", r1CashScroll) UI.CashMoreCash = gri
 UI.Hacker1 = gridRow("Auto Upgrade Hacker 1", r1HackerScroll) UI.Hacker2 = gridRow("Auto Upgrade Hacker 2", r1HackerScroll) UI.Hacker3 = gridRow("Auto Upgrade Hacker 3", r1HackerScroll) UI.Hacker4 = gridRow("Auto Upgrade Hacker 4", r1HackerScroll)
 
 -- ======================================================================================
--- REALM 2 SIDEBAR & GRIDS
+-- REALM 2 SIDEBAR & GRIDS (ICON-DRIVEN)
 -- ======================================================================================
 local r2Sidebar = makeSidebar(realm2Page)
-local b2Noobs = makeSideBtn("Noobs", r2Sidebar) b2Noobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) b2Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
-local b2Oof = makeSideBtn("OoF", r2Sidebar) local b2Water = makeSideBtn("Water", r2Sidebar) local b2Ice = makeSideBtn("Ice", r2Sidebar) local b2Buckets = makeSideBtn("Buckets", r2Sidebar) local b2Wood = makeSideBtn("Wood", r2Sidebar) local b2Planks = makeSideBtn("Planks", r2Sidebar) local b2Gems = makeSideBtn("Gems", r2Sidebar) local b2Mine = makeSideBtn("Mining", r2Sidebar)
+local b2Noobs = makeSideBtn("🌿 Noobs", r2Sidebar) b2Noobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) b2Noobs.TextColor3 = Color3.fromRGB(15, 15, 15)
+local b2Oof = makeSideBtn("⚡ OoF", r2Sidebar) 
+local b2Water = makeSideBtn("💧 Water", r2Sidebar) 
+local b2Ice = makeSideBtn("🧊 Ice", r2Sidebar) 
+local b2Buckets = makeSideBtn("🪣 Buckets", r2Sidebar) 
+local b2Wood = makeSideBtn("🪵 Wood", r2Sidebar) 
+local b2Planks = makeSideBtn("🪵 Planks", r2Sidebar) 
+local b2Gems = makeSideBtn("💎 Gems", r2Sidebar) 
+local b2Mine = makeSideBtn("⛏️ Mining", r2Sidebar)
 
 local r2NoobScroll = makeGridScroll(realm2Page, true) r2NoobScroll.Visible = true
 local r2OofScroll = makeGridScroll(realm2Page, true) local r2WaterScroll = makeGridScroll(realm2Page, true) local r2IceScroll = makeGridScroll(realm2Page, true) local r2BucketScroll = makeGridScroll(realm2Page, true) local r2WoodScroll = makeGridScroll(realm2Page, true) local r2PlanksScroll = makeGridScroll(realm2Page, true) local r2GemsScroll = makeGridScroll(realm2Page, true) local r2MiningScroll = makeGridScroll(realm2Page, true)
@@ -456,22 +531,24 @@ UI.MiningSpeedSwitch = gridRow("⚡ Glide Speed", r2MiningScroll) UI.MiningSpeed
 UI.MineStone = gridRow("Mine Stone", r2MiningScroll) UI.MineCoal = gridRow("Mine Coal", r2MiningScroll) UI.MineSilver = gridRow("Mine Silver", r2MiningScroll) UI.MineIron = gridRow("Mine Iron", r2MiningScroll) UI.MineCopper = gridRow("Mine Copper", r2MiningScroll) UI.MineGold = gridRow("Mine Gold", r2MiningScroll) UI.MinePlatinum = gridRow("Mine Platinum", r2MiningScroll) UI.MineTitanium = gridRow("Mine Titanium", r2MiningScroll) UI.MineCobalt = gridRow("Mine Cobalt", r2MiningScroll) UI.MineUranium = gridRow("Mine Uranium", r2MiningScroll) UI.MinePalladium = gridRow("Mine Palladium", r2MiningScroll) UI.MineAetherite = gridRow("Mine Aetherite", r2MiningScroll) UI.MineRuby = gridRow("Mine Ruby", r2MiningScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", r2MiningScroll) UI.MineCelestium = gridRow("Mine Celestium", r2MiningScroll)
 
 -- ======================================================================================
--- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (WITH RENAMEABLE CONFIG SLOTS)
+-- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (ICON-DRIVEN)
 -- ======================================================================================
 local r3Scroll = makeGridScroll(realm3Page, false) r3Scroll.Visible = true
 UI.Pharaoh = gridRow("Auto Upgrade Pharaoh", r3Scroll)
 
 local fSidebar = makeSidebar(footballPage)
-local bFNoobs = makeSideBtn("Noobs", fSidebar) bFNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) bFNoobs.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bFUpgrades = makeSideBtn("Upgrades", fSidebar)
+local bFNoobs = makeSideBtn("🌿 Noobs", fSidebar) bFNoobs.BackgroundColor3 = Color3.fromRGB(230, 230, 235) bFNoobs.TextColor3 = Color3.fromRGB(15, 15, 15)
+local bFUpgrades = makeSideBtn("📈 Upgrades", fSidebar)
 local fNoobScroll = makeGridScroll(footballPage, true) fNoobScroll.Visible = true
 local fUpgradeScroll = makeGridScroll(footballPage, true)
 UI.Goalkeeper = gridRow("Upgrade Goalkeeper", fNoobScroll) UI.LeftBack = gridRow("Upgrade Left Back", fNoobScroll) UI.LeftCenterBack = gridRow("Upgrade L-Center Back", fNoobScroll) UI.RightCenterBack = gridRow("Upgrade R-Center Back", fNoobScroll) UI.RightBack = gridRow("Upgrade Right Back", fNoobScroll) UI.LeftDefensiveMid = gridRow("Upgrade L-Defensive Mid", fNoobScroll) UI.RightDefensiveMid = gridRow("Upgrade R-Defensive Mid", fNoobScroll) UI.AttackingMid = gridRow("Upgrade Attacking Mid", fNoobScroll) UI.LeftWing = gridRow("Upgrade Left Wing", fNoobScroll) UI.RightWing = gridRow("Upgrade Right Wing", fNoobScroll) UI.Striker = gridRow("Upgrade Striker", fNoobScroll)
 UI.ScoreGoal = gridRow("Auto Score Goal", fUpgradeScroll) UI.MoreGoals = gridRow("More Goals Upgrade", fUpgradeScroll) UI.GoalsRuneBulk = gridRow("Goals Rune Bulk", fUpgradeScroll) UI.GoalsRuneLuck = gridRow("Goals Rune Luck", fUpgradeScroll) UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", fUpgradeScroll) UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll) UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll)
 
 local ruSidebar = makeSidebar(runesPage)
-local bRu1 = makeSideBtn("Realm 1", ruSidebar) bRu1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) bRu1.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bRu2 = makeSideBtn("Realm 2", ruSidebar) local bRu3 = makeSideBtn("Realm 3", ruSidebar) local bRuE = makeSideBtn("Events", ruSidebar)
+local bRu1 = makeSideBtn("1️⃣ Realm 1", ruSidebar) bRu1.BackgroundColor3 = Color3.fromRGB(230, 230, 235) bRu1.TextColor3 = Color3.fromRGB(15, 15, 15)
+local bRu2 = makeSideBtn("2️⃣ Realm 2", ruSidebar) 
+local bRu3 = makeSideBtn("3️⃣ Realm 3", ruSidebar) 
+local bRuE = makeSideBtn("🎉 Events", ruSidebar)
 local ruScroll1 = makeGridScroll(runesPage, true) ruScroll1.Visible = true
 local ruScroll2 = makeGridScroll(runesPage, true) local ruScroll3 = makeGridScroll(runesPage, true) local ruScrollE = makeGridScroll(runesPage, true)
 UI.RollBasicRuneCard = gridRow("Auto Basic Rune Circle", ruScroll1) UI.RollSuperRuneCard = gridRow("Auto Super Rune Circle", ruScroll1) UI.RollAdvancedRuneCard = gridRow("Auto Advanced Rune", ruScroll1) UI.RollCosmicRuneCard = gridRow("Auto Cosmic Prism", ruScroll1)
@@ -486,8 +563,8 @@ UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gri
 
 -- SETTINGS SIDEBAR (GENERAL & CONFIG SUB-TABS)
 local setSidebar = makeSidebar(settingsPage)
-local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(230, 230, 235) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bSetConfig = makeSideBtn("Config", setSidebar)
+local bSetGen = makeSideBtn("⚙️ General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(230, 230, 235) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
+local bSetConfig = makeSideBtn("💾 Config", setSidebar)
 
 local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
 local setConfigScroll = makeGridScroll(settingsPage, true)
@@ -513,8 +590,8 @@ UI.ConfigSlotSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 UI.ConfigSlotSwitch.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.ConfigSlotSwitch.Text = "Slot #1: " .. slotCustomNames[1]
 
--- Custom Textbox Frame for Renaming
-local renameFrame = Instance.new("Frame") renameFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30) renameFrame.BorderSizePixel = 0; renameFrame.Parent = setConfigScroll
+local renameFrame = Instance.new("Frame") renameFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 38) renameFrame.BorderSizePixel = 0; renameFrame.Parent = setConfigScroll
+local renameStroke = Instance.new("UIStroke") renameStroke.Color = Color3.fromRGB(70, 70, 80) renameStroke.Transparency = 0.5 renameStroke.Thickness = 1 renameStroke.Parent = renameFrame
 local renameLabel = Instance.new("TextLabel") renameLabel.Size = UDim2.new(0.4, -5, 1, 0) renameLabel.Position = UDim2.new(0, 8, 0, 0) renameLabel.BackgroundTransparency = 1; renameLabel.TextColor3 = Color3.fromRGB(220, 220, 225) renameLabel.TextSize = 11; renameLabel.Font = Enum.Font.SourceSansBold; renameLabel.Text = "Rename Slot"; renameLabel.TextXAlignment = Enum.TextXAlignment.Left; renameLabel.Parent = renameFrame
 local renameBox = Instance.new("TextBox") renameBox.Size = UDim2.new(0.6, -5, 0, 24) renameBox.Position = UDim2.new(0.4, 0, 0.5, -12) renameBox.BackgroundColor3 = Color3.fromRGB(45, 45, 50) renameBox.TextColor3 = Color3.fromRGB(255, 255, 255) renameBox.TextSize = 11; renameBox.Font = Enum.Font.SourceSansBold; renameBox.Text = slotCustomNames[1]; renameBox.Parent = renameFrame
 Instance.new("UICorner", renameFrame).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", renameBox).CornerRadius = UDim.new(0, 5)
@@ -529,7 +606,6 @@ UI.LoadSlotBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
 UI.LoadSlotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.LoadSlotBtn.Text = "LOAD"
 
--- CONFIG SLOT SWITCHING & RENAME LOGIC
 UI.ConfigSlotSwitch.MouseButton1Click:Connect(function()
     _G.SelectedConfigSlot = _G.SelectedConfigSlot + 1
     if _G.SelectedConfigSlot > 5 then _G.SelectedConfigSlot = 1 end
@@ -553,7 +629,6 @@ UI.LoadSlotBtn.MouseButton1Click:Connect(function()
     showToast("📂 Loaded Slot " .. _G.SelectedConfigSlot .. " (" .. slotCustomNames[_G.SelectedConfigSlot] .. ")")
 end)
 
--- FPS BOOSTER LOGIC
 local function toggleFPSBoost(b)
     _G.FPSBoostMode = not _G.FPSBoostMode
     b.Text = _G.FPSBoostMode and "ACTIVE" or "DISABLED"
@@ -589,7 +664,6 @@ UI.HUDToggle.MouseButton1Click:Connect(function()
     saveConfigToSlot(_G.SelectedConfigSlot, slotCustomNames[_G.SelectedConfigSlot])
 end)
 
--- THEME CYCLING LOGIC
 local themes = {
     {Name = "Neon Blue", Color = Color3.fromRGB(0, 136, 255)},
     {Name = "Purple Glow", Color = Color3.fromRGB(138, 43, 226)},
@@ -605,6 +679,8 @@ UI.ThemePicker.MouseButton1Click:Connect(function()
     UI.ThemePicker.Text = "Theme: " .. th.Name
     minBtn.TextColor3 = th.Color
     hudTitle.TextColor3 = th.Color
+    mainStroke.Color = th.Color
+    hudStroke.Color = th.Color
     showToast("🎨 Theme changed to " .. th.Name)
 end)
 
@@ -901,4 +977,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V5.7 Pro Edition - Renameable 5-Slot Config Sub-Tab Deployed!")
+print("[Dominate Hub] V6.1 Pro Edition - Smooth Gradients & Soft Accent Glows Deployed!")
