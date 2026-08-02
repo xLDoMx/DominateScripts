@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V5.3 PRO EDITION (CLEAN TOP-LEFT HUD & NO STROKES)
+-- DOMINATE HUB | V5.5 PRO EDITION (EXPLICIT CONFIG BUTTONS & CLEAN HUD)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -7,7 +7,7 @@ if getgenv().DominateHubLoaded then
         local oldUI = parentTarget:FindFirstChild("DominateHubMirror")
         if oldUI then oldUI:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V5.3 Instance...")
+    print("[Dominate Hub] Reloading V5.5 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -18,6 +18,7 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
 
 local Running = true
 local player = Players.LocalPlayer
@@ -146,7 +147,7 @@ end)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
--- SLEEK & TRANSPARENT TOAST NOTIFICATION HELPER (NO STROKE)
+-- TOAST NOTIFICATION HELPER (NO STROKE)
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
@@ -192,10 +193,23 @@ local function sendDiscordWebhook(message)
     end
 end
 
--- REAL-TIME PERFORMANCE & FARMING HUD OVERLAY (MOVED TO TOP LEFT, NO STROKE)
+-- FPS & PING TRACKING UTILS
+local fps = 60
+local frameCount = 0
+local lastFpsUpdate = tick()
+RunService.RenderStepped:Connect(function()
+    frameCount = frameCount + 1
+    if tick() - lastFpsUpdate >= 1 then
+        fps = frameCount
+        frameCount = 0
+        lastFpsUpdate = tick()
+    end
+end)
+
+-- PERFORMANCE HUD OVERLAY (TOP LEFT, NO STROKE)
 local statsHud = Instance.new("Frame")
-statsHud.Size = UDim2.new(0, 170, 0, 68)
-statsHud.Position = UDim2.new(0, 15, 0, 15) -- Moved to top left
+statsHud.Size = UDim2.new(0, 170, 0, 84)
+statsHud.Position = UDim2.new(0, 15, 0, 15) 
 statsHud.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 statsHud.BackgroundTransparency = 0.35
 statsHud.BorderSizePixel = 0
@@ -222,7 +236,7 @@ hudText.Font = Enum.Font.SourceSans
 hudText.TextXAlignment = Enum.TextXAlignment.Left
 hudText.TextYAlignment = Enum.TextYAlignment.Top
 hudText.TextWrapped = true
-hudText.Text = "Uptime: 00:00:00\nActive Features: 0"
+hudText.Text = "Uptime: 00:00:00\nFPS: 60 | Ping: 0ms\nActive Features: 0"
 hudText.Parent = statsHud
 
 local sessionStartTime = tick()
@@ -236,6 +250,11 @@ task.spawn(function()
             local mins = math.floor((elapsed % 3600) / 60)
             local secs = elapsed % 60
             
+            local pingVal = 0
+            pcall(function()
+                pingVal = math.floor((player:GetNetworkPing() or 0) * 1000)
+            end)
+            
             local activeCount = 0
             for k, v in pairs(_G) do
                 if type(v) == "boolean" and v == true and k ~= "AntiAFK" and k ~= "FPSBoostMode" and k ~= "ShowStatsHUD" then
@@ -243,7 +262,7 @@ task.spawn(function()
                 end
             end
             
-            hudText.Text = string.format("Uptime: %02d:%02d:%02d\nActive Features: %d", hours, mins, secs, activeCount)
+            hudText.Text = string.format("Uptime: %02d:%02d:%02d\nFPS: %d | Ping: %dms\nActive Features: %d", hours, mins, secs, fps, pingVal, activeCount)
         else
             statsHud.Visible = false
         end
@@ -257,7 +276,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BackgroundTransparency = 0.15; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.3 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V5.5 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- UNIVERSAL SEARCH BAR
 local searchBox = Instance.new("TextBox")
@@ -276,7 +295,7 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
--- SLEEK SMALLER & 70% TRANSPARENT FLOATING PILL (NO STROKE)
+-- FLOATING PILL (NO STROKE)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 105, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
@@ -371,7 +390,7 @@ end
 local function gridRow(txt, scr)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(30, 30, 30) f.BorderSizePixel = 0; f.Parent = scr
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.65, -5, 1, 0) l.Position = UDim2.new(0, 8, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(220, 220, 225) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
-    local b = Instance.new("TextButton") b.Size = UDim2.new(0.35, -5, 0, 24) b.Position = UDim2.new(0.65, 0, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
+    local b = Instance.new("TextButton") b.Size = UDim2.new(0.35, -5, 0, 24) b.Position = UDim2.new(0.65, 0, 0.5, -12) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 11; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5) return b
 end
 
@@ -425,7 +444,7 @@ UI.MiningSpeedSwitch = gridRow("⚡ Glide Speed", r2MiningScroll) UI.MiningSpeed
 UI.MineStone = gridRow("Mine Stone", r2MiningScroll) UI.MineCoal = gridRow("Mine Coal", r2MiningScroll) UI.MineSilver = gridRow("Mine Silver", r2MiningScroll) UI.MineIron = gridRow("Mine Iron", r2MiningScroll) UI.MineCopper = gridRow("Mine Copper", r2MiningScroll) UI.MineGold = gridRow("Mine Gold", r2MiningScroll) UI.MinePlatinum = gridRow("Mine Platinum", r2MiningScroll) UI.MineTitanium = gridRow("Mine Titanium", r2MiningScroll) UI.MineCobalt = gridRow("Mine Cobalt", r2MiningScroll) UI.MineUranium = gridRow("Mine Uranium", r2MiningScroll) UI.MinePalladium = gridRow("Mine Palladium", r2MiningScroll) UI.MineAetherite = gridRow("Mine Aetherite", r2MiningScroll) UI.MineRuby = gridRow("Mine Ruby", r2MiningScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", r2MiningScroll) UI.MineCelestium = gridRow("Mine Celestium", r2MiningScroll)
 
 -- ======================================================================================
--- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS
+-- REALM 3, FOOTBALL, RUNES, CAPSULES, ENCHANTS, SETTINGS (WITH CONFIG BUTTONS)
 -- ======================================================================================
 local r3Scroll = makeGridScroll(realm3Page, false) r3Scroll.Visible = true
 UI.Pharaoh = gridRow("Auto Upgrade Pharaoh", r3Scroll)
@@ -467,7 +486,29 @@ UI.ThemePicker.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
 UI.ThemePicker.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.ThemePicker.Text = "Theme: Neon Blue"
 
+-- MANUAL CONFIG BUTTONS IN SETTINGS
+UI.SaveConfigBtn = gridRow("💾 Save Config Now", setScroll)
+UI.SaveConfigBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
+UI.SaveConfigBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+UI.SaveConfigBtn.Text = "SAVE"
+
+UI.LoadConfigBtn = gridRow("📂 Load Config Now", setScroll)
+UI.LoadConfigBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
+UI.LoadConfigBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+UI.LoadConfigBtn.Text = "LOAD"
+
 UI.KillSwitch = gridRow("EMERGENCY KILL SWITCH", setScroll) UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20) UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200) UI.KillSwitch.Text = "TERMINATE"
+
+-- CONFIG BUTTON LOGIC
+UI.SaveConfigBtn.MouseButton1Click:Connect(function()
+    saveConfig()
+    showToast("💾 Config saved successfully!")
+end)
+
+UI.LoadConfigBtn.MouseButton1Click:Connect(function()
+    loadConfig()
+    showToast("📂 Config loaded successfully!")
+end)
 
 -- FPS BOOSTER LOGIC
 local function toggleFPSBoost(b)
@@ -812,4 +853,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V5.3 Pro Edition - Clean Top-Left HUD Deployed!")
+print("[Dominate Hub] V5.5 Pro Edition - Clean Top-Left HUD & Stroke-Free Notification Deployed!")
