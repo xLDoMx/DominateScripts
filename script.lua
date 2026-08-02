@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V8.0 PRO EDITION (MASTER TOGGLES & STREAMLINED LAYOUT)
+-- DOMINATE HUB | V8.1 PRO EDITION (DEDICATED MINES TAB & STREAMLINED LAYOUT)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V8.0 Instance...")
+    print("[Dominate Hub] Reloading V8.1 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -294,9 +294,9 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V8.0 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V8.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
--- FLOATING PILL (NO STROKE, NO FIRE ICON)
+-- FLOATING PILL (NO STROKE)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 105, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
@@ -342,25 +342,26 @@ end)
 
 local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
 
-local function makeMainTab(txt, pos)
-    local t = Instance.new("TextButton") t.Size = UDim2.new(0, 80, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(55, 55, 65) t.TextColor3 = Color3.fromRGB(210, 210, 220) t.TextSize = 11; t.Font = Enum.Font.SourceSansBold; t.Text = txt; t.Parent = tabList
+local function makeMainTab(txt, pos, width)
+    local t = Instance.new("TextButton") t.Size = UDim2.new(0, width or 68, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(55, 55, 65) t.TextColor3 = Color3.fromRGB(210, 210, 220) t.TextSize = 10; t.Font = Enum.Font.SourceSansBold; t.Text = txt; t.Parent = tabList
     Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
     return t
 end
 
-local tabUpgrades = makeMainTab("Upgrades", 0) tabUpgrades.BackgroundColor3 = Color3.fromRGB(240, 240, 245) tabUpgrades.TextColor3 = Color3.fromRGB(15, 15, 15)
-local tabNoobs = makeMainTab("Noobs", 90)
-local tabFootball = makeMainTab("Football", 180)
-local tabRunes = makeMainTab("Runes", 270)
-local tabCapsules = makeMainTab("Capsules", 360)
-local tabEnchants = makeMainTab("Enchants", 450)
-local tabSettings = makeMainTab("Settings", 540)
+local tabUpgrades = makeMainTab("Upgrades", 0, 68) tabUpgrades.BackgroundColor3 = Color3.fromRGB(240, 240, 245) tabUpgrades.TextColor3 = Color3.fromRGB(15, 15, 15)
+local tabNoobs = makeMainTab("Noobs", 72, 68)
+local tabMines = makeMainTab("Mines", 144, 68)
+local tabFootball = makeMainTab("Football", 216, 68)
+local tabRunes = makeMainTab("Runes", 288, 68)
+local tabCapsules = makeMainTab("Capsules", 360, 68)
+local tabEnchants = makeMainTab("Enchants", 432, 68)
+local tabSettings = makeMainTab("Settings", 504, 68)
 
 -- PAGE CONTAINERS
 local function makePage()
     local p = Instance.new("Frame") p.Size = UDim2.new(1, -20, 1, -85) p.Position = UDim2.new(0, 10, 0, 80) p.BackgroundTransparency = 1; p.Visible = false; p.Parent = mainFrame return p
 end
-local upgradesPage, noobsPage, footballPage, runesPage, capsulesPage, enchantsPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
+local upgradesPage, noobsPage, minesPage, footballPage, runesPage, capsulesPage, enchantsPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
 -- SIDEBAR GENERATOR
@@ -418,7 +419,6 @@ local upScrollR1 = makeGridScroll(upgradesPage, true) upScrollR1.Visible = true
 local upScrollR2 = makeGridScroll(upgradesPage, true)
 local upScrollR3 = makeGridScroll(upgradesPage, true)
 
--- Master Toggle Helper
 local function masterToggle(txt, flagsTable, scr)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
     local dot = Instance.new("Frame") dot.Name = "StatusDot" dot.Size = UDim2.new(0, 6, 0, 6) dot.Position = UDim2.new(0, 8, 0.5, -3) dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80) dot.BorderSizePixel = 0; dot.Parent = f
@@ -480,6 +480,13 @@ UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1) UI.FasterNoobs = gri
 UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2) UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2) UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2)
 
 -- ======================================================================================
+-- MINES PAGE
+-- ======================================================================================
+local minesScroll = makeGridScroll(minesPage, false) minesScroll.Visible = true
+UI.MiningSpeedSwitch = gridRow("Glide Speed", minesScroll) UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200) UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255) UI.MiningSpeedSwitch.Text = "0.8 Studs/sec"
+UI.MineStone = gridRow("Mine Stone", minesScroll) UI.MineCoal = gridRow("Mine Coal", minesScroll) UI.MineSilver = gridRow("Mine Silver", minesScroll) UI.MineIron = gridRow("Mine Iron", minesScroll) UI.MineCopper = gridRow("Mine Copper", minesScroll) UI.MineGold = gridRow("Mine Gold", minesScroll) UI.MinePlatinum = gridRow("Mine Platinum", minesScroll) UI.MineTitanium = gridRow("Mine Titanium", minesScroll) UI.MineCobalt = gridRow("Mine Cobalt", minesScroll) UI.MineUranium = gridRow("Mine Uranium", minesScroll) UI.MinePalladium = gridRow("Mine Palladium", minesScroll) UI.MineAetherite = gridRow("Mine Aetherite", minesScroll) UI.MineRuby = gridRow("Mine Ruby", minesScroll) UI.MineVoidsteel = gridRow("Mine Voidsteel", minesScroll) UI.MineCelestium = gridRow("Mine Celestium", minesScroll)
+
+-- ======================================================================================
 -- FOOTBALL PAGE
 -- ======================================================================================
 local fSidebar = makeSidebar(footballPage)
@@ -527,7 +534,6 @@ local bSetConfig = makeSideBtn("Config", setSidebar)
 local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
 local setConfigScroll = makeGridScroll(settingsPage, true)
 
--- Re-purpose setConfigScroll to hold our clean 1-line slot rows
 setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 230)
 local configLayout = Instance.new("UIListLayout")
 configLayout.Padding = UDim.new(0, 8)
@@ -914,6 +920,11 @@ UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "A
 UI.EnchantStarter.MouseButton1Click:Connect(function() tV2(UI.EnchantStarter, "AutoEnchantStarter") end) UI.EnchantCooker.MouseButton1Click:Connect(function() tV2(UI.EnchantCooker, "AutoEnchantCooker") end) UI.EnchantFarmer.MouseButton1Click:Connect(function() tV2(UI.EnchantFarmer, "AutoEnchantFarmer") end) UI.EnchantMagician.MouseButton1Click:Connect(function() tV2(UI.EnchantMagician, "AutoEnchantMagician") end) UI.EnchantArcher.MouseButton1Click:Connect(function() tV2(UI.EnchantArcher, "AutoEnchantArcher") end) UI.EnchantSoldier.MouseButton1Click:Connect(function() tV2(UI.EnchantSoldier, "AutoEnchantSoldier") end) UI.EnchantHacker1.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker1, "AutoEnchantHacker1") end) UI.EnchantHacker2.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker2, "AutoEnchantHacker2") end) UI.EnchantHacker3.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker3, "AutoEnchantHacker3") end) UI.EnchantHacker4.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker4, "AutoEnchantHacker4") end) UI.EnchantPharaoh.MouseButton1Click:Connect(function() tV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
 UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT1ChestCard, "AutoOpenT1Chest") end) UI.OpenT2ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT2ChestCard, "AutoOpenT2Chest") end) UI.AFK.MouseButton1Click:Connect(function() tV2(UI.AFK, "AntiAFK") end) UI.Prestige.MouseButton1Click:Connect(function() tV2(UI.Prestige, "AutoPrestige") end) UI.RebirthTimerCard.MouseButton1Click:Connect(function() tV2(UI.RebirthTimerCard, "AutoRebirthTimer") end) 
 
+UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
+
+local ms = {0.3, 0.5, 0.8, 1.2, 2.0} local ml = {"0.3 Studs/s", "0.5 Studs/s", "0.8 Studs/s", "1.2 Studs/s", "2.0 Studs/s"} local mi = 3
+UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() mi = mi + 1 if mi > #ms then mi = 1 end _G.MiningJumpSpeed = ms[mi] UI.MiningSpeedSwitch.Text = ml[mi] saveConfigToSlot(_G.SelectedConfigSlot) end)
+
 UI.KillSwitch.MouseButton1Click:Connect(function()
     Running = false getgenv().DominateHubLoaded = nil 
     for k, _ in pairs(_G) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then _G[k] = false end end
@@ -927,12 +938,19 @@ end)
 
 -- TAB ROUTERS
 local function mainRoute(pOpen, bActive) 
-    upgradesPage.Visible, noobsPage.Visible, footballPage.Visible, runesPage.Visible, capsulesPage.Visible, enchantsPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabUpgrades, tabNoobs, tabFootball, tabRunes, tabCapsules, tabEnchants, tabSettings}
+    upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, runesPage.Visible, capsulesPage.Visible, enchantsPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabRunes, tabCapsules, tabEnchants, tabSettings}
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(55, 55, 65), Color3.fromRGB(210, 210, 220) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(240, 240, 245), Color3.fromRGB(15, 15, 15) 
 end
-tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulesPage, tabCapsules) end) tabEnchants.MouseButton1Click:Connect(function() mainRoute(enchantsPage, tabEnchants) end) tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
+tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) 
+tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
+tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
+tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
+tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
+tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulesPage, tabCapsules) end) 
+tabEnchants.MouseButton1Click:Connect(function() mainRoute(enchantsPage, tabEnchants) end) 
+tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 local function sideRoute(tScroll, aBtn, aScrolls, aBtns)
     for i, s in ipairs(aScrolls) do s.Visible = (s == tScroll) end
@@ -963,4 +981,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V8.0 Pro Edition - Master Upgrades & Streamlined Layout Deployed!")
+print("[Dominate Hub] V8.1 Pro Edition - Dedicated Mines Tab & Clean Master Toggles Deployed!")
