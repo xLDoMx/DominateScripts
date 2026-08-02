@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V8.2 PRO EDITION (COMPACT STACKED CONFIGS & FADED GRADIENTS)
+-- DOMINATE HUB | V9.0 PRO EDITION (SCROLLING TOP TABS, COMPACT UI & STACKED SLOTS)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V8.2 Instance...")
+    print("[Dominate Hub] Reloading V9.0 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -161,7 +161,7 @@ task.spawn(function()
     until NetRemote or not Running
 end)
 
--- UI MASTER ALLOCATION
+-- UI MASTER ALLOCATION (Compact Height: 350)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
@@ -288,13 +288,13 @@ task.spawn(function()
 end)
 
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 580, 0, 420) 
-mainFrame.Position = UDim2.new(0.5, -290, 0.5, -210) 
+mainFrame.Size = UDim2.new(0, 540, 0, 350) -- Compacted height and width
+mainFrame.Position = UDim2.new(0.5, -270, 0.5, -175) 
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25) 
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 35) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 16; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V8.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.0 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -334,17 +334,37 @@ minBtn.MouseButton1Click:Connect(function()
         mainFrame.Size = UDim2.new(0, 0, 0, 0)
         mainFrame.BackgroundTransparency = 1
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 420), BackgroundTransparency = 0.35})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 540, 0, 350), BackgroundTransparency = 0.35})
         tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(0, 136, 255)
     end
 end)
 
-local tabList = Instance.new("Frame") tabList.Size = UDim2.new(1, -20, 0, 32) tabList.Position = UDim2.new(0, 10, 0, 40) tabList.BackgroundTransparency = 1; tabList.Parent = mainFrame
+-- SCROLLING TOP TABS CONTAINER
+local tabScroll = Instance.new("ScrollingFrame")
+tabScroll.Size = UDim2.new(1, -20, 0, 30)
+tabScroll.Position = UDim2.new(0, 10, 0, 36)
+tabScroll.BackgroundTransparency = 1
+tabScroll.BorderSizePixel = 0
+tabScroll.CanvasSize = UDim2.new(0, 600, 0, 0)
+tabScroll.ScrollBarThickness = 2
+tabScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255)
+tabScroll.Parent = mainFrame
 
--- MAIN TABS WITH SMOOTH FADE GRADIENTS
-local function makeMainTab(txt, pos, width)
-    local t = Instance.new("TextButton") t.Size = UDim2.new(0, width or 68, 1, 0) t.Position = UDim2.new(0, pos, 0, 0) t.BackgroundColor3 = Color3.fromRGB(55, 55, 65) t.TextColor3 = Color3.fromRGB(210, 210, 220) t.TextSize = 10; t.Font = Enum.Font.SourceSansBold; t.Text = txt; t.Parent = tabList
+local tabLayout = Instance.new("UIListLayout")
+tabLayout.FillDirection = Enum.FillDirection.Horizontal
+tabLayout.Padding = UDim.new(0, 6)
+tabLayout.Parent = tabScroll
+
+local function makeMainTab(txt)
+    local t = Instance.new("TextButton")
+    t.Size = UDim2.new(0, 68, 1, 0)
+    t.BackgroundColor3 = Color3.fromRGB(55, 55, 65)
+    t.TextColor3 = Color3.fromRGB(210, 210, 220)
+    t.TextSize = 10
+    t.Font = Enum.Font.SourceSansBold
+    t.Text = txt
+    t.Parent = tabScroll
     Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
     
     local grad = Instance.new("UIGradient")
@@ -357,23 +377,23 @@ local function makeMainTab(txt, pos, width)
     return t
 end
 
-local tabUpgrades = makeMainTab("Upgrades", 0, 68) tabUpgrades.TextColor3 = Color3.fromRGB(15, 15, 15)
-local tabNoobs = makeMainTab("Noobs", 72, 68)
-local tabMines = makeMainTab("Mines", 144, 68)
-local tabFootball = makeMainTab("Football", 216, 68)
-local tabRunes = makeMainTab("Runes", 288, 68)
-local tabCapsules = makeMainTab("Capsules", 360, 68)
-local tabEnchants = makeMainTab("Enchants", 432, 68)
-local tabSettings = makeMainTab("Settings", 504, 68)
+local tabUpgrades = makeMainTab("Upgrades") tabUpgrades.BackgroundColor3 = Color3.fromRGB(240, 240, 245) tabUpgrades.TextColor3 = Color3.fromRGB(15, 15, 15)
+local tabNoobs = makeMainTab("Noobs")
+local tabMines = makeMainTab("Mines")
+local tabFootball = makeMainTab("Football")
+local tabRunes = makeMainTab("Runes")
+local tabCapsules = makeMainTab("Capsules")
+local tabEnchants = makeMainTab("Enchants")
+local tabSettings = makeMainTab("Settings")
 
--- PAGE CONTAINERS
+-- PAGE CONTAINERS (Compact Height: -72)
 local function makePage()
-    local p = Instance.new("Frame") p.Size = UDim2.new(1, -20, 1, -85) p.Position = UDim2.new(0, 10, 0, 80) p.BackgroundTransparency = 1; p.Visible = false; p.Parent = mainFrame return p
+    local p = Instance.new("Frame") p.Size = UDim2.new(1, -20, 1, -72) p.Position = UDim2.new(0, 10, 0, 68) p.BackgroundTransparency = 1; p.Visible = false; p.Parent = mainFrame return p
 end
 local upgradesPage, noobsPage, minesPage, footballPage, runesPage, capsulesPage, enchantsPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- SIDEBAR GENERATOR WITH FADE GRADIENT
+-- SIDEBAR GENERATOR
 local function makeSidebar(parent)
     local sb = Instance.new("ScrollingFrame") sb.Size = UDim2.new(0, 95, 1, -5) sb.Position = UDim2.new(0, 0, 0, 5) sb.BackgroundTransparency = 1; sb.BorderSizePixel = 0; sb.ScrollBarThickness = 2; sb.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); sb.Parent = parent
     local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 4) list.Parent = sb
@@ -382,7 +402,7 @@ local function makeSidebar(parent)
 end
 
 local function makeSideBtn(txt, parent)
-    local b = Instance.new("TextButton") b.Size = UDim2.new(1, -5, 0, 28) b.BackgroundColor3 = Color3.fromRGB(55, 55, 65) b.TextColor3 = Color3.fromRGB(210, 210, 220) b.Font = Enum.Font.SourceSansBold; b.TextSize = 10; b.Text = txt; b.Parent = parent
+    local b = Instance.new("TextButton") b.Size = UDim2.new(1, -5, 0, 26) b.BackgroundColor3 = Color3.fromRGB(55, 55, 65) b.TextColor3 = Color3.fromRGB(210, 210, 220) b.Font = Enum.Font.SourceSansBold; b.TextSize = 10; b.Text = txt; b.Parent = parent
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
     
     local grad = Instance.new("UIGradient")
@@ -401,12 +421,12 @@ local function makeGridScroll(parent, hasSidebar)
     if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
     s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); s.Visible = false; s.Parent = parent 
     
-    local grid = Instance.new("UIGridLayout") grid.CellSize = UDim2.new(0.5, -6, 0, 32) grid.CellPadding = UDim2.new(0, 6, 0, 6) grid.SortOrder = Enum.SortOrder.LayoutOrder; grid.Parent = s
+    local grid = Instance.new("UIGridLayout") grid.CellSize = UDim2.new(0.5, -6, 0, 30) grid.CellPadding = UDim2.new(0, 6, 0, 5) grid.SortOrder = Enum.SortOrder.LayoutOrder; grid.Parent = s
     grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, grid.AbsoluteContentSize.Y + 10) end)
     return s 
 end
 
--- MORE COMPACT GRID ROW TOGGLE GENERATOR
+-- MORE COMPACT GRID ROW
 local function gridRow(txt, scr)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
 
@@ -420,7 +440,7 @@ local function gridRow(txt, scr)
     Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
 
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.58, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
-    local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -4, 0, 22) b.Position = UDim2.new(0.58, 0, 0.5, -11) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
+    local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -4, 0, 20) b.Position = UDim2.new(0.58, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) return b
 end
 
@@ -441,7 +461,7 @@ local function masterToggle(txt, flagsTable, scr)
     local dot = Instance.new("Frame") dot.Name = "StatusDot" dot.Size = UDim2.new(0, 5, 0, 5) dot.Position = UDim2.new(0, 6, 0.5, -2) dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80) dot.BorderSizePixel = 0; dot.Parent = f
     Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.55, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
-    local b = Instance.new("TextButton") b.Size = UDim2.new(0.42, -4, 0, 22) b.Position = UDim2.new(0.57, 0, 0.5, -11) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 9; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
+    local b = Instance.new("TextButton") b.Size = UDim2.new(0.42, -4, 0, 20) b.Position = UDim2.new(0.57, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 9; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
     b.MouseButton1Click:Connect(function()
@@ -539,7 +559,7 @@ local encScroll = makeGridScroll(enchantsPage, false) encScroll.Visible = true
 UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gridRow("Reroll: Cooker", encScroll) UI.EnchantFarmer = gridRow("Reroll: Farmer", encScroll) UI.EnchantMagician = gridRow("Reroll: Magician", encScroll) UI.EnchantArcher = gridRow("Reroll: Archer", encScroll) UI.EnchantSoldier = gridRow("Reroll: Soldier", encScroll) UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", encScroll) UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", encScroll) UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", encScroll) UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", encScroll) UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", encScroll)
 
 -- ======================================================================================
--- SETTINGS PAGE (GENERAL & COMPACT 1-LINE CONFIG SLOTS)
+-- SETTINGS PAGE (GENERAL & COMPACT STACKED 1-LINE CONFIG SLOTS)
 -- ======================================================================================
 local setSidebar = makeSidebar(settingsPage)
 local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -548,32 +568,32 @@ local bSetConfig = makeSideBtn("Config", setSidebar)
 local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
 local setConfigScroll = makeGridScroll(settingsPage, true)
 
-setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 230)
+setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 210)
 local configLayout = Instance.new("UIListLayout")
 configLayout.Padding = UDim.new(0, 6)
 configLayout.Parent = setConfigScroll
 
 for i = 1, 5 do
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -10, 0, 30)
+    row.Size = UDim2.new(1, -10, 0, 32) -- Full width stacked layout
     row.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     row.BorderSizePixel = 0
     row.Parent = setConfigScroll
     Instance.new("UICorner", row).CornerRadius = UDim.new(0, 5)
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 42, 1, 0)
-    label.Position = UDim2.new(0, 6, 0, 0)
+    label.Size = UDim2.new(0, 50, 1, 0)
+    label.Position = UDim2.new(0, 8, 0, 0)
     label.BackgroundTransparency = 1
     label.TextColor3 = Color3.fromRGB(220, 220, 225)
-    label.TextSize = 10
+    label.TextSize = 11
     label.Font = Enum.Font.SourceSansBold
     label.Text = "Slot " .. i
     label.Parent = row
 
     local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 140, 0, 22)
-    box.Position = UDim2.new(0, 48, 0.5, -11)
+    box.Size = UDim2.new(1, -210, 0, 22) -- Automatically stretches across available space
+    box.Position = UDim2.new(0, 60, 0.5, -11)
     box.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
     box.TextColor3 = Color3.fromRGB(255, 255, 255)
     box.TextSize = 10
@@ -583,8 +603,9 @@ for i = 1, 5 do
     Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
 
     local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0, 48, 0, 22)
-    saveBtn.Position = UDim2.new(0, 193, 0.5, -11)
+    saveBtn.Size = UDim2.new(0, 60, 0, 22)
+    saveBtn.AnchorPoint = Vector2.new(1, 0.5)
+    saveBtn.Position = UDim2.new(1, -68, 0.5, 0)
     saveBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
     saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     saveBtn.TextSize = 9
@@ -594,8 +615,9 @@ for i = 1, 5 do
     Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 4)
 
     local loadBtn = Instance.new("TextButton")
-    loadBtn.Size = UDim2.new(0, 48, 0, 22)
-    loadBtn.Position = UDim2.new(0, 245, 0.5, -11)
+    loadBtn.Size = UDim2.new(0, 60, 0, 22)
+    loadBtn.AnchorPoint = Vector2.new(1, 0.5)
+    loadBtn.Position = UDim2.new(1, -4, 0.5, 0)
     loadBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
     loadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     loadBtn.TextSize = 9
@@ -995,4 +1017,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V8.2 Pro Edition - Compact Stacked Configs & Faded Tabs Deployed!")
+print("[Dominate Hub] V9.0 Pro Edition - Compact Scrolling Layout Deployed!")
