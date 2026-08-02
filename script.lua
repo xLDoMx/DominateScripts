@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | BAD MAN
+-- DOMINATE HUB | BAD MAN 123
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -40,6 +40,7 @@ _G.AutoFillBucket6, _G.AutoFillBucket7, _G.AutoFillBucket8, _G.AutoFillBucket9, 
 -- WOOD & PLANKS AUTOMATION FLAGS (Realm 2)
 _G.AutoWoodRankUp, _G.AutoWoodMoreWood, _G.AutoWoodSharperAxes, _G.AutoWoodBiggerDeposit = false, false, false, false
 _G.AutoWoodFasterConversion, _G.AutoWoodMorePlanks = false, false
+_G.AutoDepositWood = false
 _G.AutoPlanksMorePlanks, _G.AutoPlanksMoreWood, _G.AutoPlanksWaterFromPlanks = false, false, false
 
 -- AXE CRAFTING FLAG (Realm 2)
@@ -222,7 +223,7 @@ local realm2OofScroll = makeScroll(110, realm2Page)
 local realm2WaterScroll = makeScroll(160, realm2Page)
 local realm2IceScroll = makeScroll(210, realm2Page)
 local realm2BucketScroll = makeScroll(500, realm2Page) 
-local realm2WoodScroll = makeScroll(300, realm2Page)
+local realm2WoodScroll = makeScroll(350, realm2Page)
 local realm2PlanksScroll = makeScroll(160, realm2Page)
 local realm2AxeScroll = makeScroll(110, realm2Page)
 
@@ -335,6 +336,7 @@ UI.WoodSharperAxes = gridRow("Sharper Axes", 3, realm2WoodScroll)
 UI.WoodBiggerDeposit = gridRow("Bigger Wood Deposit", 4, realm2WoodScroll)
 UI.WoodFasterConversion = gridRow("Faster Wood Conversion", 5, realm2WoodScroll)
 UI.WoodMorePlanks = gridRow("More Planks From Wood", 6, realm2WoodScroll)
+UI.DepositWood = gridRow("Auto Deposit Wood (30s)", 7, realm2WoodScroll)
 
 UI.PlanksMorePlanks = gridRow("More Planks", 1, realm2PlanksScroll)
 UI.PlanksMoreWood = gridRow("More Wood (Planks)", 2, realm2PlanksScroll)
@@ -781,14 +783,21 @@ task.spawn(function()
     end
 end)
 
--- AUTO DEPOSIT WHEAT LOOP
+-- AUTO DEPOSIT WHEAT & WOOD LOOP
 task.spawn(function()
     while Running do
-        task.wait(60.0)
-        if _G.AutoDepositWheat and NetRemote and Running then
-            pcall(function()
-                NetRemote:FireServer("DepositWheat")
-            end)
+        task.wait(30.0)
+        if NetRemote and Running then
+            if _G.AutoDepositWheat then
+                pcall(function()
+                    NetRemote:FireServer("DepositWheat")
+                end)
+            end
+            if _G.AutoDepositWood then
+                pcall(function()
+                    NetRemote:FireServer("DepositWood")
+                end)
+            end
         end
     end
 end)
@@ -859,9 +868,7 @@ local function tStateV2(b, v)
     b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
 end
 
-UI.Pharaoh.MouseButton1Click:Connect(function() tStateV2(UI.Pharaoh, "AutoUpgradePharaoh") end) 
-UI.AFK.MouseButton1Click:Connect(function() tStateV2(UI.AFK, "AntiAFK") end) 
-UI.Prestige.MouseButton1Click:Connect(function() tStateV2(UI.Prestige, "AutoPrestige") end)
+-- REALM 1 CONNECTORS
 UI.Starter.MouseButton1Click:Connect(function() tStateV2(UI.Starter, "AutoUpgradeStarter") end) 
 UI.Cooker.MouseButton1Click:Connect(function() tStateV2(UI.Cooker, "AutoUpgradeCooker") end) 
 UI.Farmer.MouseButton1Click:Connect(function() tStateV2(UI.Farmer, "AutoUpgradeFarmer") end) 
@@ -871,7 +878,44 @@ UI.Soldier.MouseButton1Click:Connect(function() tStateV2(UI.Soldier, "AutoUpgrad
 UI.MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.MoreOof, "AutoUpgradeMoreOof") end) 
 UI.FasterNoobs.MouseButton1Click:Connect(function() tStateV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
 
--- REALM 2 TOGGLE CONNECTORS
+UI.RebirthOof.MouseButton1Click:Connect(function() tStateV2(UI.RebirthOof, "AutoRebirthMoreOof") end) 
+UI.RebirthRebirth.MouseButton1Click:Connect(function() tStateV2(UI.RebirthRebirth, "AutoRebirthMoreRebirth") end) 
+UI.RebirthFire.MouseButton1Click:Connect(function() tStateV2(UI.RebirthFire, "AutoRebirthMoreFire") end)
+
+UI.FireFire.MouseButton1Click:Connect(function() tStateV2(UI.FireFire, "AutoFireMoreFire") end)
+UI.FireBulk.MouseButton1Click:Connect(function() tStateV2(UI.FireBulk, "AutoFireMoreBulk") end)
+UI.FireOof.MouseButton1Click:Connect(function() tStateV2(UI.FireOof, "AutoFireMoreOof") end)
+UI.FireRebirth.MouseButton1Click:Connect(function() tStateV2(UI.FireRebirth, "AutoFireMoreRebirth") end)
+UI.FireTierLuck.MouseButton1Click:Connect(function() tStateV2(UI.FireTierLuck, "AutoFireMoreTierLuck") end)
+UI.FireCashBonus.MouseButton1Click:Connect(function() tStateV2(UI.FireCashBonus, "AutoFireMoreCashBonus") end)
+
+UI.AutoBlazeConvert.MouseButton1Click:Connect(function() tStateV2(UI.AutoBlazeConvert, "AutoBlazeConvert") end)
+UI.BlazeMoreBlaze.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreBlaze, "AutoBlazeMoreBlaze") end) 
+UI.BlazeMoreFire.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreFire, "AutoBlazeMoreFire") end) 
+UI.BlazeMoreOof.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreOof, "AutoBlazeMoreOof") end)
+UI.BlazeMoreOofs.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreOofs, "AutoBlazeMoreOofs") end)
+UI.BlazeMoreBulk.MouseButton1Click:Connect(function() tStateV2(UI.BlazeMoreBulk, "AutoBlazeMoreBulk") end)
+
+UI.DepositWheat.MouseButton1Click:Connect(function() tStateV2(UI.DepositWheat, "AutoDepositWheat") end)
+UI.BreadMoreBread.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreBread, "AutoBreadMoreBread") end)
+UI.BreadMoreBread2.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreBread2, "AutoBreadMoreBread2") end)
+UI.BreadMoreWheat.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreWheat, "AutoBreadMoreWheat") end)
+UI.BreadBiggerWheatDeposit.MouseButton1Click:Connect(function() tStateV2(UI.BreadBiggerWheatDeposit, "AutoBreadBiggerWheatDeposit") end)
+UI.BreadFasterWheatConversion.MouseButton1Click:Connect(function() tStateV2(UI.BreadFasterWheatConversion, "AutoBreadFasterWheatConversion") end)
+UI.BreadMoreConsumption.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreConsumption, "AutoBreadMoreConsumption") end)
+UI.BreadMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreRuneLuck, "AutoBreadMoreRuneLuck") end)
+UI.BreadMoreTierLuck.MouseButton1Click:Connect(function() tStateV2(UI.BreadMoreTierLuck, "AutoBreadMoreTierLuck") end)
+UI.UpgradeCow.MouseButton1Click:Connect(function() tStateV2(UI.UpgradeCow, "AutoUpgradeCow") end)
+UI.UpgradeChicken.MouseButton1Click:Connect(function() tStateV2(UI.UpgradeChicken, "AutoUpgradeChicken") end)
+UI.BuyCow.MouseButton1Click:Connect(function() tStateV2(UI.BuyCow, "AutoBuyCow") end)
+UI.BuyChicken.MouseButton1Click:Connect(function() tStateV2(UI.BuyChicken, "AutoBuyChicken") end)
+
+UI.AutoFarmCash.MouseButton1Click:Connect(function() tStateV2(UI.AutoFarmCash, "AutoFarmCash") end)
+UI.CashMoreCash.MouseButton1Click:Connect(function() tStateV2(UI.CashMoreCash, "AutoUpgradeMoreCash") end)
+UI.CashFasterDropper.MouseButton1Click:Connect(function() tStateV2(UI.CashFasterDropper, "AutoUpgradeFasterDropper") end)
+UI.CashMoreRuneLuck.MouseButton1Click:Connect(function() tStateV2(UI.CashMoreRuneLuck, "AutoUpgradeMoreRuneLuck") end)
+
+-- REALM 2 CONNECTORS
 UI.R2Fisherman.MouseButton1Click:Connect(function() tStateV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end)
 UI.R2MoreOof.MouseButton1Click:Connect(function() tStateV2(UI.R2MoreOof, "AutoRealm2MoreOof") end)
 UI.R2WalkSpeed.MouseButton1Click:Connect(function() tStateV2(UI.R2WalkSpeed, "AutoRealm2MoreWalkSpeed") end)
@@ -901,6 +945,7 @@ UI.WoodSharperAxes.MouseButton1Click:Connect(function() tStateV2(UI.WoodSharperA
 UI.WoodBiggerDeposit.MouseButton1Click:Connect(function() tStateV2(UI.WoodBiggerDeposit, "AutoWoodBiggerDeposit") end)
 UI.WoodFasterConversion.MouseButton1Click:Connect(function() tStateV2(UI.WoodFasterConversion, "AutoWoodFasterConversion") end)
 UI.WoodMorePlanks.MouseButton1Click:Connect(function() tStateV2(UI.WoodMorePlanks, "AutoWoodMorePlanks") end)
+UI.DepositWood.MouseButton1Click:Connect(function() tStateV2(UI.DepositWood, "AutoDepositWood") end)
 
 UI.PlanksMorePlanks.MouseButton1Click:Connect(function() tStateV2(UI.PlanksMorePlanks, "AutoPlanksMorePlanks") end)
 UI.PlanksMoreWood.MouseButton1Click:Connect(function() tStateV2(UI.PlanksMoreWood, "AutoPlanksMoreWood") end)
@@ -913,6 +958,8 @@ UI.Hacker1.MouseButton1Click:Connect(function() tStateV2(UI.Hacker1, "AutoUpgrad
 UI.Hacker2.MouseButton1Click:Connect(function() tStateV2(UI.Hacker2, "AutoUpgradeHacker2") end)
 UI.Hacker3.MouseButton1Click:Connect(function() tStateV2(UI.Hacker3, "AutoUpgradeHacker3") end)
 UI.Hacker4.MouseButton1Click:Connect(function() tStateV2(UI.Hacker4, "AutoUpgradeHacker4") end)
+
+UI.Pharaoh.MouseButton1Click:Connect(function() tStateV2(UI.Pharaoh, "AutoUpgradePharaoh") end)
 
 -- FOOTBALL TOGGLE CONNECTORS
 UI.Goalkeeper.MouseButton1Click:Connect(function() tStateV2(UI.Goalkeeper, "AutoUpgradeGoalkeeper") end)
@@ -959,6 +1006,9 @@ UI.EnchantPharaoh.MouseButton1Click:Connect(function() tStateV2(UI.EnchantPharao
 
 UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tStateV2(UI.OpenT1ChestCard, "AutoOpenT1Chest") end)
 UI.OpenT2ChestCard.MouseButton1Click:Connect(function() tStateV2(UI.OpenT2ChestCard, "AutoOpenT2Chest") end)
+UI.AFK.MouseButton1Click:Connect(function() tStateV2(UI.AFK, "AntiAFK") end) 
+UI.Prestige.MouseButton1Click:Connect(function() tStateV2(UI.Prestige, "AutoPrestige") end)
+UI.RebirthTimerCard.MouseButton1Click:Connect(function() tStateV2(UI.RebirthTimerCard, "AutoRebirthTimer") end) 
 
 UI.KillSwitch.MouseButton1Click:Connect(function()
     Running = false 
@@ -1080,4 +1130,4 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-print("[Dominate Hub] Auto Craft Axes Successfully Added!")
+print("[Dominate Hub] Realm 1 Connectors Restored & Fully Operational!")
