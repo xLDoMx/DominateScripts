@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V9.2 PRO EDITION (FIXED CONNECTIONS & COMPACT LAYOUT)
+-- DOMINATE HUB | V9.3 PRO EDITION (FULL-WIDTH VERTICAL STACKED CONFIGS & GENERAL)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V9.2 Instance...")
+    print("[Dominate Hub] Reloading V9.3 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -294,7 +294,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.3 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -415,7 +415,7 @@ local function makeSideBtn(txt, parent)
     return b
 end
 
--- 2-COLUMN SCROLL GENERATOR
+-- 2-COLUMN SCROLL GENERATOR (Used for Upgrades, Noobs, Football, Runes)
 local function makeGridScroll(parent, hasSidebar)
     local s = Instance.new("ScrollingFrame")
     if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
@@ -423,6 +423,17 @@ local function makeGridScroll(parent, hasSidebar)
     
     local grid = Instance.new("UIGridLayout") grid.CellSize = UDim2.new(0.5, -6, 0, 30) grid.CellPadding = UDim2.new(0, 6, 0, 5) grid.SortOrder = Enum.SortOrder.LayoutOrder; grid.Parent = s
     grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, grid.AbsoluteContentSize.Y + 10) end)
+    return s 
+end
+
+-- SINGLE-COLUMN STACKED SCROLL GENERATOR (For Settings - General & Config)
+local function makeVerticalScroll(parent, hasSidebar)
+    local s = Instance.new("ScrollingFrame")
+    if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
+    s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); s.Visible = false; s.Parent = parent 
+    
+    local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 6) list.SortOrder = Enum.SortOrder.LayoutOrder; list.Parent = s
+    list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 10) end)
     return s 
 end
 
@@ -559,23 +570,19 @@ local encScroll = makeGridScroll(enchantsPage, false) encScroll.Visible = true
 UI.EnchantStarter = gridRow("Reroll: Starter", encScroll) UI.EnchantCooker = gridRow("Reroll: Cooker", encScroll) UI.EnchantFarmer = gridRow("Reroll: Farmer", encScroll) UI.EnchantMagician = gridRow("Reroll: Magician", encScroll) UI.EnchantArcher = gridRow("Reroll: Archer", encScroll) UI.EnchantSoldier = gridRow("Reroll: Soldier", encScroll) UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", encScroll) UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", encScroll) UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", encScroll) UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", encScroll) UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", encScroll)
 
 -- ======================================================================================
--- SETTINGS PAGE (GENERAL & STACKED FULL-WIDTH CONFIG SLOTS)
+-- SETTINGS PAGE (GENERAL & FULL-WIDTH VERTICAL STACKED CONFIG SLOTS)
 -- ======================================================================================
 local setSidebar = makeSidebar(settingsPage)
 local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
 local bSetConfig = makeSideBtn("Config", setSidebar)
 
-local setGenScroll = makeGridScroll(settingsPage, true) setGenScroll.Visible = true
-local setConfigScroll = makeGridScroll(settingsPage, true)
+local setGenScroll = makeVerticalScroll(settingsPage, true) setGenScroll.Visible = true
+local setConfigScroll = makeVerticalScroll(settingsPage, true)
 
-setConfigScroll.CanvasSize = UDim2.new(0, 0, 0, 210)
-local configLayout = Instance.new("UIListLayout")
-configLayout.Padding = UDim.new(0, 6)
-configLayout.Parent = setConfigScroll
-
+-- FULL-WIDTH STACKED CONFIG SLOTS
 for i = 1, 5 do
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -10, 0, 32)
+    row.Size = UDim2.new(1, -6, 0, 32)
     row.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     row.BorderSizePixel = 0
     row.Parent = setConfigScroll
@@ -644,16 +651,11 @@ for i = 1, 5 do
 end
 
 -- ======================================================================================
--- GENERAL SETTINGS TAB (RENAMED & ORDERED ACCORDING TO USER SPECIFICATIONS)
+-- GENERAL SETTINGS TAB (FULL-WIDTH VERTICAL STACKED ROWS)
 -- ======================================================================================
-setGenScroll.CanvasSize = UDim2.new(0, 0, 0, 310)
-local genLayout = Instance.new("UIListLayout")
-genLayout.Padding = UDim.new(0, 6)
-genLayout.Parent = setGenScroll
-
 local function genRow(txt, callback)
     local f = Instance.new("Frame")
-    f.Size = UDim2.new(1, -10, 0, 32)
+    f.Size = UDim2.new(1, -6, 0, 32)
     f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     f.BorderSizePixel = 0
     f.Parent = setGenScroll
@@ -717,7 +719,7 @@ genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
 
 -- Hub Theme Row
 local themeRow = Instance.new("Frame")
-themeRow.Size = UDim2.new(1, -10, 0, 32)
+themeRow.Size = UDim2.new(1, -6, 0, 32)
 themeRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 themeRow.BorderSizePixel = 0
 themeRow.Parent = setGenScroll
@@ -765,7 +767,7 @@ end)
 
 -- Emergency Kill Switch at the bottom
 local killRow = Instance.new("Frame")
-killRow.Size = UDim2.new(1, -10, 0, 32)
+killRow.Size = UDim2.new(1, -6, 0, 32)
 killRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 killRow.BorderSizePixel = 0
 killRow.Parent = setGenScroll
@@ -1126,4 +1128,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V9.2 Pro Edition - Fully Resolved & Cleanly Organized Deployed!")
+print("[Dominate Hub] V9.3 Pro Edition - Vertical Full-Width Stacks Deployed!")
