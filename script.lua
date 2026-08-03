@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V12.3 PRO EDITION (V11.6 STABLE BASE + DOUBLE-CLICK FIX ONLY)
+-- DOMINATE HUB | PRO EDITION (V11.6 BASE - CONFIG REMOVED COMPLETELY)
 --======================================================================================
 local Env = getgenv()
 
@@ -11,7 +11,7 @@ if Env.DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V12.3 Instance...")
+    print("[Dominate Hub] Reloading Instance...")
 end
 Env.DominateHubLoaded = true
 
@@ -38,29 +38,6 @@ pcall(function()
     blur.Size = 6
     blur.Parent = Lighting
 end)
-
--- MULTI-SLOT CONFIG SYSTEM
-Env.SelectedConfigSlot = Env.SelectedConfigSlot or 1
-local slotCustomNames = {[1] = "Slot 1", [2] = "Slot 2", [3] = "Slot 3", [4] = "Slot 4", [5] = "Slot 5"}
-
-local function getSlotFileName(slot)
-    return "DominateHub_Config_Slot" .. slot .. ".json"
-end
-
-local function saveConfigToSlot(slot, customName)
-    if customName then slotCustomNames[slot] = customName end
-    local configData = { _SlotCustomName = slotCustomNames[slot] }
-    for k, v in pairs(Env) do
-        if type(v) == "boolean" or type(v) == "number" or type(v) == "string" then
-            configData[k] = v
-        end
-    end
-    pcall(function()
-        if writefile then
-            writefile(getSlotFileName(slot), HttpService:JSONEncode(configData))
-        end
-    end)
-end
 
 -- TOAST NOTIFICATION HELPER
 local function showToast(msg)
@@ -92,156 +69,156 @@ local function showToast(msg)
     end)
 end
 
-Env.AntiAFK = Env.AntiAFK ~= nil and Env.AntiAFK or true
-Env.AutoPrestige = Env.AutoPrestige or false
-Env.CPUSaverMode = Env.CPUSaverMode or false
+Env.AntiAFK = true
+Env.AutoPrestige = false
+Env.CPUSaverMode = false
 
 -- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
-Env.AutoUpgradeStarter = Env.AutoUpgradeStarter or false
-Env.AutoUpgradeCooker = Env.AutoUpgradeCooker or false
-Env.AutoUpgradeFarmer = Env.AutoUpgradeFarmer or false
-Env.AutoUpgradeMagician = Env.AutoUpgradeMagician or false
-Env.AutoUpgradeArcher = Env.AutoUpgradeArcher or false
-Env.AutoUpgradeSoldier = Env.AutoUpgradeSoldier or false
-Env.AutoUpgradeMoreOof = Env.AutoUpgradeMoreOof or false
-Env.AutoUpgradeFasterNoobs = Env.AutoUpgradeFasterNoobs or false
+Env.AutoUpgradeStarter = false
+Env.AutoUpgradeCooker = false
+Env.AutoUpgradeFarmer = false
+Env.AutoUpgradeMagician = false
+Env.AutoUpgradeArcher = false
+Env.AutoUpgradeSoldier = false
+Env.AutoUpgradeMoreOof = false
+Env.AutoUpgradeFasterNoobs = false
 
-Env.AutoRebirthMoreOof = Env.AutoRebirthMoreOof or false
-Env.AutoRebirthMoreRebirth = Env.AutoRebirthMoreRebirth or false
-Env.AutoRebirthMoreFire = Env.AutoRebirthMoreFire or false
+Env.AutoRebirthMoreOof = false
+Env.AutoRebirthMoreRebirth = false
+Env.AutoRebirthMoreFire = false
 
-Env.AutoFireMoreFire = Env.AutoFireMoreFire or false
-Env.AutoFireMoreBulk = Env.AutoFireMoreBulk or false
-Env.AutoFireMoreOof = Env.AutoFireMoreOof or false
-Env.AutoFireMoreRebirth = Env.AutoFireMoreRebirth or false
-Env.AutoFireMoreTierLuck = Env.AutoFireMoreTierLuck or false
-Env.AutoFireMoreCashBonus = Env.AutoFireMoreCashBonus or false
+Env.AutoFireMoreFire = false
+Env.AutoFireMoreBulk = false
+Env.AutoFireMoreOof = false
+Env.AutoFireMoreRebirth = false
+Env.AutoFireMoreTierLuck = false
+Env.AutoFireMoreCashBonus = false
 
-Env.AutoRebirthTimer = Env.AutoRebirthTimer or false
+Env.AutoRebirthTimer = false
 
-Env.AutoBlazeMoreBlaze = Env.AutoBlazeMoreBlaze or false
-Env.AutoBlazeMoreFire = Env.AutoBlazeMoreFire or false
-Env.AutoBlazeMoreOof = Env.AutoBlazeMoreOof or false
-Env.AutoBlazeMoreOofs = Env.AutoBlazeMoreOofs or false
-Env.AutoBlazeMoreBulk = Env.AutoBlazeMoreBulk or false
-Env.AutoBlazeConvert = Env.AutoBlazeConvert or false
+Env.AutoBlazeMoreBlaze = false
+Env.AutoBlazeMoreFire = false
+Env.AutoBlazeMoreOof = false
+Env.AutoBlazeMoreOofs = false
+Env.AutoBlazeMoreBulk = false
+Env.AutoBlazeConvert = false
 
-Env.AutoUpgradePharaoh = Env.AutoUpgradePharaoh or false
+Env.AutoUpgradePharaoh = false
 
-Env.AutoUpgradeFishermanNoob = Env.AutoUpgradeFishermanNoob or false
-Env.AutoUpgradeKnightNoob = Env.AutoUpgradeKnightNoob or false
-Env.AutoUpgradeExplorerNoob = Env.AutoUpgradeExplorerNoob or false
-Env.AutoUpgradeMagicianNoob = Env.AutoUpgradeMagicianNoob or false
-Env.AutoRealm2MoreWalkSpeed = Env.AutoRealm2MoreWalkSpeed or false
-Env.AutoRealm2MoreWater = Env.AutoRealm2MoreWater or false
-Env.AutoRealm2MoreOofWater = Env.AutoRealm2MoreOofWater or false
-Env.AutoRealm2MorePlanks = Env.AutoRealm2MorePlanks or false
-Env.AutoRealm2MoreIce = Env.AutoRealm2MoreIce or false
-Env.AutoRealm2WaterPump1 = Env.AutoRealm2WaterPump1 or false
-Env.AutoRealm2WaterPump2 = Env.AutoRealm2WaterPump2 or false
-Env.AutoRealm2MoreOofIce = Env.AutoRealm2MoreOofIce or false
+Env.AutoUpgradeFishermanNoob = false
+Env.AutoUpgradeKnightNoob = false
+Env.AutoUpgradeExplorerNoob = false
+Env.AutoUpgradeMagicianNoob = false
+Env.AutoRealm2MoreWalkSpeed = false
+Env.AutoRealm2MoreWater = false
+Env.AutoRealm2MoreOofWater = false
+Env.AutoRealm2MorePlanks = false
+Env.AutoRealm2MoreIce = false
+Env.AutoRealm2WaterPump1 = false
+Env.AutoRealm2WaterPump2 = false
+Env.AutoRealm2MoreOofIce = false
 
 for i = 1, 11 do
-    Env["AutoFillBucket" .. i] = Env["AutoFillBucket" .. i] or false
+    Env["AutoFillBucket" .. i] = false
 end
 
-Env.AutoWoodRankUp = Env.AutoWoodRankUp or false
-Env.AutoWoodMoreWood = Env.AutoWoodMoreWood or false
-Env.AutoWoodSharperAxes = Env.AutoWoodSharperAxes or false
-Env.AutoWoodBiggerDeposit = Env.AutoWoodBiggerDeposit or false
-Env.AutoWoodFasterConversion = Env.AutoWoodFasterConversion or false
-Env.AutoWoodMorePlanks = Env.AutoWoodMorePlanks or false
-Env.AutoDepositWood = Env.AutoDepositWood or false
+Env.AutoWoodRankUp = false
+Env.AutoWoodMoreWood = false
+Env.AutoWoodSharperAxes = false
+Env.AutoWoodBiggerDeposit = false
+Env.AutoWoodFasterConversion = false
+Env.AutoWoodMorePlanks = false
+Env.AutoDepositWood = false
 
-Env.AutoPlanksMorePlanks = Env.AutoPlanksMorePlanks or false
-Env.AutoPlanksMoreWood = Env.AutoPlanksMoreWood or false
-Env.AutoPlanksWaterFromPlanks = Env.AutoPlanksWaterFromPlanks or false
+Env.AutoPlanksMorePlanks = false
+Env.AutoPlanksMoreWood = false
+Env.AutoPlanksWaterFromPlanks = false
 
-Env.AutoGemMoreOof = Env.AutoGemMoreOof or false
-Env.AutoGemMoreGems = Env.AutoGemMoreGems or false
-Env.AutoGemStrongerPickaxes = Env.AutoGemStrongerPickaxes or false
-Env.AutoGemMoreOreStats = Env.AutoGemMoreOreStats or false
-Env.AutoGemExchange = Env.AutoGemExchange or false
+Env.AutoGemMoreOof = false
+Env.AutoGemMoreGems = false
+Env.AutoGemStrongerPickaxes = false
+Env.AutoGemMoreOreStats = false
+Env.AutoGemExchange = false
 
-Env.AutoMineStone = Env.AutoMineStone or false
-Env.AutoMineCoal = Env.AutoMineCoal or false
-Env.AutoMineSilver = Env.AutoMineSilver or false
-Env.AutoMineIron = Env.AutoMineIron or false
-Env.AutoMineCopper = Env.AutoMineCopper or false
-Env.AutoMineGold = Env.AutoMineGold or false
-Env.AutoMinePlatinum = Env.AutoMinePlatinum or false
-Env.AutoMineTitanium = Env.AutoMineTitanium or false
-Env.AutoMineCobalt = Env.AutoMineCobalt or false
-Env.AutoMineUranium = Env.AutoMineUranium or false
-Env.AutoMinePalladium = Env.AutoMinePalladium or false
-Env.AutoMineAetherite = Env.AutoMineAetherite or false
-Env.AutoMineRuby = Env.AutoMineRuby or false
-Env.AutoMineVoidsteel = Env.AutoMineVoidsteel or false
-Env.AutoMineCelestium = Env.AutoMineCelestium or false
-Env.MiningJumpSpeed = Env.MiningJumpSpeed or 0.8 
+Env.AutoMineStone = false
+Env.AutoMineCoal = false
+Env.AutoMineSilver = false
+Env.AutoMineIron = false
+Env.AutoMineCopper = false
+Env.AutoMineGold = false
+Env.AutoMinePlatinum = false
+Env.AutoMineTitanium = false
+Env.AutoMineCobalt = false
+Env.AutoMineUranium = false
+Env.AutoMinePalladium = false
+Env.AutoMineAetherite = false
+Env.AutoMineRuby = false
+Env.AutoMineVoidsteel = false
+Env.AutoMineCelestium = false
+Env.MiningJumpSpeed = 0.8 
 
-Env.AutoUpgradeHacker1 = Env.AutoUpgradeHacker1 or false
-Env.AutoUpgradeHacker2 = Env.AutoUpgradeHacker2 or false
-Env.AutoUpgradeHacker3 = Env.AutoUpgradeHacker3 or false
-Env.AutoUpgradeHacker4 = Env.AutoUpgradeHacker4 or false
+Env.AutoUpgradeHacker1 = false
+Env.AutoUpgradeHacker2 = false
+Env.AutoUpgradeHacker3 = false
+Env.AutoUpgradeHacker4 = false
 
-Env.AutoScoreGoal = Env.AutoScoreGoal or false
-Env.AutoGoalsMoreGoals = Env.AutoGoalsMoreGoals or false
-Env.AutoGoalsRuneBulk = Env.AutoGoalsRuneBulk or false
-Env.AutoGoalsRuneLuck = Env.AutoGoalsRuneLuck or false
-Env.AutoBuyAutoKick = Env.AutoBuyAutoKick or false
-Env.AutoFootballTree = Env.AutoFootballTree or false
-Env.AutoClaimTrophies = Env.AutoClaimTrophies or false
+Env.AutoScoreGoal = false
+Env.AutoGoalsMoreGoals = false
+Env.AutoGoalsRuneBulk = false
+Env.AutoGoalsRuneLuck = false
+Env.AutoBuyAutoKick = false
+Env.AutoFootballTree = false
+Env.AutoClaimTrophies = false
 
-Env.AutoUpgradeGoalkeeper = Env.AutoUpgradeGoalkeeper or false
-Env.AutoUpgradeLeftBack = Env.AutoUpgradeLeftBack or false
-Env.AutoUpgradeLeftCenterBack = Env.AutoUpgradeLeftCenterBack or false
-Env.AutoUpgradeRightCenterBack = Env.AutoUpgradeRightCenterBack or false
-Env.AutoUpgradeRightBack = Env.AutoUpgradeRightBack or false
-Env.AutoUpgradeLeftDefensiveMid = Env.AutoUpgradeLeftDefensiveMid or false
-Env.AutoUpgradeRightDefensiveMid = Env.AutoUpgradeRightDefensiveMid or false
-Env.AutoUpgradeAttackingMid = Env.AutoUpgradeAttackingMid or false
-Env.AutoUpgradeLeftWing = Env.AutoUpgradeLeftWing or false
-Env.AutoUpgradeRightWing = Env.AutoUpgradeRightWing or false
-Env.AutoUpgradeStriker = Env.AutoUpgradeStriker or false
+Env.AutoUpgradeGoalkeeper = false
+Env.AutoUpgradeLeftBack = false
+Env.AutoUpgradeLeftCenterBack = false
+Env.AutoUpgradeRightCenterBack = false
+Env.AutoUpgradeRightBack = false
+Env.AutoUpgradeLeftDefensiveMid = false
+Env.AutoUpgradeRightDefensiveMid = false
+Env.AutoUpgradeAttackingMid = false
+Env.AutoUpgradeLeftWing = false
+Env.AutoUpgradeRightWing = false
+Env.AutoUpgradeStriker = false
 
-Env.AutoBreadMoreBread = Env.AutoBreadMoreBread or false
-Env.AutoBreadMoreBread2 = Env.AutoBreadMoreBread2 or false
-Env.AutoBreadMoreWheat = Env.AutoBreadMoreWheat or false
-Env.AutoBreadBiggerWheatDeposit = Env.AutoBreadBiggerWheatDeposit or false
-Env.AutoDepositWheat = Env.AutoDepositWheat or false
-Env.AutoBreadFasterWheatConversion = Env.AutoBreadFasterWheatConversion or false
-Env.AutoBreadMoreConsumption = Env.AutoBreadMoreConsumption or false
-Env.AutoBreadMoreRuneLuck = Env.AutoBreadMoreRuneLuck or false
-Env.AutoBreadMoreTierLuck = Env.AutoBreadMoreTierLuck or false
-Env.AutoUpgradeCow = Env.AutoUpgradeCow or false
-Env.AutoUpgradeChicken = Env.AutoUpgradeChicken or false
-Env.AutoBuyCow = Env.AutoBuyCow or false
-Env.AutoBuyChicken = Env.AutoBuyChicken or false
+Env.AutoBreadMoreBread = false
+Env.AutoBreadMoreBread2 = false
+Env.AutoBreadMoreWheat = false
+Env.AutoBreadBiggerWheatDeposit = false
+Env.AutoDepositWheat = false
+Env.AutoBreadFasterWheatConversion = false
+Env.AutoBreadMoreConsumption = false
+Env.AutoBreadMoreRuneLuck = false
+Env.AutoBreadMoreTierLuck = false
+Env.AutoUpgradeCow = false
+Env.AutoUpgradeChicken = false
+Env.AutoBuyCow = false
+Env.AutoBuyChicken = false
 
-Env.AutoFarmCash = Env.AutoFarmCash or false
-Env.AutoUpgradeMoreCash = Env.AutoUpgradeMoreCash or false
-Env.AutoUpgradeFasterDropper = Env.AutoUpgradeFasterDropper or false
-Env.AutoUpgradeMoreRuneLuck = Env.AutoUpgradeMoreRuneLuck or false
+Env.AutoFarmCash = false
+Env.AutoUpgradeMoreCash = false
+Env.AutoUpgradeFasterDropper = false
+Env.AutoUpgradeMoreRuneLuck = false
 
-Env.AutoRollBasicRune = Env.AutoRollBasicRune or false
-Env.AutoRollSuperRune = Env.AutoRollSuperRune or false
-Env.AutoRollAdvancedRune = Env.AutoRollAdvancedRune or false
-Env.AutoRollCosmicRune = Env.AutoRollCosmicRune or false
-Env.AutoRollFootballRune = Env.AutoRollFootballRune or false
-Env.AutoRollSnowyRune = Env.AutoRollSnowyRune or false
+Env.AutoRollBasicRune = false
+Env.AutoRollSuperRune = false
+Env.AutoRollAdvancedRune = false
+Env.AutoRollCosmicRune = false
+Env.AutoRollFootballRune = false
+Env.AutoRollSnowyRune = false
 
-Env.AutoOpenT1Chest = Env.AutoOpenT1Chest or false
-Env.AutoOpenT2Chest = Env.AutoOpenT2Chest or false
-Env.AutoOpenClassicCapsule = Env.AutoOpenClassicCapsule or false
-Env.AutoOpenFootballCapsule = Env.AutoOpenFootballCapsule or false
-Env.AutoOpenSuperCapsule = Env.AutoOpenSuperCapsule or false
+Env.AutoOpenT1Chest = false
+Env.AutoOpenT2Chest = false
+Env.AutoOpenClassicCapsule = false
+Env.AutoOpenFootballCapsule = false
+Env.AutoOpenSuperCapsule = false
 
-Env.FPSBoostMode = Env.FPSBoostMode or false
-Env.ShowStatsHUD = Env.ShowStatsHUD ~= nil and Env.ShowStatsHUD or true
-Env.DiscordWebhookURL = Env.DiscordWebhookURL or ""
+Env.FPSBoostMode = false
+Env.ShowStatsHUD = true
+Env.DiscordWebhookURL = ""
 
--- HELPER FUNCTIONS HOISTED EARLY
+-- HELPER FUNCTIONS
 local function tV2(b, v) 
     Env[v] = not Env[v] 
     b.Text = Env[v] and "ACTIVE" or "DISABLED" 
@@ -255,7 +232,6 @@ local function tV2(b, v)
             dot.BackgroundColor3 = Env[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
         end
     end
-    saveConfigToSlot(Env.SelectedConfigSlot)
 end
 
 local function toggleFPSBoost(b)
@@ -265,7 +241,6 @@ local function toggleFPSBoost(b)
     b.TextColor3 = Env.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
     local dot = b.Parent:FindFirstChild("StatusDot")
     if dot then dot.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-    saveConfigToSlot(Env.SelectedConfigSlot)
     
     if Env.FPSBoostMode then
         pcall(function()
@@ -405,7 +380,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V12.3 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -546,9 +521,6 @@ local function makeVerticalScroll(parent, hasSidebar)
     return s 
 end
 
--- REGISTRY FOR UI BUTTON SYNC
-local registeredButtons = {}
-
 local function gridRow(txt, scr, vKey)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
 
@@ -564,10 +536,6 @@ local function gridRow(txt, scr, vKey)
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.58, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -4, 0, 20) b.Position = UDim2.new(0.58, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) 
-    
-    if vKey then
-        table.insert(registeredButtons, {Btn = b, Var = vKey, Dot = dot})
-    end
     return b
 end
 
@@ -603,7 +571,6 @@ local function masterToggle(txt, flagsTable, scr)
         b.BackgroundColor3 = activeState and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
         b.TextColor3 = activeState and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
         dot.BackgroundColor3 = activeState and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-        saveConfigToSlot(Env.SelectedConfigSlot)
     end)
     return b
 end
@@ -687,8 +654,6 @@ bestTierBtn.MouseButton1Click:Connect(function()
         end
     end
     
-    saveConfigToSlot(Env.SelectedConfigSlot)
-    syncAllUI()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
@@ -743,7 +708,6 @@ local function sleekMineRow(txt, scr, vKey)
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
     UI[vKey] = b
-    table.insert(registeredButtons, {Btn = b, Var = vKey, Dot = dot})
     return b
 end
 
@@ -829,80 +793,8 @@ UI.SuperCapsule = gridRow("Hatch Super Capsule", miscScrollCap, "AutoOpenSuperCa
 -- ======================================================================================
 local setSidebar = makeSidebar(settingsPage)
 local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bSetConfig = makeSideBtn("Config", setSidebar)
 
 local setGenScroll = makeVerticalScroll(settingsPage, true) setGenScroll.Visible = true
-local setConfigScroll = makeVerticalScroll(settingsPage, true)
-
-for i = 1, 5 do
-    local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -6, 0, 32)
-    row.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-    row.BorderSizePixel = 0
-    row.Parent = setConfigScroll
-    Instance.new("UICorner", row).CornerRadius = UDim.new(0, 5)
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 50, 1, 0)
-    label.Position = UDim2.new(0, 8, 0, 0)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.fromRGB(220, 220, 225)
-    label.TextSize = 11
-    label.Font = Enum.Font.SourceSansBold
-    label.Text = "Slot " .. i
-    label.Parent = row
-
-    local loadBtn = Instance.new("TextButton")
-    loadBtn.Size = UDim2.new(0, 55, 0, 22)
-    loadBtn.AnchorPoint = Vector2.new(1, 0.5)
-    loadBtn.Position = UDim2.new(1, -4, 0.5, 0)
-    loadBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 120)
-    loadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    loadBtn.TextSize = 9
-    loadBtn.Font = Enum.Font.SourceSansBold
-    loadBtn.Text = "LOAD"
-    loadBtn.Parent = row
-    Instance.new("UICorner", loadBtn).CornerRadius = UDim.new(0, 4)
-
-    local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0, 55, 0, 22)
-    saveBtn.AnchorPoint = Vector2.new(1, 0.5)
-    saveBtn.Position = UDim2.new(1, -63, 0.5, 0)
-    saveBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
-    saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    saveBtn.TextSize = 9
-    saveBtn.Font = Enum.Font.SourceSansBold
-    saveBtn.Text = "SAVE"
-    saveBtn.Parent = row
-    Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 4)
-
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(1, -180, 0, 22)
-    box.Position = UDim2.new(0, 58, 0.5, -11)
-    box.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
-    box.TextColor3 = Color3.fromRGB(255, 255, 255)
-    box.TextSize = 10
-    box.Font = Enum.Font.SourceSansBold
-    box.Text = slotCustomNames[i]
-    box.Parent = row
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
-
-    box:GetPropertyChangedSignal("Text"):Connect(function()
-        slotCustomNames[i] = box.Text
-    end)
-
-    saveBtn.MouseButton1Click:Connect(function()
-        saveConfigToSlot(i, box.Text)
-        showToast("Saved to Slot " .. i .. " (" .. box.Text .. ")")
-    end)
-
-    loadBtn.MouseButton1Click:Connect(function()
-        Env.SelectedConfigSlot = i
-        loadConfigFromSlot(i)
-        box.Text = slotCustomNames[i]
-        showToast("Loaded Slot " .. i .. " (" .. slotCustomNames[i] .. ")")
-    end)
-end
 
 local function genRow(txt, vKey, callback)
     local f = Instance.new("Frame")
@@ -943,10 +835,6 @@ local function genRow(txt, vKey, callback)
     b.Parent = f
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
-    if vKey then
-        table.insert(registeredButtons, {Btn = b, Var = vKey, Dot = dot})
-    end
-
     if callback then
         b.MouseButton1Click:Connect(function()
             callback(b)
@@ -962,6 +850,48 @@ local function genSpacer(h)
     sp.Parent = setGenScroll
 end
 
+local function tV2(b, v) 
+    Env[v] = not Env[v] 
+    b.Text = Env[v] and "ACTIVE" or "DISABLED" 
+    b.BackgroundColor3 = Env[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
+    b.TextColor3 = Env[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    
+    local card = b.Parent
+    if card and card:IsA("Frame") then
+        local dot = card:FindFirstChild("StatusDot")
+        if dot then
+            dot.BackgroundColor3 = Env[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        end
+    end
+end
+
+local function toggleFPSBoost(b)
+    Env.FPSBoostMode = not Env.FPSBoostMode
+    b.Text = Env.FPSBoostMode and "ACTIVE" or "DISABLED"
+    b.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = Env.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    local dot = b.Parent:FindFirstChild("StatusDot")
+    if dot then dot.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
+    
+    if Env.FPSBoostMode then
+        pcall(function()
+            Lighting.GlobalShadows = false
+            Lighting.FogEnd = 9e9
+            for _, v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Material = Enum.Material.SmoothPlastic
+                    v.Reflectance = 0
+                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+                    v.Enabled = false
+                end
+            end
+        end)
+        showToast("FPS Booster Enabled!")
+    else
+        showToast("FPS Booster Disabled!")
+    end
+end
+
 UI.AFK = genRow("Anti AFK Protection", "AntiAFK", function(b) tV2(b, "AntiAFK") end)
 UI.FPSBoostToggle = genRow("FPS Booster Mode", "FPSBoostMode", function(b) toggleFPSBoost(b) end)
 UI.HUDToggle = genRow("Stats HUD Overlay", "ShowStatsHUD", function(b)
@@ -971,7 +901,6 @@ UI.HUDToggle = genRow("Stats HUD Overlay", "ShowStatsHUD", function(b)
     b.TextColor3 = Env.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
     local dot = b.Parent:FindFirstChild("StatusDot")
     if dot then dot.BackgroundColor3 = Env.ShowStatsHUD and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-    saveConfigToSlot(Env.SelectedConfigSlot)
 end)
 
 UI.CPUSaverToggle = genRow("CPU Saver Mode", "CPUSaverMode", function(b) 
@@ -981,7 +910,6 @@ UI.CPUSaverToggle = genRow("CPU Saver Mode", "CPUSaverMode", function(b)
     b.TextColor3 = Env.CPUSaverMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
     local dot = b.Parent:FindFirstChild("StatusDot")
     if dot then dot.BackgroundColor3 = Env.CPUSaverMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-    saveConfigToSlot(Env.SelectedConfigSlot)
     showToast(Env.CPUSaverMode and "CPU Saver Mode Enabled (Background loops throttled)" or "CPU Saver Mode Disabled")
 end)
 
@@ -1031,7 +959,6 @@ UI.MiningSpeedSwitch.MouseButton1Click:Connect(function()
     if mi > #ms then mi = 1 end 
     Env.MiningJumpSpeed = ms[mi] 
     UI.MiningSpeedSwitch.Text = ml[mi] 
-    saveConfigToSlot(Env.SelectedConfigSlot) 
 end)
 
 genSpacer(10)
@@ -1122,21 +1049,6 @@ UI.KillSwitch.MouseButton1Click:Connect(function()
     end) 
     sg:Destroy()
 end)
-
--- ======================================================================================
--- UI SYNCHRONIZATION ENGINE
--- ======================================================================================
-syncAllUI = function()
-    for _, item in ipairs(registeredButtons) do
-        local isActive = Env[item.Var] == true
-        item.Btn.Text = isActive and "ACTIVE" or "DISABLED"
-        item.Btn.BackgroundColor3 = isActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-        item.Btn.TextColor3 = isActive and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-        if item.Dot then
-            item.Dot.BackgroundColor3 = isActive and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-        end
-    end
-end
 
 -- WIRE UP NOOBS
 UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) 
@@ -1240,9 +1152,8 @@ bMiscRu2.MouseButton1Click:Connect(function() sideRoute(miscScrollRu2, bMiscRu2,
 bMiscRuE.MouseButton1Click:Connect(function() sideRoute(miscScrollRuE, bMiscRuE, miscSubS, miscSubB) end)
 bMiscCap.MouseButton1Click:Connect(function() sideRoute(miscScrollCap, bMiscCap, miscSubS, miscSubB) end)
 
-local setS, setB = {setGenScroll, setConfigScroll}, {bSetGen, bSetConfig}
+local setS, setB = {setGenScroll}, {bSetGen}
 bSetGen.MouseButton1Click:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
-bSetConfig.MouseButton1Click:Connect(function() sideRoute(setConfigScroll, bSetConfig, setS, setB) end)
 
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
@@ -1254,11 +1165,8 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- NOW LOAD CONFIG & SYNC BUTTONS AFTER ALL ELEMENTS ARE CREATED & REGISTERED (FIXES DOUBLE-CLICK BUG)
-loadConfigFromSlot(1)
-
 -- ======================================================================================
--- LOCOMOTION & TELEPORT ENGINES (V11.6 ORIGINAL SPEEDS & LOOPS)
+-- LOCOMOTION & TELEPORT ENGINES (ORIGINAL V11.6 LOOPS)
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1397,7 +1305,8 @@ local PrimaryUpgradeQueue = {
     {F="AutoRebirthMoreOof",T="UpgradeUpgradeMax",A={"Rebirth","MoreOof"}}, {F="AutoRebirthMoreRebirth",T="UpgradeUpgradeMax",A={"Rebirth","MoreRebirth"}}, {F="AutoRebirthMoreFire",T="UpgradeUpgradeMax",A={"Rebirth","MoreFire"}},
     {F="AutoFireMoreFire",T="UpgradeUpgradeMax",A={"Fire","MoreFire"}}, {F="AutoFireMoreBulk",T="UpgradeUpgradeMax",A={"Fire","MoreBulk"}}, {F="AutoFireMoreOof",T="UpgradeUpgradeMax",A={"Fire","MoreOof"}}, {F="AutoFireMoreRebirth",T="UpgradeUpgradeMax",A={"Fire","MoreRebirth"}}, {F="AutoFireMoreTierLuck",T="UpgradeUpgradeMax",A={"Fire","MoreTierLuck"}}, {F="AutoFireMoreCashBonus",T="UpgradeUpgradeMax",A={"Fire","MoreCashBonus"}},
     {F="AutoUpgradeMoreCash",T="UpgradeUpgradeMax",A={"Cash","MoreCash"}}, {F="AutoUpgradeFasterDropper",T="UpgradeUpgradeMax",A={"Cash","FasterDropper"}}, {F="AutoUpgradeMoreRuneLuck",T="UpgradeUpgradeMax",A={"Cash","MoreRuneLuck"}},
-    {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}, {F="AutoBuyAutoKick",T="UpgradeUpgradeMax",A={"Goals","AutoKick"}}
+    {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}, {F="AutoBuyAutoKick",T="UpgradeUpgradeMax",A={"Goals","AutoKick"}},
+    {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}}
 }
 
 task.spawn(function()
@@ -1444,9 +1353,6 @@ end)
 
 task.spawn(function() while Running do task.wait(3.0) if NetRemote and Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() NetRemote:FireServer("BuyTrophy", i) end) task.wait(0.2) end end end end)
 
-local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
-task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
-
 task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
@@ -1463,4 +1369,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.3 Pro Edition - V11.6 Stable Base + Double-Click Fix!")
+print("[Dominate Hub] V11.6 Base Loaded Successfully (Config Removed)!")
