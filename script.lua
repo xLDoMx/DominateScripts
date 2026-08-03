@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V10.6 PRO EDITION (ROBUST REMOTE & ORE FINDER ENGINE)
+-- DOMINATE HUB | V9.9 PRO EDITION (CONSOLIDATED MISC TAB & SLEEK STACKED LAYOUT)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V10.6 Instance...")
+    print("[Dominate Hub] Reloading V9.9 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -27,31 +27,8 @@ local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
 
--- MASTER UI ELEMENTS & BUTTON REGISTRY
+-- MASTER UI ELEMENTS TABLE
 local UI = {}
-local registeredButtons = {}
-
-local function updateButtonVisual(b, isActive)
-    b.Text = isActive and "ACTIVE" or "DISABLED"
-    b.BackgroundColor3 = isActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = isActive and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    local card = b.Parent
-    if card and card:IsA("Frame") then
-        local dot = card:FindFirstChild("StatusDot")
-        if dot then
-            dot.BackgroundColor3 = isActive and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-        end
-    end
-end
-
-local function refreshAllVisuals()
-    for vKey, btnData in pairs(registeredButtons) do
-        if type(btnData.btn) == "userdata" and btnData.btn.Parent then
-            local activeState = _G[btnData.flagKey] == true
-            updateButtonVisual(btnData.btn, activeState)
-        end
-    end
-end
 
 -- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
@@ -99,11 +76,10 @@ local function loadConfigFromSlot(slot)
             end
         end
     end)
-    refreshAllVisuals()
 end
 loadConfigFromSlot(1)
 
-_G.AntiAFK, _G.AutoPrestige, _G.CPUSaverMode = true, false, false
+_G.AntiAFK, _G.AutoPrestige = true, false
 
 -- ALL AUTOMATION FLAGS
 _G.AutoUpgradeStarter, _G.AutoUpgradeCooker, _G.AutoUpgradeFarmer, _G.AutoUpgradeMagician, _G.AutoUpgradeArcher, _G.AutoUpgradeSoldier, _G.AutoUpgradeMoreOof, _G.AutoUpgradeFasterNoobs = false, false, false, false, false, false, false, false
@@ -180,20 +156,12 @@ player.Idled:Connect(function()
     end
 end)
 
--- ROBUST REMOTE EVENT FINDER
 task.spawn(function()
-    while not NetRemote and Running do
-        pcall(function()
-            for _, descendant in ipairs(ReplicatedStorage:GetDescendants()) do
-                if descendant:IsA("RemoteEvent") and (descendant.Name == "MainRemote" or descendant.Name:lower():find("remote")) then
-                    NetRemote = descendant
-                    print("[Dominate Hub] Connected to NetRemote: " .. descendant:GetFullName())
-                    break
-                end
-            end
-        end)
-        if not NetRemote then task.wait(1.0) end
-    end
+    repeat
+        local netService = ReplicatedStorage:WaitForChild("__Net", 5)
+        if netService then NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent") end
+        if not NetRemote then task.wait(0.5) end
+    until NetRemote or not Running
 end)
 
 -- UI MASTER ALLOCATION (Compact Height: 350)
@@ -310,7 +278,7 @@ task.spawn(function()
             
             local activeCount = 0
             for k, v in pairs(_G) do
-                if type(v) == "boolean" and v == true and k ~= "AntiAFK" and k ~= "FPSBoostMode" and k ~= "ShowStatsHUD" and k ~= "CPUSaverMode" then
+                if type(v) == "boolean" and v == true and k ~= "AntiAFK" and k ~= "FPSBoostMode" and k ~= "ShowStatsHUD" then
                     activeCount = activeCount + 1
                 end
             end
@@ -329,9 +297,9 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.6 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.9 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
--- FLOATING PILL (BULLETPROOF TOGGLE)
+-- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 105, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
@@ -358,11 +326,24 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 minBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = not mainFrame.Visible
-    minBtn.TextColor3 = mainFrame.Visible and Color3.fromRGB(0, 136, 255) or Color3.fromRGB(0, 215, 110)
+    local isVisible = mainFrame.Visible
+    if isVisible then
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1})
+        tween:Play()
+        task.wait(0.25)
+        mainFrame.Visible = false
+        minBtn.TextColor3 = Color3.fromRGB(0, 215, 110)
+    else
+        mainFrame.Size = UDim2.new(0, 0, 0, 0)
+        mainFrame.BackgroundTransparency = 1
+        mainFrame.Visible = true
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 540, 0, 350), BackgroundTransparency = 0.35})
+        tween:Play()
+        minBtn.TextColor3 = Color3.fromRGB(0, 136, 255)
+    end
 end)
 
--- SCROLLING TOP TABS CONTAINER
+-- SCROLLING TOP TABS CONTAINER (6 Tabs Total: Upgrades, Noobs, Mines, Football, Misc, Settings)
 local tabScroll = Instance.new("ScrollingFrame")
 tabScroll.Size = UDim2.new(1, -20, 0, 30)
 tabScroll.Position = UDim2.new(0, 10, 0, 36)
@@ -435,7 +416,7 @@ local function makeSideBtn(txt, parent)
     return b
 end
 
--- 2-COLUMN SCROLL GENERATOR
+-- 2-COLUMN SCROLL GENERATOR (Used for Upgrades, Noobs, Football, Misc Sub-tabs)
 local function makeGridScroll(parent, hasSidebar)
     local s = Instance.new("ScrollingFrame")
     if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
@@ -446,7 +427,7 @@ local function makeGridScroll(parent, hasSidebar)
     return s 
 end
 
--- SINGLE-COLUMN STACKED VERTICAL SCROLL GENERATOR
+-- SINGLE-COLUMN STACKED VERTICAL SCROLL GENERATOR (For Settings & Mines)
 local function makeVerticalScroll(parent, hasSidebar)
     local s = Instance.new("ScrollingFrame")
     if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
@@ -457,8 +438,8 @@ local function makeVerticalScroll(parent, hasSidebar)
     return s 
 end
 
--- MORE COMPACT GRID ROW (WITH STATE SYNC)
-local function gridRow(txt, scr, vKey)
+-- MORE COMPACT GRID ROW
+local function gridRow(txt, scr)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
 
     local dot = Instance.new("Frame")
@@ -472,14 +453,7 @@ local function gridRow(txt, scr, vKey)
 
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.58, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -4, 0, 20) b.Position = UDim2.new(0.58, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) 
-
-    if vKey then
-        registeredButtons[vKey] = {btn = b, flagKey = vKey}
-        updateButtonVisual(b, _G[vKey] == true)
-    end
-
-    return b
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) return b
 end
 
 -- ======================================================================================
@@ -502,12 +476,6 @@ local function masterToggle(txt, flagsTable, scr)
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.42, -4, 0, 20) b.Position = UDim2.new(0.57, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 9; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
-    local anyActive = false
-    for _, flag in ipairs(flagsTable) do
-        if _G[flag] then anyActive = true break end
-    end
-    updateButtonVisual(b, anyActive)
-
     b.MouseButton1Click:Connect(function()
         local activeState = false
         for _, flag in ipairs(flagsTable) do
@@ -516,7 +484,10 @@ local function masterToggle(txt, flagsTable, scr)
         for _, flag in ipairs(flagsTable) do
             _G[flag] = activeState
         end
-        updateButtonVisual(b, activeState)
+        b.Text = activeState and "ACTIVE" or "DISABLED"
+        b.BackgroundColor3 = activeState and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+        b.TextColor3 = activeState and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+        dot.BackgroundColor3 = activeState and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
         saveConfigToSlot(_G.SelectedConfigSlot)
     end)
     return b
@@ -548,22 +519,13 @@ local bNoobR2 = makeSideBtn("Realm 2 Noobs", noobSidebar)
 local noobScrollR1 = makeGridScroll(noobsPage, true) noobScrollR1.Visible = true
 local noobScrollR2 = makeGridScroll(noobsPage, true)
 
-UI.Starter = gridRow("Starter Auto Upgrade", noobScrollR1, "AutoUpgradeStarter") 
-UI.Cooker = gridRow("Cooker Auto Upgrade", noobScrollR1, "AutoUpgradeCooker") 
-UI.Farmer = gridRow("Farmer Auto Upgrade", noobScrollR1, "AutoUpgradeFarmer") 
-UI.Magician = gridRow("Magician Auto Upgrade", noobScrollR1, "AutoUpgradeMagician") 
-UI.Archer = gridRow("Archer Auto Upgrade", noobScrollR1, "AutoUpgradeArcher") 
-UI.Soldier = gridRow("Soldier Auto Upgrade", noobScrollR1, "AutoUpgradeSoldier")
-UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1, "AutoUpgradeMoreOof") 
-UI.FasterNoobs = gridRow("Faster Noobs Upgrade", noobScrollR1, "AutoUpgradeFasterNoobs")
+UI.Starter = gridRow("Starter Auto Upgrade", noobScrollR1) UI.Cooker = gridRow("Cooker Auto Upgrade", noobScrollR1) UI.Farmer = gridRow("Farmer Auto Upgrade", noobScrollR1) UI.Magician = gridRow("Magician Auto Upgrade", noobScrollR1) UI.Archer = gridRow("Archer Auto Upgrade", noobScrollR1) UI.Soldier = gridRow("Soldier Auto Upgrade", noobScrollR1)
+UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1) UI.FasterNoobs = gridRow("Faster Noobs Upgrade", noobScrollR1)
 
-UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2, "AutoUpgradeFishermanNoob") 
-UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2, "AutoUpgradeKnightNoob") 
-UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2, "AutoUpgradeExplorerNoob") 
-UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2, "AutoUpgradeMagicianNoob")
+UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2) UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2) UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2)
 
 -- ======================================================================================
--- MINES PAGE (BEST TIER ONLY TOGGLE & ORES)
+-- MINES PAGE (SLEEK BORDERLESS TEXT LISTING & BLENDED BEST TIER ONLY TOGGLE BUTTON)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
 
@@ -601,7 +563,17 @@ bestTierBtn.MouseButton1Click:Connect(function()
         end
     end
     
-    refreshAllVisuals()
+    for _, oreName in ipairs(allOres) do
+        local btn = UI[oreName]
+        if btn then
+            local isActive = _G[oreName]
+            btn.Text = isActive and "ACTIVE" or "DISABLED"
+            btn.BackgroundColor3 = isActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+            btn.TextColor3 = isActive and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+            local dot = btn.Parent:FindFirstChild("StatusDot")
+            if dot then dot.BackgroundColor3 = isActive and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
+        end
+    end
     saveConfigToSlot(_G.SelectedConfigSlot)
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
@@ -657,12 +629,13 @@ local function sleekMineRow(txt, scr, vKey)
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
     UI[vKey] = b
-    registeredButtons[vKey] = {btn = b, flagKey = vKey}
-    updateButtonVisual(b, _G[vKey] == true)
 
     b.MouseButton1Click:Connect(function()
         _G[vKey] = not _G[vKey]
-        updateButtonVisual(b, _G[vKey])
+        b.Text = _G[vKey] and "ACTIVE" or "DISABLED"
+        b.BackgroundColor3 = _G[vKey] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+        b.TextColor3 = _G[vKey] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+        dot.BackgroundColor3 = _G[vKey] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
         saveConfigToSlot(_G.SelectedConfigSlot)
     end)
     return b
@@ -698,25 +671,8 @@ local bFUpgrades = makeSideBtn("Upgrades", fSidebar)
 local fNoobScroll = makeGridScroll(footballPage, true) fNoobScroll.Visible = true
 local fUpgradeScroll = makeGridScroll(footballPage, true)
 
-UI.Goalkeeper = gridRow("Upgrade Goalkeeper", fNoobScroll, "AutoUpgradeGoalkeeper") 
-UI.LeftBack = gridRow("Upgrade Left Back", fNoobScroll, "AutoUpgradeLeftBack") 
-UI.LeftCenterBack = gridRow("Upgrade L-Center Back", fNoobScroll, "AutoUpgradeLeftCenterBack") 
-UI.RightCenterBack = gridRow("Upgrade R-Center Back", fNoobScroll, "AutoUpgradeRightCenterBack") 
-UI.RightBack = gridRow("Upgrade Right Back", fNoobScroll, "AutoUpgradeRightBack") 
-UI.LeftDefensiveMid = gridRow("Upgrade L-Defensive Mid", fNoobScroll, "AutoUpgradeLeftDefensiveMid") 
-UI.RightDefensiveMid = gridRow("Upgrade R-Defensive Mid", fNoobScroll, "AutoUpgradeRightDefensiveMid") 
-UI.AttackingMid = gridRow("Upgrade Attacking Mid", fNoobScroll, "AutoUpgradeAttackingMid") 
-UI.LeftWing = gridRow("Upgrade Left Wing", fNoobScroll, "AutoUpgradeLeftWing") 
-UI.RightWing = gridRow("Upgrade Right Wing", fNoobScroll, "AutoUpgradeRightWing") 
-UI.Striker = gridRow("Upgrade Striker", fNoobScroll, "AutoUpgradeStriker")
-
-UI.ScoreGoal = gridRow("Auto Score Goal", fUpgradeScroll, "AutoScoreGoal") 
-UI.MoreGoals = gridRow("More Goals Upgrade", fUpgradeScroll, "AutoGoalsMoreGoals") 
-UI.GoalsRuneBulk = gridRow("Goals Rune Bulk", fUpgradeScroll, "AutoGoalsRuneBulk") 
-UI.GoalsRuneLuck = gridRow("Goals Rune Luck", fUpgradeScroll, "AutoGoalsRuneLuck") 
-UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", fUpgradeScroll, "AutoBuyAutoKick") 
-UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll, "AutoFootballTree") 
-UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll, "AutoClaimTrophies")
+UI.Goalkeeper = gridRow("Upgrade Goalkeeper", fNoobScroll) UI.LeftBack = gridRow("Upgrade Left Back", fNoobScroll) UI.LeftCenterBack = gridRow("Upgrade L-Center Back", fNoobScroll) UI.RightCenterBack = gridRow("Upgrade R-Center Back", fNoobScroll) UI.RightBack = gridRow("Upgrade Right Back", fNoobScroll) UI.LeftDefensiveMid = gridRow("Upgrade L-Defensive Mid", fNoobScroll) UI.RightDefensiveMid = gridRow("Upgrade R-Defensive Mid", fNoobScroll) UI.AttackingMid = gridRow("Upgrade Attacking Mid", fNoobScroll) UI.LeftWing = gridRow("Upgrade Left Wing", fNoobScroll) UI.RightWing = gridRow("Upgrade Right Wing", fNoobScroll) UI.Striker = gridRow("Upgrade Striker", fNoobScroll)
+UI.ScoreGoal = gridRow("Auto Score Goal", fUpgradeScroll) UI.MoreGoals = gridRow("More Goals Upgrade", fUpgradeScroll) UI.GoalsRuneBulk = gridRow("Goals Rune Bulk", fUpgradeScroll) UI.GoalsRuneLuck = gridRow("Goals Rune Luck", fUpgradeScroll) UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", fUpgradeScroll) UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll) UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll)
 
 -- ======================================================================================
 -- MISC PAGE (CONSOLIDATED RUNES, CAPSULES, AND ENCHANTS)
@@ -734,30 +690,30 @@ local miscScrollRuE = makeGridScroll(miscPage, true)
 local miscScrollCap = makeGridScroll(miscPage, true)
 local miscScrollEnc = makeGridScroll(miscPage, true)
 
-UI.RollBasicRuneCard = gridRow("Auto Basic Rune Circle", miscScrollRu1, "AutoRollBasicRune") 
-UI.RollSuperRuneCard = gridRow("Auto Super Rune Circle", miscScrollRu1, "AutoRollSuperRune") 
-UI.RollAdvancedRuneCard = gridRow("Auto Advanced Rune", miscScrollRu1, "AutoRollAdvancedRune") 
-UI.RollCosmicRuneCard = gridRow("Auto Cosmic Prism", miscScrollRu1, "AutoRollCosmicRune")
+UI.RollBasicRuneCard = gridRow("Auto Basic Rune Circle", miscScrollRu1) 
+UI.RollSuperRuneCard = gridRow("Auto Super Rune Circle", miscScrollRu1) 
+UI.RollAdvancedRuneCard = gridRow("Auto Advanced Rune", miscScrollRu1) 
+UI.RollCosmicRuneCard = gridRow("Auto Cosmic Prism", miscScrollRu1)
 
-UI.RollSnowyRuneCard = gridRow("Auto Snowy Rune Circle", miscScrollRu2, "AutoRollSnowyRune")
+UI.RollSnowyRuneCard = gridRow("Auto Snowy Rune Circle", miscScrollRu2)
 
-UI.FootballRuneCard = gridRow("Auto Football Rune", miscScrollRuE, "AutoRollFootballRune")
+UI.FootballRuneCard = gridRow("Auto Football Rune", miscScrollRuE)
 
-UI.ClassicCapsule = gridRow("Hatch Classic Capsule", miscScrollCap, "AutoOpenClassicCapsule") 
-UI.FootballCapsule = gridRow("Hatch Football Capsule", miscScrollCap, "AutoOpenFootballCapsule") 
-UI.SuperCapsule = gridRow("Hatch Super Capsule", miscScrollCap, "AutoOpenSuperCapsule")
+UI.ClassicCapsule = gridRow("Hatch Classic Capsule", miscScrollCap) 
+UI.FootballCapsule = gridRow("Hatch Football Capsule", miscScrollCap) 
+UI.SuperCapsule = gridRow("Hatch Super Capsule", miscScrollCap)
 
-UI.EnchantStarter = gridRow("Reroll: Starter", miscScrollEnc, "AutoEnchantStarter") 
-UI.EnchantCooker = gridRow("Reroll: Cooker", miscScrollEnc, "AutoEnchantCooker") 
-UI.EnchantFarmer = gridRow("Reroll: Farmer", miscScrollEnc, "AutoEnchantFarmer") 
-UI.EnchantMagician = gridRow("Reroll: Magician", miscScrollEnc, "AutoEnchantMagician") 
-UI.EnchantArcher = gridRow("Reroll: Archer", miscScrollEnc, "AutoEnchantArcher") 
-UI.EnchantSoldier = gridRow("Reroll: Soldier", miscScrollEnc, "AutoEnchantSoldier") 
-UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", miscScrollEnc, "AutoEnchantHacker1") 
-UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", miscScrollEnc, "AutoEnchantHacker2") 
-UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", miscScrollEnc, "AutoEnchantHacker3") 
-UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", miscScrollEnc, "AutoEnchantHacker4") 
-UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", miscScrollEnc, "AutoEnchantPharaoh")
+UI.EnchantStarter = gridRow("Reroll: Starter", miscScrollEnc) 
+UI.EnchantCooker = gridRow("Reroll: Cooker", miscScrollEnc) 
+UI.EnchantFarmer = gridRow("Reroll: Farmer", miscScrollEnc) 
+UI.EnchantMagician = gridRow("Reroll: Magician", miscScrollEnc) 
+UI.EnchantArcher = gridRow("Reroll: Archer", miscScrollEnc) 
+UI.EnchantSoldier = gridRow("Reroll: Soldier", miscScrollEnc) 
+UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", miscScrollEnc) 
+UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", miscScrollEnc) 
+UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", miscScrollEnc) 
+UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", miscScrollEnc) 
+UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", miscScrollEnc)
 
 -- ======================================================================================
 -- SETTINGS PAGE (GENERAL & FULL-WIDTH VERTICAL STACKED CONFIG SLOTS)
@@ -843,7 +799,7 @@ end
 -- ======================================================================================
 -- GENERAL SETTINGS TAB (FULL-WIDTH VERTICAL STACKED ROWS WITH REQUESTED SPACING)
 -- ======================================================================================
-local function genRow(txt, vKey, callback)
+local function genRow(txt, callback)
     local f = Instance.new("Frame")
     f.Size = UDim2.new(1, -6, 0, 32)
     f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
@@ -882,11 +838,6 @@ local function genRow(txt, vKey, callback)
     b.Parent = f
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
-    if vKey then
-        registeredButtons[vKey] = {btn = b, flagKey = vKey}
-        updateButtonVisual(b, _G[vKey] == true)
-    end
-
     if callback then
         b.MouseButton1Click:Connect(function()
             callback(b)
@@ -902,27 +853,24 @@ local function genSpacer(h)
     sp.Parent = setGenScroll
 end
 
-UI.AFK = genRow("Anti  AFK Protection", "AntiAFK", function(b) tV2(b, "AntiAFK") end)
-UI.FPSBoostToggle = genRow("FPS Booster Mode", "FPSBoostMode", function(b) toggleFPSBoost(b) end)
-UI.HUDToggle = genRow("Stats HUD Ovrlay", "ShowStatsHUD", function(b)
+UI.AFK = genRow("Anti  AFK Protection", function(b) tV2(b, "AntiAFK") end)
+UI.FPSBoostToggle = genRow("FPS Booster Mode", function(b) toggleFPSBoost(b) end)
+UI.HUDToggle = genRow("Stats HUD Ovrlay", function(b)
     _G.ShowStatsHUD = not _G.ShowStatsHUD
-    updateButtonVisual(b, _G.ShowStatsHUD)
+    b.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
+    b.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = _G.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    local dot = b.Parent:FindFirstChild("StatusDot")
+    if dot then dot.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
     saveConfigToSlot(_G.SelectedConfigSlot)
-end)
-
-UI.CPUSaverToggle = genRow("CPU Saver Mode", "CPUSaverMode", function(b) 
-    _G.CPUSaverMode = not _G.CPUSaverMode
-    updateButtonVisual(b, _G.CPUSaverMode)
-    saveConfigToSlot(_G.SelectedConfigSlot)
-    showToast(_G.CPUSaverMode and "CPU Saver Mode Enabled (Background loops throttled)" or "CPU Saver Mode Disabled")
 end)
 
 genSpacer(10)
 
-UI.RebirthTimerCard = genRow("Auto Rebirth", "AutoRebirthTimer", function(b) tV2(b, "AutoRebirthTimer") end)
-UI.Prestige = genRow("Auto Prestige", "AutoPrestige", function(b) tV2(b, "AutoPrestige") end)
-UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", "AutoOpenT1Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
-UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", "AutoOpenT2Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
+UI.RebirthTimerCard = genRow("Auto Rebirth", function(b) tV2(b, "AutoRebirthTimer") end)
+UI.Prestige = genRow("Auto Prestige", function(b) tV2(b, "AutoPrestige") end)
+UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
+UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
 
 genSpacer(10)
 
@@ -1060,7 +1008,11 @@ end)
 
 local function toggleFPSBoost(b)
     _G.FPSBoostMode = not _G.FPSBoostMode
-    updateButtonVisual(b, _G.FPSBoostMode)
+    b.Text = _G.FPSBoostMode and "ACTIVE" or "DISABLED"
+    b.BackgroundColor3 = _G.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = _G.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    local dot = b.Parent:FindFirstChild("StatusDot")
+    if dot then dot.BackgroundColor3 = _G.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
     saveConfigToSlot(_G.SelectedConfigSlot)
     
     if _G.FPSBoostMode then
@@ -1131,4 +1083,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V10.6 Pro Edition - Robust Remote & Ore Finder Deployed!")
+print("[Dominate Hub] V9.8 Pro Edition - Spaced General Settings & Sleek Mines Deployed!")
