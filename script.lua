@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V11.9 PRO EDITION (MOBILE TOUCH SUPPORT VIA .ACTIVATED)
+-- DOMINATE HUB | V11.9 PRO EDITION (MOBILE TOUCH SUPPORT VIA .ACTIVATED)a
 --======================================================================================
 local Env = getgenv()
 
