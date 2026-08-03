@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V11.5 PRO EDITION (TYCOON TELEPORT MOVED TO SETTINGS)
+-- DOMINATE HUB | V11.8 PRO EDITION (DOUBLE-CLICK TOGGLE BUG FIXED & OPTIMIZED)
 --======================================================================================
 local Env = getgenv()
 
@@ -11,7 +11,7 @@ if Env.DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V11.5 Instance...")
+    print("[Dominate Hub] Reloading V11.8 Instance...")
 end
 Env.DominateHubLoaded = true
 
@@ -90,27 +90,6 @@ local function showToast(msg)
         task.wait(0.25)
         toast:Destroy()
     end)
-end
-
--- FORWARD DECLARATION FOR UI SYNC
-local syncAllUI = function() end
-
-local function loadConfigFromSlot(slot)
-    pcall(function()
-        local fileName = getSlotFileName(slot)
-        if readfile and isfile and isfile(fileName) then
-            local data = HttpService:JSONDecode(readfile(fileName))
-            if data._SlotCustomName then
-                slotCustomNames[slot] = data._SlotCustomName
-            end
-            for k, v in pairs(data) do
-                if k ~= "_SlotCustomName" then
-                    Env[k] = v
-                end
-            end
-        end
-    end)
-    syncAllUI()
 end
 
 Env.AntiAFK = Env.AntiAFK ~= nil and Env.AntiAFK or true
@@ -264,7 +243,7 @@ Env.FPSBoostMode = Env.FPSBoostMode or false
 Env.ShowStatsHUD = Env.ShowStatsHUD ~= nil and Env.ShowStatsHUD or true
 Env.DiscordWebhookURL = Env.DiscordWebhookURL or ""
 
--- EARLY DEFINITION OF HELPERS TO PREVENT NIL CALL ERRORS
+-- HELPER FUNCTIONS
 local function tV2(b, v) 
     Env[v] = not Env[v] 
     b.Text = Env[v] and "ACTIVE" or "DISABLED" 
@@ -308,8 +287,6 @@ local function toggleFPSBoost(b)
         showToast("FPS Booster Disabled!")
     end
 end
-
-loadConfigFromSlot(1)
 
 player.Idled:Connect(function()
     if Running and Env.AntiAFK then
@@ -430,7 +407,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.5 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.8 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -1165,6 +1142,9 @@ syncAllUI = function()
     end
 end
 
+-- NOW LOAD CONFIG AFTER BUTTONS ARE CREATED & REGISTERED (FIXES DOUBLE-CLICK BUG)
+loadConfigFromSlot(1)
+
 -- WIRE UP NOOBS
 UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) 
 UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) 
@@ -1274,10 +1254,15 @@ bSetConfig.MouseButton1Click:Connect(function() sideRoute(setConfigScroll, bSetC
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
-UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
 
 --======================================================================================
--- LOCOMOTION & TELEPORT ENGINES
+-- LOCOMOTION & TELEPORT ENGINES (SPED UP BY 0.3s)
 --======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1292,7 +1277,7 @@ local function GetWorldRoot() return player.Character and player.Character:FindF
 
 task.spawn(function()
     while Running do
-        task.wait(Env.CPUSaverMode and 0.5 or 0.2)
+        task.wait(Env.CPUSaverMode and 0.2 or 0.05)
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
@@ -1325,7 +1310,7 @@ end
 
 task.spawn(function()
     while Running do
-        task.wait(Env.CPUSaverMode and 0.25 or 0.1)
+        task.wait(Env.CPUSaverMode and 0.1 or 0.02)
         if Running then
             local enabledOreNames = {} local hasAnyEnabled = false
             for i = 1, #OrePriorityList do if Env[OrePriorityList[i].F] then enabledOreNames[OrePriorityList[i].N] = true hasAnyEnabled = true end end
@@ -1361,7 +1346,7 @@ end)
 
 task.spawn(function()
     while Running do
-        task.wait(Env.CPUSaverMode and 0.25 or 0.12)
+        task.wait(Env.CPUSaverMode and 0.1 or 0.02)
         if NetRemote and Running then
             local hrp = GetWorldRoot()
             if hrp then
@@ -1375,7 +1360,7 @@ end)
 
 task.spawn(function()
     while Running do
-        task.wait(0.5)
+        task.wait(0.2)
         if Env.AutoFarmCash and Running then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") local ty = gc and gc:FindFirstChild("Tycoon") local btnF = ty and ty:FindFirstChild("Buttons")
             if btnF and Running then
@@ -1392,20 +1377,20 @@ task.spawn(function()
                                 att = true 
                                 if Env.AutoTycoonTeleport then
                                     MasterTargetVector = tb.Position + Vector3.new(0, 3, 0) 
-                                    task.wait(0.4)
+                                    task.wait(0.1) 
                                 else
-                                    task.wait(0.1)
+                                    task.wait(0.05)
                                 end
                                 if not Running then break end
-                                if bM:IsDescendantOf(btnF) then locked[bM.Name] = true MasterTargetVector = nil task.wait(0.05) else MasterTargetVector = nil task.wait(0.1) break end
+                                if bM:IsDescendantOf(btnF) then locked[bM.Name] = true MasterTargetVector = nil task.wait(0.02) else MasterTargetVector = nil task.wait(0.05) break end
                             end
                         end
                     end
-                    if not att or not Env.AutoFarmCash or not Running then break end task.wait(0.1)
+                    if not att or not Env.AutoFarmCash or not Running then break end task.wait(0.05)
                 until false
                 if Running then MasterTargetVector = nil local sE = tick() + math.random(120, 180) repeat task.wait(1) until tick() >= sE or not Env.AutoFarmCash or not Running end
-            else MasterTargetVector = nil task.wait(2) end
-        else MasterTargetVector = nil task.wait(1) end
+            else MasterTargetVector = nil task.wait(1.7) end
+        else MasterTargetVector = nil task.wait(0.7) end
     end
 end)
 
@@ -1423,22 +1408,23 @@ local PrimaryUpgradeQueue = {
     {F="AutoRebirthMoreOof",T="UpgradeUpgradeMax",A={"Rebirth","MoreOof"}}, {F="AutoRebirthMoreRebirth",T="UpgradeUpgradeMax",A={"Rebirth","MoreRebirth"}}, {F="AutoRebirthMoreFire",T="UpgradeUpgradeMax",A={"Rebirth","MoreFire"}},
     {F="AutoFireMoreFire",T="UpgradeUpgradeMax",A={"Fire","MoreFire"}}, {F="AutoFireMoreBulk",T="UpgradeUpgradeMax",A={"Fire","MoreBulk"}}, {F="AutoFireMoreOof",T="UpgradeUpgradeMax",A={"Fire","MoreOof"}}, {F="AutoFireMoreRebirth",T="UpgradeUpgradeMax",A={"Fire","MoreRebirth"}}, {F="AutoFireMoreTierLuck",T="UpgradeUpgradeMax",A={"Fire","MoreTierLuck"}}, {F="AutoFireMoreCashBonus",T="UpgradeUpgradeMax",A={"Fire","MoreCashBonus"}},
     {F="AutoUpgradeMoreCash",T="UpgradeUpgradeMax",A={"Cash","MoreCash"}}, {F="AutoUpgradeFasterDropper",T="UpgradeUpgradeMax",A={"Cash","FasterDropper"}}, {F="AutoUpgradeMoreRuneLuck",T="UpgradeUpgradeMax",A={"Cash","MoreRuneLuck"}},
-    {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}, {F="AutoBuyAutoKick",T="UpgradeUpgradeMax",A={"Goals","AutoKick"}}
+    {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}, {F="AutoBuyAutoKick",T="UpgradeUpgradeMax",A={"Goals","AutoKick"}},
+    {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}}
 }
 
 task.spawn(function()
     while Running do
-        task.wait(Env.CPUSaverMode and 2.0 or 1.0)
+        task.wait(Env.CPUSaverMode and 1.7 or 0.7)
         if NetRemote and Running then
             for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end local item = PrimaryUpgradeQueue[i]
-                if Env[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.25) end
+                if Env[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.05) end
             end
         end
     end
 end)
 
-task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
+task.spawn(function() while Running do task.wait(0.2) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.05) end end end end end)
 
 task.spawn(function()
     while Running do
@@ -1451,7 +1437,7 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function() while Running do task.wait(0.2) if NetRemote and Running and Env.AutoScoreGoal then pcall(function() NetRemote:FireServer("RegisterFootballKick") end) task.wait(1.5) if not Running or not Env.AutoScoreGoal then break end pcall(function() NetRemote:FireServer("ScoreGoal") end) task.wait(1.5) end end end)
+task.spawn(function() while Running do task.wait(0.2) if NetRemote and Running and Env.AutoScoreGoal then pcall(function() NetRemote:FireServer("RegisterFootballKick") end) task.wait(1.2) if not Running or not Env.AutoScoreGoal then break end pcall(function() NetRemote:FireServer("ScoreGoal") end) task.wait(1.2) end end end)
 
 task.spawn(function()
     while Running do
@@ -1460,23 +1446,20 @@ task.spawn(function()
             if treeGui then
                 for _, obj in pairs(treeGui:GetDescendants()) do
                     if not Running or not Env.AutoFootballTree then break end
-                    if (obj:IsA("GuiButton") or obj:IsA("Frame")) and obj.Name ~= "Main" and obj.Name ~= "Container" then pcall(function() NetRemote:FireServer("BuyFootballUITreeNode", obj.Name) end) task.wait(0.5) end
+                    if (obj:IsA("GuiButton") or obj:IsA("Frame")) and obj.Name ~= "Main" and obj.Name ~= "Container" then pcall(function() NetRemote:FireServer("BuyFootballUITreeNode", obj.Name) end) task.wait(0.2) end
                 end
             end
         end
-        task.wait(5.0)
+        task.wait(4.7)
     end
 end)
 
-task.spawn(function() while Running do task.wait(3.0) if NetRemote and Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() NetRemote:FireServer("BuyTrophy", i) end) task.wait(0.2) end end end end)
+task.spawn(function() while Running do task.wait(2.7) if NetRemote and Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() NetRemote:FireServer("BuyTrophy", i) end) task.wait(0.05) end end end end)
 
-local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
-task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
-
-task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
-task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
-task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
+task.spawn(function() while Running do task.wait(29.7) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
+task.spawn(function() while Running do task.wait(0.7) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.05) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.05) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.05) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.05) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.05) end end end end)
+task.spawn(function() while Running do task.wait(0.9) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
+task.spawn(function() while Running do task.wait(4.7) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
 task.spawn(function()
     while Running do
@@ -1489,4 +1472,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.5 Pro Edition - Tycoon Teleport Toggle Added & Fully Synchronized!")
+print("[Dominate Hub] V11.8 Pro Edition - Double-Click Bug Fixed & Sped Up!")
