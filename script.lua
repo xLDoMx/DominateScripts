@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V10.9 PRO EDITION (ENCHANT WARNING AUTO-STOP PROTECTED)
+-- DOMINATE HUB | V11.0 PRO EDITION (TELEPORTS RESTORED, ENCHANTS REMOVED, TOGGLES FIXED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V10.9 Instance...")
+    print("[Dominate Hub] Reloading V11.0 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -26,7 +26,6 @@ local Running = true
 local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
-local EnchantWarningRemote = nil
 
 local UI = {}
 
@@ -61,6 +60,9 @@ local function saveConfigToSlot(slot, customName)
     end)
 end
 
+-- FORWARD DECLARATION FOR UI SYNC
+local syncAllUI = function() end
+
 local function loadConfigFromSlot(slot)
     pcall(function()
         local fileName = getSlotFileName(slot)
@@ -76,6 +78,7 @@ local function loadConfigFromSlot(slot)
             end
         end
     end)
+    syncAllUI()
 end
 loadConfigFromSlot(1)
 
@@ -141,9 +144,6 @@ _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRoll
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 _G.AutoOpenClassicCapsule, _G.AutoOpenFootballCapsule, _G.AutoOpenSuperCapsule = false, false, false
 
-_G.AutoEnchantStarter, _G.AutoEnchantCooker, _G.AutoEnchantFarmer, _G.AutoEnchantMagician, _G.AutoEnchantArcher, _G.AutoEnchantSoldier = false, false, false, false, false, false
-_G.AutoEnchantFisherman, _G.AutoEnchantKnight, _G.AutoEnchantExplorer, _G.AutoEnchantR2Magician, _G.AutoEnchantPharaoh = false, false, false, false, false
-
 _G.FPSBoostMode = false
 _G.ShowStatsHUD = true
 _G.DiscordWebhookURL = _G.DiscordWebhookURL or ""
@@ -159,10 +159,7 @@ end)
 task.spawn(function()
     repeat
         local netService = ReplicatedStorage:WaitForChild("__Net", 5)
-        if netService then 
-            NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent") 
-            EnchantWarningRemote = netService:FindFirstChild("EnchantWarning")
-        end
+        if netService then NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent") end
         if not NetRemote then task.wait(0.5) end
     until NetRemote or not Running
 end)
@@ -300,7 +297,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.9 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.0 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -441,8 +438,10 @@ local function makeVerticalScroll(parent, hasSidebar)
     return s 
 end
 
--- MORE COMPACT GRID ROW
-local function gridRow(txt, scr)
+-- REGISTRY FOR UI BUTTON SYNC
+local registeredButtons = {}
+
+local function gridRow(txt, scr, vKey)
     local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
 
     local dot = Instance.new("Frame")
@@ -456,7 +455,12 @@ local function gridRow(txt, scr)
 
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.58, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -4, 0, 20) b.Position = UDim2.new(0.58, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) return b
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) 
+    
+    if vKey then
+        table.insert(registeredButtons, {Btn = b, Var = vKey, Dot = dot})
+    end
+    return b
 end
 
 -- ======================================================================================
@@ -522,19 +526,19 @@ local bNoobR2 = makeSideBtn("Realm 2 Noobs", noobSidebar)
 local noobScrollR1 = makeGridScroll(noobsPage, true) noobScrollR1.Visible = true
 local noobScrollR2 = makeGridScroll(noobsPage, true)
 
-UI.Starter = gridRow("Starter Auto Upgrade", noobScrollR1) 
-UI.Cooker = gridRow("Cooker Auto Upgrade", noobScrollR1) 
-UI.Farmer = gridRow("Farmer Auto Upgrade", noobScrollR1) 
-UI.Magician = gridRow("Magician Auto Upgrade", noobScrollR1) 
-UI.Archer = gridRow("Archer Auto Upgrade", noobScrollR1) 
-UI.Soldier = gridRow("Soldier Auto Upgrade", noobScrollR1)
-UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1) 
-UI.FasterNoobs = gridRow("Faster Noobs Upgrade", noobScrollR1)
+UI.Starter = gridRow("Starter Auto Upgrade", noobScrollR1, "AutoUpgradeStarter") 
+UI.Cooker = gridRow("Cooker Auto Upgrade", noobScrollR1, "AutoUpgradeCooker") 
+UI.Farmer = gridRow("Farmer Auto Upgrade", noobScrollR1, "AutoUpgradeFarmer") 
+UI.Magician = gridRow("Magician Auto Upgrade", noobScrollR1, "AutoUpgradeMagician") 
+UI.Archer = gridRow("Archer Auto Upgrade", noobScrollR1, "AutoUpgradeArcher") 
+UI.Soldier = gridRow("Soldier Auto Upgrade", noobScrollR1, "AutoUpgradeSoldier")
+UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1, "AutoUpgradeMoreOof") 
+UI.FasterNoobs = gridRow("Faster Noobs Upgrade", noobScrollR1, "AutoUpgradeFasterNoobs")
 
-UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) 
-UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2) 
-UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2) 
-UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2)
+UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2, "AutoUpgradeFishermanNoob") 
+UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2, "AutoUpgradeKnightNoob") 
+UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2, "AutoUpgradeExplorerNoob") 
+UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2, "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
 -- MINES PAGE
@@ -576,6 +580,7 @@ bestTierBtn.MouseButton1Click:Connect(function()
     end
     
     saveConfigToSlot(_G.SelectedConfigSlot)
+    syncAllUI()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
@@ -630,6 +635,7 @@ local function sleekMineRow(txt, scr, vKey)
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
     UI[vKey] = b
+    table.insert(registeredButtons, {Btn = b, Var = vKey, Dot = dot})
     return b
 end
 
@@ -663,25 +669,25 @@ local bFUpgrades = makeSideBtn("Upgrades", fSidebar)
 local fNoobScroll = makeGridScroll(footballPage, true) fNoobScroll.Visible = true
 local fUpgradeScroll = makeGridScroll(footballPage, true)
 
-UI.Goalkeeper = gridRow("Upgrade Goalkeeper", fNoobScroll) 
-UI.LeftBack = gridRow("Upgrade Left Back", fNoobScroll) 
-UI.LeftCenterBack = gridRow("Upgrade L-Center Back", fNoobScroll) 
-UI.RightCenterBack = gridRow("Upgrade R-Center Back", fNoobScroll) 
-UI.RightBack = gridRow("Upgrade Right Back", fNoobScroll) 
-UI.LeftDefensiveMid = gridRow("Upgrade L-Defensive Mid", fNoobScroll) 
-UI.RightDefensiveMid = gridRow("Upgrade R-Defensive Mid", fNoobScroll) 
-UI.AttackingMid = gridRow("Upgrade Attacking Mid", fNoobScroll) 
-UI.LeftWing = gridRow("Upgrade Left Wing", fNoobScroll) 
-UI.RightWing = gridRow("Upgrade Right Wing", fNoobScroll) 
-UI.Striker = gridRow("Upgrade Striker", fNoobScroll)
+UI.Goalkeeper = gridRow("Upgrade Goalkeeper", fNoobScroll, "AutoUpgradeGoalkeeper") 
+UI.LeftBack = gridRow("Upgrade Left Back", fNoobScroll, "AutoUpgradeLeftBack") 
+UI.LeftCenterBack = gridRow("Upgrade L-Center Back", fNoobScroll, "AutoUpgradeLeftCenterBack") 
+UI.RightCenterBack = gridRow("Upgrade R-Center Back", fNoobScroll, "AutoUpgradeRightCenterBack") 
+UI.RightBack = gridRow("Upgrade Right Back", fNoobScroll, "AutoUpgradeRightBack") 
+UI.LeftDefensiveMid = gridRow("Upgrade L-Defensive Mid", fNoobScroll, "AutoUpgradeLeftDefensiveMid") 
+UI.RightDefensiveMid = gridRow("Upgrade R-Defensive Mid", fNoobScroll, "AutoUpgradeRightDefensiveMid") 
+UI.AttackingMid = gridRow("Upgrade Attacking Mid", fNoobScroll, "AutoUpgradeAttackingMid") 
+UI.LeftWing = gridRow("Upgrade Left Wing", fNoobScroll, "AutoUpgradeLeftWing") 
+UI.RightWing = gridRow("Upgrade Right Wing", fNoobScroll, "AutoUpgradeRightWing") 
+UI.Striker = gridRow("Upgrade Striker", fNoobScroll, "AutoUpgradeStriker")
 
-UI.ScoreGoal = gridRow("Auto Score Goal", fUpgradeScroll) 
-UI.MoreGoals = gridRow("More Goals Upgrade", fUpgradeScroll) 
-UI.GoalsRuneBulk = gridRow("Goals Rune Bulk", fUpgradeScroll) 
-UI.GoalsRuneLuck = gridRow("Goals Rune Luck", fUpgradeScroll) 
-UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", fUpgradeScroll) 
-UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll) 
-UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll)
+UI.ScoreGoal = gridRow("Auto Score Goal", fUpgradeScroll, "AutoScoreGoal") 
+UI.MoreGoals = gridRow("More Goals Upgrade", fUpgradeScroll, "AutoGoalsMoreGoals") 
+UI.GoalsRuneBulk = gridRow("Goals Rune Bulk", fUpgradeScroll, "AutoGoalsRuneBulk") 
+UI.GoalsRuneLuck = gridRow("Goals Rune Luck", fUpgradeScroll, "AutoGoalsRuneLuck") 
+UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", fUpgradeScroll, "AutoBuyAutoKick") 
+UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll, "AutoFootballTree") 
+UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll, "AutoClaimTrophies")
 
 -- ======================================================================================
 -- MISC PAGE
@@ -691,38 +697,24 @@ local bMiscRu1 = makeSideBtn("Runes R1", miscSidebar) bMiscRu1.BackgroundColor3 
 local bMiscRu2 = makeSideBtn("Runes R2", miscSidebar)
 local bMiscRuE = makeSideBtn("Runes Events", miscSidebar)
 local bMiscCap = makeSideBtn("Capsules", miscSidebar)
-local bMiscEnc = makeSideBtn("Enchants", miscSidebar)
 
 local miscScrollRu1 = makeGridScroll(miscPage, true) miscScrollRu1.Visible = true
 local miscScrollRu2 = makeGridScroll(miscPage, true)
 local miscScrollRuE = makeGridScroll(miscPage, true)
 local miscScrollCap = makeGridScroll(miscPage, true)
-local miscScrollEnc = makeGridScroll(miscPage, true)
 
-UI.RollBasicRuneCard = gridRow("Auto Basic Rune Circle", miscScrollRu1) 
-UI.RollSuperRuneCard = gridRow("Auto Super Rune Circle", miscScrollRu1) 
-UI.RollAdvancedRuneCard = gridRow("Auto Advanced Rune", miscScrollRu1) 
-UI.RollCosmicRuneCard = gridRow("Auto Cosmic Prism", miscScrollRu1)
+UI.RollBasicRuneCard = gridRow("Auto Basic Rune Circle", miscScrollRu1, "AutoRollBasicRune") 
+UI.RollSuperRuneCard = gridRow("Auto Super Rune Circle", miscScrollRu1, "AutoRollSuperRune") 
+UI.RollAdvancedRuneCard = gridRow("Auto Advanced Rune", miscScrollRu1, "AutoRollAdvancedRune") 
+UI.RollCosmicRuneCard = gridRow("Auto Cosmic Prism", miscScrollRu1, "AutoRollCosmicRune")
 
-UI.RollSnowyRuneCard = gridRow("Auto Snowy Rune Circle", miscScrollRu2)
+UI.RollSnowyRuneCard = gridRow("Auto Snowy Rune Circle", miscScrollRu2, "AutoRollSnowyRune")
 
-UI.FootballRuneCard = gridRow("Auto Football Rune", miscScrollRuE)
+UI.FootballRuneCard = gridRow("Auto Football Rune", miscScrollRuE, "AutoRollFootballRune")
 
-UI.ClassicCapsule = gridRow("Hatch Classic Capsule", miscScrollCap) 
-UI.FootballCapsule = gridRow("Hatch Football Capsule", miscScrollCap) 
-UI.SuperCapsule = gridRow("Hatch Super Capsule", miscScrollCap)
-
-UI.EnchantStarter = gridRow("Reroll: Starter", miscScrollEnc) 
-UI.EnchantCooker = gridRow("Reroll: Cooker", miscScrollEnc) 
-UI.EnchantFarmer = gridRow("Reroll: Farmer", miscScrollEnc) 
-UI.EnchantMagician = gridRow("Reroll: Magician", miscScrollEnc) 
-UI.EnchantArcher = gridRow("Reroll: Archer", miscScrollEnc) 
-UI.EnchantSoldier = gridRow("Reroll: Soldier", miscScrollEnc) 
-UI.EnchantFisherman = gridRow("Reroll: Fisherman", miscScrollEnc) 
-UI.EnchantKnight = gridRow("Reroll: Knight", miscScrollEnc) 
-UI.EnchantExplorer = gridRow("Reroll: Explorer", miscScrollEnc) 
-UI.EnchantR2Magician = gridRow("Reroll: Magician (R2)", miscScrollEnc) 
-UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", miscScrollEnc)
+UI.ClassicCapsule = gridRow("Hatch Classic Capsule", miscScrollCap, "AutoOpenClassicCapsule") 
+UI.FootballCapsule = gridRow("Hatch Football Capsule", miscScrollCap, "AutoOpenFootballCapsule") 
+UI.SuperCapsule = gridRow("Hatch Super Capsule", miscScrollCap, "AutoOpenSuperCapsule")
 
 -- ======================================================================================
 -- SETTINGS PAGE
@@ -804,7 +796,7 @@ for i = 1, 5 do
     end)
 end
 
-local function genRow(txt, callback)
+local function genRow(txt, vKey, callback)
     local f = Instance.new("Frame")
     f.Size = UDim2.new(1, -6, 0, 32)
     f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
@@ -843,6 +835,10 @@ local function genRow(txt, callback)
     b.Parent = f
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
+    if vKey then
+        table.insert(registeredButtons, {Btn = b, Var = vKey, Dot = dot})
+    end
+
     if callback then
         b.MouseButton1Click:Connect(function()
             callback(b)
@@ -858,9 +854,9 @@ local function genSpacer(h)
     sp.Parent = setGenScroll
 end
 
-UI.AFK = genRow("Anti  AFK Protection", function(b) tV2(b, "AntiAFK") end)
-UI.FPSBoostToggle = genRow("FPS Booster Mode", function(b) toggleFPSBoost(b) end)
-UI.HUDToggle = genRow("Stats HUD Ovrlay", function(b)
+UI.AFK = genRow("Anti AFK Protection", "AntiAFK", function(b) tV2(b, "AntiAFK") end)
+UI.FPSBoostToggle = genRow("FPS Booster Mode", "FPSBoostMode", function(b) toggleFPSBoost(b) end)
+UI.HUDToggle = genRow("Stats HUD Overlay", "ShowStatsHUD", function(b)
     _G.ShowStatsHUD = not _G.ShowStatsHUD
     b.Text = _G.ShowStatsHUD and "ACTIVE" or "DISABLED"
     b.BackgroundColor3 = _G.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
@@ -870,7 +866,7 @@ UI.HUDToggle = genRow("Stats HUD Ovrlay", function(b)
     saveConfigToSlot(_G.SelectedConfigSlot)
 end)
 
-UI.CPUSaverToggle = genRow("CPU Saver Mode", function(b) 
+UI.CPUSaverToggle = genRow("CPU Saver Mode", "CPUSaverMode", function(b) 
     _G.CPUSaverMode = not _G.CPUSaverMode
     b.Text = _G.CPUSaverMode and "ACTIVE" or "DISABLED"
     b.BackgroundColor3 = _G.CPUSaverMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
@@ -883,10 +879,10 @@ end)
 
 genSpacer(10)
 
-UI.RebirthTimerCard = genRow("Auto Rebirth", function(b) tV2(b, "AutoRebirthTimer") end)
-UI.Prestige = genRow("Auto Prestige", function(b) tV2(b, "AutoPrestige") end)
-UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
-UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
+UI.RebirthTimerCard = genRow("Auto Rebirth", "AutoRebirthTimer", function(b) tV2(b, "AutoRebirthTimer") end)
+UI.Prestige = genRow("Auto Prestige", "AutoPrestige", function(b) tV2(b, "AutoPrestige") end)
+UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", "AutoOpenT1Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
+UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", "AutoOpenT2Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
 
 genSpacer(10)
 
@@ -993,7 +989,7 @@ killLabel.BackgroundTransparency = 1
 killLabel.TextColor3 = Color3.fromRGB(255, 200, 200)
 killLabel.TextSize = 10
 killLabel.Font = Enum.Font.SourceSansBold
-killLabel.Text = "Enermency Kill Switch"
+killLabel.Text = "Emergency Kill Switch"
 killLabel.TextXAlignment = Enum.TextXAlignment.Left
 killLabel.Parent = killRow
 
@@ -1047,9 +1043,24 @@ local function toggleFPSBoost(b)
     end
 end
 
---======================================================================================
+-- ======================================================================================
+-- UI SYNCHRONIZATION ENGINE (FIXES TOGGLE SYNCING ON LOAD)
+-- ======================================================================================
+syncAllUI = function()
+    for _, item in ipairs(registeredButtons) do
+        local isActive = _G[item.Var] == true
+        item.Btn.Text = isActive and "ACTIVE" or "DISABLED"
+        item.Btn.BackgroundColor3 = isActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+        item.Btn.TextColor3 = isActive and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+        if item.Dot then
+            item.Dot.BackgroundColor3 = isActive and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        end
+    end
+end
+
+-- ======================================================================================
 -- CONNECTORS
---======================================================================================
+-- ======================================================================================
 local function tV2(b, v) 
     _G[v] = not _G[v] 
     b.Text = _G[v] and "ACTIVE" or "DISABLED" 
@@ -1066,6 +1077,7 @@ local function tV2(b, v)
     saveConfigToSlot(_G.SelectedConfigSlot)
 end
 
+-- WIRE UP NOOBS
 UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) 
 UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) 
 UI.Farmer.MouseButton1Click:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) 
@@ -1080,6 +1092,7 @@ UI.R2Knight.MouseButton1Click:Connect(function() tV2(UI.R2Knight, "AutoUpgradeKn
 UI.R2Explorer.MouseButton1Click:Connect(function() tV2(UI.R2Explorer, "AutoUpgradeExplorerNoob") end) 
 UI.R2Magician.MouseButton1Click:Connect(function() tV2(UI.R2Magician, "AutoUpgradeMagicianNoob") end)
 
+-- WIRE UP FOOTBALL
 UI.Goalkeeper.MouseButton1Click:Connect(function() tV2(UI.Goalkeeper, "AutoUpgradeGoalkeeper") end) 
 UI.LeftBack.MouseButton1Click:Connect(function() tV2(UI.LeftBack, "AutoUpgradeLeftBack") end) 
 UI.LeftCenterBack.MouseButton1Click:Connect(function() tV2(UI.LeftCenterBack, "AutoUpgradeLeftCenterBack") end) 
@@ -1100,6 +1113,7 @@ UI.AutoBuyKicker.MouseButton1Click:Connect(function() tV2(UI.AutoBuyKicker, "Aut
 UI.FootballTree.MouseButton1Click:Connect(function() tV2(UI.FootballTree, "AutoFootballTree") end) 
 UI.ClaimTrophies.MouseButton1Click:Connect(function() tV2(UI.ClaimTrophies, "AutoClaimTrophies") end)
 
+-- WIRE UP RUNES & CAPSULES
 UI.RollBasicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollBasicRuneCard, "AutoRollBasicRune") end) 
 UI.RollSuperRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollSuperRuneCard, "AutoRollSuperRune") end) 
 UI.RollAdvancedRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollAdvancedRuneCard, "AutoRollAdvancedRune") end) 
@@ -1111,18 +1125,7 @@ UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "A
 UI.FootballCapsule.MouseButton1Click:Connect(function() tV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end) 
 UI.SuperCapsule.MouseButton1Click:Connect(function() tV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
 
-UI.EnchantStarter.MouseButton1Click:Connect(function() tV2(UI.EnchantStarter, "AutoEnchantStarter") end) 
-UI.EnchantCooker.MouseButton1Click:Connect(function() tV2(UI.EnchantCooker, "AutoEnchantCooker") end) 
-UI.EnchantFarmer.MouseButton1Click:Connect(function() tV2(UI.EnchantFarmer, "AutoEnchantFarmer") end) 
-UI.EnchantMagician.MouseButton1Click:Connect(function() tV2(UI.EnchantMagician, "AutoEnchantMagician") end) 
-UI.EnchantArcher.MouseButton1Click:Connect(function() tV2(UI.EnchantArcher, "AutoEnchantArcher") end) 
-UI.EnchantSoldier.MouseButton1Click:Connect(function() tV2(UI.EnchantSoldier, "AutoEnchantSoldier") end) 
-UI.EnchantFisherman.MouseButton1Click:Connect(function() tV2(UI.EnchantFisherman, "AutoEnchantFisherman") end) 
-UI.EnchantKnight.MouseButton1Click:Connect(function() tV2(UI.EnchantKnight, "AutoEnchantKnight") end) 
-UI.EnchantExplorer.MouseButton1Click:Connect(function() tV2(UI.EnchantExplorer, "AutoEnchantExplorer") end) 
-UI.EnchantR2Magician.MouseButton1Click:Connect(function() tV2(UI.EnchantR2Magician, "AutoEnchantR2Magician") end) 
-UI.EnchantPharaoh.MouseButton1Click:Connect(function() tV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
-
+-- WIRE UP MINES
 UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) 
 UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) 
 UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) 
@@ -1170,12 +1173,11 @@ bNoobR2.MouseButton1Click:Connect(function() sideRoute(noobScrollR2, bNoobR2, no
 local fS, fB = {fNoobScroll, fUpgradeScroll}, {bFNoobs, bFUpgrades}
 bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS, fB) end) bFUpgrades.MouseButton1Click:Connect(function() sideRoute(fUpgradeScroll, bFUpgrades, fS, fB) end)
 
-local miscSubS, miscSubB = {miscScrollRu1, miscScrollRu2, miscScrollRuE, miscScrollCap, miscScrollEnc}, {bMiscRu1, bMiscRu2, bMiscRuE, bMiscCap, bMiscEnc}
+local miscSubS, miscSubB = {miscScrollRu1, miscScrollRu2, miscScrollRuE, miscScrollCap}, {bMiscRu1, bMiscRu2, bMiscRuE, bMiscCap}
 bMiscRu1.MouseButton1Click:Connect(function() sideRoute(miscScrollRu1, bMiscRu1, miscSubS, miscSubB) end)
 bMiscRu2.MouseButton1Click:Connect(function() sideRoute(miscScrollRu2, bMiscRu2, miscSubS, miscSubB) end)
 bMiscRuE.MouseButton1Click:Connect(function() sideRoute(miscScrollRuE, bMiscRuE, miscSubS, miscSubB) end)
 bMiscCap.MouseButton1Click:Connect(function() sideRoute(miscScrollCap, bMiscCap, miscSubS, miscSubB) end)
-bMiscEnc.MouseButton1Click:Connect(function() sideRoute(miscScrollEnc, bMiscEnc, miscSubS, miscSubB) end)
 
 local setS, setB = {setGenScroll, setConfigScroll}, {bSetGen, bSetConfig}
 bSetGen.MouseButton1Click:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
@@ -1187,7 +1189,7 @@ mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.Us
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
 --======================================================================================
--- LOCOMOTION & REMOTE ENGINES
+-- LOCOMOTION & TELEPORT ENGINES (RESTORED)
 --======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1195,8 +1197,7 @@ local MiningTargetVector = nil
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
-    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
-    Enchant = Vector3.new(1193.1235, 18.7949, -854.0244)
+    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149)
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
@@ -1279,64 +1280,6 @@ task.spawn(function()
                 if _G.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap + Vector3.new(0, 3, 0)) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Classic") end)
                 elseif _G.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap + Vector3.new(0, 3, 0)) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Football") end)
                 elseif _G.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap + Vector3.new(0, 3, 0)) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Super") end) end
-            end
-        end
-    end
-end)
-
--- ENCHANT WARNING AUTO-STOP LISTENER
-if EnchantWarningRemote then
-    EnchantWarningRemote.OnClientEvent:Connect(function()
-        for i = 1, 11 do
-            local flags = {"AutoEnchantStarter", "AutoEnchantCooker", "AutoEnchantFarmer", "AutoEnchantMagician", "AutoEnchantArcher", "AutoEnchantSoldier", "AutoEnchantFisherman", "AutoEnchantKnight", "AutoEnchantExplorer", "AutoEnchantR2Magician", "AutoEnchantPharaoh"}
-            for _, f in ipairs(flags) do
-                _G[f] = false
-            end
-        end
-        showToast("Enchant Target Hit! Auto-Enchant stopped to save pull.")
-    end)
-end
-
-local EnchantQueue = { 
-    {F="AutoEnchantStarter", A={"Starter"}}, 
-    {F="AutoEnchantCooker", A={"Cooker"}}, 
-    {F="AutoEnchantFarmer", A={"Farmer"}}, 
-    {F="AutoEnchantMagician", A={"Magician"}}, 
-    {F="AutoEnchantArcher", A={"Archer"}}, 
-    {F="AutoEnchantSoldier", A={"Soldier"}}, 
-    {F="AutoEnchantFisherman", A={"Fisherman"}}, 
-    {F="AutoEnchantKnight", A={"Knight"}}, 
-    {F="AutoEnchantExplorer", A={"Explorer"}}, 
-    {F="AutoEnchantR2Magician", A={"Magician"}}, 
-    {F="AutoEnchantPharaoh", A={"Pharaoh"}} 
-}
-
-task.spawn(function()
-    while Running do
-        task.wait(_G.CPUSaverMode and 1.0 or 0.5) 
-        local anyActive = false
-        for i = 1, #EnchantQueue do 
-            if _G[EnchantQueue[i].F] then 
-                anyActive = true 
-                break 
-            end 
-        end
-        
-        if NetRemote and Running and anyActive then
-            local hrp = GetWorldRoot() 
-            if hrp and (hrp.Position - Dest.Enchant).Magnitude > 10 then 
-                hrp.CFrame = CFrame.new(Dest.Enchant + Vector3.new(0, 3, 0)) 
-            end
-            
-            for i = 1, #EnchantQueue do
-                if not Running then break end 
-                local item = EnchantQueue[i]
-                if _G[item.F] then 
-                    pcall(function() 
-                        NetRemote:FireServer("RerollEnchant", unpack(item.A)) 
-                    end) 
-                    task.wait(0.3) 
-                end
             end
         end
     end
@@ -1441,4 +1384,4 @@ task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running t
 task.spawn(function() while Running do task.wait(5.0) if _G.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 task.spawn(function() local tc = math.random(270, 330) local se = 0 while Running do task.wait(1) if Running and _G.AutoBlazeConvert and NetRemote then se = se + 1 if se >= tc then se = 0 tc = math.random(270, 330) pcall(function() NetRemote:FireServer("Blaze") end) end else se = 0 end end end)
 
-print("[Dominate Hub] V10.9 Pro Edition - Enchant Warning Protection Active!")
+print("[Dominate Hub] V11.0 Pro Edition - Teleports Restored & Toggles Synchronized!")
