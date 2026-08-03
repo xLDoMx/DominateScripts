@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V10.8 PRO EDITION (REALM 2 ENCHANTS & STABLE V9.6 ENGINE)
+-- DOMINATE HUB | V10.9 PRO EDITION (ENCHANT WARNING AUTO-STOP PROTECTED)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V10.8 Instance...")
+    print("[Dominate Hub] Reloading V10.9 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -26,6 +26,7 @@ local Running = true
 local player = Players.LocalPlayer
 local vu = VirtualUser
 local NetRemote = nil
+local EnchantWarningRemote = nil
 
 local UI = {}
 
@@ -140,7 +141,6 @@ _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRoll
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 _G.AutoOpenClassicCapsule, _G.AutoOpenFootballCapsule, _G.AutoOpenSuperCapsule = false, false, false
 
--- UPDATED ENCHANT FLAGS (REALM 2 NOOBS ADDED)
 _G.AutoEnchantStarter, _G.AutoEnchantCooker, _G.AutoEnchantFarmer, _G.AutoEnchantMagician, _G.AutoEnchantArcher, _G.AutoEnchantSoldier = false, false, false, false, false, false
 _G.AutoEnchantFisherman, _G.AutoEnchantKnight, _G.AutoEnchantExplorer, _G.AutoEnchantR2Magician, _G.AutoEnchantPharaoh = false, false, false, false, false
 
@@ -159,7 +159,10 @@ end)
 task.spawn(function()
     repeat
         local netService = ReplicatedStorage:WaitForChild("__Net", 5)
-        if netService then NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent") end
+        if netService then 
+            NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent") 
+            EnchantWarningRemote = netService:FindFirstChild("EnchantWarning")
+        end
         if not NetRemote then task.wait(0.5) end
     until NetRemote or not Running
 end)
@@ -297,7 +300,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.8 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.9 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -681,7 +684,7 @@ UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll)
 UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll)
 
 -- ======================================================================================
--- MISC PAGE (UPDATED ENCHANTS: REALM 1 + REALM 2 NOOBS)
+-- MISC PAGE
 -- ======================================================================================
 local miscSidebar = makeSidebar(miscPage)
 local bMiscRu1 = makeSideBtn("Runes R1", miscSidebar) bMiscRu1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bMiscRu1.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -1281,7 +1284,19 @@ task.spawn(function()
     end
 end)
 
--- UPDATED ENCHANT QUEUE (REALM 1 + REALM 2 NOOBS)
+-- ENCHANT WARNING AUTO-STOP LISTENER
+if EnchantWarningRemote then
+    EnchantWarningRemote.OnClientEvent:Connect(function()
+        for i = 1, 11 do
+            local flags = {"AutoEnchantStarter", "AutoEnchantCooker", "AutoEnchantFarmer", "AutoEnchantMagician", "AutoEnchantArcher", "AutoEnchantSoldier", "AutoEnchantFisherman", "AutoEnchantKnight", "AutoEnchantExplorer", "AutoEnchantR2Magician", "AutoEnchantPharaoh"}
+            for _, f in ipairs(flags) do
+                _G[f] = false
+            end
+        end
+        showToast("Enchant Target Hit! Auto-Enchant stopped to save pull.")
+    end)
+end
+
 local EnchantQueue = { 
     {F="AutoEnchantStarter", A={"Starter"}}, 
     {F="AutoEnchantCooker", A={"Cooker"}}, 
@@ -1426,4 +1441,4 @@ task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running t
 task.spawn(function() while Running do task.wait(5.0) if _G.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 task.spawn(function() local tc = math.random(270, 330) local se = 0 while Running do task.wait(1) if Running and _G.AutoBlazeConvert and NetRemote then se = se + 1 if se >= tc then se = 0 tc = math.random(270, 330) pcall(function() NetRemote:FireServer("Blaze") end) end else se = 0 end end end)
 
-print("[Dominate Hub] V10.8 Pro Edition - Realm 2 Enchants Integrated Successfully!")
+print("[Dominate Hub] V10.9 Pro Edition - Enchant Warning Protection Active!")
