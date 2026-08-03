@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V11.4 PRO EDITION (AUTO TYCOON RESET INTEGRATED INTO CASH LOOP)
+-- DOMINATE HUB | V11.5 PRO EDITION (TYCOON TELEPORT MOVED TO SETTINGS)
 --======================================================================================
 local Env = getgenv()
 
@@ -11,7 +11,7 @@ if Env.DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V11.4 Instance...")
+    print("[Dominate Hub] Reloading V11.5 Instance...")
 end
 Env.DominateHubLoaded = true
 
@@ -116,6 +116,7 @@ end
 Env.AntiAFK = Env.AntiAFK ~= nil and Env.AntiAFK or true
 Env.AutoPrestige = Env.AutoPrestige or false
 Env.CPUSaverMode = Env.CPUSaverMode or false
+Env.AutoTycoonTeleport = Env.AutoTycoonTeleport or false
 
 -- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
 Env.AutoUpgradeStarter = Env.AutoUpgradeStarter or false
@@ -429,7 +430,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.4 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.5 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -1009,6 +1010,8 @@ UI.CPUSaverToggle = genRow("CPU Saver Mode", "CPUSaverMode", function(b)
     showToast(Env.CPUSaverMode and "CPU Saver Mode Enabled (Background loops throttled)" or "CPU Saver Mode Disabled")
 end)
 
+UI.TycoonTeleportToggle = genRow("Tycoon Teleport to Pad", "AutoTycoonTeleport", function(b) tV2(b, "AutoTycoonTeleport") end)
+
 genSpacer(10)
 
 UI.RebirthTimerCard = genRow("Auto Rebirth", "AutoRebirthTimer", function(b) tV2(b, "AutoRebirthTimer") end)
@@ -1386,7 +1389,13 @@ task.spawn(function()
                         if bM and bM:IsA("Model") and not locked[bM.Name] then
                             local tb = bM:FindFirstChild("BuyingButtonPart", true)
                             if tb and tb:IsA("BasePart") and Running then
-                                att = true MasterTargetVector = tb.Position + Vector3.new(0, 3, 0) task.wait(0.4)
+                                att = true 
+                                if Env.AutoTycoonTeleport then
+                                    MasterTargetVector = tb.Position + Vector3.new(0, 3, 0) 
+                                    task.wait(0.4)
+                                else
+                                    task.wait(0.1)
+                                end
                                 if not Running then break end
                                 if bM:IsDescendantOf(btnF) then locked[bM.Name] = true MasterTargetVector = nil task.wait(0.05) else MasterTargetVector = nil task.wait(0.1) break end
                             end
@@ -1480,4 +1489,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.4 Pro Edition - Auto Tycoon Reset Added & Fully Synchronized!")
+print("[Dominate Hub] V11.5 Pro Edition - Tycoon Teleport Toggle Added & Fully Synchronized!")
