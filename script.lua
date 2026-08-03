@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V11.2 PRO EDITION (FUNCTION HOISTING & TOGGLE FIX)
+-- DOMINATE HUB | V11.3 PRO EDITION (BLAZE CONVERT FIXED: 1-MIN FIXED TIMER)
 --======================================================================================
 local Env = getgenv()
 
@@ -11,7 +11,7 @@ if Env.DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V11.2 Instance...")
+    print("[Dominate Hub] Reloading V11.3 Instance...")
 end
 Env.DominateHubLoaded = true
 
@@ -428,7 +428,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.3 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -1466,6 +1466,17 @@ task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running 
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
-task.spawn(function() local tc = math.random(270, 330) local se = 0 while Running do task.wait(1) if Running and Env.AutoBlazeConvert and NetRemote then se = se + 1 if se >= tc then se = 0 tc = math.random(270, 330) pcall(function() NetRemote:FireServer("Blaze") end) end else se = 0 end end end)
 
-print("[Dominate Hub] V11.2 Pro Edition - Function Hoisting & Toggles Fully Fixed!")
+-- FIXED BLAZE CONVERSION TASK (EVERY 1 MINUTE STABLE TIMER, MATCHED TO DEPOSIT LOOPS)
+task.spawn(function()
+    while Running do
+        task.wait(60.0) -- Exactly every 1 minute
+        if NetRemote and Running and Env.AutoBlazeConvert then
+            pcall(function()
+                NetRemote:FireServer("Blaze")
+            end)
+        end
+    end
+end)
+
+print("[Dominate Hub] V11.3 Pro Edition - Blaze Convert Fixed (1-Min Timer) & All Toggles Active!")
