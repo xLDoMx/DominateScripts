@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V11.1 PRO EDITION (ENVIRONMENT UNIFIED VIA GETGENV)
+-- DOMINATE HUB | V11.2 PRO EDITION (FUNCTION HOISTING & TOGGLE FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -11,7 +11,7 @@ if Env.DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V11.1 Instance...")
+    print("[Dominate Hub] Reloading V11.2 Instance...")
 end
 Env.DominateHubLoaded = true
 
@@ -59,6 +59,36 @@ local function saveConfigToSlot(slot, customName)
         if writefile then
             writefile(getSlotFileName(slot), HttpService:JSONEncode(configData))
         end
+    end)
+end
+
+-- TOAST NOTIFICATION HELPER
+local function showToast(msg)
+    task.spawn(function()
+        local toast = Instance.new("Frame")
+        toast.Size = UDim2.new(0, 210, 0, 36)
+        toast.Position = UDim2.new(1, 10, 1, -60)
+        toast.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+        toast.BackgroundTransparency = 0.35 
+        toast.BorderSizePixel = 0
+        toast.Parent = (gethui and gethui()) or player:WaitForChild("PlayerGui")
+        Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 10)
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, -10, 1, 0)
+        label.Position = UDim2.new(0, 5, 0, 0)
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.fromRGB(240, 240, 245)
+        label.TextSize = 11
+        label.Font = Enum.Font.SourceSansBold
+        label.Text = msg
+        label.Parent = toast
+
+        toast:TweenPosition(UDim2.new(1, -225, 1, -60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
+        task.wait(2.8)
+        toast:TweenPosition(UDim2.new(1, 10, 1, -60), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.25, true)
+        task.wait(0.25)
+        toast:Destroy()
     end)
 end
 
@@ -232,6 +262,51 @@ Env.FPSBoostMode = Env.FPSBoostMode or false
 Env.ShowStatsHUD = Env.ShowStatsHUD ~= nil and Env.ShowStatsHUD or true
 Env.DiscordWebhookURL = Env.DiscordWebhookURL or ""
 
+-- EARLY DEFINITION OF HELPERS TO PREVENT NIL CALL ERRORS
+local function tV2(b, v) 
+    Env[v] = not Env[v] 
+    b.Text = Env[v] and "ACTIVE" or "DISABLED" 
+    b.BackgroundColor3 = Env[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
+    b.TextColor3 = Env[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    
+    local card = b.Parent
+    if card and card:IsA("Frame") then
+        local dot = card:FindFirstChild("StatusDot")
+        if dot then
+            dot.BackgroundColor3 = Env[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        end
+    end
+    saveConfigToSlot(Env.SelectedConfigSlot)
+end
+
+local function toggleFPSBoost(b)
+    Env.FPSBoostMode = not Env.FPSBoostMode
+    b.Text = Env.FPSBoostMode and "ACTIVE" or "DISABLED"
+    b.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+    b.TextColor3 = Env.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    local dot = b.Parent:FindFirstChild("StatusDot")
+    if dot then dot.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
+    saveConfigToSlot(Env.SelectedConfigSlot)
+    
+    if Env.FPSBoostMode then
+        pcall(function()
+            Lighting.GlobalShadows = false
+            Lighting.FogEnd = 9e9
+            for _, v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Material = Enum.Material.SmoothPlastic
+                    v.Reflectance = 0
+                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+                    v.Enabled = false
+                end
+            end
+        end)
+        showToast("FPS Booster Enabled!")
+    else
+        showToast("FPS Booster Disabled!")
+    end
+end
+
 loadConfigFromSlot(1)
 
 player.Idled:Connect(function()
@@ -253,36 +328,6 @@ end)
 -- UI MASTER ALLOCATION (Compact Height: 350)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
-
--- TOAST NOTIFICATION HELPER
-local function showToast(msg)
-    task.spawn(function()
-        local toast = Instance.new("Frame")
-        toast.Size = UDim2.new(0, 210, 0, 36)
-        toast.Position = UDim2.new(1, 10, 1, -60)
-        toast.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-        toast.BackgroundTransparency = 0.35 
-        toast.BorderSizePixel = 0
-        toast.Parent = sg
-        Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 10)
-
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -10, 1, 0)
-        label.Position = UDim2.new(0, 5, 0, 0)
-        label.BackgroundTransparency = 1
-        label.TextColor3 = Color3.fromRGB(240, 240, 245)
-        label.TextSize = 11
-        label.Font = Enum.Font.SourceSansBold
-        label.Text = msg
-        label.Parent = toast
-
-        toast:TweenPosition(UDim2.new(1, -225, 1, -60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
-        task.wait(2.8)
-        toast:TweenPosition(UDim2.new(1, 10, 1, -60), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.25, true)
-        task.wait(0.25)
-        toast:Destroy()
-    end)
-end
 
 local function sendDiscordWebhook(message)
     if Env.DiscordWebhookURL ~= "" then
@@ -383,7 +428,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -1101,34 +1146,6 @@ UI.KillSwitch.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
-local function toggleFPSBoost(b)
-    Env.FPSBoostMode = not Env.FPSBoostMode
-    b.Text = Env.FPSBoostMode and "ACTIVE" or "DISABLED"
-    b.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = Env.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    local dot = b.Parent:FindFirstChild("StatusDot")
-    if dot then dot.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-    saveConfigToSlot(Env.SelectedConfigSlot)
-    
-    if Env.FPSBoostMode then
-        pcall(function()
-            Lighting.GlobalShadows = false
-            Lighting.FogEnd = 9e9
-            for _, v in ipairs(workspace:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.Material = Enum.Material.SmoothPlastic
-                    v.Reflectance = 0
-                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-                    v.Enabled = false
-                end
-            end
-        end)
-        showToast("FPS Booster Enabled!")
-    else
-        showToast("FPS Booster Disabled!")
-    end
-end
-
 -- ======================================================================================
 -- UI SYNCHRONIZATION ENGINE
 -- ======================================================================================
@@ -1142,25 +1159,6 @@ syncAllUI = function()
             item.Dot.BackgroundColor3 = isActive and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
         end
     end
-end
-
--- ======================================================================================
--- CONNECTORS
--- ======================================================================================
-local function tV2(b, v) 
-    Env[v] = not Env[v] 
-    b.Text = Env[v] and "ACTIVE" or "DISABLED" 
-    b.BackgroundColor3 = Env[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
-    b.TextColor3 = Env[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
-    
-    local card = b.Parent
-    if card and card:IsA("Frame") then
-        local dot = card:FindFirstChild("StatusDot")
-        if dot then
-            dot.BackgroundColor3 = Env[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-        end
-    end
-    saveConfigToSlot(Env.SelectedConfigSlot)
 end
 
 -- WIRE UP NOOBS
@@ -1470,4 +1468,4 @@ task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running t
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 task.spawn(function() local tc = math.random(270, 330) local se = 0 while Running do task.wait(1) if Running and Env.AutoBlazeConvert and NetRemote then se = se + 1 if se >= tc then se = 0 tc = math.random(270, 330) pcall(function() NetRemote:FireServer("Blaze") end) end else se = 0 end end end)
 
-print("[Dominate Hub] V11.1 Pro Edition - Environment Unified & Toggles Fully Functional!")
+print("[Dominate Hub] V11.2 Pro Edition - Function Hoisting & Toggles Fully Fixed!")
