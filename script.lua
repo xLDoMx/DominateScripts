@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V10.7 PRO EDITION (STABLE V9.6 BASE + CPU SAVER & MISC TAB)
+-- DOMINATE HUB | V10.8 PRO EDITION (REALM 2 ENCHANTS & STABLE V9.6 ENGINE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V10.7 Instance...")
+    print("[Dominate Hub] Reloading V10.8 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -140,8 +140,9 @@ _G.AutoRollBasicRune, _G.AutoRollSuperRune, _G.AutoRollAdvancedRune, _G.AutoRoll
 _G.AutoOpenT1Chest, _G.AutoOpenT2Chest = false, false
 _G.AutoOpenClassicCapsule, _G.AutoOpenFootballCapsule, _G.AutoOpenSuperCapsule = false, false, false
 
+-- UPDATED ENCHANT FLAGS (REALM 2 NOOBS ADDED)
 _G.AutoEnchantStarter, _G.AutoEnchantCooker, _G.AutoEnchantFarmer, _G.AutoEnchantMagician, _G.AutoEnchantArcher, _G.AutoEnchantSoldier = false, false, false, false, false, false
-_G.AutoEnchantHacker1, _G.AutoEnchantHacker2, _G.AutoEnchantHacker3, _G.AutoEnchantHacker4, _G.AutoEnchantPharaoh = false, false, false, false, false
+_G.AutoEnchantFisherman, _G.AutoEnchantKnight, _G.AutoEnchantExplorer, _G.AutoEnchantR2Magician, _G.AutoEnchantPharaoh = false, false, false, false, false
 
 _G.FPSBoostMode = false
 _G.ShowStatsHUD = true
@@ -296,7 +297,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.7 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.8 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -342,7 +343,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SCROLLING TOP TABS CONTAINER (6 Tabs Total: Upgrades, Noobs, Mines, Football, Misc, Settings)
+-- SCROLLING TOP TABS CONTAINER
 local tabScroll = Instance.new("ScrollingFrame")
 tabScroll.Size = UDim2.new(1, -20, 0, 30)
 tabScroll.Position = UDim2.new(0, 10, 0, 36)
@@ -386,7 +387,7 @@ local tabFootball = makeMainTab("Football")
 local tabMisc = makeMainTab("Misc")
 local tabSettings = makeMainTab("Settings")
 
--- PAGE CONTAINERS (Compact Height: -72)
+-- PAGE CONTAINERS
 local function makePage()
     local p = Instance.new("Frame") p.Size = UDim2.new(1, -20, 1, -72) p.Position = UDim2.new(0, 10, 0, 68) p.BackgroundTransparency = 1; p.Visible = false; p.Parent = mainFrame return p
 end
@@ -533,7 +534,7 @@ UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2)
 UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2)
 
 -- ======================================================================================
--- MINES PAGE (SLEEK BORDERLESS TEXT LISTING & BLENDED BEST TIER ONLY TOGGLE BUTTON)
+-- MINES PAGE
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
 
@@ -680,7 +681,7 @@ UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll)
 UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll)
 
 -- ======================================================================================
--- MISC PAGE (CONSOLIDATED RUNES, CAPSULES, AND ENCHANTS)
+-- MISC PAGE (UPDATED ENCHANTS: REALM 1 + REALM 2 NOOBS)
 -- ======================================================================================
 local miscSidebar = makeSidebar(miscPage)
 local bMiscRu1 = makeSideBtn("Runes R1", miscSidebar) bMiscRu1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bMiscRu1.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -714,14 +715,14 @@ UI.EnchantFarmer = gridRow("Reroll: Farmer", miscScrollEnc)
 UI.EnchantMagician = gridRow("Reroll: Magician", miscScrollEnc) 
 UI.EnchantArcher = gridRow("Reroll: Archer", miscScrollEnc) 
 UI.EnchantSoldier = gridRow("Reroll: Soldier", miscScrollEnc) 
-UI.EnchantHacker1 = gridRow("Reroll: Hacker 1", miscScrollEnc) 
-UI.EnchantHacker2 = gridRow("Reroll: Hacker 2", miscScrollEnc) 
-UI.EnchantHacker3 = gridRow("Reroll: Hacker 3", miscScrollEnc) 
-UI.EnchantHacker4 = gridRow("Reroll: Hacker 4", miscScrollEnc) 
+UI.EnchantFisherman = gridRow("Reroll: Fisherman", miscScrollEnc) 
+UI.EnchantKnight = gridRow("Reroll: Knight", miscScrollEnc) 
+UI.EnchantExplorer = gridRow("Reroll: Explorer", miscScrollEnc) 
+UI.EnchantR2Magician = gridRow("Reroll: Magician (R2)", miscScrollEnc) 
 UI.EnchantPharaoh = gridRow("Reroll: Pharaoh", miscScrollEnc)
 
 -- ======================================================================================
--- SETTINGS PAGE (GENERAL & FULL-WIDTH VERTICAL STACKED CONFIG SLOTS)
+-- SETTINGS PAGE
 -- ======================================================================================
 local setSidebar = makeSidebar(settingsPage)
 local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
@@ -730,7 +731,6 @@ local bSetConfig = makeSideBtn("Config", setSidebar)
 local setGenScroll = makeVerticalScroll(settingsPage, true) setGenScroll.Visible = true
 local setConfigScroll = makeVerticalScroll(settingsPage, true)
 
--- FULL-WIDTH STACKED CONFIG SLOTS
 for i = 1, 5 do
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -6, 0, 32)
@@ -801,9 +801,6 @@ for i = 1, 5 do
     end)
 end
 
--- ======================================================================================
--- GENERAL SETTINGS TAB (FULL-WIDTH VERTICAL STACKED ROWS WITH REQUESTED SPACING)
--- ======================================================================================
 local function genRow(txt, callback)
     local f = Instance.new("Frame")
     f.Size = UDim2.new(1, -6, 0, 32)
@@ -890,7 +887,6 @@ UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2
 
 genSpacer(10)
 
--- Glide Speed row in General Settings
 local speedRow = Instance.new("Frame")
 speedRow.Size = UDim2.new(1, -6, 0, 32)
 speedRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
@@ -933,7 +929,6 @@ end)
 
 genSpacer(10)
 
--- Hub Theme Row
 local themeRow = Instance.new("Frame")
 themeRow.Size = UDim2.new(1, -6, 0, 32)
 themeRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
@@ -981,7 +976,6 @@ themeBtn.MouseButton1Click:Connect(function()
     showToast("Theme changed to " .. th.Name)
 end)
 
--- Emergency Kill Switch at the bottom
 local killRow = Instance.new("Frame")
 killRow.Size = UDim2.new(1, -6, 0, 32)
 killRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
@@ -1051,7 +1045,7 @@ local function toggleFPSBoost(b)
 end
 
 --======================================================================================
--- CONNECTORS, KILL SWITCH & DRAG CONTROLLER (EXACT WORKING V9.6 MAP)
+-- CONNECTORS
 --======================================================================================
 local function tV2(b, v) 
     _G[v] = not _G[v] 
@@ -1066,7 +1060,6 @@ local function tV2(b, v)
             dot.BackgroundColor3 = _G[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
         end
     end
-    
     saveConfigToSlot(_G.SelectedConfigSlot)
 end
 
@@ -1121,10 +1114,10 @@ UI.EnchantFarmer.MouseButton1Click:Connect(function() tV2(UI.EnchantFarmer, "Aut
 UI.EnchantMagician.MouseButton1Click:Connect(function() tV2(UI.EnchantMagician, "AutoEnchantMagician") end) 
 UI.EnchantArcher.MouseButton1Click:Connect(function() tV2(UI.EnchantArcher, "AutoEnchantArcher") end) 
 UI.EnchantSoldier.MouseButton1Click:Connect(function() tV2(UI.EnchantSoldier, "AutoEnchantSoldier") end) 
-UI.EnchantHacker1.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker1, "AutoEnchantHacker1") end) 
-UI.EnchantHacker2.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker2, "AutoEnchantHacker2") end) 
-UI.EnchantHacker3.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker3, "AutoEnchantHacker3") end) 
-UI.EnchantHacker4.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker4, "AutoEnchantHacker4") end) 
+UI.EnchantFisherman.MouseButton1Click:Connect(function() tV2(UI.EnchantFisherman, "AutoEnchantFisherman") end) 
+UI.EnchantKnight.MouseButton1Click:Connect(function() tV2(UI.EnchantKnight, "AutoEnchantKnight") end) 
+UI.EnchantExplorer.MouseButton1Click:Connect(function() tV2(UI.EnchantExplorer, "AutoEnchantExplorer") end) 
+UI.EnchantR2Magician.MouseButton1Click:Connect(function() tV2(UI.EnchantR2Magician, "AutoEnchantR2Magician") end) 
 UI.EnchantPharaoh.MouseButton1Click:Connect(function() tV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
 
 UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) 
@@ -1191,11 +1184,10 @@ mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.Us
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
 --======================================================================================
--- LOCOMOTION & REMOTE ENGINES (STABLE V9.6 BACKEND LOOPS)
+-- LOCOMOTION & REMOTE ENGINES
 --======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
-local CurrentLoopStateSleep = false 
 
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
@@ -1289,16 +1281,47 @@ task.spawn(function()
     end
 end)
 
-local EnchantQueue = { {F="AutoEnchantStarter",A={"Starter"}}, {F="AutoEnchantCooker",A={"Cooker"}}, {F="AutoEnchantFarmer",A={"Farmer"}}, {F="AutoEnchantMagician",A={"Magician"}}, {F="AutoEnchantArcher",A={"Archer"}}, {F="AutoEnchantSoldier",A={"Soldier"}}, {F="AutoEnchantHacker1",A={"Hacker 1"}}, {F="AutoEnchantHacker2",A={"Hacker 2"}}, {F="AutoEnchantHacker3",A={"Hacker 3"}}, {F="AutoEnchantHacker4",A={"Hacker 4"}}, {F="AutoEnchantPharaoh",A={"Pharaoh"}} }
+-- UPDATED ENCHANT QUEUE (REALM 1 + REALM 2 NOOBS)
+local EnchantQueue = { 
+    {F="AutoEnchantStarter", A={"Starter"}}, 
+    {F="AutoEnchantCooker", A={"Cooker"}}, 
+    {F="AutoEnchantFarmer", A={"Farmer"}}, 
+    {F="AutoEnchantMagician", A={"Magician"}}, 
+    {F="AutoEnchantArcher", A={"Archer"}}, 
+    {F="AutoEnchantSoldier", A={"Soldier"}}, 
+    {F="AutoEnchantFisherman", A={"Fisherman"}}, 
+    {F="AutoEnchantKnight", A={"Knight"}}, 
+    {F="AutoEnchantExplorer", A={"Explorer"}}, 
+    {F="AutoEnchantR2Magician", A={"Magician"}}, 
+    {F="AutoEnchantPharaoh", A={"Pharaoh"}} 
+}
+
 task.spawn(function()
     while Running do
-        task.wait(_G.CPUSaverMode and 1.0 or 0.5) local act = false
-        for i = 1, #EnchantQueue do if _G[EnchantQueue[i].F] then act = true break end end
-        if NetRemote and Running and act then
-            local hrp = GetWorldRoot() if hrp and (hrp.Position - Dest.Enchant).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.Enchant + Vector3.new(0, 3, 0)) end
+        task.wait(_G.CPUSaverMode and 1.0 or 0.5) 
+        local anyActive = false
+        for i = 1, #EnchantQueue do 
+            if _G[EnchantQueue[i].F] then 
+                anyActive = true 
+                break 
+            end 
+        end
+        
+        if NetRemote and Running and anyActive then
+            local hrp = GetWorldRoot() 
+            if hrp and (hrp.Position - Dest.Enchant).Magnitude > 10 then 
+                hrp.CFrame = CFrame.new(Dest.Enchant + Vector3.new(0, 3, 0)) 
+            end
+            
             for i = 1, #EnchantQueue do
-                if not Running then break end local item = EnchantQueue[i]
-                if _G[item.F] then pcall(function() NetRemote:FireServer("RerollEnchant", unpack(item.A)) end) task.wait(0.3) end
+                if not Running then break end 
+                local item = EnchantQueue[i]
+                if _G[item.F] then 
+                    pcall(function() 
+                        NetRemote:FireServer("RerollEnchant", unpack(item.A)) 
+                    end) 
+                    task.wait(0.3) 
+                end
             end
         end
     end
@@ -1310,7 +1333,7 @@ task.spawn(function()
         if _G.AutoFarmCash and Running then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") local ty = gc and gc:FindFirstChild("Tycoon") local btnF = ty and ty:FindFirstChild("Buttons")
             if btnF and Running then
-                local locked = {} CurrentLoopStateSleep = false 
+                local locked = {} 
                 repeat
                     if not Running or not _G.AutoFarmCash then break end
                     local vis = btnF:GetChildren() local att = false
@@ -1328,9 +1351,9 @@ task.spawn(function()
                     end
                     if not att or not _G.AutoFarmCash or not Running then break end task.wait(0.1)
                 until false
-                if Running then MasterTargetVector = nil CurrentLoopStateSleep = true local sE = tick() + math.random(120, 180) repeat task.wait(1) until tick() >= sE or not _G.AutoFarmCash or not Running end
+                if Running then MasterTargetVector = nil local sE = tick() + math.random(120, 180) repeat task.wait(1) until tick() >= sE or not _G.AutoFarmCash or not Running end
             else MasterTargetVector = nil task.wait(2) end
-        else MasterTargetVector = nil CurrentLoopStateSleep = true task.wait(1) end
+        else MasterTargetVector = nil task.wait(1) end
     end
 end)
 
@@ -1403,4 +1426,4 @@ task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running t
 task.spawn(function() while Running do task.wait(5.0) if _G.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 task.spawn(function() local tc = math.random(270, 330) local se = 0 while Running do task.wait(1) if Running and _G.AutoBlazeConvert and NetRemote then se = se + 1 if se >= tc then se = 0 tc = math.random(270, 330) pcall(function() NetRemote:FireServer("Blaze") end) end else se = 0 end end end)
 
-print("[Dominate Hub] V10.7 Pro Edition - V9.6 Backend Restored & Updated!")
+print("[Dominate Hub] V10.8 Pro Edition - Realm 2 Enchants Integrated Successfully!")
