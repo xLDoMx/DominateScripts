@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V12.1 PRO EDITION (DOUBLE-CLICK BUG FIXED VIA END-OF-SCRIPT UI SYNC)
+-- DOMINATE HUB | V12.2 PRO EDITION (V11.7 SPEEDS + MOUSE CLICKS + DOUBLE-CLICK FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -11,7 +11,7 @@ if Env.DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V12.1 Instance...")
+    print("[Dominate Hub] Reloading V12.2 Instance...")
 end
 Env.DominateHubLoaded = true
 
@@ -407,7 +407,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V12.1 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V12.2 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -1142,9 +1142,6 @@ syncAllUI = function()
     end
 end
 
--- NOW LOAD CONFIG & SYNC BUTTONS AFTER ALL ELEMENTS ARE CREATED & REGISTERED
-loadConfigFromSlot(1)
-
 -- WIRE UP NOOBS
 UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) 
 UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) 
@@ -1261,9 +1258,12 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
---=====================================================================================
+-- NOW LOAD CONFIG & SYNC BUTTONS AFTER ALL ELEMENTS ARE CREATED & REGISTERED
+loadConfigFromSlot(1)
+
+--======================================================================================
 -- LOCOMOTION & TELEPORT ENGINES (SPED UP BY 0.3s)
---=====================================================================================
+--======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
 
@@ -1472,4 +1472,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.0 Pro Edition - Mouse Clicks Restored & Optimized!")
+print("[Dominate Hub] V12.2 Pro Edition - V11.7 Sped-up Script + Double-Click Fixed!")
