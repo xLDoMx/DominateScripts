@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V11.9 PRO EDITION (MOBILE TOUCH SUPPORT VIA .ACTIVATED)a
+-- DOMINATE HUB | V12.0 PRO EDITION (MOUSE CLICKS RESTORED & TOGGLES FIXED)
 --======================================================================================
 local Env = getgenv()
 
@@ -11,7 +11,7 @@ if Env.DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V11.9 Instance...")
+    print("[Dominate Hub] Reloading V12.0 Instance...")
 end
 Env.DominateHubLoaded = true
 
@@ -243,7 +243,7 @@ Env.FPSBoostMode = Env.FPSBoostMode or false
 Env.ShowStatsHUD = Env.ShowStatsHUD ~= nil and Env.ShowStatsHUD or true
 Env.DiscordWebhookURL = Env.DiscordWebhookURL or ""
 
--- HELPER FUNCTIONS
+-- HELPER FUNCTIONS HOISTED EARLY
 local function tV2(b, v) 
     Env[v] = not Env[v] 
     b.Text = Env[v] and "ACTIVE" or "DISABLED" 
@@ -407,7 +407,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V11.9 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V12.0 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -435,7 +435,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
-minBtn.Activated:Connect(function()
+minBtn.MouseButton1Click:Connect(function()
     local isVisible = mainFrame.Visible
     if isVisible then
         local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1})
@@ -593,7 +593,7 @@ local function masterToggle(txt, flagsTable, scr)
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.42, -4, 0, 20) b.Position = UDim2.new(0.57, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 9; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
-    b.Activated:Connect(function()
+    b.MouseButton1Click:Connect(function()
         local activeState = false
         for _, flag in ipairs(flagsTable) do
             if not Env[flag] then activeState = true break end
@@ -666,7 +666,7 @@ bestTierBtn.Text = "Best Tier Only: DISABLED"
 bestTierBtn.Parent = minesScroll
 Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 5)
 
-bestTierBtn.Activated:Connect(function()
+bestTierBtn.MouseButton1Click:Connect(function()
     bestTierActive = not bestTierActive
     bestTierBtn.Text = bestTierActive and "Best Tier Only: ACTIVE" or "Best Tier Only: DISABLED"
     bestTierBtn.BackgroundColor3 = bestTierActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
@@ -893,12 +893,12 @@ for i = 1, 5 do
         slotCustomNames[i] = box.Text
     end)
 
-    saveBtn.Activated:Connect(function()
+    saveBtn.MouseButton1Click:Connect(function()
         saveConfigToSlot(i, box.Text)
         showToast("Saved to Slot " .. i .. " (" .. box.Text .. ")")
     end)
 
-    loadBtn.Activated:Connect(function()
+    loadBtn.MouseButton1Click:Connect(function()
         Env.SelectedConfigSlot = i
         loadConfigFromSlot(i)
         box.Text = slotCustomNames[i]
@@ -950,7 +950,7 @@ local function genRow(txt, vKey, callback)
     end
 
     if callback then
-        b.Activated:Connect(function()
+        b.MouseButton1Click:Connect(function()
             callback(b)
         end)
     end
@@ -1030,7 +1030,7 @@ Instance.new("UICorner", UI.MiningSpeedSwitch).CornerRadius = UDim.new(0, 4)
 local ms = {0.3, 0.5, 0.8, 1.2, 2.0} 
 local ml = {"0.3 S/s", "0.5 S/s", "0.8 S/s", "1.2 S/s", "2.0 S/s"} 
 local mi = 3
-UI.MiningSpeedSwitch.Activated:Connect(function() 
+UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() 
     mi = mi + 1 
     if mi > #ms then mi = 1 end 
     Env.MiningJumpSpeed = ms[mi] 
@@ -1077,7 +1077,7 @@ local themes = {
 }
 local currentThemeIdx = 1
 
-themeBtn.Activated:Connect(function()
+themeBtn.MouseButton1Click:Connect(function()
     currentThemeIdx = currentThemeIdx + 1
     if currentThemeIdx > #themes then currentThemeIdx = 1 end
     local th = themes[currentThemeIdx]
@@ -1116,7 +1116,7 @@ UI.KillSwitch.Text = "TERMINATE"
 UI.KillSwitch.Parent = killRow
 Instance.new("UICorner", UI.KillSwitch).CornerRadius = UDim.new(0, 4)
 
-UI.KillSwitch.Activated:Connect(function()
+UI.KillSwitch.MouseButton1Click:Connect(function()
     Running = false Env.DominateHubLoaded = nil 
     for k, _ in pairs(Env) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then Env[k] = false end end
     pcall(function() 
@@ -1146,69 +1146,69 @@ end
 loadConfigFromSlot(1)
 
 -- WIRE UP NOOBS
-UI.Starter.Activated:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) 
-UI.Cooker.Activated:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) 
-UI.Farmer.Activated:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) 
-UI.Magician.Activated:Connect(function() tV2(UI.Magician, "AutoUpgradeMagician") end) 
-UI.Archer.Activated:Connect(function() tV2(UI.Archer, "AutoUpgradeArcher") end) 
-UI.Soldier.Activated:Connect(function() tV2(UI.Soldier, "AutoUpgradeSoldier") end) 
-UI.MoreOof.Activated:Connect(function() tV2(UI.MoreOof, "AutoUpgradeMoreOof") end) 
-UI.FasterNoobs.Activated:Connect(function() tV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
+UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) 
+UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) 
+UI.Farmer.MouseButton1Click:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) 
+UI.Magician.MouseButton1Click:Connect(function() tV2(UI.Magician, "AutoUpgradeMagician") end) 
+UI.Archer.MouseButton1Click:Connect(function() tV2(UI.Archer, "AutoUpgradeArcher") end) 
+UI.Soldier.MouseButton1Click:Connect(function() tV2(UI.Soldier, "AutoUpgradeSoldier") end) 
+UI.MoreOof.MouseButton1Click:Connect(function() tV2(UI.MoreOof, "AutoUpgradeMoreOof") end) 
+UI.FasterNoobs.MouseButton1Click:Connect(function() tV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
 
-UI.R2Fisherman.Activated:Connect(function() tV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end) 
-UI.R2Knight.Activated:Connect(function() tV2(UI.R2Knight, "AutoUpgradeKnightNoob") end) 
-UI.R2Explorer.Activated:Connect(function() tV2(UI.R2Explorer, "AutoUpgradeExplorerNoob") end) 
-UI.R2Magician.Activated:Connect(function() tV2(UI.R2Magician, "AutoUpgradeMagicianNoob") end)
+UI.R2Fisherman.MouseButton1Click:Connect(function() tV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end) 
+UI.R2Knight.MouseButton1Click:Connect(function() tV2(UI.R2Knight, "AutoUpgradeKnightNoob") end) 
+UI.R2Explorer.MouseButton1Click:Connect(function() tV2(UI.R2Explorer, "AutoUpgradeExplorerNoob") end) 
+UI.R2Magician.MouseButton1Click:Connect(function() tV2(UI.R2Magician, "AutoUpgradeMagicianNoob") end)
 
 -- WIRE UP FOOTBALL
-UI.Goalkeeper.Activated:Connect(function() tV2(UI.Goalkeeper, "AutoUpgradeGoalkeeper") end) 
-UI.LeftBack.Activated:Connect(function() tV2(UI.LeftBack, "AutoUpgradeLeftBack") end) 
-UI.LeftCenterBack.Activated:Connect(function() tV2(UI.LeftCenterBack, "AutoUpgradeLeftCenterBack") end) 
-UI.RightCenterBack.Activated:Connect(function() tV2(UI.RightCenterBack, "AutoUpgradeRightCenterBack") end) 
-UI.RightBack.Activated:Connect(function() tV2(UI.RightBack, "AutoUpgradeRightBack") end) 
-UI.LeftDefensiveMid.Activated:Connect(function() tV2(UI.LeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end) 
-UI.RightDefensiveMid.Activated:Connect(function() tV2(UI.RightDefensiveMid, "AutoUpgradeRightDefensiveMid") end) 
-UI.AttackingMid.Activated:Connect(function() tV2(UI.AttackingMid, "AutoUpgradeAttackingMid") end) 
-UI.LeftWing.Activated:Connect(function() tV2(UI.LeftWing, "AutoUpgradeLeftWing") end) 
-UI.RightWing.Activated:Connect(function() tV2(UI.RightWing, "AutoUpgradeRightWing") end) 
-UI.Striker.Activated:Connect(function() tV2(UI.Striker, "AutoUpgradeStriker") end)
+UI.Goalkeeper.MouseButton1Click:Connect(function() tV2(UI.Goalkeeper, "AutoUpgradeGoalkeeper") end) 
+UI.LeftBack.MouseButton1Click:Connect(function() tV2(UI.LeftBack, "AutoUpgradeLeftBack") end) 
+UI.LeftCenterBack.MouseButton1Click:Connect(function() tV2(UI.LeftCenterBack, "AutoUpgradeLeftCenterBack") end) 
+UI.RightCenterBack.MouseButton1Click:Connect(function() tV2(UI.RightCenterBack, "AutoUpgradeRightCenterBack") end) 
+UI.RightBack.MouseButton1Click:Connect(function() tV2(UI.RightBack, "AutoUpgradeRightBack") end) 
+UI.LeftDefensiveMid.MouseButton1Click:Connect(function() tV2(UI.LeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end) 
+UI.RightDefensiveMid.MouseButton1Click:Connect(function() tV2(UI.RightDefensiveMid, "AutoUpgradeRightDefensiveMid") end) 
+UI.AttackingMid.MouseButton1Click:Connect(function() tV2(UI.AttackingMid, "AutoUpgradeAttackingMid") end) 
+UI.LeftWing.MouseButton1Click:Connect(function() tV2(UI.LeftWing, "AutoUpgradeLeftWing") end) 
+UI.RightWing.MouseButton1Click:Connect(function() tV2(UI.RightWing, "AutoUpgradeRightWing") end) 
+UI.Striker.MouseButton1Click:Connect(function() tV2(UI.Striker, "AutoUpgradeStriker") end)
 
-UI.ScoreGoal.Activated:Connect(function() tV2(UI.ScoreGoal, "AutoScoreGoal") end) 
-UI.MoreGoals.Activated:Connect(function() tV2(UI.MoreGoals, "AutoGoalsMoreGoals") end) 
-UI.GoalsRuneBulk.Activated:Connect(function() tV2(UI.GoalsRuneBulk, "AutoGoalsRuneBulk") end) 
-UI.GoalsRuneLuck.Activated:Connect(function() tV2(UI.GoalsRuneLuck, "AutoGoalsRuneLuck") end) 
-UI.AutoBuyKicker.Activated:Connect(function() tV2(UI.AutoBuyKicker, "AutoBuyAutoKick") end) 
-UI.FootballTree.Activated:Connect(function() tV2(UI.FootballTree, "AutoFootballTree") end) 
-UI.ClaimTrophies.Activated:Connect(function() tV2(UI.ClaimTrophies, "AutoClaimTrophies") end)
+UI.ScoreGoal.MouseButton1Click:Connect(function() tV2(UI.ScoreGoal, "AutoScoreGoal") end) 
+UI.MoreGoals.MouseButton1Click:Connect(function() tV2(UI.MoreGoals, "AutoGoalsMoreGoals") end) 
+UI.GoalsRuneBulk.MouseButton1Click:Connect(function() tV2(UI.GoalsRuneBulk, "AutoGoalsRuneBulk") end) 
+UI.GoalsRuneLuck.MouseButton1Click:Connect(function() tV2(UI.GoalsRuneLuck, "AutoGoalsRuneLuck") end) 
+UI.AutoBuyKicker.MouseButton1Click:Connect(function() tV2(UI.AutoBuyKicker, "AutoBuyAutoKick") end) 
+UI.FootballTree.MouseButton1Click:Connect(function() tV2(UI.FootballTree, "AutoFootballTree") end) 
+UI.ClaimTrophies.MouseButton1Click:Connect(function() tV2(UI.ClaimTrophies, "AutoClaimTrophies") end)
 
 -- WIRE UP RUNES & CAPSULES
-UI.RollBasicRuneCard.Activated:Connect(function() tV2(UI.RollBasicRuneCard, "AutoRollBasicRune") end) 
-UI.RollSuperRuneCard.Activated:Connect(function() tV2(UI.RollSuperRuneCard, "AutoRollSuperRune") end) 
-UI.RollAdvancedRuneCard.Activated:Connect(function() tV2(UI.RollAdvancedRuneCard, "AutoRollAdvancedRune") end) 
-UI.RollCosmicRuneCard.Activated:Connect(function() tV2(UI.RollCosmicRuneCard, "AutoRollCosmicRune") end) 
-UI.RollSnowyRuneCard.Activated:Connect(function() tV2(UI.RollSnowyRuneCard, "AutoRollSnowyRune") end) 
-UI.FootballRuneCard.Activated:Connect(function() tV2(UI.FootballRuneCard, "AutoRollFootballRune") end)
+UI.RollBasicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollBasicRuneCard, "AutoRollBasicRune") end) 
+UI.RollSuperRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollSuperRuneCard, "AutoRollSuperRune") end) 
+UI.RollAdvancedRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollAdvancedRuneCard, "AutoRollAdvancedRune") end) 
+UI.RollCosmicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollCosmicRuneCard, "AutoRollCosmicRune") end) 
+UI.RollSnowyRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollSnowyRuneCard, "AutoRollSnowyRune") end) 
+UI.FootballRuneCard.MouseButton1Click:Connect(function() tV2(UI.FootballRuneCard, "AutoRollFootballRune") end)
 
-UI.ClassicCapsule.Activated:Connect(function() tV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end) 
-UI.FootballCapsule.Activated:Connect(function() tV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end) 
-UI.SuperCapsule.Activated:Connect(function() tV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
+UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end) 
+UI.FootballCapsule.MouseButton1Click:Connect(function() tV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end) 
+UI.SuperCapsule.MouseButton1Click:Connect(function() tV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
 
 -- WIRE UP MINES
-UI.MineStone.Activated:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) 
-UI.MineCoal.Activated:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) 
-UI.MineSilver.Activated:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) 
-UI.MineIron.Activated:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) 
-UI.MineCopper.Activated:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) 
-UI.MineGold.Activated:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) 
-UI.MinePlatinum.Activated:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) 
-UI.MineTitanium.Activated:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) 
-UI.MineCobalt.Activated:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) 
-UI.MineUranium.Activated:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) 
-UI.MinePalladium.Activated:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) 
-UI.MineAetherite.Activated:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) 
-UI.MineRuby.Activated:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) 
-UI.MineVoidsteel.Activated:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) 
-UI.MineCelestium.Activated:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
+UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) 
+UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) 
+UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) 
+UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) 
+UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) 
+UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) 
+UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) 
+UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) 
+UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) 
+UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) 
+UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) 
+UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) 
+UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) 
+UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) 
+UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
 
 -- TAB ROUTERS
 local function mainRoute(pOpen, bActive) 
@@ -1217,12 +1217,12 @@ local function mainRoute(pOpen, bActive)
     for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(55, 55, 65), Color3.fromRGB(210, 210, 220) end
     bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(240, 240, 245), Color3.fromRGB(15, 15, 15) 
 end
-tabUpgrades.Activated:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) 
-tabNoobs.Activated:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
-tabMines.Activated:Connect(function() mainRoute(minesPage, tabMines) end)
-tabFootball.Activated:Connect(function() mainRoute(footballPage, tabFootball) end) 
-tabMisc.Activated:Connect(function() mainRoute(miscPage, tabMisc) end)
-tabSettings.Activated:Connect(function() mainRoute(settingsPage, tabSettings) end)
+tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) 
+tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
+tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
+tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
+tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
+tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 local function sideRoute(tScroll, aBtn, aScrolls, aBtns)
     for i, s in ipairs(aScrolls) do s.Visible = (s == tScroll) end
@@ -1230,26 +1230,26 @@ local function sideRoute(tScroll, aBtn, aScrolls, aBtns)
 end
 
 local upS, upB = {upScrollR1, upScrollR2, upScrollR3}, {bUpR1, bUpR2, bUpR3}
-bUpR1.Activated:Connect(function() sideRoute(upScrollR1, bUpR1, upS, upB) end)
-bUpR2.Activated:Connect(function() sideRoute(upScrollR2, bUpR2, upS, upB) end)
-bUpR3.Activated:Connect(function() sideRoute(upScrollR3, bUpR3, upS, upB) end)
+bUpR1.MouseButton1Click:Connect(function() sideRoute(upScrollR1, bUpR1, upS, upB) end)
+bUpR2.MouseButton1Click:Connect(function() sideRoute(upScrollR2, bUpR2, upS, upB) end)
+bUpR3.MouseButton1Click:Connect(function() sideRoute(upScrollR3, bUpR3, upS, upB) end)
 
 local noobS, noobB = {noobScrollR1, noobScrollR2}, {bNoobR1, bNoobR2}
-bNoobR1.Activated:Connect(function() sideRoute(noobScrollR1, bNoobR1, noobS, noobB) end)
-bNoobR2.Activated:Connect(function() sideRoute(noobScrollR2, bNoobR2, noobS, noobB) end)
+bNoobR1.MouseButton1Click:Connect(function() sideRoute(noobScrollR1, bNoobR1, noobS, noobB) end)
+bNoobR2.MouseButton1Click:Connect(function() sideRoute(noobScrollR2, bNoobR2, noobS, noobB) end)
 
 local fS, fB = {fNoobScroll, fUpgradeScroll}, {bFNoobs, bFUpgrades}
-bFNoobs.Activated:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS, fB) end) bFUpgrades.Activated:Connect(function() sideRoute(fUpgradeScroll, bFUpgrades, fS, fB) end)
+bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS, fB) end) bFUpgrades.MouseButton1Click:Connect(function() sideRoute(fUpgradeScroll, bFUpgrades, fS, fB) end)
 
 local miscSubS, miscSubB = {miscScrollRu1, miscScrollRu2, miscScrollRuE, miscScrollCap}, {bMiscRu1, bMiscRu2, bMiscRuE, bMiscCap}
-bMiscRu1.Activated:Connect(function() sideRoute(miscScrollRu1, bMiscRu1, miscSubS, miscSubB) end)
-bMiscRu2.Activated:Connect(function() sideRoute(miscScrollRu2, bMiscRu2, miscSubS, miscSubB) end)
-bMiscRuE.Activated:Connect(function() sideRoute(miscScrollRuE, bMiscRuE, miscSubS, miscSubB) end)
-bMiscCap.Activated:Connect(function() sideRoute(miscScrollCap, bMiscCap, miscSubS, miscSubB) end)
+bMiscRu1.MouseButton1Click:Connect(function() sideRoute(miscScrollRu1, bMiscRu1, miscSubS, miscSubB) end)
+bMiscRu2.MouseButton1Click:Connect(function() sideRoute(miscScrollRu2, bMiscRu2, miscSubS, miscSubB) end)
+bMiscRuE.MouseButton1Click:Connect(function() sideRoute(miscScrollRuE, bMiscRuE, miscSubS, miscSubB) end)
+bMiscCap.MouseButton1Click:Connect(function() sideRoute(miscScrollCap, bMiscCap, miscSubS, miscSubB) end)
 
 local setS, setB = {setGenScroll, setConfigScroll}, {bSetGen, bSetConfig}
-bSetGen.Activated:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
-bSetConfig.Activated:Connect(function() sideRoute(setConfigScroll, bSetConfig, setS, setB) end)
+bSetGen.MouseButton1Click:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
+bSetConfig.MouseButton1Click:Connect(function() sideRoute(setConfigScroll, bSetConfig, setS, setB) end)
 
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
@@ -1262,7 +1262,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 --======================================================================================
--- LOCOMOTION & TELEPORT ENGINES
+-- LOCOMOTION & TELEPORT ENGINES (SPED UP BY 0.3s)
 --======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1472,4 +1472,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.9 Pro Edition - Mobile Touch Supported & Optimized!")
+print("[Dominate Hub] V12.0 Pro Edition - Mouse Clicks Restored & Optimized!")
