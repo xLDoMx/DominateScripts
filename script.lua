@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V12.0 PRO EDITION (MOUSE CLICKS RESTORED & TOGGLES FIXED)
+-- DOMINATE HUB | V12.0 PRO EDITION (MOUSE CLICKS RESTORED & TOGGLES FIXED)w
 --======================================================================================
 local Env = getgenv()
 
