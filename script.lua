@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V9.8 PRO EDITION (SPACED GENERAL SETTINGS & SLEEK MINES)
+-- DOMINATE HUB | V9.6 PRO EDITION (FIXED TABLES, GLIDE SPEED IN GENERAL & BEST TIER BUTTON)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V9.8 Instance...")
+    print("[Dominate Hub] Reloading V9.6 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -297,7 +297,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.8 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V9.6 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL
 local minBtn = Instance.new("TextButton") 
@@ -518,8 +518,7 @@ local noobSidebar = makeSidebar(noobsPage)
 local bNoobR1 = makeSideBtn("Realm 1 Noobs", noobSidebar) bNoobR1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bNoobR1.TextColor3 = Color3.fromRGB(15, 15, 15)
 local bNoobR2 = makeSideBtn("Realm 2 Noobs", noobSidebar)
 
-local noobScrollR1 = makeGridScroll(noobsPage, true) upScrollR1.Visible = true -- wait, keep correct visibility
-noobScrollR1.Visible = true
+local noobScrollR1 = makeGridScroll(noobsPage, true) noobScrollR1.Visible = true
 local noobScrollR2 = makeGridScroll(noobsPage, true)
 
 UI.Starter = gridRow("Starter Auto Upgrade", noobScrollR1) UI.Cooker = gridRow("Cooker Auto Upgrade", noobScrollR1) UI.Farmer = gridRow("Farmer Auto Upgrade", noobScrollR1) UI.Magician = gridRow("Magician Auto Upgrade", noobScrollR1) UI.Archer = gridRow("Archer Auto Upgrade", noobScrollR1) UI.Soldier = gridRow("Soldier Auto Upgrade", noobScrollR1)
@@ -532,41 +531,32 @@ UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2) UI.R2Knight = g
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
 
--- Best Tier Only Blended Toggle Button at the top
-local bestTierActive = false
+-- Best Tier Only Red Button at the top middle
 local bestTierBtn = Instance.new("TextButton")
 bestTierBtn.Size = UDim2.new(1, -6, 0, 28)
-bestTierBtn.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
-bestTierBtn.TextColor3 = Color3.fromRGB(255, 120, 120)
+bestTierBtn.BackgroundColor3 = Color3.fromRGB(160, 30, 30)
+bestTierBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 bestTierBtn.TextSize = 11
 bestTierBtn.Font = Enum.Font.SourceSansBold
-bestTierBtn.Text = "Best Tier Only: DISABLED"
+bestTierBtn.Text = "Best Tier Only"
 bestTierBtn.Parent = minesScroll
 Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 5)
 
 bestTierBtn.MouseButton1Click:Connect(function()
-    bestTierActive = not bestTierActive
-    bestTierBtn.Text = bestTierActive and "Best Tier Only: ACTIVE" or "Best Tier Only: DISABLED"
-    bestTierBtn.BackgroundColor3 = bestTierActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    bestTierBtn.TextColor3 = bestTierActive and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-
     local topOres = {"AutoMineVoidsteel", "AutoMineCelestium", "AutoMineRuby"}
     local allOres = {
         "AutoMineStone", "AutoMineCoal", "AutoMineSilver", "AutoMineIron", "AutoMineCopper",
         "AutoMineGold", "AutoMinePlatinum", "AutoMineTitanium", "AutoMineCobalt", "AutoMineUranium",
         "AutoMinePalladium", "AutoMineAetherite", "AutoMineRuby", "AutoMineVoidsteel", "AutoMineCelestium"
     }
-    
     for _, ore in ipairs(allOres) do
         _G[ore] = false
     end
-    
-    if bestTierActive then
-        for _, ore in ipairs(topOres) do
-            _G[ore] = true
-        end
+    for _, ore in ipairs(topOres) do
+        _G[ore] = true
     end
     
+    -- Update UI button states if referenced
     for _, oreName in ipairs(allOres) do
         local btn = UI[oreName]
         if btn then
@@ -579,14 +569,14 @@ bestTierBtn.MouseButton1Click:Connect(function()
         end
     end
     saveConfigToSlot(_G.SelectedConfigSlot)
-    showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
+    showToast("Best Tier Only ores activated (Ruby, Voidsteel, Celestium)!")
 end)
 
 local function mineSectionHeader(txt, scr)
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, -6, 0, 24)
+    lbl.Size = UDim2.new(1, -6, 0, 22)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(130, 130, 145)
+    lbl.TextColor3 = Color3.fromRGB(140, 140, 155)
     lbl.TextSize = 10
     lbl.Font = Enum.Font.SourceSansBold
     lbl.Text = txt
@@ -603,7 +593,7 @@ local function sleekMineRow(txt, scr, vKey)
 
     local l = Instance.new("TextLabel")
     l.Size = UDim2.new(0.58, -8, 1, 0)
-    l.Position = UDim2.new(0, 16, 0, 0)
+    l.Position = UDim2.new(0, 6, 0, 0)
     l.BackgroundTransparency = 1
     l.TextColor3 = Color3.fromRGB(180, 180, 195)
     l.TextSize = 10
@@ -615,7 +605,7 @@ local function sleekMineRow(txt, scr, vKey)
     local dot = Instance.new("Frame")
     dot.Name = "StatusDot"
     dot.Size = UDim2.new(0, 4, 0, 4)
-    dot.Position = UDim2.new(0, 6, 0.5, -2)
+    dot.Position = UDim2.new(0, 0, 0.5, -2)
     dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
     dot.BorderSizePixel = 0
     dot.Parent = f
@@ -786,7 +776,7 @@ for i = 1, 5 do
 end
 
 -- ======================================================================================
--- GENERAL SETTINGS TAB (FULL-WIDTH VERTICAL STACKED ROWS WITH REQUESTED SPACING)
+-- GENERAL SETTINGS TAB (FULL-WIDTH VERTICAL STACKED ROWS)
 -- ======================================================================================
 local function genRow(txt, callback)
     local f = Instance.new("Frame")
@@ -835,13 +825,6 @@ local function genRow(txt, callback)
     return b
 end
 
-local function genSpacer(h)
-    local sp = Instance.new("Frame")
-    sp.Size = UDim2.new(1, -6, 0, h or 12)
-    sp.BackgroundTransparency = 1
-    sp.Parent = setGenScroll
-end
-
 UI.AFK = genRow("Anti  AFK Protection", function(b) tV2(b, "AntiAFK") end)
 UI.FPSBoostToggle = genRow("FPS Booster Mode", function(b) toggleFPSBoost(b) end)
 UI.HUDToggle = genRow("Stats HUD Ovrlay", function(b)
@@ -854,14 +837,10 @@ UI.HUDToggle = genRow("Stats HUD Ovrlay", function(b)
     saveConfigToSlot(_G.SelectedConfigSlot)
 end)
 
-genSpacer(10) -- Space after Stats HUD / FPS Booster
-
 UI.RebirthTimerCard = genRow("Auto Rebirth", function(b) tV2(b, "AutoRebirthTimer") end)
 UI.Prestige = genRow("Auto Prestige", function(b) tV2(b, "AutoPrestige") end)
 UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
 UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
-
-genSpacer(10) -- Space between Mass Open T2 Chest and Glide Speed
 
 -- Glide Speed row in General Settings
 local speedRow = Instance.new("Frame")
@@ -903,8 +882,6 @@ UI.MiningSpeedSwitch.MouseButton1Click:Connect(function()
     UI.MiningSpeedSwitch.Text = ml[mi] 
     saveConfigToSlot(_G.SelectedConfigSlot) 
 end)
-
-genSpacer(10) -- Space before Theme & Kill Switch
 
 -- Hub Theme Row
 local themeRow = Instance.new("Frame")
@@ -1235,3 +1212,82 @@ task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running t
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if _G.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if _G.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if _G.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 task.spawn(function() local tc = math.random(270, 330) local se = 0 while Running do task.wait(1) if Running and _G.AutoBlazeConvert and NetRemote then se = se + 1 if se >= tc then se = 0 tc = math.random(270, 330) pcall(function() NetRemote:FireServer("Blaze") end) end else se = 0 end end end)
+
+--======================================================================================
+-- CONNECTORS, KILL SWITCH & DRAG CONTROLLER
+--======================================================================================
+local function tV2(b, v) 
+    _G[v] = not _G[v] 
+    b.Text = _G[v] and "ACTIVE" or "DISABLED" 
+    b.BackgroundColor3 = _G[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
+    b.TextColor3 = _G[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
+    
+    local card = b.Parent
+    if card and card:IsA("Frame") then
+        local dot = card:FindFirstChild("StatusDot")
+        if dot then
+            dot.BackgroundColor3 = _G[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        end
+    end
+    
+    saveConfigToSlot(_G.SelectedConfigSlot)
+end
+
+UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) UI.Farmer.MouseButton1Click:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) UI.Magician.MouseButton1Click:Connect(function() tV2(UI.Magician, "AutoUpgradeMagician") end) UI.Archer.MouseButton1Click:Connect(function() tV2(UI.Archer, "AutoUpgradeArcher") end) UI.Soldier.MouseButton1Click:Connect(function() tV2(UI.Soldier, "AutoUpgradeSoldier") end) UI.MoreOof.MouseButton1Click:Connect(function() tV2(UI.MoreOof, "AutoUpgradeMoreOof") end) UI.FasterNoobs.MouseButton1Click:Connect(function() tV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
+UI.R2Fisherman.MouseButton1Click:Connect(function() tV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end) UI.R2Knight.MouseButton1Click:Connect(function() tV2(UI.R2Knight, "AutoUpgradeKnightNoob") end) UI.R2Explorer.MouseButton1Click:Connect(function() tV2(UI.R2Explorer, "AutoUpgradeExplorerNoob") end) UI.R2Magician.MouseButton1Click:Connect(function() tV2(UI.R2Magician, "AutoUpgradeMagicianNoob") end)
+
+UI.Goalkeeper.MouseButton1Click:Connect(function() tV2(UI.Goalkeeper, "AutoUpgradeGoalkeeper") end) UI.LeftBack.MouseButton1Click:Connect(function() tV2(UI.LeftBack, "AutoUpgradeLeftBack") end) UI.LeftCenterBack.MouseButton1Click:Connect(function() tV2(UI.LeftCenterBack, "AutoUpgradeLeftCenterBack") end) UI.RightCenterBack.MouseButton1Click:Connect(function() tV2(UI.RightCenterBack, "AutoUpgradeRightCenterBack") end) UI.RightBack.MouseButton1Click:Connect(function() tV2(UI.RightBack, "AutoUpgradeRightBack") end) UI.LeftDefensiveMid.MouseButton1Click:Connect(function() tV2(UI.LeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end) UI.RightDefensiveMid.MouseButton1Click:Connect(function() tV2(UI.RightDefensiveMid, "AutoUpgradeRightDefensiveMid") end) UI.AttackingMid.MouseButton1Click:Connect(function() tV2(UI.AttackingMid, "AutoUpgradeAttackingMid") end) UI.LeftWing.MouseButton1Click:Connect(function() tV2(UI.LeftWing, "AutoUpgradeLeftWing") end) UI.RightWing.MouseButton1Click:Connect(function() tV2(UI.RightWing, "AutoUpgradeRightWing") end) UI.Striker.MouseButton1Click:Connect(function() tV2(UI.Striker, "AutoUpgradeStriker") end)
+UI.ScoreGoal.MouseButton1Click:Connect(function() tV2(UI.ScoreGoal, "AutoScoreGoal") end) UI.MoreGoals.MouseButton1Click:Connect(function() tV2(UI.MoreGoals, "AutoGoalsMoreGoals") end) UI.GoalsRuneBulk.MouseButton1Click:Connect(function() tV2(UI.GoalsRuneBulk, "AutoGoalsRuneBulk") end) UI.GoalsRuneLuck.MouseButton1Click:Connect(function() tV2(UI.GoalsRuneLuck, "AutoGoalsRuneLuck") end) UI.AutoBuyKicker.MouseButton1Click:Connect(function() tV2(UI.AutoBuyKicker, "AutoBuyAutoKick") end) UI.FootballTree.MouseButton1Click:Connect(function() tV2(UI.FootballTree, "AutoFootballTree") end) UI.ClaimTrophies.MouseButton1Click:Connect(function() tV2(UI.ClaimTrophies, "AutoClaimTrophies") end)
+
+UI.RollBasicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollBasicRuneCard, "AutoRollBasicRune") end) UI.RollSuperRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollSuperRuneCard, "AutoRollSuperRune") end) UI.RollAdvancedRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollAdvancedRuneCard, "AutoRollAdvancedRune") end) UI.RollCosmicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollCosmicRuneCard, "AutoRollCosmicRune") end) UI.RollSnowyRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollSnowyRuneCard, "AutoRollSnowyRune") end) UI.FootballRuneCard.MouseButton1Click:Connect(function() tV2(UI.FootballRuneCard, "AutoRollFootballRune") end)
+UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end) UI.FootballCapsule.MouseButton1Click:Connect(function() tV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end) UI.SuperCapsule.MouseButton1Click:Connect(function() tV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
+
+UI.EnchantStarter.MouseButton1Click:Connect(function() tV2(UI.EnchantStarter, "AutoEnchantStarter") end) UI.EnchantCooker.MouseButton1Click:Connect(function() tV2(UI.EnchantCooker, "AutoEnchantCooker") end) UI.EnchantFarmer.MouseButton1Click:Connect(function() tV2(UI.EnchantFarmer, "AutoEnchantFarmer") end) UI.EnchantMagician.MouseButton1Click:Connect(function() tV2(UI.EnchantMagician, "AutoEnchantMagician") end) UI.EnchantArcher.MouseButton1Click:Connect(function() tV2(UI.EnchantArcher, "AutoEnchantArcher") end) UI.EnchantSoldier.MouseButton1Click:Connect(function() tV2(UI.EnchantSoldier, "AutoEnchantSoldier") end) UI.EnchantHacker1.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker1, "AutoEnchantHacker1") end) UI.EnchantHacker2.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker2, "AutoEnchantHacker2") end) UI.EnchantHacker3.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker3, "AutoEnchantHacker3") end) UI.EnchantHacker4.MouseButton1Click:Connect(function() tV2(UI.EnchantHacker4, "AutoEnchantHacker4") end) UI.EnchantPharaoh.MouseButton1Click:Connect(function() tV2(UI.EnchantPharaoh, "AutoEnchantPharaoh") end)
+UI.OpenT1ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT1ChestCard, "AutoOpenT1Chest") end) UI.OpenT2ChestCard.MouseButton1Click:Connect(function() tV2(UI.OpenT2ChestCard, "AutoOpenT2Chest") end) UI.AFK.MouseButton1Click:Connect(function() tV2(UI.AFK, "AntiAFK") end) UI.Prestige.MouseButton1Click:Connect(function() tV2(UI.Prestige, "AutoPrestige") end) UI.RebirthTimerCard.MouseButton1Click:Connect(function() tV2(UI.RebirthTimerCard, "AutoRebirthTimer") end) 
+
+-- TAB ROUTERS
+local function mainRoute(pOpen, bActive) 
+    upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, runesPage.Visible, capsulesPage.Visible, enchantsPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabRunes, tabCapsules, tabEnchants, tabSettings}
+    for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(55, 55, 65), Color3.fromRGB(210, 210, 220) end
+    bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(240, 240, 245), Color3.fromRGB(15, 15, 15) 
+end
+tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) 
+tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
+tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
+tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
+tabRunes.MouseButton1Click:Connect(function() mainRoute(runesPage, tabRunes) end) 
+tabCapsules.MouseButton1Click:Connect(function() mainRoute(capsulesPage, tabCapsules) end) 
+tabEnchants.MouseButton1Click:Connect(function() mainRoute(enchantsPage, tabEnchants) end) 
+tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
+
+local function sideRoute(tScroll, aBtn, aScrolls, aBtns)
+    for i, s in ipairs(aScrolls) do s.Visible = (s == tScroll) end
+    for i, b in ipairs(aBtns) do b.BackgroundColor3 = (b == aBtn) and Color3.fromRGB(240, 240, 245) or Color3.fromRGB(55, 55, 65) b.TextColor3 = (b == aBtn) and Color3.fromRGB(15, 15, 15) or Color3.fromRGB(210, 210, 220) end
+end
+
+local upS, upB = {upScrollR1, upScrollR2, upScrollR3}, {bUpR1, bUpR2, bUpR3}
+bUpR1.MouseButton1Click:Connect(function() sideRoute(upScrollR1, bUpR1, upS, upB) end)
+bUpR2.MouseButton1Click:Connect(function() sideRoute(upScrollR2, bUpR2, upS, upB) end)
+bUpR3.MouseButton1Click:Connect(function() sideRoute(upScrollR3, bUpR3, upS, upB) end)
+
+local noobS, noobB = {noobScrollR1, noobScrollR2}, {bNoobR1, bNoobR2}
+bNoobR1.MouseButton1Click:Connect(function() sideRoute(noobScrollR1, bNoobR1, noobS, noobB) end)
+bNoobR2.MouseButton1Click:Connect(function() sideRoute(noobScrollR2, bNoobR2, noobS, noobB) end)
+
+local fS, fB = {fNoobScroll, fUpgradeScroll}, {bFNoobs, bFUpgrades}
+bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS, fB) end) bFUpgrades.MouseButton1Click:Connect(function() sideRoute(fUpgradeScroll, bFUpgrades, fS, fB) end)
+
+local ruS, ruB = {ruScroll1, ruScroll2, ruScroll3, ruScrollE}, {bRu1, bRu2, bRu3, bRuE}
+bRu1.MouseButton1Click:Connect(function() sideRoute(ruScroll1, bRu1, ruS, ruB) end) bRu2.MouseButton1Click:Connect(function() sideRoute(ruScroll2, bRu2, ruS, ruB) end) bRu3.MouseButton1Click:Connect(function() sideRoute(ruScroll3, bRu3, ruS, ruB) end) bRuE.MouseButton1Click:Connect(function() sideRoute(ruScrollE, bRuE, ruS, ruB) end)
+
+local setS, setB = {setGenScroll, setConfigScroll}, {bSetGen, bSetConfig}
+bSetGen.MouseButton1Click:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
+bSetConfig.MouseButton1Click:Connect(function() sideRoute(setConfigScroll, bSetConfig, setS, setB) end)
+
+local dragging, dragInput, dragStart, startPos
+mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
+mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
+UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
+
+print("[Dominate Hub] V9.6 Pro Edition - Fully Resolved & Aligned Deployed!")
