@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | V10.5 PRO EDITION (STATE-SYNCED TOGGLES & BULLETPROOF STACKS)
+-- DOMINATE HUB | V10.6 PRO EDITION (ROBUST REMOTE & ORE FINDER ENGINE)
 --======================================================================================
 if getgenv().DominateHubLoaded then 
     pcall(function()
@@ -9,7 +9,7 @@ if getgenv().DominateHubLoaded then
         local oldBlur = Lighting:FindFirstChild("DominateHubBlur")
         if oldBlur then oldBlur:Destroy() end
     end)
-    print("[Dominate Hub] Reloading V10.5 Instance...")
+    print("[Dominate Hub] Reloading V10.6 Instance...")
 end
 getgenv().DominateHubLoaded = true
 
@@ -180,12 +180,20 @@ player.Idled:Connect(function()
     end
 end)
 
+-- ROBUST REMOTE EVENT FINDER
 task.spawn(function()
-    repeat
-        local netService = ReplicatedStorage:WaitForChild("__Net", 5)
-        if netService then NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent") end
-        if not NetRemote then task.wait(0.5) end
-    until NetRemote or not Running
+    while not NetRemote and Running do
+        pcall(function()
+            for _, descendant in ipairs(ReplicatedStorage:GetDescendants()) do
+                if descendant:IsA("RemoteEvent") and (descendant.Name == "MainRemote" or descendant.Name:lower():find("remote")) then
+                    NetRemote = descendant
+                    print("[Dominate Hub] Connected to NetRemote: " .. descendant:GetFullName())
+                    break
+                end
+            end
+        end)
+        if not NetRemote then task.wait(1.0) end
+    end
 end)
 
 -- UI MASTER ALLOCATION (Compact Height: 350)
@@ -321,7 +329,7 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
 local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.5 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | V10.6 Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
 
 -- FLOATING PILL (BULLETPROOF TOGGLE)
 local minBtn = Instance.new("TextButton") 
@@ -494,7 +502,6 @@ local function masterToggle(txt, flagsTable, scr)
     local b = Instance.new("TextButton") b.Size = UDim2.new(0.42, -4, 0, 20) b.Position = UDim2.new(0.57, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 9; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
     Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
 
-    -- Check initial state for master toggle
     local anyActive = false
     for _, flag in ipairs(flagsTable) do
         if _G[flag] then anyActive = true break end
@@ -903,7 +910,6 @@ UI.HUDToggle = genRow("Stats HUD Ovrlay", "ShowStatsHUD", function(b)
     saveConfigToSlot(_G.SelectedConfigSlot)
 end)
 
--- CPU Saver Mode toggle added right under Stats HUD
 UI.CPUSaverToggle = genRow("CPU Saver Mode", "CPUSaverMode", function(b) 
     _G.CPUSaverMode = not _G.CPUSaverMode
     updateButtonVisual(b, _G.CPUSaverMode)
@@ -1125,4 +1131,4 @@ mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.User
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
 UserInputService.InputChanged:Connect(function(input) if input == dragInput and dragging then local delta = input.Position - dragStart mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end)
 
-print("[Dominate Hub] V10.5 Pro Edition - Fully State-Synced & Deployed!")
+print("[Dominate Hub] V10.6 Pro Edition - Robust Remote & Ore Finder Deployed!")
