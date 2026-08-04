@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (INDEPENDENT/COMBINED GEM CONVERTER & SHOP TELEPORT)
+-- DOMINATE HUB | PRO EDITION (LARGER SPACED CARDS & EXACT STYLING)
 --======================================================================================
 local Env = getgenv()
 
@@ -230,18 +230,18 @@ Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 Env.DiscordWebhookURL = ""
 
--- CARD ROW HELPER
+-- LARGER SPACED CARD BOX HELPER
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -10, 0, 42)
+    row.Size = UDim2.new(1, -10, 0, 48)
     row.BackgroundColor3 = Color3.fromRGB(22, 14, 35)
     row.BorderSizePixel = 0
     row.Parent = parent
-    Instance.new("UICorner", row).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", row).CornerRadius = UDim.new(0, 10)
 
     local rowStroke = Instance.new("UIStroke")
     rowStroke.Color = Color3.fromRGB(168, 85, 247)
-    rowStroke.Transparency = 0.55
+    rowStroke.Transparency = 0.5
     rowStroke.Parent = row
 
     local lbl = Instance.new("TextLabel")
@@ -256,8 +256,8 @@ local function createToggleRow(parent, txt, vKey)
     lbl.Parent = row
 
     local switchTrack = Instance.new("TextButton")
-    switchTrack.Size = UDim2.new(0, 48, 0, 22)
-    switchTrack.Position = UDim2.new(1, -58, 0.5, -11)
+    switchTrack.Size = UDim2.new(0, 50, 0, 24)
+    switchTrack.Position = UDim2.new(1, -60, 0.5, -12)
     switchTrack.BackgroundColor3 = Env[vKey] and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)
     switchTrack.Text = ""
     switchTrack.AutoButtonColor = false
@@ -270,8 +270,8 @@ local function createToggleRow(parent, txt, vKey)
     trackStroke.Parent = switchTrack
 
     local switchThumb = Instance.new("Frame")
-    switchThumb.Size = UDim2.new(0, 18, 0, 18)
-    switchThumb.Position = Env[vKey] and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
+    switchThumb.Size = UDim2.new(0, 20, 0, 20)
+    switchThumb.Position = Env[vKey] and UDim2.new(1, -22, 0.5, -10) or UDim2.new(0, 2, 0.5, -10)
     switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     switchThumb.BorderSizePixel = 0
     switchThumb.Parent = switchTrack
@@ -282,24 +282,24 @@ local function createToggleRow(parent, txt, vKey)
         local active = Env[vKey]
         TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)}):Play()
         TweenService:Create(trackStroke, TweenInfo.new(0.2), {Transparency = active and 0.2 or 0.7}):Play()
-        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}):Play()
+        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -22, 0.5, -10) or UDim2.new(0, 2, 0.5, -10)}):Play()
     end)
 
     return row
 end
 
--- MASTER TOGGLE GROUP HELPER
+-- LARGER MASTER TOGGLE GROUP HELPER
 local function masterToggleGroup(txt, flagsTable, scr)
     local f = Instance.new("Frame") 
-    f.Size = UDim2.new(1, -10, 0, 42) 
+    f.Size = UDim2.new(1, -10, 0, 48) 
     f.BackgroundColor3 = Color3.fromRGB(22, 14, 35) 
     f.BorderSizePixel = 0 
     f.Parent = scr
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 10)
 
     local fStroke = Instance.new("UIStroke")
     fStroke.Color = Color3.fromRGB(168, 85, 247)
-    fStroke.Transparency = 0.55
+    fStroke.Transparency = 0.5
     fStroke.Parent = f
 
     local l = Instance.new("TextLabel") 
@@ -314,8 +314,8 @@ local function masterToggleGroup(txt, flagsTable, scr)
     l.Parent = f
     
     local switchTrack = Instance.new("TextButton")
-    switchTrack.Size = UDim2.new(0, 48, 0, 22)
-    switchTrack.Position = UDim2.new(1, -58, 0.5, -11)
+    switchTrack.Size = UDim2.new(0, 50, 0, 24)
+    switchTrack.Position = UDim2.new(1, -60, 0.5, -12)
     switchTrack.BackgroundColor3 = Color3.fromRGB(42, 28, 65)
     switchTrack.Text = ""
     switchTrack.AutoButtonColor = false
@@ -328,8 +328,8 @@ local function masterToggleGroup(txt, flagsTable, scr)
     trackStroke.Parent = switchTrack
 
     local switchThumb = Instance.new("Frame")
-    switchThumb.Size = UDim2.new(0, 18, 0, 18)
-    switchThumb.Position = UDim2.new(0, 2, 0.5, -9)
+    switchThumb.Size = UDim2.new(0, 20, 0, 20)
+    switchThumb.Position = UDim2.new(0, 2, 0.5, -10)
     switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     switchThumb.BorderSizePixel = 0
     switchThumb.Parent = switchTrack
@@ -345,7 +345,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
         end
         TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = activeState and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)}):Play()
         TweenService:Create(trackStroke, TweenInfo.new(0.2), {Transparency = activeState and 0.2 or 0.7}):Play()
-        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = activeState and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}):Play()
+        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = activeState and UDim2.new(1, -22, 0.5, -10) or UDim2.new(0, 2, 0.5, -10)}):Play()
     end)
     return switchTrack
 end
@@ -668,7 +668,7 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR WITH BOLD PURPLE SCROLLBAR & CLEAN PADDING
+-- VERTICAL SCROLL GENERATOR WITH BOLD PURPLE SCROLLBAR & CLEAN PADDING (`UIListLayout.Padding = 10`)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -680,7 +680,7 @@ local function makeVerticalScroll(parent)
     s.Visible = false 
     s.Parent = parent 
     
-    local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 8) list.SortOrder = Enum.SortOrder.LayoutOrder; list.Parent = s
+    local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 10) list.SortOrder = Enum.SortOrder.LayoutOrder; list.Parent = s
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 20) end)
     return s 
 end
@@ -744,17 +744,17 @@ local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
-bestTierBtn.Size = UDim2.new(1, -10, 0, 42)
+bestTierBtn.Size = UDim2.new(1, -10, 0, 48)
 bestTierBtn.BackgroundColor3 = Color3.fromRGB(22, 14, 35)
 bestTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
 bestTierBtn.TextSize = 13
 bestTierBtn.Font = Enum.Font.SourceSansBold
 bestTierBtn.Text = "Best Tier Only: DISABLED"
 bestTierBtn.Parent = minesScroll
-Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 10)
 local bestTierStroke = Instance.new("UIStroke")
 bestTierStroke.Color = Color3.fromRGB(168, 85, 247)
-bestTierStroke.Transparency = 0.55
+bestTierStroke.Transparency = 0.5
 bestTierStroke.Parent = bestTierBtn
 
 bestTierBtn.MouseButton1Click:Connect(function()
@@ -775,19 +775,19 @@ end)
 
 -- GLIDE SPEED SCROLLER
 local speedContainer = Instance.new("Frame")
-speedContainer.Size = UDim2.new(1, -10, 0, 56)
+speedContainer.Size = UDim2.new(1, -10, 0, 60)
 speedContainer.BackgroundColor3 = Color3.fromRGB(22, 14, 35)
 speedContainer.BorderSizePixel = 0
 speedContainer.Parent = minesScroll
-Instance.new("UICorner", speedContainer).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", speedContainer).CornerRadius = UDim.new(0, 10)
 local speedStroke = Instance.new("UIStroke")
 speedStroke.Color = Color3.fromRGB(168, 85, 247)
-speedStroke.Transparency = 0.55
+speedStroke.Transparency = 0.5
 speedStroke.Parent = speedContainer
 
 local speedLabel = Instance.new("TextLabel")
 speedLabel.Size = UDim2.new(1, -20, 0, 22)
-speedLabel.Position = UDim2.new(0, 12, 0, 6)
+speedLabel.Position = UDim2.new(0, 16, 0, 8)
 speedLabel.BackgroundTransparency = 1
 speedLabel.TextColor3 = Color3.fromRGB(240, 235, 250)
 speedLabel.TextSize = 13
@@ -797,8 +797,8 @@ speedLabel.TextXAlignment = Enum.TextXAlignment.Left
 speedLabel.Parent = speedContainer
 
 local sliderTrack = Instance.new("TextButton")
-sliderTrack.Size = UDim2.new(1, -24, 0, 14)
-sliderTrack.Position = UDim2.new(0, 12, 0, 32)
+sliderTrack.Size = UDim2.new(1, -32, 0, 14)
+sliderTrack.Position = UDim2.new(0, 16, 0, 34)
 sliderTrack.BackgroundColor3 = Color3.fromRGB(42, 28, 65)
 sliderTrack.Text = ""
 sliderTrack.AutoButtonColor = false
@@ -922,11 +922,11 @@ createToggleRow(settingsScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
 createToggleRow(settingsScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
 
 createSectionHeader(settingsScroll, "Emergency Controls")
-local killRow = Instance.new("Frame") killRow.Size = UDim2.new(1, -10, 0, 42) killRow.BackgroundColor3 = Color3.fromRGB(22, 14, 35) killRow.BorderSizePixel = 0; killRow.Parent = settingsScroll
-Instance.new("UICorner", killRow).CornerRadius = UDim.new(0, 8)
+local killRow = Instance.new("Frame") killRow.Size = UDim2.new(1, -10, 0, 48) killRow.BackgroundColor3 = Color3.fromRGB(22, 14, 35) killRow.BorderSizePixel = 0; killRow.Parent = settingsScroll
+Instance.new("UICorner", killRow).CornerRadius = UDim.new(0, 10)
 local killRowStroke = Instance.new("UIStroke")
 killRowStroke.Color = Color3.fromRGB(168, 85, 247)
-killRowStroke.Transparency = 0.55
+killRowStroke.Transparency = 0.5
 killRowStroke.Parent = killRow
 
 local killLbl = Instance.new("TextLabel") killLbl.Size = UDim2.new(0.6, 0, 1, 0) killLbl.Position = UDim2.new(0, 16, 0, 0) killLbl.BackgroundTransparency = 1; killLbl.TextColor3 = Color3.fromRGB(254, 202, 202) killLbl.TextSize = 13; killLbl.Font = Enum.Font.SourceSansBold; killLbl.Text = "Emergency Kill Switch"; killLbl.TextXAlignment = Enum.TextXAlignment.Left; killLbl.Parent = killRow
@@ -1224,4 +1224,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.19 Cleaned Football Labels & Loaded Successfully!")
+print("[Dominate Hub] V11.20 Spacious Card Boxes & Stable Execution Loaded Successfully!")
