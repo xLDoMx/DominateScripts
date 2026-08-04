@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (ULTRA-SMOOTH LERP GLIDE & STABLE EXECUTION)
+-- DOMINATE HUB | PRO EDITION (SEPARATED GEM CONVERTER & SHOP TELEPORT)
 --======================================================================================
 local Env = getgenv()
 
@@ -1070,7 +1070,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES (BUTTERY SMOOTH PER-FRAME LERP GLIDE)
+-- LOCOMOTION & AUTOMATION ENGINES (SEPARATED GEM CONVERTER & SHOP TELEPORT LOOPS)
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1097,10 +1097,52 @@ task.spawn(function()
             
             if act and (hrp.Position - act).Magnitude > 3 then
                 local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
-                -- Smooth per-frame alpha interpolation (fluid gliding curve)
                 local alpha = math.clamp(0.08 / speed, 0.01, 1.0)
                 hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(act + Vector3.new(0, 3, 0)), alpha)
             end
+        end
+    end
+end)
+
+-- 1. GEM CONVERTER ALONE (Fires remote from anywhere without teleporting when Shop Teleport is OFF)
+task.spawn(function()
+    while Running do
+        task.wait(60.0)
+        if NetRemote and Running and Env.AutoGemExchange and not Env.AutoGemShopTeleport then
+            pcall(function()
+                NetRemote:FireServer("ExchangeAllMinerals")
+            end)
+            showToast("Gem Converter: Exchanged minerals successfully!")
+        end
+    end
+end)
+
+-- 2. SHOP TELEPORT LOOP ALONE (Keeps player at shop when Gem Converter is OFF)
+task.spawn(function()
+    while Running do
+        task.wait(0.5)
+        if Running and Env.AutoGemShopTeleport and not Env.AutoGemExchange then
+            MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
+        elseif MasterTargetVector == Vector3.new(623.851, 8.781, 3210.993) and not Env.AutoGemShopTeleport then
+            MasterTargetVector = nil
+        end
+    end
+end)
+
+-- 3. COMBINED PITSTOP LOOP (Only runs when BOTH Gem Converter AND Shop Teleport are TOGGLED ON)
+task.spawn(function()
+    while Running do
+        task.wait(60.0)
+        if NetRemote and Running and Env.AutoGemExchange and Env.AutoGemShopTeleport then
+            pcall(function()
+                MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
+                task.wait(6.0)
+                NetRemote:FireServer("ExchangeAllMinerals")
+                task.wait(1.0)
+                MasterTargetVector = nil
+            end)
+            showToast("Gem Shop Pitstop: Teleported & Exchanged minerals!")
+            sendDiscordWebhook("Dominate Hub: Performed Combined Gem Shop Teleport & Conversion!")
         end
     end
 end)
@@ -1269,24 +1311,6 @@ end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
 
--- WORKING GEM CONVERTER & 6-SECOND PITSTOP LOOP
-task.spawn(function()
-    while Running do
-        task.wait(60.0)
-        if NetRemote and Running and Env.AutoGemExchange then
-            pcall(function()
-                MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
-                task.wait(6.0)
-                NetRemote:FireServer("ExchangeAllMinerals")
-                task.wait(1.0)
-                MasterTargetVector = nil
-            end)
-            showToast("Gem Shop Pitstop: Exchanged minerals successfully!")
-            sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop & Converted Minerals!")
-        end
-    end
-end)
-
 task.spawn(function() while Running do task.wait(0.2) if NetRemote and Running and Env.AutoScoreGoal then pcall(function() NetRemote:FireServer("RegisterFootballKick") end) task.wait(1.5) if not Running or not Env.AutoScoreGoal then break end pcall(function() NetRemote:FireServer("ScoreGoal") end) task.wait(1.5) end end end)
 
 task.spawn(function()
@@ -1325,4 +1349,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.28 Ultra-Smooth Per-Frame Lerp Glide Loaded Successfully!")
+print("[Dominate Hub] V11.29 Separated Gem Converter & Teleport Loop Loaded Successfully!")
