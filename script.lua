@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED SYNTAX & FULLY VERIFIED EXECUTION)
+-- DOMINATE HUB | PRO EDITION (STRICTLY VERIFIED & STABLE STYLED BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -196,6 +196,7 @@ Env.AutoScoreGoal = false
 Env.AutoGoalsMoreGoals = false
 Env.AutoGoalsRuneBulk = false
 Env.AutoGoalsRuneLuck = false
+Env.AutoBuyAutoKick = false
 Env.AutoFootballTree = false
 Env.AutoClaimTrophies = false
 
@@ -321,7 +322,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- MASTER TOGGLE GROUP CONTAINER[cite: 1]
+-- MASTER TOGGLE GROUP CONTAINER
 local function masterToggleGroup(txt, flagsTable, scr)
     local f = Instance.new("Frame") 
     f.Size = UDim2.new(1, -10, 0, 42) 
@@ -399,7 +400,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
     return switchTrack
 end
 
--- SECTION HEADER HELPER[cite: 1]
+-- SECTION HEADER HELPER
 local function createSectionHeader(parent, txt)
     local header = Instance.new("TextLabel")
     header.Size = UDim2.new(1, -10, 0, 32)
@@ -429,7 +430,7 @@ task.spawn(function()
     until NetRemote or not Running
 end)
 
--- UI MASTER ALLOCATION[cite: 1]
+-- UI MASTER ALLOCATION
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
@@ -449,7 +450,7 @@ local function sendDiscordWebhook(message)
     end
 end
 
--- FPS & PING TRACKING UTILS[cite: 1]
+-- FPS & PING TRACKING UTILS
 local fps = 60
 local frameCount = 0
 local lastFpsUpdate = tick()
@@ -462,7 +463,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)[cite: 1]
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 96)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -529,7 +530,7 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER[cite: 1]
+-- MAIN WINDOW CONTAINER
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 0, 0, 0) 
 mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) 
@@ -556,7 +557,7 @@ task.spawn(function()
     }):Play()
 end)
 
--- BLANK LOGO BOX WITH FADED SHINY TOP STROKE EFFECT[cite: 1]
+-- BLANK LOGO BOX WITH FADED SHINY TOP STROKE EFFECT
 local logoBox = Instance.new("Frame")
 logoBox.Size = UDim2.new(0, 34, 0, 34)
 logoBox.Position = UDim2.new(0, 14, 0, 10)
@@ -617,7 +618,7 @@ task.spawn(function()
     end
 end)
 
--- FLOATING PILL (MINIMIZE / RESTORE)[cite: 1]
+-- FLOATING PILL (MINIMIZE / RESTORE)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 115, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -57, 0.01, 0) 
@@ -672,7 +673,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER[cite: 1]
+-- SIDEBAR CONTAINER
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -724,7 +725,7 @@ local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
 
--- PAGE CONTAINER AREA[cite: 1]
+-- PAGE CONTAINER AREA
 local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
@@ -742,7 +743,7 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR[cite: 1]
+-- VERTICAL SCROLL GENERATOR
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -760,7 +761,7 @@ local function makeVerticalScroll(parent)
 end
 
 -- ======================================================================================
--- UPGRADES PAGE[cite: 1]
+-- UPGRADES PAGE
 -- ======================================================================================
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
@@ -793,7 +794,7 @@ createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 
 -- ======================================================================================
--- NOOBS PAGE SETUP[cite: 1]
+-- NOOBS PAGE SETUP
 -- ======================================================================================
 local noobsScroll = makeVerticalScroll(noobsPage) noobsScroll.Visible = true
 
@@ -812,7 +813,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
--- MINES PAGE SETUP (SORTED WORST TO BEST)[cite: 1]
+-- MINES PAGE SETUP (SORTED WORST TO BEST)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
@@ -848,7 +849,7 @@ bestTierBtn.MouseButton1Click:Connect(function()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
--- GLIDE SPEED SCROLLER[cite: 1]
+-- GLIDE SPEED SCROLLER
 local speedContainer = Instance.new("Frame")
 speedContainer.Size = UDim2.new(1, -10, 0, 60)
 speedContainer.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
@@ -942,7 +943,7 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- FOOTBALL PAGE SETUP[cite: 1]
+-- FOOTBALL PAGE SETUP
 -- ======================================================================================
 local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
 
@@ -968,7 +969,7 @@ createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- ======================================================================================
--- MISC PAGE SETUP[cite: 1]
+-- MISC PAGE SETUP
 -- ======================================================================================
 local miscScroll = makeVerticalScroll(miscPage) miscScroll.Visible = true
 
@@ -986,7 +987,7 @@ createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 
 -- ======================================================================================
--- SETTINGS PAGE SETUP[cite: 1]
+-- SETTINGS PAGE SETUP
 -- ======================================================================================
 local settingsScroll = makeVerticalScroll(settingsPage) settingsScroll.Visible = true
 
@@ -1025,7 +1026,6 @@ killLbl.Text = "Emergency Kill Switch"
 killLbl.TextXAlignment = Enum.TextXAlignment.Left 
 killLbl.Parent = killRow
 
--- FIXED EMERGENCY KILL SWITCH BUTTON POSITION & SIZE[cite: 1]
 local killBtn = Instance.new("TextButton") 
 killBtn.Size = UDim2.new(0, 110, 0, 30) 
 killBtn.Position = UDim2.new(1, -118, 0.5, -15) 
@@ -1051,7 +1051,7 @@ killBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- TAB ROUTING SYSTEM[cite: 1]
+-- TAB ROUTING SYSTEM
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
@@ -1074,7 +1074,7 @@ tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFoot
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
--- WINDOW DRAGGING ENGINE[cite: 1]
+-- WINDOW DRAGGING ENGINE
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
@@ -1086,7 +1086,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES (SEPARATED GEM CONVERTER & SHOP TELEPORT LOOPS)[cite: 1]
+-- LOCOMOTION & AUTOMATION ENGINES
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1120,7 +1120,7 @@ task.spawn(function()
     end
 end)
 
--- 1. GEM CONVERTER ALONE (Fires remote without teleporting when Shop Teleport is OFF)[cite: 1]
+-- 1. GEM CONVERTER ALONE
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1133,7 +1133,7 @@ task.spawn(function()
     end
 end)
 
--- 2. SHOP TELEPORT LOOP ALONE (Keeps player at shop when Gem Converter is OFF)[cite: 1]
+-- 2. SHOP TELEPORT LOOP ALONE
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1145,7 +1145,7 @@ task.spawn(function()
     end
 end)
 
--- 3. COMBINED PITSTOP LOOP (Only runs when BOTH are TOGGLED ON)[cite: 1]
+-- 3. COMBINED PITSTOP LOOP
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1365,4 +1365,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.33 Fully Verified, Fixed & Loaded Successfully!")
+print("[Dominate Hub] V11.34 Fully Verified & Fixed Script Loaded Successfully!")
