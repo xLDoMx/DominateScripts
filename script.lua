@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (SMOOTH GLIDE ANIMATION & STABLE EXECUTION)
+-- DOMINATE HUB | PRO EDITION (ULTRA-SMOOTH LERP GLIDE & STABLE EXECUTION)
 --======================================================================================
 local Env = getgenv()
 
@@ -1070,7 +1070,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES (WITH SMOOTH TWEENED GLIDE MOVEMENT)
+-- LOCOMOTION & AUTOMATION ENGINES (BUTTERY SMOOTH PER-FRAME LERP GLIDE)
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1083,9 +1083,10 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
 task.spawn(function()
     while Running do
-        task.wait(Env.CPUSaverMode and 0.5 or 0.1)
+        RunService.RenderStepped:Wait()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
@@ -1093,11 +1094,12 @@ task.spawn(function()
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
-            if act and Running and (hrp.Position - act).Magnitude > 5 then
-                local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 2.0)
-                local tween = TweenService:Create(hrp, TweenInfo.new(speed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(act)})
-                tween:Play()
-                task.wait(speed)
+            
+            if act and (hrp.Position - act).Magnitude > 3 then
+                local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
+                -- Smooth per-frame alpha interpolation (fluid gliding curve)
+                local alpha = math.clamp(0.08 / speed, 0.01, 1.0)
+                hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(act + Vector3.new(0, 3, 0)), alpha)
             end
         end
     end
@@ -1158,7 +1160,7 @@ task.spawn(function()
                     end
                 end
                 
-                if currentTargetPanel and currentTargetPanel.Parent then MiningTargetVector = currentTargetPanel.Position + Vector3.new(0, 3, 0) else MiningTargetVector = nil end
+                if currentTargetPanel and currentTargetPanel.Parent then MiningTargetVector = currentTargetPanel.Position else MiningTargetVector = nil end
             else 
                 currentTargetPanel = nil 
                 MiningTargetVector = nil 
@@ -1323,4 +1325,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.27 Smooth Glide Movement & Faded Shiny Header Stroke Loaded Successfully!")
+print("[Dominate Hub] V11.28 Ultra-Smooth Per-Frame Lerp Glide Loaded Successfully!")
