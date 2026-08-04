@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (EMOJI SIDEBAR & SECTION HEADER LAYOUT)
+-- DOMINATE HUB | PRO EDITION (GLOWING NEON CARD SIDEBAR)
 --======================================================================================
 local Env = getgenv()
 
@@ -502,7 +502,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER WITH EMOJIS (VERTICAL LEFT NAVIGATION)
+-- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION WITH NEON PADDING & STROKES)
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 140, 1, -45)
 sidebarFrame.Position = UDim2.new(0, 10, 0, 40)
@@ -517,20 +517,26 @@ sidebarLayout.Parent = sidebarFrame
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
-    t.Size = UDim2.new(1, -10, 0, 38)
-    t.Position = UDim2.new(0, 5, 0, 0)
-    t.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+    t.Size = UDim2.new(1, -12, 0, 42)
+    t.Position = UDim2.new(0, 6, 0, 0)
+    t.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
     t.TextColor3 = Color3.fromRGB(180, 180, 195)
-    t.TextSize = 11
+    t.TextSize = 12
     t.Font = Enum.Font.SourceSansBold
-    t.Text = emoji .. "  " .. txt
+    t.Text = emoji .. "    " .. txt
     t.TextXAlignment = Enum.TextXAlignment.Left
     t.Parent = sidebarFrame
-    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 8)
     
+    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 10)
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingLeft = UDim.new(0, 14)
+    padding.Parent = t
+
     local stroke = Instance.new("UIStroke")
+    stroke.Name = "TabStroke"
     stroke.Color = Color3.fromRGB(147, 51, 234)
-    stroke.Transparency = 0.8
+    stroke.Transparency = 0.4
     stroke.Parent = t
     return t
 end
@@ -538,6 +544,9 @@ end
 local tabUpgrades = makeMainTab("⚡", "Upgrades") 
 tabUpgrades.BackgroundColor3 = Color3.fromRGB(147, 51, 234) 
 tabUpgrades.TextColor3 = Color3.fromRGB(255, 255, 255)
+local tabUpgradesStroke = tabUpgrades:FindFirstChild("TabStroke")
+if tabUpgradesStroke then tabUpgradesStroke.Color = Color3.fromRGB(216, 180, 254) tabUpgradesStroke.Transparency = 0.05 end
+
 local tabNoobs = makeMainTab("🤖", "Noobs")
 local tabMines = makeMainTab("⛏️", "Mines")
 local tabFootball = makeMainTab("⚽", "Football")
@@ -801,13 +810,28 @@ killBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- TAB ROUTING SYSTEM (MAIN TABS ONLY - NO SUB-TABS)
+-- TAB ROUTING SYSTEM WITH GLOWING STROKE STATES
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
-    for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(24, 24, 32), Color3.fromRGB(180, 180, 195) end
-    bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(147, 51, 234), Color3.fromRGB(255, 255, 255) 
+    for _, t in ipairs(tabs) do 
+        t.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+        t.TextColor3 = Color3.fromRGB(180, 180, 195)
+        local stroke = t:FindFirstChild("TabStroke")
+        if stroke then
+            stroke.Color = Color3.fromRGB(147, 51, 234)
+            stroke.Transparency = 0.5
+        end
+    end
+    bActive.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
+    bActive.TextColor3 = Color3.fromRGB(255, 255, 255)
+    local activeStroke = bActive:FindFirstChild("TabStroke")
+    if activeStroke then
+        activeStroke.Color = Color3.fromRGB(216, 180, 254)
+        activeStroke.Transparency = 0.05
+    end
 end
+
 tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) 
 tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
 tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
@@ -1084,4 +1108,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.5 Emoji Sidebar & Section Header Theme Loaded Successfully!")
+print("[Dominate Hub] V11.6 Neon Card Sidebar Theme Loaded Successfully!")
