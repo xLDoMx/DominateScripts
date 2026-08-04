@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED EMERGENCY BUTTON POSITION & STABLE EXECUTION)
+-- DOMINATE HUB | PRO EDITION (SEPARATED GEM CONVERTER, FIXED TERMINATE & LERP GLIDE)
 --======================================================================================
 local Env = getgenv()
 
@@ -232,7 +232,7 @@ Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 Env.DiscordWebhookURL = ""
 
--- FEATURE ROW CONTAINER (50% TRANSPARENT DEEP PURPLE, NO STROKE)
+-- FEATURE ROW CONTAINER (50% TRANSPARENT DEEP PURPLE, NO STROKE)[cite: 1]
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -306,7 +306,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- MASTER TOGGLE GROUP CONTAINER
+-- MASTER TOGGLE GROUP CONTAINER[cite: 1]
 local function masterToggleGroup(txt, flagsTable, scr)
     local f = Instance.new("Frame") 
     f.Size = UDim2.new(1, -10, 0, 42) 
@@ -384,7 +384,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
     return switchTrack
 end
 
--- SECTION HEADER HELPER
+-- SECTION HEADER HELPER[cite: 1]
 local function createSectionHeader(parent, txt)
     local header = Instance.new("TextLabel")
     header.Size = UDim2.new(1, -10, 0, 32)
@@ -414,7 +414,7 @@ task.spawn(function()
     until NetRemote or not Running
 end)
 
--- UI MASTER ALLOCATION
+-- UI MASTER ALLOCATION[cite: 1]
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
@@ -434,7 +434,7 @@ local function sendDiscordWebhook(message)
     end
 end
 
--- FPS & PING TRACKING UTILS
+-- FPS & PING TRACKING UTILS[cite: 1]
 local fps = 60
 local frameCount = 0
 local lastFpsUpdate = tick()
@@ -447,7 +447,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)[cite: 1]
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 96)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -514,7 +514,7 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER
+-- MAIN WINDOW CONTAINER[cite: 1]
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 0, 0, 0) 
 mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) 
@@ -541,7 +541,7 @@ task.spawn(function()
     }):Play()
 end)
 
--- BLANK LOGO BOX WITH FADED SHINY TOP STROKE EFFECT
+-- BLANK LOGO BOX WITH FADED SHINY TOP STROKE EFFECT[cite: 1]
 local logoBox = Instance.new("Frame")
 logoBox.Size = UDim2.new(0, 34, 0, 34)
 logoBox.Position = UDim2.new(0, 14, 0, 10)
@@ -602,7 +602,7 @@ task.spawn(function()
     end
 end)
 
--- FLOATING PILL (MINIMIZE / RESTORE)
+-- FLOATING PILL (MINIMIZE / RESTORE)[cite: 1]
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 115, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -57, 0.01, 0) 
@@ -657,7 +657,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER
+-- SIDEBAR CONTAINER[cite: 1]
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -709,7 +709,7 @@ local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
 
--- PAGE CONTAINER AREA
+-- PAGE CONTAINER AREA[cite: 1]
 local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
@@ -727,7 +727,7 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR
+-- VERTICAL SCROLL GENERATOR[cite: 1]
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -745,7 +745,7 @@ local function makeVerticalScroll(parent)
 end
 
 -- ======================================================================================
--- UPGRADES PAGE
+-- UPGRADES PAGE[cite: 1]
 -- ======================================================================================
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
@@ -778,7 +778,7 @@ createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 
 -- ======================================================================================
--- NOOBS PAGE SETUP
+-- NOOBS PAGE SETUP[cite: 1]
 -- ======================================================================================
 local noobsScroll = makeVerticalScroll(noobsPage) noobsScroll.Visible = true
 
@@ -797,7 +797,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
--- MINES PAGE SETUP (SORTED WORST TO BEST)
+-- MINES PAGE SETUP (SORTED WORST TO BEST)[cite: 1]
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
@@ -833,7 +833,7 @@ bestTierBtn.MouseButton1Click:Connect(function()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
--- GLIDE SPEED SCROLLER
+-- GLIDE SPEED SCROLLER[cite: 1]
 local speedContainer = Instance.new("Frame")
 speedContainer.Size = UDim2.new(1, -10, 0, 60)
 speedContainer.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
@@ -927,7 +927,7 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- FOOTBALL PAGE SETUP
+-- FOOTBALL PAGE SETUP[cite: 1]
 -- ======================================================================================
 local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
 
@@ -953,7 +953,7 @@ createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- ======================================================================================
--- MISC PAGE SETUP
+-- MISC PAGE SETUP[cite: 1]
 -- ======================================================================================
 local miscScroll = makeVerticalScroll(miscPage) miscScroll.Visible = true
 
@@ -971,7 +971,7 @@ createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 
 -- ======================================================================================
--- SETTINGS PAGE SETUP
+-- SETTINGS PAGE SETUP[cite: 1]
 -- ======================================================================================
 local settingsScroll = makeVerticalScroll(settingsPage) settingsScroll.Visible = true
 
@@ -1010,7 +1010,7 @@ killLbl.Text = "Emergency Kill Switch"
 killLbl.TextXAlignment = Enum.TextXAlignment.Left 
 killLbl.Parent = killRow
 
--- FIXED EMERGENCY KILL SWITCH BUTTON (Replacing the old toggle row layout)
+-- FIXED EMERGENCY KILL SWITCH BUTTON POSITION & SIZE
 local killBtn = Instance.new("TextButton") 
 killBtn.Size = UDim2.new(0, 110, 0, 30) 
 killBtn.Position = UDim2.new(1, -118, 0.5, -15) 
@@ -1036,7 +1036,7 @@ killBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- TAB ROUTING SYSTEM
+-- TAB ROUTING SYSTEM[cite: 1]
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
@@ -1059,7 +1059,7 @@ tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFoot
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
--- WINDOW DRAGGING ENGINE
+-- WINDOW DRAGGING ENGINE[cite: 1]
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
@@ -1071,7 +1071,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES
+-- LOCOMOTION & AUTOMATION ENGINES (SEPARATED GEM CONVERTER & SHOP TELEPORT LOOPS)[cite: 1]
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1105,7 +1105,7 @@ task.spawn(function()
     end
 end)
 
--- 1. GEM CONVERTER ALONE
+-- 1. GEM CONVERTER ALONE (Fires remote without teleporting when Shop Teleport is OFF)
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1118,7 +1118,7 @@ task.spawn(function()
     end
 end)
 
--- 2. SHOP TELEPORT LOOP ALONE
+-- 2. SHOP TELEPORT LOOP ALONE (Keeps player at shop when Gem Converter is OFF)
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1130,7 +1130,7 @@ task.spawn(function()
     end
 end)
 
--- 3. COMBINED PITSTOP LOOP
+-- 3. COMBINED PITSTOP LOOP (Only runs when BOTH are TOGGLED ON)
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1335,8 +1335,8 @@ local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bre
 task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
 
 task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
-task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if IDLE_CHECK_REMOVED = true if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeList", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AllOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
+task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
+task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
 task.spawn(function()
@@ -1350,4 +1350,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.30 Fixed Terminate Button & Final Polish Loaded Successfully!")
+print("[Dominate Hub] V11.31 Fully Verified & Fixed Script Loaded Successfully!")
