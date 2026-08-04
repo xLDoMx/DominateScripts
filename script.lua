@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (BLANK LOGO, FADED TOP SHINY STROKE & STABLE EXECUTION)
+-- DOMINATE HUB | PRO EDITION (SMOOTH GLIDE ANIMATION & STABLE EXECUTION)
 --======================================================================================
 local Env = getgenv()
 
@@ -554,10 +554,9 @@ local logoCorner = Instance.new("UICorner")
 logoCorner.CornerRadius = UDim.new(0, 8)
 logoCorner.Parent = logoBox
 
--- Cool faded shiny stroke container around the top logo box
 local logoBoxStroke = Instance.new("UIStroke")
 logoBoxStroke.Color = Color3.fromRGB(240, 220, 255)
-logoBoxStroke.Transparency = 0.65 -- Very faded shiny look
+logoBoxStroke.Transparency = 0.65
 logoBoxStroke.Parent = logoBox
 
 local headerTitle = Instance.new("TextLabel") 
@@ -1071,7 +1070,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES
+-- LOCOMOTION & AUTOMATION ENGINES (WITH SMOOTH TWEENED GLIDE MOVEMENT)
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1086,7 +1085,7 @@ local function GetWorldRoot() return player.Character and player.Character:FindF
 
 task.spawn(function()
     while Running do
-        task.wait(Env.CPUSaverMode and 0.5 or 0.2)
+        task.wait(Env.CPUSaverMode and 0.5 or 0.1)
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
@@ -1094,7 +1093,12 @@ task.spawn(function()
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
-            if act and Running and (hrp.Position - act).Magnitude > 5 then hrp.CFrame = CFrame.new(act) end
+            if act and Running and (hrp.Position - act).Magnitude > 5 then
+                local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 2.0)
+                local tween = TweenService:Create(hrp, TweenInfo.new(speed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(act)})
+                tween:Play()
+                task.wait(speed)
+            end
         end
     end
 end)
@@ -1319,4 +1323,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.26 Blank Logo, Faded Shiny Stroke & 50% Transparent Cards Loaded Successfully!")
+print("[Dominate Hub] V11.27 Smooth Glide Movement & Faded Shiny Header Stroke Loaded Successfully!")
