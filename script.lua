@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (CUSTOM 'D' LOGO HEADER & VERIFIED STABLE EXECUTION)
+-- DOMINATE HUB | PRO EDITION (BLANK LOGO, FADED TOP SHINY STROKE & STABLE EXECUTION)
 --======================================================================================
 local Env = getgenv()
 
@@ -232,7 +232,7 @@ Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 Env.DiscordWebhookURL = ""
 
--- FEATURE ROW CONTAINER (DEEP DARK PURPLE WITH 50% TRANSPARENCY, NO STROKE)
+-- FEATURE ROW CONTAINER (50% TRANSPARENT DEEP PURPLE, NO STROKE)
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -541,23 +541,23 @@ task.spawn(function()
     }):Play()
 end)
 
--- BRANDED HEADER WITH CUSTOM 'D' LOGO IMAGE CONTAINER & SUBTITLE
-local logoBox = Instance.new("ImageLabel")
+-- BLANK LOGO BOX WITH FADED SHINY TOP STROKE EFFECT
+local logoBox = Instance.new("Frame")
 logoBox.Size = UDim2.new(0, 34, 0, 34)
 logoBox.Position = UDim2.new(0, 14, 0, 10)
 logoBox.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
 logoBox.BackgroundTransparency = 0.2
 logoBox.BorderSizePixel = 0
-logoBox.Image = "rbxassetid://0" -- Replace "0" with your uploaded decal asset ID for your D logo graphic!
 logoBox.Parent = mainFrame
 
 local logoCorner = Instance.new("UICorner")
 logoCorner.CornerRadius = UDim.new(0, 8)
 logoCorner.Parent = logoBox
 
+-- Cool faded shiny stroke container around the top logo box
 local logoBoxStroke = Instance.new("UIStroke")
-logoBoxStroke.Color = Color3.fromRGB(216, 180, 254)
-logoBoxStroke.Transparency = 0.3
+logoBoxStroke.Color = Color3.fromRGB(240, 220, 255)
+logoBoxStroke.Transparency = 0.65 -- Very faded shiny look
 logoBoxStroke.Parent = logoBox
 
 local headerTitle = Instance.new("TextLabel") 
@@ -1301,7 +1301,7 @@ end)
 task.spawn(function() while Running do task.wait(3.0) if NetRemote and Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() NetRemote:FireServer("BuyTrophy", i) end) task.wait(0.2) end end end end)
 
 local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
-task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #GemUpgradeList end end end)
+task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
 
 task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
@@ -1319,4 +1319,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.25 Verified Stable Build Loaded Successfully!")
+print("[Dominate Hub] V11.26 Blank Logo, Faded Shiny Stroke & 50% Transparent Cards Loaded Successfully!")
