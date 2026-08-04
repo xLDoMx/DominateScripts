@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (GEM UPGRADES ISOLATED & FAST-LOOPED)
+-- DOMINATE HUB | PRO EDITION (UPDATED WITH CORRECT GEM SHOP POSITION)
 --======================================================================================
 local Env = getgenv()
 
@@ -1319,7 +1319,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED FAST GEM UPGRADE LOOP (FIRES INDEPENDENTLY SO GEMS UPGRADE FAST WHILE MINING)
+-- DEDICATED FAST GEM UPGRADE LOOP
 local GemUpgradeList = {
     {F="AutoGemMoreOof", T="UpgradeUpgradeMax", A={"Gem","MoreOof"}},
     {F="AutoGemMoreGems", T="UpgradeUpgradeMax", A={"Gem","MoreGems"}},
@@ -1347,13 +1347,21 @@ end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
 
+-- GEM CONVERTER & 1-MINUTE SHOP PITSTOP LOOP (UPDATED POSITION)
 task.spawn(function()
     while Running do
-        task.wait(20.0)
+        task.wait(60.0)
         if NetRemote and Running and Env.AutoGemExchange then
-            pcall(function() NetRemote:FireServer("ExchangeAllMinerals") end)
-            showToast("Successfully exchanged minerals for gems!")
-            sendDiscordWebhook("Dominate Hub: Successfully exchanged all minerals for gems!")
+            pcall(function()
+                -- Teleport to the exact Gem Shop position found
+                MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
+                task.wait(2.5) -- Buffer time to load/render area and process upgrades
+                NetRemote:FireServer("ExchangeAllMinerals")
+                task.wait(1.0)
+                MasterTargetVector = nil -- Return control back to mining
+            end)
+            showToast("Gem Shop Pitstop: Exchanged minerals & synced upgrades!")
+            sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop and exchanged minerals!")
         end
     end
 end)
@@ -1396,4 +1404,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.6 Base Loaded Successfully with Isolated Fast Gem Upgrades!")
+print("[Dominate Hub] V11.6 Base Loaded Successfully with Updated Gem Shop Pitstop!")
