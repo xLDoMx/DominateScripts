@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STROKELESS & 50% TRANSPARENT DEEP PURPLE CARDS)[cite: 1]
+-- DOMINATE HUB | PRO EDITION (ANIMATED UI & VERIFIED STABLE EXECUTION)
 --======================================================================================
 local Env = getgenv()
 
@@ -31,13 +31,13 @@ local NetRemote = nil
 
 local UI = {}
 
--- STATS TRACKING VARIABLES FOR HUD[cite: 1]
+-- STATS TRACKING VARIABLES FOR HUD
 local oresMined = 0
 local lastTrackedPart = nil
 local currentTargetPanel = nil
 local gemExchangeCountdown = 60
 
--- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING[cite: 1]
+-- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
     local blur = Instance.new("BlurEffect")
     blur.Name = "DominateHubBlur"
@@ -45,7 +45,7 @@ pcall(function()
     blur.Parent = Lighting
 end)
 
--- TOAST NOTIFICATION HELPER[cite: 1]
+-- TOAST NOTIFICATION HELPER
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
@@ -87,7 +87,7 @@ Env.AntiAFK = true
 Env.AutoPrestige = false
 Env.CPUSaverMode = false
 
--- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV[cite: 1]
+-- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
 Env.AutoUpgradeStarter = false
 Env.AutoUpgradeCooker = false
 Env.AutoUpgradeFarmer = false
@@ -232,7 +232,7 @@ Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 Env.DiscordWebhookURL = ""
 
--- FEATURE ROW CONTAINER (DEEP DARK PURPLE WITH 50% TRANSPARENCY, NO STROKE)[cite: 1]
+-- FEATURE ROW CONTAINER WITH HOVER ANIMATION
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -284,6 +284,18 @@ local function createToggleRow(parent, txt, vKey)
     thumbCorner.CornerRadius = UDim.new(1, 0)
     thumbCorner.Parent = switchThumb
 
+    -- Hover micro-interaction animation
+    row.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            TweenService:Create(row, TweenInfo.new(0.2), {BackgroundTransparency = 0.35, BackgroundColor3 = Color3.fromRGB(45, 25, 70)}):Play()
+        end
+    end)
+    row.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            TweenService:Create(row, TweenInfo.new(0.2), {BackgroundTransparency = 0.5, BackgroundColor3 = Color3.fromRGB(35, 20, 55)}):Play()
+        end
+    end)
+
     switchTrack.MouseButton1Click:Connect(function()
         Env[vKey] = not Env[vKey]
         local active = Env[vKey]
@@ -295,7 +307,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- MASTER TOGGLE GROUP CONTAINER (DEEP DARK PURPLE WITH 50% TRANSPARENCY, NO STROKE)[cite: 1]
+-- MASTER TOGGLE GROUP CONTAINER WITH HOVER ANIMATION
 local function masterToggleGroup(txt, flagsTable, scr)
     local f = Instance.new("Frame") 
     f.Size = UDim2.new(1, -10, 0, 42) 
@@ -347,6 +359,17 @@ local function masterToggleGroup(txt, flagsTable, scr)
     thumbCorner.CornerRadius = UDim.new(1, 0)
     thumbCorner.Parent = switchThumb
 
+    f.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            TweenService:Create(f, TweenInfo.new(0.2), {BackgroundTransparency = 0.35, BackgroundColor3 = Color3.fromRGB(45, 25, 70)}):Play()
+        end
+    end)
+    f.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            TweenService:Create(f, TweenInfo.new(0.2), {BackgroundTransparency = 0.5, BackgroundColor3 = Color3.fromRGB(35, 20, 55)}):Play()
+        end
+    end)
+
     switchTrack.MouseButton1Click:Connect(function()
         local activeState = false
         for _, flag in ipairs(flagsTable) do
@@ -362,7 +385,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
     return switchTrack
 end
 
--- SECTION HEADER HELPER (GOTHAMBOLD)[cite: 1]
+-- SECTION HEADER HELPER
 local function createSectionHeader(parent, txt)
     local header = Instance.new("TextLabel")
     header.Size = UDim2.new(1, -10, 0, 32)
@@ -392,7 +415,7 @@ task.spawn(function()
     until NetRemote or not Running
 end)
 
--- UI MASTER ALLOCATION[cite: 1]
+-- UI MASTER ALLOCATION
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
@@ -412,7 +435,7 @@ local function sendDiscordWebhook(message)
     end
 end
 
--- FPS & PING TRACKING UTILS[cite: 1]
+-- FPS & PING TRACKING UTILS
 local fps = 60
 local frameCount = 0
 local lastFpsUpdate = tick()
@@ -425,7 +448,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)[cite: 1]
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 96)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -492,12 +515,12 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER[cite: 1]
+-- MAIN WINDOW CONTAINER WITH SPRING ENTRANCE ANIMATION
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 620, 0, 410) 
-mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205) 
+mainFrame.Size = UDim2.new(0, 0, 0, 0) 
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) 
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 28) 
-mainFrame.BackgroundTransparency = 0.02
+mainFrame.BackgroundTransparency = 1
 mainFrame.BorderSizePixel = 0 
 mainFrame.Parent = sg
 
@@ -510,7 +533,17 @@ mainStroke.Color = Color3.fromRGB(168, 85, 247)
 mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
 
--- BRANDED HEADER WITH LOGO ICON BOX & SUBTITLE[cite: 1]
+-- Spring entrance animation execution
+task.spawn(function()
+    task.wait(0.1)
+    TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 620, 0, 410),
+        Position = UDim2.new(0.5, -310, 0.5, -205),
+        BackgroundTransparency = 0.02
+    }):Play()
+end)
+
+-- BRANDED HEADER WITH LOGO ICON BOX & SUBTITLE
 local logoBox = Instance.new("Frame")
 logoBox.Size = UDim2.new(0, 34, 0, 34)
 logoBox.Position = UDim2.new(0, 14, 0, 10)
@@ -580,7 +613,7 @@ task.spawn(function()
     end
 end)
 
--- FLOATING PILL (MINIMIZE / RESTORE)[cite: 1]
+-- FLOATING PILL (MINIMIZE / RESTORE WITH MORPHING ANIMATION)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 115, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -57, 0.01, 0) 
@@ -619,22 +652,23 @@ end)
 minBtn.MouseButton1Click:Connect(function()
     local isVisible = mainFrame.Visible
     if isVisible then
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), Position = minBtn.Position, BackgroundTransparency = 1})
         tween:Play()
         task.wait(0.25)
         mainFrame.Visible = false
         minBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
     else
         mainFrame.Size = UDim2.new(0, 0, 0, 0)
+        mainFrame.Position = minBtn.Position
         mainFrame.BackgroundTransparency = 0.02
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 620, 0, 410), BackgroundTransparency = 0.02})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 620, 0, 410), Position = UDim2.new(0.5, -310, 0.5, -205), BackgroundTransparency = 0.02})
         tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(216, 180, 254)
     end
 end)
 
--- SIDEBAR CONTAINER[cite: 1]
+-- SIDEBAR CONTAINER
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -686,7 +720,7 @@ local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
 
--- PAGE CONTAINER AREA[cite: 1]
+-- PAGE CONTAINER AREA
 local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
@@ -704,7 +738,7 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR[cite: 1]
+-- VERTICAL SCROLL GENERATOR
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -722,7 +756,7 @@ local function makeVerticalScroll(parent)
 end
 
 -- ======================================================================================
--- UPGRADES PAGE[cite: 1]
+-- UPGRADES PAGE
 -- ======================================================================================
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
@@ -755,7 +789,7 @@ createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 
 -- ======================================================================================
--- NOOBS PAGE SETUP[cite: 1]
+-- NOOBS PAGE SETUP
 -- ======================================================================================
 local noobsScroll = makeVerticalScroll(noobsPage) noobsScroll.Visible = true
 
@@ -774,7 +808,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
--- MINES PAGE SETUP (SORTED WORST TO BEST)[cite: 1]
+-- MINES PAGE SETUP (SORTED WORST TO BEST)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
@@ -810,7 +844,7 @@ bestTierBtn.MouseButton1Click:Connect(function()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
--- GLIDE SPEED SCROLLER[cite: 1]
+-- GLIDE SPEED SCROLLER
 local speedContainer = Instance.new("Frame")
 speedContainer.Size = UDim2.new(1, -10, 0, 60)
 speedContainer.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
@@ -904,7 +938,7 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- FOOTBALL PAGE SETUP[cite: 1]
+-- FOOTBALL PAGE SETUP
 -- ======================================================================================
 local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
 
@@ -930,7 +964,7 @@ createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- ======================================================================================
--- MISC PAGE SETUP[cite: 1]
+-- MISC PAGE SETUP
 -- ======================================================================================
 local miscScroll = makeVerticalScroll(miscPage) miscScroll.Visible = true
 
@@ -948,7 +982,7 @@ createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 
 -- ======================================================================================
--- SETTINGS PAGE SETUP[cite: 1]
+-- SETTINGS PAGE SETUP
 -- ======================================================================================
 local settingsScroll = makeVerticalScroll(settingsPage) settingsScroll.Visible = true
 
@@ -1012,7 +1046,7 @@ killBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- TAB ROUTING SYSTEM[cite: 1]
+-- TAB ROUTING SYSTEM
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
@@ -1035,7 +1069,7 @@ tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFoot
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
--- WINDOW DRAGGING ENGINE[cite: 1]
+-- WINDOW DRAGGING ENGINE
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
@@ -1047,7 +1081,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES[cite: 1]
+-- LOCOMOTION & AUTOMATION ENGINES
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1239,7 +1273,7 @@ end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
 
--- WORKING GEM CONVERTER & 6-SECOND PITSTOP LOOP[cite: 1]
+-- WORKING GEM CONVERTER & 6-SECOND PITSTOP LOOP
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1295,4 +1329,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.24 Verified Stable Build Loaded Successfully![cite: 1]")
+print("[Dominate Hub] V11.25 Verified Stable Execution Loaded Successfully![cite: 1]")
