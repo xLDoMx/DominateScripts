@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (CYBER-PURPLE REWORKED UI)
+-- DOMINATE HUB | PRO EDITION (EMOJI SIDEBAR & SECTION HEADER LAYOUT)
 --======================================================================================
 local Env = getgenv()
 
@@ -270,7 +270,6 @@ local function createToggleRow(parent, txt, vKey)
     switchTrack.MouseButton1Click:Connect(function()
         Env[vKey] = not Env[vKey]
         local active = Env[vKey]
-        
         TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)}):Play()
         TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
     end)
@@ -278,25 +277,18 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
-local function toggleFPSBoost(b)
-    Env.FPSBoostMode = not Env.FPSBoostMode
-    if Env.FPSBoostMode then
-        pcall(function()
-            Lighting.GlobalShadows = false
-            Lighting.FogEnd = 9e9
-            for _, v in ipairs(workspace:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.Material = Enum.Material.SmoothPlastic
-                    v.Reflectance = 0
-                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-                    v.Enabled = false
-                end
-            end
-        end)
-        showToast("FPS Booster Enabled!")
-    else
-        showToast("FPS Booster Disabled!")
-    end
+-- SECTION HEADER HELPER FUNCTION
+local function createSectionHeader(parent, txt)
+    local header = Instance.new("TextLabel")
+    header.Size = UDim2.new(1, -6, 0, 26)
+    header.BackgroundTransparency = 1
+    header.TextColor3 = Color3.fromRGB(192, 132, 252)
+    header.TextSize = 12
+    header.Font = Enum.Font.SourceSansBold
+    header.Text = txt
+    header.TextXAlignment = Enum.TextXAlignment.Left
+    header.Parent = parent
+    return header
 end
 
 player.Idled:Connect(function()
@@ -315,7 +307,7 @@ task.spawn(function()
     until NetRemote or not Running
 end)
 
--- UI MASTER ALLOCATION (BK'S HUB CYBER-PURPLE THEME)
+-- UI MASTER ALLOCATION
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
@@ -510,9 +502,9 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION)
+-- SIDEBAR CONTAINER WITH EMOJIS (VERTICAL LEFT NAVIGATION)
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(0, 130, 1, -45)
+sidebarFrame.Size = UDim2.new(0, 140, 1, -45)
 sidebarFrame.Position = UDim2.new(0, 10, 0, 40)
 sidebarFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
 sidebarFrame.BorderSizePixel = 0
@@ -520,34 +512,42 @@ sidebarFrame.Parent = mainFrame
 Instance.new("UICorner", sidebarFrame).CornerRadius = UDim.new(0, 8)
 
 local sidebarLayout = Instance.new("UIListLayout")
-sidebarLayout.Padding = UDim.new(0, 5)
+sidebarLayout.Padding = UDim.new(0, 6)
 sidebarLayout.Parent = sidebarFrame
 
-local function makeMainTab(txt)
+local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
-    t.Size = UDim2.new(1, -10, 0, 32)
+    t.Size = UDim2.new(1, -10, 0, 38)
     t.Position = UDim2.new(0, 5, 0, 0)
     t.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
     t.TextColor3 = Color3.fromRGB(180, 180, 195)
     t.TextSize = 11
     t.Font = Enum.Font.SourceSansBold
-    t.Text = txt
+    t.Text = emoji .. "  " .. txt
+    t.TextXAlignment = Enum.TextXAlignment.Left
     t.Parent = sidebarFrame
-    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 8)
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(147, 51, 234)
+    stroke.Transparency = 0.8
+    stroke.Parent = t
     return t
 end
 
-local tabUpgrades = makeMainTab("Upgrades") tabUpgrades.BackgroundColor3 = Color3.fromRGB(147, 51, 234) tabUpgrades.TextColor3 = Color3.fromRGB(255, 255, 255)
-local tabNoobs = makeMainTab("Noobs")
-local tabMines = makeMainTab("Mines")
-local tabFootball = makeMainTab("Football")
-local tabMisc = makeMainTab("Misc")
-local tabSettings = makeMainTab("Settings")
+local tabUpgrades = makeMainTab("⚡", "Upgrades") 
+tabUpgrades.BackgroundColor3 = Color3.fromRGB(147, 51, 234) 
+tabUpgrades.TextColor3 = Color3.fromRGB(255, 255, 255)
+local tabNoobs = makeMainTab("🤖", "Noobs")
+local tabMines = makeMainTab("⛏️", "Mines")
+local tabFootball = makeMainTab("⚽", "Football")
+local tabMisc = makeMainTab("📦", "Misc")
+local tabSettings = makeMainTab("⚙️", "Settings")
 
 -- PAGE CONTAINER AREA
 local pageArea = Instance.new("Frame")
-pageArea.Size = UDim2.new(1, -150, 1, -45)
-pageArea.Position = UDim2.new(0, 145, 0, 40)
+pageArea.Size = UDim2.new(1, -160, 1, -45)
+pageArea.Position = UDim2.new(0, 155, 0, 40)
 pageArea.BackgroundTransparency = 1
 pageArea.Parent = mainFrame
 
@@ -562,44 +562,11 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- SUB-SIDEBAR GENERATOR (FOR REALMS / SUB-TABS)
-local function makeSubSidebar(parent)
-    local sb = Instance.new("ScrollingFrame") 
-    sb.Size = UDim2.new(0, 90, 1, 0) 
-    sb.Position = UDim2.new(0, 0, 0, 0) 
-    sb.BackgroundTransparency = 1 
-    sb.BorderSizePixel = 0 
-    sb.ScrollBarThickness = 2 
-    sb.ScrollBarImageColor3 = Color3.fromRGB(147, 51, 234) 
-    sb.Parent = parent
-    local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 4) list.Parent = sb
-    list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() sb.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 10) end)
-    return sb
-end
-
-local function makeSubBtn(txt, parent)
-    local b = Instance.new("TextButton") 
-    b.Size = UDim2.new(1, -5, 0, 26) 
-    b.BackgroundColor3 = Color3.fromRGB(26, 26, 36) 
-    b.TextColor3 = Color3.fromRGB(180, 180, 195) 
-    b.Font = Enum.Font.SourceSansBold 
-    b.TextSize = 10 
-    b.Text = txt 
-    b.Parent = parent
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
-    return b
-end
-
--- VERTICAL SCROLL GENERATOR FOR CONTENT
-local function makeVerticalScroll(parent, hasSubsidebar)
+-- VERTICAL SCROLL GENERATOR FOR SINGLE-PAGE CONTENT (NO SUB-TABS)
+local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
-    if hasSubsidebar then 
-        s.Size = UDim2.new(1, -100, 1, 0) 
-        s.Position = UDim2.new(0, 100, 0, 0) 
-    else 
-        s.Size = UDim2.new(1, 0, 1, 0) 
-        s.Position = UDim2.new(0, 0, 0, 0) 
-    end
+    s.Size = UDim2.new(1, 0, 1, 0) 
+    s.Position = UDim2.new(0, 0, 0, 0)
     s.BackgroundTransparency = 1 
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 3 
@@ -613,17 +580,9 @@ local function makeVerticalScroll(parent, hasSubsidebar)
 end
 
 -- ======================================================================================
--- UPGRADES PAGE SETUP
+-- UPGRADES PAGE (CONTINUOUS SCROLL WITH SECTION HEADERS - NO SUB-TABS)
 -- ======================================================================================
-local upSidebar = makeSubSidebar(upgradesPage)
-local bUpR1 = makeSubBtn("Realm 1", upSidebar) bUpR1.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bUpR1.TextColor3 = Color3.fromRGB(255, 255, 255)
-local bUpR2 = makeSubSubSidebarTargetId if true then end -- placeholder
-local bUpR2Btn = makeSubBtn("Realm 2", upSidebar)
-local bUpR3Btn = makeSubBtn("Realm 3", upSidebar)
-
-local upScrollR1 = makeVerticalScroll(upgradesPage, true) upScrollR1.Visible = true
-local upScrollR2 = makeVerticalScroll(upgradesPage, true)
-local upScrollR3 = makeVerticalScroll(upgradesPage, true)
+local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
 local function masterToggleGroup(txt, flagsTable, scr)
     local f = Instance.new("Frame") f.Size = UDim2.new(1, -6, 0, 32) f.BackgroundColor3 = Color3.fromRGB(26, 26, 36) f.BorderSizePixel = 0; f.Parent = scr
@@ -661,131 +620,57 @@ local function masterToggleGroup(txt, flagsTable, scr)
     return switchTrack
 end
 
-masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScrollR1)
-masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScrollR1)
-masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScrollR1)
-masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScrollR1)
-masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScrollR1)
-masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScrollR1)
+createSectionHeader(upScroll, "Realm 1 Upgrades")
+masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScroll)
+masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScroll)
+masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScroll)
+masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScroll)
+masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScroll)
+masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScroll)
 
-masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScrollR2)
-masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, upScrollR2)
-masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScrollR2)
-masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScrollR2)
-masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScrollR2)
+createSectionHeader(upScroll, "Realm 2 Upgrades")
+masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScroll)
+masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, upScroll)
+masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScroll)
+masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScroll)
+masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScroll)
 
--- GEM UPGRADES SECTION ON REALM 2
-local function makeAccordionDropdown(title, optionsList, scr)
-    local headerBtn = Instance.new("TextButton")
-    headerBtn.Size = UDim2.new(1, -6, 0, 32)
-    headerBtn.BackgroundColor3 = Color3.fromRGB(26, 26, 36)
-    headerBtn.TextColor3 = Color3.fromRGB(220, 220, 230)
-    headerBtn.TextSize = 11
-    headerBtn.Font = Enum.Font.SourceSansBold
-    headerBtn.Text = "  ▼ " .. title
-    headerBtn.TextXAlignment = Enum.TextXAlignment.Left
-    headerBtn.Parent = scr
-    Instance.new("UICorner", headerBtn).CornerRadius = UDim.new(0, 6)
+createSectionHeader(upScroll, "Gem Upgrades & Features")
+createToggleRow(upScroll, "More Oof (Gem)", "AutoGemMoreOof")
+createToggleRow(upScroll, "More Gems", "AutoGemMoreGems")
+createToggleRow(upScroll, "Stronger Pickaxes", "AutoGemStrongerPickaxes")
+createToggleRow(upScroll, "More Ore Stats", "AutoGemMoreOreStats")
+createToggleRow(upScroll, "Gem Converter", "AutoGemExchange")
+createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
-    local expanded = false
-    local createdRows = {}
-
-    for _, opt in ipairs(optionsList) do
-        local row = Instance.new("Frame")
-        row.Size = UDim2.new(1, -6, 0, 30)
-        row.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
-        row.BorderSizePixel = 0
-        row.Visible = false
-        row.Parent = scr
-        Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
-
-        local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(0.6, 0, 1, 0)
-        lbl.Position = UDim2.new(0, 16, 0, 0)
-        lbl.BackgroundTransparency = 1
-        lbl.TextColor3 = Color3.fromRGB(190, 190, 205)
-        lbl.TextSize = 10
-        lbl.Font = Enum.Font.SourceSans
-        lbl.Text = opt.Name
-        lbl.TextXAlignment = Enum.TextXAlignment.Left
-        lbl.Parent = row
-
-        local switchTrack = Instance.new("TextButton")
-        switchTrack.Size = UDim2.new(0, 40, 0, 20)
-        switchTrack.Position = UDim2.new(1, -50, 0.5, -10)
-        switchTrack.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)
-        switchTrack.Text = ""
-        switchTrack.AutoButtonColor = false
-        switchTrack.Parent = row
-        Instance.new("UICorner", switchTrack).CornerRadius = UDim.new(1, 0)
-
-        local switchThumb = Instance.new("Frame")
-        switchThumb.Size = UDim2.new(0, 16, 0, 16)
-        switchThumb.Position = Env[opt.Var] and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
-        switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        switchThumb.BorderSizePixel = 0
-        switchThumb.Parent = switchTrack
-        Instance.new("UICorner", switchThumb).CornerRadius = UDim.new(1, 0)
-
-        switchTrack.MouseButton1Click:Connect(function()
-            Env[opt.Var] = not Env[opt.Var]
-            local active = Env[opt.Var]
-            TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)}):Play()
-            TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
-        end)
-
-        table.insert(createdRows, row)
-    end
-
-    headerBtn.MouseButton1Click:Connect(function()
-        expanded = not expanded
-        headerBtn.Text = expanded and ("  ▲ " .. title) or ("  ▼ " .. title)
-        for _, r in ipairs(createdRows) do
-            r.Visible = expanded
-        end
-    end)
-end
-
-local gemUpgradesList = {
-    {Name = "More Oof (Gem)", Var = "AutoGemMoreOof"},
-    {Name = "More Gems", Var = "AutoGemMoreGems"},
-    {Name = "Stronger Pickaxes", Var = "AutoGemStrongerPickaxes"},
-    {Name = "More Ore Stats", Var = "AutoGemMoreOreStats"},
-    {Name = "Gem Converter", Var = "AutoGemExchange"},
-    {Name = "Shop Teleport Loop", Var = "AutoGemShopTeleport"}
-}
-makeAccordionDropdown("Gem Upgrades", gemUpgradesList, upScrollR2)
-
-masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScrollR3)
+createSectionHeader(upScroll, "Realm 3 Upgrades")
+masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 
 -- ======================================================================================
--- NOOBS PAGE SETUP
+-- NOOBS PAGE SETUP (CONTINUOUS SCROLL - NO SUB-TABS)
 -- ======================================================================================
-local noobSidebar = makeSubSidebar(noobsPage)
-local bNoobR1 = makeSubBtn("Realm 1 Noobs", noobSidebar) bNoobR1.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bNoobR1.TextColor3 = Color3.fromRGB(255, 255, 255)
-local bNoobR2 = makeSubBtn("Realm 2 Noobs", noobSidebar)
+local noobsScroll = makeVerticalScroll(noobsPage) noobsScroll.Visible = true
 
-local noobScrollR1 = makeVerticalScroll(noobsPage, true) noobScrollR1.Visible = true
-local noobScrollR2 = makeVerticalScroll(noobsPage, true)
+createSectionHeader(noobsScroll, "Realm 1 Noobs")
+createToggleRow(noobsScroll, "Starter Auto Upgrade", "AutoUpgradeStarter")
+createToggleRow(noobsScroll, "Cooker Auto Upgrade", "AutoUpgradeCooker")
+createToggleRow(noobsScroll, "Farmer Auto Upgrade", "AutoUpgradeFarmer")
+createToggleRow(noobsScroll, "Magician Auto Upgrade", "AutoUpgradeMagician")
+createToggleRow(noobsScroll, "Archer Auto Upgrade", "AutoUpgradeArcher")
+createToggleRow(noobsScroll, "Soldier Auto Upgrade", "AutoUpgradeSoldier")
+createToggleRow(noobsScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
+createToggleRow(noobsScroll, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
 
-createToggleRow(noobScrollR1, "Starter Auto Upgrade", "AutoUpgradeStarter")
-createToggleRow(noobScrollR1, "Cooker Auto Upgrade", "AutoUpgradeCooker")
-createToggleRow(noobScrollR1, "Farmer Auto Upgrade", "AutoUpgradeFarmer")
-createToggleRow(noobScrollR1, "Magician Auto Upgrade", "AutoUpgradeMagician")
-createToggleRow(noobScrollR1, "Archer Auto Upgrade", "AutoUpgradeArcher")
-createToggleRow(noobScrollR1, "Soldier Auto Upgrade", "AutoUpgradeSoldier")
-createToggleRow(noobScrollR1, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
-createToggleRow(noobScrollR1, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
-
-createToggleRow(noobScrollR2, "Auto Upgrade Fisherman", "AutoUpgradeFishermanNoob")
-createToggleRow(noobScrollR2, "Auto Upgrade Knight", "AutoUpgradeKnightNoob")
-createToggleRow(noobScrollR2, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
-createToggleRow(noobScrollR2, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
+createSectionHeader(noobsScroll, "Realm 2 Noobs")
+createToggleRow(noobsScroll, "Auto Upgrade Fisherman", "AutoUpgradeFishermanNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Knight", "AutoUpgradeKnightNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
 -- MINES PAGE SETUP
 -- ======================================================================================
-local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
+local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
@@ -814,16 +699,21 @@ bestTierBtn.MouseButton1Click:Connect(function()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
+createSectionHeader(minesScroll, "Basic Ores")
 createToggleRow(minesScroll, "Stone", "AutoMineStone")
 createToggleRow(minesScroll, "Coal", "AutoMineCoal")
 createToggleRow(minesScroll, "Silver", "AutoMineSilver")
 createToggleRow(minesScroll, "Iron", "AutoMineIron")
 createToggleRow(minesScroll, "Copper", "AutoMineCopper")
+
+createSectionHeader(minesScroll, "Advanced Ores")
 createToggleRow(minesScroll, "Gold", "AutoMineGold")
 createToggleRow(minesScroll, "Platinum", "AutoMinePlatinum")
 createToggleRow(minesScroll, "Titanium", "AutoMineTitanium")
 createToggleRow(minesScroll, "Cobalt", "AutoMineCobalt")
 createToggleRow(minesScroll, "Uranium", "AutoMineUranium")
+
+createSectionHeader(minesScroll, "End-Game Ores")
 createToggleRow(minesScroll, "Palladium", "AutoMinePalladium")
 createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
 createToggleRow(minesScroll, "Ruby", "AutoMineRuby")
@@ -831,79 +721,69 @@ createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 
 -- ======================================================================================
--- FOOTBALL PAGE SETUP
+-- FOOTBALL PAGE SETUP (CONTINUOUS SCROLL - NO SUB-TABS)
 -- ======================================================================================
-local fSidebar = makeSubSidebar(footballPage)
-local bFNoobs = makeSubBtn("Noobs", fSidebar) bFNoobs.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bFNoobs.TextColor3 = Color3.fromRGB(255, 255, 255)
-local bFUpgrades = makeSubBtn("Upgrades", fSidebar)
-local fNoobScroll = makeVerticalScroll(footballPage, true) fNoobScroll.Visible = true
-local fUpgradeScroll = makeVerticalScroll(footballPage, true)
+local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
 
-createToggleRow(fNoobScroll, "Upgrade Goalkeeper", "AutoUpgradeGoalkeeper")
-createToggleRow(fNoobScroll, "Upgrade Left Back", "AutoUpgradeLeftBack")
-createToggleRow(fNoobScroll, "Upgrade L-Center Back", "AutoUpgradeLeftCenterBack")
-createToggleRow(fNoobScroll, "Upgrade R-Center Back", "AutoUpgradeRightCenterBack")
-createToggleRow(fNoobScroll, "Upgrade Right Back", "AutoUpgradeRightBack")
-createToggleRow(fNoobScroll, "Upgrade L-Defensive Mid", "AutoUpgradeLeftDefensiveMid")
-createToggleRow(fNoobScroll, "Upgrade R-Defensive Mid", "AutoUpgradeRightDefensiveMid")
-createToggleRow(fNoobScroll, "Upgrade Attacking Mid", "AutoUpgradeAttackingMid")
-createToggleRow(fNoobScroll, "Upgrade Left Wing", "AutoUpgradeLeftWing")
-createToggleRow(fNoobScroll, "Upgrade Right Wing", "AutoUpgradeRightWing")
-createToggleRow(fNoobScroll, "Upgrade Striker", "AutoUpgradeStriker")
+createSectionHeader(footballScroll, "Football Noobs")
+createToggleRow(footballScroll, "Upgrade Goalkeeper", "AutoUpgradeGoalkeeper")
+createToggleRow(footballScroll, "Upgrade Left Back", "AutoUpgradeLeftBack")
+createToggleRow(footballScroll, "Upgrade L-Center Back", "AutoUpgradeLeftCenterBack")
+createToggleRow(footballScroll, "Upgrade R-Center Back", "AutoUpgradeRightCenterBack")
+createToggleRow(footballScroll, "Upgrade Right Back", "AutoUpgradeRightBack")
+createToggleRow(footballScroll, "Upgrade L-Defensive Mid", "AutoUpgradeLeftDefensiveMid")
+createToggleRow(footballScroll, "Upgrade R-Defensive Mid", "AutoUpgradeRightDefensiveMid")
+createToggleRow(footballScroll, "Upgrade Attacking Mid", "AutoUpgradeAttackingMid")
+createToggleRow(footballScroll, "Upgrade Left Wing", "AutoUpgradeLeftWing")
+createToggleRow(footballScroll, "Upgrade Right Wing", "AutoUpgradeRightWing")
+createToggleRow(footballScroll, "Upgrade Striker", "AutoUpgradeStriker")
 
-createToggleRow(fUpgradeScroll, "Auto Score Goal", "AutoScoreGoal")
-createToggleRow(fUpgradeScroll, "More Goals Upgrade", "AutoGoalsMoreGoals")
-createToggleRow(fUpgradeScroll, "Goals Rune Bulk", "AutoGoalsRuneBulk")
-createToggleRow(fUpgradeScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
-createToggleRow(fUpgradeScroll, "Auto-Buy Auto Kick", "AutoBuyAutoKick")
-createToggleRow(fUpgradeScroll, "Auto Football Tree", "AutoFootballTree")
-createToggleRow(fUpgradeScroll, "Auto Buy Trophies", "AutoClaimTrophies")
+createSectionHeader(footballScroll, "Football Upgrades & Features")
+createToggleRow(footballScroll, "Auto Score Goal", "AutoScoreGoal")
+createToggleRow(footballScroll, "More Goals Upgrade", "AutoGoalsMoreGoals")
+createToggleRow(footballScroll, "Goals Rune Bulk", "AutoGoalsRuneBulk")
+createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
+createToggleRow(footballScroll, "Auto-Buy Auto Kick", "AutoBuyAutoKick")
+createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
+createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- ======================================================================================
--- MISC PAGE SETUP
+-- MISC PAGE SETUP (CONTINUOUS SCROLL - NO SUB-TABS)
 -- ======================================================================================
-local miscSidebar = makeSubSidebar(miscPage)
-local bMiscRu1 = makeSubBtn("Runes R1", miscSidebar) bMiscRu1.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bMiscRu1.TextColor3 = Color3.fromRGB(255, 255, 255)
-local bMiscRu2 = makeSubBtn("Runes R2", miscSidebar)
-local bMiscRuE = makeSubBtn("Events", miscSidebar)
-local bMiscCap = makeSubBtn("Capsules", miscSidebar)
+local miscScroll = makeVerticalScroll(miscPage) miscScroll.Visible = true
 
-local miscScrollRu1 = makeVerticalScroll(miscPage, true) miscScrollRu1.Visible = true
-local miscScrollRu2 = makeVerticalScroll(miscPage, true)
-local miscScrollRuE = makeVerticalScroll(miscPage, true)
-local miscScrollCap = makeVerticalScroll(miscPage, true)
+createSectionHeader(miscScroll, "Runes")
+createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
+createToggleRow(miscScroll, "Auto Super Rune Circle", "AutoRollSuperRune")
+createToggleRow(miscScroll, "Auto Advanced Rune", "AutoRollAdvancedRune")
+createToggleRow(miscScroll, "Auto Cosmic Prism", "AutoRollCosmicRune")
+createToggleRow(miscScroll, "Auto Snowy Rune Circle", "AutoRollSnowyRune")
+createToggleRow(miscScroll, "Auto Football Rune", "AutoRollFootballRune")
 
-createToggleRow(miscScrollRu1, "Auto Basic Rune Circle", "AutoRollBasicRune")
-createToggleRow(miscScrollRu1, "Auto Super Rune Circle", "AutoRollSuperRune")
-createToggleRow(miscScrollRu1, "Auto Advanced Rune", "AutoRollAdvancedRune")
-createToggleRow(miscScrollRu1, "Auto Cosmic Prism", "AutoRollCosmicRune")
-
-createToggleRow(miscScrollRu2, "Auto Snowy Rune Circle", "AutoRollSnowyRune")
-createToggleRow(miscScrollRuE, "Auto Football Rune", "AutoRollFootballRune")
-
-createToggleRow(miscScrollCap, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
-createToggleRow(miscScrollCap, "Hatch Football Capsule", "AutoOpenFootballCapsule")
-createToggleRow(miscScrollCap, "Hatch Super Capsule", "AutoOpenSuperCapsule")
+createSectionHeader(miscScroll, "Capsules")
+createToggleRow(miscScroll, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
+createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
+createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 
 -- ======================================================================================
 -- SETTINGS PAGE SETUP
 -- ======================================================================================
-local setSidebar = makeSubSidebar(settingsPage)
-local bSetGen = makeSubBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bSetGen.TextColor3 = Color3.fromRGB(255, 255, 255)
+local settingsScroll = makeVerticalScroll(settingsPage) settingsScroll.Visible = true
 
-local setGenScroll = makeVerticalScroll(settingsPage, true) setGenScroll.Visible = true
+createSectionHeader(settingsScroll, "General Settings")
+createToggleRow(settingsScroll, "Anti AFK Protection", "AntiAFK")
+createToggleRow(settingsScroll, "FPS Booster Mode", "FPSBoostMode")
+createToggleRow(settingsScroll, "Stats HUD Overlay", "ShowStatsHUD")
+createToggleRow(settingsScroll, "CPU Saver Mode", "CPUSaverMode")
 
-createToggleRow(setGenScroll, "Anti AFK Protection", "AntiAFK")
-createToggleRow(setGenScroll, "FPS Booster Mode", "FPSBoostMode")
-createToggleRow(setGenScroll, "Stats HUD Overlay", "ShowStatsHUD")
-createToggleRow(setGenScroll, "CPU Saver Mode", "CPUSaverMode")
-createToggleRow(setGenScroll, "Auto Rebirth", "AutoRebirthTimer")
-createToggleRow(setGenScroll, "Auto Prestige", "AutoPrestige")
-createToggleRow(setGenScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
-createToggleRow(setGenScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
+createSectionHeader(settingsScroll, "Automation Settings")
+createToggleRow(settingsScroll, "Auto Rebirth", "AutoRebirthTimer")
+createToggleRow(settingsScroll, "Auto Prestige", "AutoPrestige")
+createToggleRow(settingsScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
+createToggleRow(settingsScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
 
--- EMERGENCY KILL SWITCH ROW
-local killRow = Instance.new("Frame") killRow.Size = UDim2.new(1, -6, 0, 32) killRow.BackgroundColor3 = Color3.fromRGB(40, 20, 20) killRow.BorderSizePixel = 0; killRow.Parent = setGenScroll
+createSectionHeader(settingsScroll, "Emergency Controls")
+local killRow = Instance.new("Frame") killRow.Size = UDim2.new(1, -6, 0, 32) killRow.BackgroundColor3 = Color3.fromRGB(40, 20, 20) killRow.BorderSizePixel = 0; killRow.Parent = settingsScroll
 Instance.new("UICorner", killRow).CornerRadius = UDim.new(0, 6)
 local killLbl = Instance.new("TextLabel") killLbl.Size = UDim2.new(0.6, 0, 1, 0) killLbl.Position = UDim2.new(0, 12, 0, 0) killLbl.BackgroundTransparency = 1; killLbl.TextColor3 = Color3.fromRGB(255, 180, 180) killLbl.TextSize = 11; killLbl.Font = Enum.Font.SourceSansBold; killLbl.Text = "Emergency Kill Switch"; killLbl.TextXAlignment = Enum.TextXAlignment.Left; killLbl.Parent = killRow
 
@@ -921,7 +801,7 @@ killBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- TAB ROUTING SYSTEM
+-- TAB ROUTING SYSTEM (MAIN TABS ONLY - NO SUB-TABS)
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
@@ -934,33 +814,6 @@ tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
-
-local function sideRoute(tScroll, aBtn, aScrolls, aBtns)
-    for i, s in ipairs(aScrolls) do s.Visible = (s == tScroll) end
-    for i, b in ipairs(aBtns) do b.BackgroundColor3 = (b == aBtn) and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(26, 26, 36) b.TextColor3 = (b == aBtn) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 195) end
-end
-
-local upS, upB = {upScrollR1, upScrollR2, upScrollR3}, {bUpR1, bUpR2Btn, bUpR3Btn}
-bUpR1.MouseButton1Click:Connect(function() sideRoute(upScrollR1, bUpR1, upS, upB) end)
-bUpR2Btn.MouseButton1Click:Connect(function() sideRoute(upScrollR2, bUpR2Btn, upS, upB) end)
-bUpR3Btn.MouseButton1Click:Connect(function() sideRoute(upScrollR3, bUpR3Btn, upS, upB) end)
-
-local noobS, noobB = {noobScrollR1, noobScrollR2}, {bNoobR1, bNoobR2}
-bNoobR1.MouseButton1Click:Connect(function() sideRoute(noobScrollR1, bNoobR1, noobS, noobB) end)
-bNoobR2.MouseButton1Click:Connect(function() sideRoute(noobScrollR2, bNoobR2, noobS, noobB) end)
-
-local fS, fB = {fNoobScroll, fUpgradeScroll}, {bFNoobs, bFUpgrades}
-bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS, fB) end) 
-bFUpgrades.MouseButton1Click:Connect(function() sideRoute(fUpgradeScroll, bFUpgrades, fS, fB) end)
-
-local miscSubS, miscSubB = {miscScrollRu1, miscScrollRu2, miscScrollRuE, miscScrollCap}, {bMiscRu1, bMiscRu2, bMiscRuE, bMiscCap}
-bMiscRu1.MouseButton1Click:Connect(function() sideRoute(miscScrollRu1, bMiscRu1, miscSubS, miscSubB) end)
-bMiscRu2.MouseButton1Click:Connect(function() sideRoute(miscScrollRu2, bMiscRu2, miscSubS, miscSubB) end)
-bMiscRuE.MouseButton1Click:Connect(function() sideRoute(miscScrollRuE, bMiscRuE, miscSubS, miscSubB) end)
-bMiscCap.MouseButton1Click:Connect(function() sideRoute(miscScrollCap, bMiscCap, miscSubS, miscSubB) end)
-
-local setS, setB = {setGenScroll}, {bSetGen}
-bSetGen.MouseButton1Click:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
 
 -- WINDOW DRAGGING ENGINE
 local dragging, dragInput, dragStart, startPos
@@ -1231,4 +1084,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.4 Cyber-Purple Aesthetic Theme Loaded Successfully!")
+print("[Dominate Hub] V11.5 Emoji Sidebar & Section Header Theme Loaded Successfully!")
