@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (ENHANCED PERFORMANCE HUD & MINING STATS)
+-- DOMINATE HUB | PRO EDITION (GEM UPGRADES DROPDOWN & 6S SHOP PITSTOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -35,7 +35,7 @@ local UI = {}
 local oresMined = 0
 local lastTrackedPart = nil
 local currentTargetPart = nil
-local gemExchangeCountdown = 20
+local gemExchangeCountdown = 60
 
 -- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
@@ -145,6 +145,7 @@ Env.AutoGemMoreGems = false
 Env.AutoGemStrongerPickaxes = false
 Env.AutoGemMoreOreStats = false
 Env.AutoGemExchange = false
+Env.AutoGemShopTeleport = false
 
 Env.AutoMineStone = false
 Env.AutoMineCoal = false
@@ -346,7 +347,7 @@ hudText.Font = Enum.Font.SourceSans
 hudText.TextXAlignment = Enum.TextXAlignment.Left
 hudText.TextYAlignment = Enum.TextYAlignment.Top
 hudText.TextWrapped = true
-hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Glide: 0.8 S/s\nGem Exchange: 20s | Mined: 0"
+hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Glide: 0.8 S/s\nGem Exchange: 60s | Mined: 0"
 hudText.Parent = statsHud
 
 local sessionStartTime = tick()
@@ -550,11 +551,11 @@ local bUpR2 = makeSideBtn("Realm 2", upSidebar)
 local bUpR3 = makeSideBtn("Realm 3", upSidebar)
 
 local upScrollR1 = makeGridScroll(upgradesPage, true) upScrollR1.Visible = true
-local upScrollR2 = makeGridScroll(upgradesPage, true)
+local upScrollR2 = makeVerticalScroll(upgradesPage, true) -- Changed to vertical scroll to properly hold accordion dropdowns
 local upScrollR3 = makeGridScroll(upgradesPage, true)
 
 local function masterToggle(txt, flagsTable, scr)
-    local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
+    local f = Instance.new("Frame") f.Size = UDim2.new(1, -6, 0, 30) f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
     local dot = Instance.new("Frame") dot.Name = "StatusDot" dot.Size = UDim2.new(0, 5, 0, 5) dot.Position = UDim2.new(0, 6, 0.5, -2) dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80) dot.BorderSizePixel = 0; dot.Parent = f
     Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
     local l = Instance.new("TextLabel") l.Size = UDim2.new(0.55, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
@@ -577,6 +578,101 @@ local function masterToggle(txt, flagsTable, scr)
     return b
 end
 
+-- ACCORDION DROPDOWN BUILDER FOR GEM UPGRADES
+local function makeAccordionDropdown(title, optionsList, scr)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -6, 0, 32)
+    container.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    container.BorderSizePixel = 0
+    container.ClipsDescendants = true
+    container.Parent = scr
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 5)
+
+    local headerBtn = Instance.new("TextButton")
+    headerBtn.Size = UDim2.new(1, 0, 0, 32)
+    headerBtn.BackgroundTransparency = 1
+    headerBtn.TextColor3 = Color3.fromRGB(230, 230, 235)
+    headerBtn.TextSize = 10
+    headerBtn.Font = Enum.Font.SourceSansBold
+    headerBtn.Text = "  ▼ " .. title
+    headerBtn.TextXAlignment = Enum.TextXAlignment.Left
+    headerBtn.Parent = container
+
+    local subListLayout = Instance.new("UIListLayout")
+    subListLayout.Padding = UDim.new(0, 4)
+    subListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    subListLayout.Parent = container
+
+    local topSpacer = Instance.new("Frame")
+    topSpacer.Size = UDim2.new(1, 0, 0, 32)
+    topSpacer.BackgroundTransparency = 1
+    topSpacer.LayoutOrder = -1
+    topSpacer.Parent = container
+
+    local expanded = false
+    local collapsedHeight = 32
+    local expandedHeight = 32 + (#optionsList * 26) + ((#optionsList - 1) * 4) + 8
+
+    for idx, opt in ipairs(optionsList) do
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, -12, 0, 26)
+        row.Position = UDim2.new(0, 6, 0, 0)
+        row.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        row.BorderSizePixel = 0
+        row.LayoutOrder = idx
+        row.Parent = container
+        Instance.new("UICorner", row).CornerRadius = UDim.new(0, 4)
+
+        local dot = Instance.new("Frame")
+        dot.Name = "StatusDot"
+        dot.Size = UDim2.new(0, 4, 0, 4)
+        dot.Position = UDim2.new(0, 6, 0.5, -2)
+        dot.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        dot.BorderSizePixel = 0
+        dot.Parent = row
+        Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(0.58, -8, 1, 0)
+        lbl.Position = UDim2.new(0, 16, 0, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.TextColor3 = Color3.fromRGB(200, 200, 215)
+        lbl.TextSize = 9
+        lbl.Font = Enum.Font.SourceSans
+        lbl.Text = opt.Name
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent = row
+
+        local togBtn = Instance.new("TextButton")
+        togBtn.Size = UDim2.new(0.40, -4, 0, 20)
+        togBtn.Position = UDim2.new(0.58, 0, 0.5, -10)
+        togBtn.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+        togBtn.TextColor3 = Env[opt.Var] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+        togBtn.TextSize = 9
+        togBtn.Font = Enum.Font.SourceSansBold
+        togBtn.Text = Env[opt.Var] and "ACTIVE" or "DISABLED"
+        togBtn.Parent = row
+        Instance.new("UICorner", togBtn).CornerRadius = UDim.new(0, 4)
+
+        togBtn.MouseButton1Click:Connect(function()
+            Env[opt.Var] = not Env[opt.Var]
+            togBtn.Text = Env[opt.Var] and "ACTIVE" or "DISABLED"
+            togBtn.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
+            togBtn.TextColor3 = Env[opt.Var] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+            dot.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        end)
+    end
+
+    headerBtn.MouseButton1Click:Connect(function()
+        expanded = not expanded
+        headerBtn.Text = expanded and ("  ▲ " .. title) or ("  ▼ " .. title)
+        local targetH = expanded and expandedHeight or collapsedHeight
+        TweenService:Create(container, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, -6, 0, targetH)}):Play()
+    end)
+
+    return container
+end
+
 masterToggle("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScrollR1)
 masterToggle("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScrollR1)
 masterToggle("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScrollR1)
@@ -589,7 +685,17 @@ masterToggle("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFill
 masterToggle("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScrollR2)
 masterToggle("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScrollR2)
 masterToggle("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScrollR2)
-masterToggle("Gem Upgrades", {"AutoGemMoreOof", "AutoGemMoreGems", "AutoGemStrongerPickaxes", "AutoGemMoreOreStats", "AutoGemExchange"}, upScrollR2)
+
+-- GEM UPGRADES DROPDOWN ACCORDION
+local gemUpgradesList = {
+    {Name = "More Oof (Gem)", Var = "AutoGemMoreOof"},
+    {Name = "More Gems", Var = "AutoGemMoreGems"},
+    {Name = "Stronger Pickaxes", Var = "AutoGemStrongerPickaxes"},
+    {Name = "More Ore Stats", Var = "AutoGemMoreOreStats"},
+    {Name = "Gem Converter", Var = "AutoGemExchange"},
+    {Name = "Shop Teleport Loop", Var = "AutoGemShopTeleport"}
+}
+makeAccordionDropdown("Gem Upgrades", gemUpgradesList, upScrollR2)
 
 masterToggle("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScrollR3)
 
@@ -850,21 +956,6 @@ local function genSpacer(h)
     sp.Size = UDim2.new(1, -6, 0, h or 12)
     sp.BackgroundTransparency = 1
     sp.Parent = setGenScroll
-end
-
-local function tV2(b, v) 
-    Env[v] = not Env[v] 
-    b.Text = Env[v] and "ACTIVE" or "DISABLED" 
-    b.BackgroundColor3 = Env[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
-    b.TextColor3 = Env[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
-    
-    local card = b.Parent
-    if card and card:IsA("Frame") then
-        local dot = card:FindFirstChild("StatusDot")
-        if dot then
-            dot.BackgroundColor3 = Env[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-        end
-    end
 end
 
 local function toggleFPSBoost(b)
@@ -1205,7 +1296,7 @@ local OrePriorityList = {
 }
 
 local currentOreIndex = 1
-local lastOreJumpTick = 0
+lastOreJumpTick = 0
 
 local function isOreRespawning(oreModel)
     for _, desc in ipairs(oreModel:GetDescendants()) do
@@ -1361,28 +1452,30 @@ end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
 
--- GEM CONVERTER, COUNTDOWN TIMER, & 1-MINUTE SHOP PITSTOP LOOP
+-- GEM SHOP PITSTOP LOOP (WITH 6S STORE DELAY)
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if Env.AutoGemExchange then
+        if Env.AutoGemShopTeleport then
             gemExchangeCountdown = gemExchangeCountdown - 1
             if gemExchangeCountdown <= 0 then
-                gemExchangeCountdown = 20
+                gemExchangeCountdown = 60
                 if NetRemote and Running then
                     pcall(function()
                         MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
-                        task.wait(2.5)
-                        NetRemote:FireServer("ExchangeAllMinerals")
+                        task.wait(6.0) -- Delayed by 6 seconds for the store to process updates and purchases
+                        if Env.AutoGemExchange then
+                            NetRemote:FireServer("ExchangeAllMinerals")
+                        end
                         task.wait(1.0)
                         MasterTargetVector = nil
                     end)
-                    showToast("Gem Shop Pitstop: Exchanged minerals & synced upgrades!")
-                    sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop and exchanged minerals!")
+                    showToast("Gem Shop Pitstop: Stayed 6s to update upgrades!")
+                    sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop!")
                 end
             end
         else
-            gemExchangeCountdown = 20
+            gemExchangeCountdown = 60
         end
     end
 end)
@@ -1425,4 +1518,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.6 Base Loaded Successfully with Enhanced Mining HUD Stats!")
+print("[Dominate Hub] V11.6 Base Loaded Successfully with Accordion Gem Upgrades & 6s Pitstop!")
