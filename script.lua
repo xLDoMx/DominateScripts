@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (SEPARATED GEM CONVERTER, FIXED TERMINATE & LERP GLIDE)
+-- DOMINATE HUB | PRO EDITION (LIVE GEM EXCHANGE HUD TIMER & VERIFIED STABLE EXECUTION)
 --======================================================================================
 local Env = getgenv()
 
@@ -36,6 +36,21 @@ local oresMined = 0
 local lastTrackedPart = nil
 local currentTargetPanel = nil
 local gemExchangeCountdown = 60
+
+-- LIVE GEM EXCHANGE COUNTDOWN TICKER
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if Env.AutoGemExchange or Env.AutoGemShopTeleport then
+            gemExchangeCountdown = gemExchangeCountdown - 1
+            if gemExchangeCountdown < 0 then
+                gemExchangeCountdown = 60
+            end
+        else
+            gemExchangeCountdown = 60
+        end
+    end
+end)
 
 -- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
@@ -1010,7 +1025,7 @@ killLbl.Text = "Emergency Kill Switch"
 killLbl.TextXAlignment = Enum.TextXAlignment.Left 
 killLbl.Parent = killRow
 
--- FIXED EMERGENCY KILL SWITCH BUTTON POSITION & SIZE
+-- FIXED EMERGENCY KILL SWITCH BUTTON POSITION & SIZE[cite: 1]
 local killBtn = Instance.new("TextButton") 
 killBtn.Size = UDim2.new(0, 110, 0, 30) 
 killBtn.Position = UDim2.new(1, -118, 0.5, -15) 
@@ -1105,7 +1120,7 @@ task.spawn(function()
     end
 end)
 
--- 1. GEM CONVERTER ALONE (Fires remote without teleporting when Shop Teleport is OFF)
+-- 1. GEM CONVERTER ALONE (Fires remote without teleporting when Shop Teleport is OFF)[cite: 1]
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1118,7 +1133,7 @@ task.spawn(function()
     end
 end)
 
--- 2. SHOP TELEPORT LOOP ALONE (Keeps player at shop when Gem Converter is OFF)
+-- 2. SHOP TELEPORT LOOP ALONE (Keeps player at shop when Gem Converter is OFF)[cite: 1]
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1130,7 +1145,7 @@ task.spawn(function()
     end
 end)
 
--- 3. COMBINED PITSTOP LOOP (Only runs when BOTH are TOGGLED ON)
+-- 3. COMBINED PITSTOP LOOP (Only runs when BOTH are TOGGLED ON)[cite: 1]
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1320,7 +1335,7 @@ task.spawn(function()
             local pGui = player:FindFirstChild("PlayerGui") local treeGui = pGui and pGui:FindFirstChild("FootballUITree")
             if treeGui then
                 for _, obj in pairs(treeGui:GetDescendants()) do
-                    if not Running or not Env.AutoFootballTree then break end
+                    if not Running or then break end
                     if (obj:IsA("GuiButton") or obj:IsA("Frame")) and obj.Name ~= "Main" and obj.Name ~= "Container" then pcall(function() NetRemote:FireServer("BuyFootballUITreeNode", obj.Name) end) task.wait(0.5) end
                 end
             end
@@ -1336,7 +1351,7 @@ task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemot
 
 task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
+task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("SpeedOpenT2Chest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
 task.spawn(function()
@@ -1350,4 +1365,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.31 Fully Verified & Fixed Script Loaded Successfully!")
+print("[Dominate Hub] V11.32 Clean & Stable Final Version Loaded Successfully!")
