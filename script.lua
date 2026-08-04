@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (BLENDED PURPLE THEME & WORKING GEM CONVERTER)
+-- DOMINATE HUB | PRO EDITION (UNIFIED BLENDED PURPLE UI & POLISHED TYPOGRAPHY)
 --======================================================================================
 local Env = getgenv()
 
@@ -67,7 +67,7 @@ local function showToast(msg)
         label.Position = UDim2.new(0, 5, 0, 0)
         label.BackgroundTransparency = 1
         label.TextColor3 = Color3.fromRGB(240, 240, 250)
-        label.TextSize = 11
+        label.TextSize = 12
         label.Font = Enum.Font.SourceSansBold
         label.Text = msg
         label.Parent = toast
@@ -230,28 +230,28 @@ Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 Env.DiscordWebhookURL = ""
 
--- FLAT SEAMLESS TOGGLE ROW (NO BACKGROUND BOXES, MATCHING REFERENCE)
+-- FLAT SEAMLESS TOGGLE ROW (LARGER TEXT, CLEAN SPACING)
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -6, 0, 32)
+    row.Size = UDim2.new(1, -6, 0, 36)
     row.BackgroundTransparency = 1
     row.BorderSizePixel = 0
     row.Parent = parent
 
     local lbl = Instance.new("TextLabel")
     lbl.Size = UDim2.new(0.7, 0, 1, 0)
-    lbl.Position = UDim2.new(0, 8, 0, 0)
+    lbl.Position = UDim2.new(0, 10, 0, 0)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(220, 220, 230)
-    lbl.TextSize = 11
+    lbl.TextColor3 = Color3.fromRGB(235, 235, 245)
+    lbl.TextSize = 12
     lbl.Font = Enum.Font.SourceSansBold
     lbl.Text = txt
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = row
 
     local switchTrack = Instance.new("TextButton")
-    switchTrack.Size = UDim2.new(0, 40, 0, 20)
-    switchTrack.Position = UDim2.new(1, -45, 0.5, -10)
+    switchTrack.Size = UDim2.new(0, 44, 0, 22)
+    switchTrack.Position = UDim2.new(1, -55, 0.5, -11)
     switchTrack.BackgroundColor3 = Env[vKey] and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(45, 40, 65)
     switchTrack.Text = ""
     switchTrack.AutoButtonColor = false
@@ -259,8 +259,8 @@ local function createToggleRow(parent, txt, vKey)
     Instance.new("UICorner", switchTrack).CornerRadius = UDim.new(1, 0)
 
     local switchThumb = Instance.new("Frame")
-    switchThumb.Size = UDim2.new(0, 16, 0, 16)
-    switchThumb.Position = Env[vKey] and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+    switchThumb.Size = UDim2.new(0, 18, 0, 18)
+    switchThumb.Position = Env[vKey] and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
     switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     switchThumb.BorderSizePixel = 0
     switchThumb.Parent = switchTrack
@@ -270,7 +270,7 @@ local function createToggleRow(parent, txt, vKey)
         Env[vKey] = not Env[vKey]
         local active = Env[vKey]
         TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(45, 40, 65)}):Play()
-        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
+        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}):Play()
     end)
 
     return row
@@ -279,10 +279,10 @@ end
 -- SECTION HEADER HELPER FUNCTION
 local function createSectionHeader(parent, txt)
     local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, -6, 0, 28)
+    header.Size = UDim2.new(1, -6, 0, 30)
     header.BackgroundTransparency = 1
     header.TextColor3 = Color3.fromRGB(216, 180, 254)
-    header.TextSize = 12
+    header.TextSize = 13
     header.Font = Enum.Font.SourceSansBold
     header.Text = txt
     header.TextXAlignment = Enum.TextXAlignment.Left
@@ -403,12 +403,12 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER (RICH BLENDED PURPLE-TONED DARK BACKGROUND)
+-- MAIN WINDOW CONTAINER (UNIFIED SEAMLESS BLENDED PURPLE BACKGROUND)
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 580, 0, 370) 
-mainFrame.Position = UDim2.new(0.5, -290, 0.5, -185) 
+mainFrame.Size = UDim2.new(0, 600, 0, 390) 
+mainFrame.Position = UDim2.new(0.5, -300, 0.5, -195) 
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 30) 
-mainFrame.BackgroundTransparency = 0.05
+mainFrame.BackgroundTransparency = 0.02
 mainFrame.BorderSizePixel = 0 
 mainFrame.Parent = sg
 
@@ -418,24 +418,57 @@ mainStroke.Color = Color3.fromRGB(168, 85, 247)
 mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
 
--- HEADER TITLE & TELEMETRY
+-- BRANDED HEADER WITH LOGO ICON BOX & SUBTITLE (MATCHING SCREENSHOT)
+local logoBox = Instance.new("Frame")
+logoBox.Size = UDim2.new(0, 34, 0, 34)
+logoBox.Position = UDim2.new(0, 14, 0, 10)
+logoBox.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
+logoBox.BackgroundTransparency = 0.2
+logoBox.BorderSizePixel = 0
+logoBox.Parent = mainFrame
+Instance.new("UICorner", logoBox).CornerRadius = UDim.new(0, 8)
+local logoBoxStroke = Instance.new("UIStroke")
+logoBoxStroke.Color = Color3.fromRGB(216, 180, 254)
+logoBoxStroke.Transparency = 0.3
+logoBoxStroke.Parent = logoBox
+
+local logoLabel = Instance.new("TextLabel")
+logoLabel.Size = UDim2.new(1, 0, 1, 0)
+logoLabel.BackgroundTransparency = 1
+logoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+logoLabel.TextSize = 18
+logoLabel.Font = Enum.Font.SourceSansItalic
+logoLabel.Text = "B"
+logoLabel.Parent = logoBox
+
 local headerTitle = Instance.new("TextLabel") 
-headerTitle.Size = UDim2.new(0.6, 0, 0, 35) 
-headerTitle.Position = UDim2.new(0, 14, 0, 4) 
+headerTitle.Size = UDim2.new(0.5, 0, 0, 20) 
+headerTitle.Position = UDim2.new(0, 56, 0, 8) 
 headerTitle.BackgroundTransparency = 1 
-headerTitle.TextColor3 = Color3.fromRGB(240, 240, 250) 
-headerTitle.TextSize = 14 
+headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255) 
+headerTitle.TextSize = 15 
 headerTitle.Font = Enum.Font.SourceSansBold 
 headerTitle.Text = "Dominate Hub v1.4 (Pro Edition)" 
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left 
 headerTitle.Parent = mainFrame
 
+local headerSubtitle = Instance.new("TextLabel")
+headerSubtitle.Size = UDim2.new(0.5, 0, 0, 16)
+headerSubtitle.Position = UDim2.new(0, 56, 0, 28)
+headerSubtitle.BackgroundTransparency = 1
+headerSubtitle.TextColor3 = Color3.fromRGB(180, 150, 210)
+headerSubtitle.TextSize = 11
+headerSubtitle.Font = Enum.Font.SourceSans
+headerSubtitle.Text = "discord.gg/dominatehub | Lovely <3"
+headerSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+headerSubtitle.Parent = mainFrame
+
 local headerTelemetry = Instance.new("TextLabel")
-headerTelemetry.Size = UDim2.new(0.35, 0, 0, 35)
-headerTelemetry.Position = UDim2.new(0.63, 0, 0, 4)
+headerTelemetry.Size = UDim2.new(0.3, 0, 0, 35)
+headerTelemetry.Position = UDim2.new(0.68, 0, 0, 10)
 headerTelemetry.BackgroundTransparency = 1
-headerTelemetry.TextColor3 = Color3.fromRGB(216, 180, 254)
-headerTelemetry.TextSize = 11
+headerTelemetry.TextColor3 = Color3.fromRGB(74, 222, 128)
+headerTelemetry.TextSize = 12
 headerTelemetry.Font = Enum.Font.SourceSansBold
 headerTelemetry.Text = "FPS: 60 | 30ms"
 headerTelemetry.TextXAlignment = Enum.TextXAlignment.Right
@@ -493,34 +526,32 @@ minBtn.MouseButton1Click:Connect(function()
         minBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
     else
         mainFrame.Size = UDim2.new(0, 0, 0, 0)
-        mainFrame.BackgroundTransparency = 0.05
+        mainFrame.BackgroundTransparency = 0.02
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 370), BackgroundTransparency = 0.05})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 600, 0, 390), BackgroundTransparency = 0.02})
         tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(216, 180, 254)
     end
 end)
 
--- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION - BLENDED PURPLE CARDS, NO TEXT STROKE)
+-- SIDEBAR CONTAINER (SEAMLESSLY BLENDED INTO MAIN WINDOW - NO SEPARATE BLACK PANEL)
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(0, 140, 1, -45)
-sidebarFrame.Position = UDim2.new(0, 10, 0, 40)
-sidebarFrame.BackgroundColor3 = Color3.fromRGB(14, 9, 24)
+sidebarFrame.Size = UDim2.new(0, 150, 1, -55)
+sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
+sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
 sidebarFrame.Parent = mainFrame
-Instance.new("UICorner", sidebarFrame).CornerRadius = UDim.new(0, 8)
 
 local sidebarLayout = Instance.new("UIListLayout")
-sidebarLayout.Padding = UDim.new(0, 6)
+sidebarLayout.Padding = UDim.new(0, 8)
 sidebarLayout.Parent = sidebarFrame
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
-    t.Size = UDim2.new(1, -12, 0, 42)
-    t.Position = UDim2.new(0, 6, 0, 0)
-    t.BackgroundColor3 = Color3.fromRGB(28, 20, 46)
+    t.Size = UDim2.new(1, 0, 0, 44)
+    t.BackgroundColor3 = Color3.fromRGB(28, 18, 45)
     t.TextColor3 = Color3.fromRGB(210, 190, 235)
-    t.TextSize = 12
+    t.TextSize = 13
     t.Font = Enum.Font.SourceSansBold
     t.Text = emoji .. "    " .. txt
     t.TextXAlignment = Enum.TextXAlignment.Left
@@ -547,8 +578,8 @@ local tabSettings = makeMainTab("⚙️", "Settings")
 
 -- PAGE CONTAINER AREA
 local pageArea = Instance.new("Frame")
-pageArea.Size = UDim2.new(1, -160, 1, -45)
-pageArea.Position = UDim2.new(0, 155, 0, 40)
+pageArea.Size = UDim2.new(1, -178, 1, -55)
+pageArea.Position = UDim2.new(0, 172, 0, 50)
 pageArea.BackgroundTransparency = 1
 pageArea.Parent = mainFrame
 
@@ -563,14 +594,14 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR FOR SINGLE-PAGE CONTENT
+-- VERTICAL SCROLL GENERATOR WITH BOLD PURPLE SCROLLBAR
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
     s.Position = UDim2.new(0, 0, 0, 0)
     s.BackgroundTransparency = 1 
     s.BorderSizePixel = 0 
-    s.ScrollBarThickness = 3 
+    s.ScrollBarThickness = 6 
     s.ScrollBarImageColor3 = Color3.fromRGB(168, 85, 247) 
     s.Visible = false 
     s.Parent = parent 
@@ -586,12 +617,12 @@ end
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
 local function masterToggleGroup(txt, flagsTable, scr)
-    local f = Instance.new("Frame") f.Size = UDim2.new(1, -6, 0, 32) f.BackgroundTransparency = 1; f.BorderSizePixel = 0; f.Parent = scr
-    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.6, 0, 1, 0) l.Position = UDim2.new(0, 8, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(220, 220, 230) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.Parent = f
+    local f = Instance.new("Frame") f.Size = UDim2.new(1, -10, 0, 36) f.BackgroundTransparency = 1; f.BorderSizePixel = 0; f.Parent = scr
+    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.65, 0, 1, 0) l.Position = UDim2.new(0, 8, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(235, 235, 245) l.TextSize = 12; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.Parent = f
     
     local switchTrack = Instance.new("TextButton")
-    switchTrack.Size = UDim2.new(0, 40, 0, 20)
-    switchTrack.Position = UDim2.new(1, -45, 0.5, -10)
+    switchTrack.Size = UDim2.new(0, 44, 0, 22)
+    switchTrack.Position = UDim2.new(1, -50, 0.5, -11)
     switchTrack.BackgroundColor3 = Color3.fromRGB(45, 40, 65)
     switchTrack.Text = ""
     switchTrack.AutoButtonColor = false
@@ -599,8 +630,8 @@ local function masterToggleGroup(txt, flagsTable, scr)
     Instance.new("UICorner", switchTrack).CornerRadius = UDim.new(1, 0)
 
     local switchThumb = Instance.new("Frame")
-    switchThumb.Size = UDim2.new(0, 16, 0, 16)
-    switchThumb.Position = UDim2.new(0, 2, 0.5, -8)
+    switchThumb.Size = UDim2.new(0, 18, 0, 18)
+    switchThumb.Position = UDim2.new(0, 2, 0.5, -9)
     switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     switchThumb.BorderSizePixel = 0
     switchThumb.Parent = switchTrack
@@ -615,7 +646,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
             Env[flag] = activeState
         end
         TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = activeState and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(45, 40, 65)}):Play()
-        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = activeState and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
+        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = activeState and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}):Play()
     end)
     return switchTrack
 end
@@ -674,10 +705,10 @@ local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
-bestTierBtn.Size = UDim2.new(1, -6, 0, 30)
+bestTierBtn.Size = UDim2.new(1, -10, 0, 34)
 bestTierBtn.BackgroundColor3 = Color3.fromRGB(45, 40, 65)
-bestTierBtn.TextColor3 = Color3.fromRGB(220, 220, 230)
-bestTierBtn.TextSize = 11
+bestTierBtn.TextColor3 = Color3.fromRGB(235, 235, 245)
+bestTierBtn.TextSize = 12
 bestTierBtn.Font = Enum.Font.SourceSansBold
 bestTierBtn.Text = "Best Tier Only: DISABLED"
 bestTierBtn.Parent = minesScroll
@@ -701,25 +732,25 @@ end)
 
 -- GLIDE SPEED SCROLLER
 local speedContainer = Instance.new("Frame")
-speedContainer.Size = UDim2.new(1, -6, 0, 46)
+speedContainer.Size = UDim2.new(1, -10, 0, 48)
 speedContainer.BackgroundTransparency = 1
 speedContainer.BorderSizePixel = 0
 speedContainer.Parent = minesScroll
 
 local speedLabel = Instance.new("TextLabel")
 speedLabel.Size = UDim2.new(1, -12, 0, 20)
-speedLabel.Position = UDim2.new(0, 8, 0, 4)
+speedLabel.Position = UDim2.new(0, 4, 0, 4)
 speedLabel.BackgroundTransparency = 1
-speedLabel.TextColor3 = Color3.fromRGB(220, 220, 230)
-speedLabel.TextSize = 11
+speedLabel.TextColor3 = Color3.fromRGB(235, 235, 245)
+speedLabel.TextSize = 12
 speedLabel.Font = Enum.Font.SourceSansBold
 speedLabel.Text = string.format("Glide Speed: %.1fs", Env.MiningJumpSpeed or 0.8)
 speedLabel.TextXAlignment = Enum.TextXAlignment.Left
 speedLabel.Parent = speedContainer
 
 local sliderTrack = Instance.new("TextButton")
-sliderTrack.Size = UDim2.new(1, -16, 0, 12)
-sliderTrack.Position = UDim2.new(0, 8, 0, 28)
+sliderTrack.Size = UDim2.new(1, -8, 0, 14)
+sliderTrack.Position = UDim2.new(0, 4, 0, 28)
 sliderTrack.BackgroundColor3 = Color3.fromRGB(45, 40, 65)
 sliderTrack.Text = ""
 sliderTrack.AutoButtonColor = false
@@ -827,7 +858,7 @@ createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 
 -- ======================================================================================
--- SETTINGS PAGE SETUP
+-- SETTINGS PAGE SETUP (FIXED KILL SWITCH PLACEMENT)
 -- ======================================================================================
 local settingsScroll = makeVerticalScroll(settingsPage) settingsScroll.Visible = true
 
@@ -844,11 +875,11 @@ createToggleRow(settingsScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
 createToggleRow(settingsScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
 
 createSectionHeader(settingsScroll, "Emergency Controls")
-local killRow = Instance.new("Frame") killRow.Size = UDim2.new(1, -6, 0, 32) killRow.BackgroundTransparency = 1; killRow.BorderSizePixel = 0; killRow.Parent = settingsScroll
-local killLbl = Instance.new("TextLabel") killLbl.Size = UDim2.new(0.6, 0, 1, 0) killLbl.Position = UDim2.new(0, 8, 0, 0) killLbl.BackgroundTransparency = 1; killLbl.TextColor3 = Color3.fromRGB(255, 180, 180) killLbl.TextSize = 11; killLbl.Font = Enum.Font.SourceSansBold; killLbl.Text = "Emergency Kill Switch"; killLbl.TextXAlignment = Enum.TextXAlignment.Left; killLbl.Parent = killRow
+local killRow = Instance.new("Frame") killRow.Size = UDim2.new(1, -10, 0, 36) killRow.BackgroundTransparency = 1; killRow.BorderSizePixel = 0; killRow.Parent = settingsScroll
+local killLbl = Instance.new("TextLabel") killLbl.Size = UDim2.new(0.6, 0, 1, 0) killLbl.Position = UDim2.new(0, 8, 0, 0) killLbl.BackgroundTransparency = 1; killLbl.TextColor3 = Color3.fromRGB(255, 180, 180) killLbl.TextSize = 12; killLbl.Font = Enum.Font.SourceSansBold; killLbl.Text = "Emergency Kill Switch"; killLbl.TextXAlignment = Enum.TextXAlignment.Left; killLbl.Parent = killRow
 
-local killBtn = Instance.new("TextButton") killBtn.Size = UDim2.new(0, 75, 0, 20) killBtn.Position = UDim2.new(1, -45, 0.5, -10) killBtn.BackgroundColor3 = Color3.fromRGB(120, 20, 20) killBtn.TextColor3 = Color3.fromRGB(255, 200, 200) killBtn.TextSize = 10; killBtn.Font = Enum.Font.SourceSansBold; killBtn.Text = "TERMINATE" killBtn.Parent = killRow
-Instance.new("UICorner", killBtn).CornerRadius = UDim.new(0, 4)
+local killBtn = Instance.new("TextButton") killBtn.Size = UDim2.new(0, 85, 0, 24) killBtn.Position = UDim2.new(1, -50, 0.5, -12) killBtn.BackgroundColor3 = Color3.fromRGB(153, 27, 27) killBtn.TextColor3 = Color3.fromRGB(254, 226, 226) killBtn.TextSize = 11; killBtn.Font = Enum.Font.SourceSansBold; killBtn.Text = "TERMINATE" killBtn.Parent = killRow
+Instance.new("UICorner", killBtn).CornerRadius = UDim.new(0, 6)
 
 killBtn.MouseButton1Click:Connect(function()
     Running = false Env.DominateHubLoaded = nil 
@@ -866,7 +897,7 @@ local function mainRoute(pOpen, bActive)
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
     for _, t in ipairs(tabs) do 
-        t.BackgroundColor3 = Color3.fromRGB(28, 20, 46)
+        t.BackgroundColor3 = Color3.fromRGB(28, 18, 46)
         t.TextColor3 = Color3.fromRGB(210, 190, 235)
     end
     bActive.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
@@ -1084,7 +1115,7 @@ end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
 
--- RESTORED WORKING GEM CONVERTER & 6-SECOND PITSTOP LOOP
+-- WORKING GEM CONVERTER & 6-SECOND PITSTOP LOOP
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1140,4 +1171,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.10 Blended Purple Theme, Seamless Layout & Restored Gem Converter Loaded Successfully!")
+print("[Dominate Hub] V11.11 Perfectly Blended Theme, Restored Gem Converter & Polished UI Loaded!")
