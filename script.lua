@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (UPDATED WITH CORRECT GEM SHOP POSITION)
+-- DOMINATE HUB | PRO EDITION (ENHANCED PERFORMANCE HUD & MINING STATS)
 --======================================================================================
 local Env = getgenv()
 
@@ -30,6 +30,12 @@ local vu = VirtualUser
 local NetRemote = nil
 
 local UI = {}
+
+-- STATS TRACKING VARIABLES FOR HUD
+local oresMined = 0
+local lastTrackedPart = nil
+local currentTargetPart = nil
+local gemExchangeCountdown = 20
 
 -- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
@@ -310,9 +316,9 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)
+-- PERFORMANCE HUD OVERLAY (TOP LEFT - WIDER & TALLER)
 local statsHud = Instance.new("Frame")
-statsHud.Size = UDim2.new(0, 170, 0, 84)
+statsHud.Size = UDim2.new(0, 210, 0, 96)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
 statsHud.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 statsHud.BackgroundTransparency = 0.35
@@ -340,7 +346,7 @@ hudText.Font = Enum.Font.SourceSans
 hudText.TextXAlignment = Enum.TextXAlignment.Left
 hudText.TextYAlignment = Enum.TextYAlignment.Top
 hudText.TextWrapped = true
-hudText.Text = "Uptime: 00:00:00\nFPS: 60 | Ping: 0ms\nActive Features: 0"
+hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Glide: 0.8 S/s\nGem Exchange: 20s | Mined: 0"
 hudText.Parent = statsHud
 
 local sessionStartTime = tick()
@@ -354,19 +360,15 @@ task.spawn(function()
             local mins = math.floor((elapsed % 3600) / 60)
             local secs = elapsed % 60
             
-            local pingVal = 0
-            pcall(function()
-                pingVal = math.floor((player:GetNetworkPing() or 0) * 1000)
-            end)
-            
-            local activeCount = 0
-            for k, v in pairs(Env) do
-                if type(v) == "boolean" and v == true and k ~= "AntiAFK" and k ~= "FPSBoostMode" and k ~= "ShowStatsHUD" and k ~= "CPUSaverMode" then
-                    activeCount = activeCount + 1
-                end
+            local targetName = "None"
+            if currentTargetPart and currentTargetPart.Parent then
+                targetName = currentTargetPart.Parent.Name
             end
             
-            hudText.Text = string.format("Uptime: %02d:%02d:%02d\nFPS: %d | Ping: %dms\nActive Features: %d", hours, mins, secs, fps, pingVal, activeCount)
+            hudText.Text = string.format(
+                "Uptime: %02d:%02d:%02d | FPS: %d\nTarget: %s | Glide: %.1f S/s\nGem Exchange: %ds | Mined: %d",
+                hours, mins, secs, fps, targetName, Env.MiningJumpSpeed or 0.8, gemExchangeCountdown, oresMined
+            )
         else
             statsHud.Visible = false
         end
@@ -1204,7 +1206,6 @@ local OrePriorityList = {
 
 local currentOreIndex = 1
 local lastOreJumpTick = 0
-local currentTargetPart = nil
 
 local function isOreRespawning(oreModel)
     for _, desc in ipairs(oreModel:GetDescendants()) do
@@ -1238,12 +1239,25 @@ task.spawn(function()
                     if #freshList > 0 then
                         table.sort(freshList, function(a, b) return a.Position.X < b.Position.X end)
                         currentOreIndex = currentOreIndex + 1 if currentOreIndex > #freshList then currentOreIndex = 1 end
-                        currentTargetPart = freshList[currentOreIndex] lastOreJumpTick = tick()
-                    else currentTargetPart = nil end
+                        currentTargetPart = freshList[currentOreIndex] 
+                        lastOreJumpTick = tick()
+                        
+                        if currentTargetPart and currentTargetPart ~= lastTrackedPart then
+                            lastTrackedPart = currentTargetPart
+                            oresMined = oresMined + 1
+                        end
+                    else 
+                        currentTargetPart = nil 
+                    end
                 end
                 
                 if currentTargetPart and currentTargetPart.Parent then MiningTargetVector = currentTargetPart.Position + Vector3.new(0, 3, 0) else MiningTargetVector = nil end
-            else currentTargetPart = nil MiningTargetVector = nil end
+            else 
+                currentTargetPart = nil 
+                MiningTargetVector = nil 
+                oresMined = 0
+                lastTrackedPart = nil
+            end
         end
     end
 end)
@@ -1347,21 +1361,28 @@ end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
 
--- GEM CONVERTER & 1-MINUTE SHOP PITSTOP LOOP (UPDATED POSITION)
+-- GEM CONVERTER, COUNTDOWN TIMER, & 1-MINUTE SHOP PITSTOP LOOP
 task.spawn(function()
     while Running do
-        task.wait(60.0)
-        if NetRemote and Running and Env.AutoGemExchange then
-            pcall(function()
-                -- Teleport to the exact Gem Shop position found
-                MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
-                task.wait(2.5) -- Buffer time to load/render area and process upgrades
-                NetRemote:FireServer("ExchangeAllMinerals")
-                task.wait(1.0)
-                MasterTargetVector = nil -- Return control back to mining
-            end)
-            showToast("Gem Shop Pitstop: Exchanged minerals & synced upgrades!")
-            sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop and exchanged minerals!")
+        task.wait(1.0)
+        if Env.AutoGemExchange then
+            gemExchangeCountdown = gemExchangeCountdown - 1
+            if gemExchangeCountdown <= 0 then
+                gemExchangeCountdown = 20
+                if NetRemote and Running then
+                    pcall(function()
+                        MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
+                        task.wait(2.5)
+                        NetRemote:FireServer("ExchangeAllMinerals")
+                        task.wait(1.0)
+                        MasterTargetVector = nil
+                    end)
+                    showToast("Gem Shop Pitstop: Exchanged minerals & synced upgrades!")
+                    sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop and exchanged minerals!")
+                end
+            end
+        else
+            gemExchangeCountdown = 20
         end
     end
 end)
@@ -1404,4 +1425,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.6 Base Loaded Successfully with Updated Gem Shop Pitstop!")
+print("[Dominate Hub] V11.6 Base Loaded Successfully with Enhanced Mining HUD Stats!")
