@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (GLOWING NEON CARD SIDEBAR)
+-- DOMINATE HUB | PRO EDITION (GLOWING NEON CARD SIDEBAR)x
 --======================================================================================
 local Env = getgenv()
 
