@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (CLEANED FOOTBALL LABELS & WORKING LOGIC)
+-- DOMINATE HUB | PRO EDITION (INDEPENDENT/COMBINED GEM CONVERTER & SHOP TELEPORT)
 --======================================================================================
 local Env = getgenv()
 
@@ -1224,4 +1224,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.18 Stable Build Loaded Successfully!")
+print("[Dominate Hub] V11.19 Cleaned Football Labels & Loaded Successfully!")
