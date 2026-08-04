@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (GLOWING NEON CARD SIDEBAR)x
+-- DOMINATE HUB | PRO EDITION (FIXED UI PLACEMENT & REVERTED QUEUE)
 --======================================================================================
 local Env = getgenv()
 
@@ -536,7 +536,7 @@ local function makeMainTab(emoji, txt)
     local stroke = Instance.new("UIStroke")
     stroke.Name = "TabStroke"
     stroke.Color = Color3.fromRGB(147, 51, 234)
-    stroke.Transparency = 0.4
+    stroke.Transparency = 0.5
     stroke.Parent = t
     return t
 end
@@ -589,7 +589,7 @@ local function makeVerticalScroll(parent)
 end
 
 -- ======================================================================================
--- UPGRADES PAGE (CONTINUOUS SCROLL WITH SECTION HEADERS - NO SUB-TABS)
+-- UPGRADES PAGE (WITH MORE OOF AT REALM 1 UI)
 -- ======================================================================================
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
@@ -630,6 +630,8 @@ local function masterToggleGroup(txt, flagsTable, scr)
 end
 
 createSectionHeader(upScroll, "Realm 1 Upgrades")
+createToggleRow(upScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
+createToggleRow(upScroll, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
 masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScroll)
 masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScroll)
 masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScroll)
@@ -656,7 +658,7 @@ createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 
 -- ======================================================================================
--- NOOBS PAGE SETUP (CONTINUOUS SCROLL - NO SUB-TABS)
+-- NOOBS PAGE SETUP (MORE OOF REMOVED FROM HERE)
 -- ======================================================================================
 local noobsScroll = makeVerticalScroll(noobsPage) noobsScroll.Visible = true
 
@@ -667,8 +669,6 @@ createToggleRow(noobsScroll, "Farmer Auto Upgrade", "AutoUpgradeFarmer")
 createToggleRow(noobsScroll, "Magician Auto Upgrade", "AutoUpgradeMagician")
 createToggleRow(noobsScroll, "Archer Auto Upgrade", "AutoUpgradeArcher")
 createToggleRow(noobsScroll, "Soldier Auto Upgrade", "AutoUpgradeSoldier")
-createToggleRow(noobsScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
-createToggleRow(noobsScroll, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
 
 createSectionHeader(noobsScroll, "Realm 2 Noobs")
 createToggleRow(noobsScroll, "Auto Upgrade Fisherman", "AutoUpgradeFishermanNoob")
@@ -677,7 +677,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
--- MINES PAGE SETUP
+-- MINES PAGE SETUP (WITH GLIDESPEED SLIDER)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
@@ -708,6 +708,68 @@ bestTierBtn.MouseButton1Click:Connect(function()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
+-- GLIDE SPEED SCROLLER
+local speedContainer = Instance.new("Frame")
+speedContainer.Size = UDim2.new(1, -6, 0, 46)
+speedContainer.BackgroundColor3 = Color3.fromRGB(26, 26, 36)
+speedContainer.BorderSizePixel = 0
+speedContainer.Parent = minesScroll
+Instance.new("UICorner", speedContainer).CornerRadius = UDim.new(0, 6)
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, -12, 0, 20)
+speedLabel.Position = UDim2.new(0, 8, 0, 4)
+speedLabel.BackgroundTransparency = 1
+speedLabel.TextColor3 = Color3.fromRGB(220, 220, 230)
+speedLabel.TextSize = 11
+speedLabel.Font = Enum.Font.SourceSansBold
+speedLabel.Text = string.format("Glide Speed: %.1fs", Env.MiningJumpSpeed or 0.8)
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = speedContainer
+
+local sliderTrack = Instance.new("TextButton")
+sliderTrack.Size = UDim2.new(1, -16, 0, 12)
+sliderTrack.Position = UDim2.new(0, 8, 0, 28)
+sliderTrack.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+sliderTrack.Text = ""
+sliderTrack.AutoButtonColor = false
+sliderTrack.Parent = speedContainer
+Instance.new("UICorner", sliderTrack).CornerRadius = UDim.new(1, 0)
+
+local sliderFill = Instance.new("Frame")
+local initialPercent = math.clamp(((Env.MiningJumpSpeed or 0.8) - 0.1) / 2.9, 0, 1)
+sliderFill.Size = UDim2.new(initialPercent, 0, 1, 0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
+sliderFill.BorderSizePixel = 0
+sliderFill.Parent = sliderTrack
+Instance.new("UICorner", sliderFill).CornerRadius = UDim.new(1, 0)
+
+local function updateSlider(inputX)
+    local relX = math.clamp((inputX - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X, 0, 1)
+    local speedVal = math.round((0.1 + (relX * 2.9)) * 10) / 10
+    Env.MiningJumpSpeed = speedVal
+    speedLabel.Text = string.format("Glide Speed: %.1fs", speedVal)
+    sliderFill.Size = UDim2.new(relX, 0, 1, 0)
+end
+
+local sliding = false
+sliderTrack.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        sliding = true
+        updateSlider(input.Position.X)
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updateSlider(input.Position.X)
+    end
+end)
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        sliding = false
+    end
+end)
+
 createSectionHeader(minesScroll, "Basic Ores")
 createToggleRow(minesScroll, "Stone", "AutoMineStone")
 createToggleRow(minesScroll, "Coal", "AutoMineCoal")
@@ -730,7 +792,7 @@ createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 
 -- ======================================================================================
--- FOOTBALL PAGE SETUP (CONTINUOUS SCROLL - NO SUB-TABS)
+-- FOOTBALL PAGE SETUP
 -- ======================================================================================
 local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
 
@@ -757,7 +819,7 @@ createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- ======================================================================================
--- MISC PAGE SETUP (CONTINUOUS SCROLL - NO SUB-TABS)
+-- MISC PAGE SETUP
 -- ======================================================================================
 local miscScroll = makeVerticalScroll(miscPage) miscScroll.Visible = true
 
@@ -810,7 +872,7 @@ killBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- TAB ROUTING SYSTEM WITH GLOWING STROKE STATES
+-- TAB ROUTING SYSTEM
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
@@ -1046,7 +1108,7 @@ task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running t
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if Env.AutoGemShopTeleport then
+        if Env.AutoGemShopTeleport or Env.AutoGemExchange then
             gemExchangeCountdown = gemExchangeCountdown - 1
             if gemExchangeCountdown <= 0 then
                 gemExchangeCountdown = 60
@@ -1060,7 +1122,7 @@ task.spawn(function()
                         task.wait(1.0)
                         MasterTargetVector = nil
                     end)
-                    showToast("Gem Shop Pitstop: Stayed 6s to update upgrades!")
+                    showToast("Gem Shop Pitstop: Stayed 6s to update upgrades & convert!")
                     sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop!")
                 end
             end
@@ -1108,4 +1170,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.6 Neon Card Sidebar Theme Loaded Successfully!")
+print("[Dominate Hub] V11.7 Fully Optimized Theme & Logic Loaded Successfully!")
