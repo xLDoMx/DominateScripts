@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED ACCORDION LAYOUT & 6S PITSTOP) x2
+-- DOMINATE HUB | PRO EDITION (CYBER-PURPLE REWORKED UI)
 --======================================================================================
 local Env = getgenv()
 
@@ -49,25 +49,30 @@ end)
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
-        toast.Size = UDim2.new(0, 210, 0, 36)
+        toast.Size = UDim2.new(0, 220, 0, 38)
         toast.Position = UDim2.new(1, 10, 1, -60)
-        toast.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-        toast.BackgroundTransparency = 0.35 
+        toast.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+        toast.BackgroundTransparency = 0.2
         toast.BorderSizePixel = 0
         toast.Parent = (gethui and gethui()) or player:WaitForChild("PlayerGui")
-        Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 10)
+        Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 8)
+
+        local stroke = Instance.new("UIStroke")
+        stroke.Color = Color3.fromRGB(168, 85, 247)
+        stroke.Transparency = 0.3
+        stroke.Parent = toast
 
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(1, -10, 1, 0)
         label.Position = UDim2.new(0, 5, 0, 0)
         label.BackgroundTransparency = 1
-        label.TextColor3 = Color3.fromRGB(240, 240, 245)
+        label.TextColor3 = Color3.fromRGB(240, 240, 250)
         label.TextSize = 11
         label.Font = Enum.Font.SourceSansBold
         label.Text = msg
         label.Parent = toast
 
-        toast:TweenPosition(UDim2.new(1, -225, 1, -60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
+        toast:TweenPosition(UDim2.new(1, -235, 1, -60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
         task.wait(2.8)
         toast:TweenPosition(UDim2.new(1, 10, 1, -60), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.25, true)
         task.wait(0.25)
@@ -225,30 +230,56 @@ Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 Env.DiscordWebhookURL = ""
 
--- HELPER FUNCTIONS
-local function tV2(b, v) 
-    Env[v] = not Env[v] 
-    b.Text = Env[v] and "ACTIVE" or "DISABLED" 
-    b.BackgroundColor3 = Env[v] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20) 
-    b.TextColor3 = Env[v] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120) 
-    
-    local card = b.Parent
-    if card and card:IsA("Frame") then
-        local dot = card:FindFirstChild("StatusDot")
-        if dot then
-            dot.BackgroundColor3 = Env[v] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-        end
-    end
+-- MODERN SLIDER TOGGLE HELPER FUNCTION
+local function createToggleRow(parent, txt, vKey)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -6, 0, 32)
+    row.BackgroundColor3 = Color3.fromRGB(26, 26, 36)
+    row.BorderSizePixel = 0
+    row.Parent = parent
+    Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0.7, 0, 1, 0)
+    lbl.Position = UDim2.new(0, 12, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.fromRGB(220, 220, 230)
+    lbl.TextSize = 11
+    lbl.Font = Enum.Font.SourceSansBold
+    lbl.Text = txt
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = row
+
+    local switchTrack = Instance.new("TextButton")
+    switchTrack.Size = UDim2.new(0, 40, 0, 20)
+    switchTrack.Position = UDim2.new(1, -50, 0.5, -10)
+    switchTrack.BackgroundColor3 = Env[vKey] and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)
+    switchTrack.Text = ""
+    switchTrack.AutoButtonColor = false
+    switchTrack.Parent = row
+    Instance.new("UICorner", switchTrack).CornerRadius = UDim.new(1, 0)
+
+    local switchThumb = Instance.new("Frame")
+    switchThumb.Size = UDim2.new(0, 16, 0, 16)
+    switchThumb.Position = Env[vKey] and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+    switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    switchThumb.BorderSizePixel = 0
+    switchThumb.Parent = switchTrack
+    Instance.new("UICorner", switchThumb).CornerRadius = UDim.new(1, 0)
+
+    switchTrack.MouseButton1Click:Connect(function()
+        Env[vKey] = not Env[vKey]
+        local active = Env[vKey]
+        
+        TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)}):Play()
+        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
+    end)
+
+    return row
 end
 
 local function toggleFPSBoost(b)
     Env.FPSBoostMode = not Env.FPSBoostMode
-    b.Text = Env.FPSBoostMode and "ACTIVE" or "DISABLED"
-    b.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = Env.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    local dot = b.Parent:FindFirstChild("StatusDot")
-    if dot then dot.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-    
     if Env.FPSBoostMode then
         pcall(function()
             Lighting.GlobalShadows = false
@@ -284,7 +315,7 @@ task.spawn(function()
     until NetRemote or not Running
 end)
 
--- UI MASTER ALLOCATION (Compact Height: 350)
+-- UI MASTER ALLOCATION (BK'S HUB CYBER-PURPLE THEME)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
@@ -317,21 +348,26 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT - WIDER & TALLER)
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 96)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
-statsHud.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+statsHud.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 statsHud.BackgroundTransparency = 0.35
 statsHud.BorderSizePixel = 0
 statsHud.Parent = sg
 Instance.new("UICorner", statsHud).CornerRadius = UDim.new(0, 8)
 
+local hudStroke = Instance.new("UIStroke")
+hudStroke.Color = Color3.fromRGB(147, 51, 234)
+hudStroke.Transparency = 0.4
+hudStroke.Parent = statsHud
+
 local hudTitle = Instance.new("TextLabel")
 hudTitle.Size = UDim2.new(1, 0, 0, 20)
 hudTitle.Position = UDim2.new(0, 0, 0, 2)
 hudTitle.BackgroundTransparency = 1
-hudTitle.TextColor3 = Color3.fromRGB(0, 136, 255)
+hudTitle.TextColor3 = Color3.fromRGB(192, 132, 252)
 hudTitle.TextSize = 10
 hudTitle.Font = Enum.Font.SourceSansBold
 hudTitle.Text = "PERFORMANCE HUD"
@@ -341,7 +377,7 @@ local hudText = Instance.new("TextLabel")
 hudText.Size = UDim2.new(1, -10, 1, -22)
 hudText.Position = UDim2.new(0, 5, 0, 22)
 hudText.BackgroundTransparency = 1
-hudText.TextColor3 = Color3.fromRGB(220, 220, 225)
+hudText.TextColor3 = Color3.fromRGB(220, 220, 230)
 hudText.TextSize = 10
 hudText.Font = Enum.Font.SourceSans
 hudText.TextXAlignment = Enum.TextXAlignment.Left
@@ -376,25 +412,70 @@ task.spawn(function()
     end
 end)
 
+-- MAIN WINDOW CONTAINER
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 540, 0, 350) 
-mainFrame.Position = UDim2.new(0.5, -270, 0.5, -175) 
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25) 
-mainFrame.BackgroundTransparency = 0.35; mainFrame.BorderSizePixel = 0; mainFrame.Parent = sg
-local mainCorner = Instance.new("UICorner") mainCorner.CornerRadius = UDim.new(0, 10) mainCorner.Parent = mainFrame
+mainFrame.Size = UDim2.new(0, 580, 0, 370) 
+mainFrame.Position = UDim2.new(0.5, -290, 0.5, -185) 
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24) 
+mainFrame.BackgroundTransparency = 0.15
+mainFrame.BorderSizePixel = 0 
+mainFrame.Parent = sg
 
-local headerTitle = Instance.new("TextLabel") headerTitle.Size = UDim2.new(0.5, 0, 0, 30) headerTitle.Position = UDim2.new(0, 12, 0, 4) headerTitle.BackgroundTransparency = 1; headerTitle.TextColor3 = Color3.fromRGB(245, 245, 250) headerTitle.TextSize = 15; headerTitle.Font = Enum.Font.SourceSansBold; headerTitle.Text = "Dominate Hub | Pro" headerTitle.TextXAlignment = Enum.TextXAlignment.Left; headerTitle.Parent = mainFrame
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 12)
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(147, 51, 234)
+mainStroke.Transparency = 0.25
+mainStroke.Parent = mainFrame
 
--- FLOATING PILL
+-- HEADER TITLE & TELEMETRY
+local headerTitle = Instance.new("TextLabel") 
+headerTitle.Size = UDim2.new(0.6, 0, 0, 35) 
+headerTitle.Position = UDim2.new(0, 14, 0, 4) 
+headerTitle.BackgroundTransparency = 1 
+headerTitle.TextColor3 = Color3.fromRGB(240, 240, 250) 
+headerTitle.TextSize = 14 
+headerTitle.Font = Enum.Font.SourceSansBold 
+headerTitle.Text = "Dominate Hub v1.4 (Pro Edition)" 
+headerTitle.TextXAlignment = Enum.TextXAlignment.Left 
+headerTitle.Parent = mainFrame
+
+local headerTelemetry = Instance.new("TextLabel")
+headerTelemetry.Size = UDim2.new(0.35, 0, 0, 35)
+headerTelemetry.Position = UDim2.new(0.63, 0, 0, 4)
+headerTelemetry.BackgroundTransparency = 1
+headerTelemetry.TextColor3 = Color3.fromRGB(192, 132, 252)
+headerTelemetry.TextSize = 11
+headerTelemetry.Font = Enum.Font.SourceSansBold
+headerTelemetry.Text = "FPS: 60 | 30ms"
+headerTelemetry.TextXAlignment = Enum.TextXAlignment.Right
+headerTelemetry.Parent = mainFrame
+
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        pcall(function()
+            local pingVal = math.floor((player:GetNetworkPing() or 0) * 1000)
+            headerTelemetry.Text = string.format("FPS: %d | %dms", fps, pingVal)
+        end)
+    end
+end)
+
+-- FLOATING PILL (MINIMIZE / RESTORE)
 local minBtn = Instance.new("TextButton") 
-minBtn.Size = UDim2.new(0, 105, 0, 26) 
-minBtn.Position = UDim2.new(0.5, -52, 0.01, 0) 
-minBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 20) 
-minBtn.BackgroundTransparency = 0.70 
-minBtn.TextColor3 = Color3.fromRGB(0, 136, 255) 
-minBtn.TextSize = 11; minBtn.Font = Enum.Font.SourceSansBold; minBtn.Text = "Dominate Hub" 
+minBtn.Size = UDim2.new(0, 115, 0, 26) 
+minBtn.Position = UDim2.new(0.5, -57, 0.01, 0) 
+minBtn.BackgroundColor3 = Color3.fromRGB(22, 22, 30) 
+minBtn.BackgroundTransparency = 0.5 
+minBtn.TextColor3 = Color3.fromRGB(192, 132, 252) 
+minBtn.TextSize = 11 
+minBtn.Font = Enum.Font.SourceSansBold 
+minBtn.Text = "Dominate Hub" 
 minBtn.Parent = sg
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 13)
+local minStroke = Instance.new("UIStroke")
+minStroke.Color = Color3.fromRGB(147, 51, 234)
+minStroke.Transparency = 0.4
+minStroke.Parent = minBtn
 
 local pDragging, pDragInput, pDragStart, pStartPos
 minBtn.InputBegan:Connect(function(input)
@@ -418,151 +499,154 @@ minBtn.MouseButton1Click:Connect(function()
         tween:Play()
         task.wait(0.25)
         mainFrame.Visible = false
-        minBtn.TextColor3 = Color3.fromRGB(0, 215, 110)
+        minBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
     else
         mainFrame.Size = UDim2.new(0, 0, 0, 0)
-        mainFrame.BackgroundTransparency = 1
+        mainFrame.BackgroundTransparency = 0.15
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 540, 0, 350), BackgroundTransparency = 0.35})
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 370), BackgroundTransparency = 0.15})
         tween:Play()
-        minBtn.TextColor3 = Color3.fromRGB(0, 136, 255)
+        minBtn.TextColor3 = Color3.fromRGB(192, 132, 252)
     end
 end)
 
--- SCROLLING TOP TABS CONTAINER
-local tabScroll = Instance.new("ScrollingFrame")
-tabScroll.Size = UDim2.new(1, -20, 0, 30)
-tabScroll.Position = UDim2.new(0, 10, 0, 36)
-tabScroll.BackgroundTransparency = 1
-tabScroll.BorderSizePixel = 0
-tabScroll.CanvasSize = UDim2.new(0, 500, 0, 0)
-tabScroll.ScrollBarThickness = 2
-tabScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255)
-tabScroll.Parent = mainFrame
+-- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION)
+local sidebarFrame = Instance.new("Frame")
+sidebarFrame.Size = UDim2.new(0, 130, 1, -45)
+sidebarFrame.Position = UDim2.new(0, 10, 0, 40)
+sidebarFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 18)
+sidebarFrame.BorderSizePixel = 0
+sidebarFrame.Parent = mainFrame
+Instance.new("UICorner", sidebarFrame).CornerRadius = UDim.new(0, 8)
 
-local tabLayout = Instance.new("UIListLayout")
-tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.Padding = UDim.new(0, 6)
-tabLayout.Parent = tabScroll
+local sidebarLayout = Instance.new("UIListLayout")
+sidebarLayout.Padding = UDim.new(0, 5)
+sidebarLayout.Parent = sidebarFrame
 
 local function makeMainTab(txt)
     local t = Instance.new("TextButton")
-    t.Size = UDim2.new(0, 75, 1, 0)
-    t.BackgroundColor3 = Color3.fromRGB(55, 55, 65)
-    t.TextColor3 = Color3.fromRGB(210, 210, 220)
-    t.TextSize = 10
+    t.Size = UDim2.new(1, -10, 0, 32)
+    t.Position = UDim2.new(0, 5, 0, 0)
+    t.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+    t.TextColor3 = Color3.fromRGB(180, 180, 195)
+    t.TextSize = 11
     t.Font = Enum.Font.SourceSansBold
     t.Text = txt
-    t.Parent = tabScroll
+    t.Parent = sidebarFrame
     Instance.new("UICorner", t).CornerRadius = UDim.new(0, 6)
-    
-    local grad = Instance.new("UIGradient")
-    grad.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 160, 175))
-    }
-    grad.Rotation = 90
-    grad.Parent = t
     return t
 end
 
-local tabUpgrades = makeMainTab("Upgrades") tabUpgrades.BackgroundColor3 = Color3.fromRGB(240, 240, 245) tabUpgrades.TextColor3 = Color3.fromRGB(15, 15, 15)
+local tabUpgrades = makeMainTab("Upgrades") tabUpgrades.BackgroundColor3 = Color3.fromRGB(147, 51, 234) tabUpgrades.TextColor3 = Color3.fromRGB(255, 255, 255)
 local tabNoobs = makeMainTab("Noobs")
 local tabMines = makeMainTab("Mines")
 local tabFootball = makeMainTab("Football")
 local tabMisc = makeMainTab("Misc")
 local tabSettings = makeMainTab("Settings")
 
--- PAGE CONTAINERS
+-- PAGE CONTAINER AREA
+local pageArea = Instance.new("Frame")
+pageArea.Size = UDim2.new(1, -150, 1, -45)
+pageArea.Position = UDim2.new(0, 145, 0, 40)
+pageArea.BackgroundTransparency = 1
+pageArea.Parent = mainFrame
+
 local function makePage()
-    local p = Instance.new("Frame") p.Size = UDim2.new(1, -20, 1, -72) p.Position = UDim2.new(0, 10, 0, 68) p.BackgroundTransparency = 1; p.Visible = false; p.Parent = mainFrame return p
+    local p = Instance.new("Frame") 
+    p.Size = UDim2.new(1, 0, 1, 0) 
+    p.BackgroundTransparency = 1 
+    p.Visible = false 
+    p.Parent = pageArea 
+    return p
 end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- SIDEBAR GENERATOR
-local function makeSidebar(parent)
-    local sb = Instance.new("ScrollingFrame") sb.Size = UDim2.new(0, 95, 1, -5) sb.Position = UDim2.new(0, 0, 0, 5) sb.BackgroundTransparency = 1; sb.BorderSizePixel = 0; sb.ScrollBarThickness = 2; sb.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); sb.Parent = parent
+-- SUB-SIDEBAR GENERATOR (FOR REALMS / SUB-TABS)
+local function makeSubSidebar(parent)
+    local sb = Instance.new("ScrollingFrame") 
+    sb.Size = UDim2.new(0, 90, 1, 0) 
+    sb.Position = UDim2.new(0, 0, 0, 0) 
+    sb.BackgroundTransparency = 1 
+    sb.BorderSizePixel = 0 
+    sb.ScrollBarThickness = 2 
+    sb.ScrollBarImageColor3 = Color3.fromRGB(147, 51, 234) 
+    sb.Parent = parent
     local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 4) list.Parent = sb
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() sb.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 10) end)
     return sb
 end
 
-local function makeSideBtn(txt, parent)
-    local b = Instance.new("TextButton") b.Size = UDim2.new(1, -5, 0, 26) b.BackgroundColor3 = Color3.fromRGB(55, 55, 65) b.TextColor3 = Color3.fromRGB(210, 210, 220) b.Font = Enum.Font.SourceSansBold; b.TextSize = 10; b.Text = txt; b.Parent = parent
+local function makeSubBtn(txt, parent)
+    local b = Instance.new("TextButton") 
+    b.Size = UDim2.new(1, -5, 0, 26) 
+    b.BackgroundColor3 = Color3.fromRGB(26, 26, 36) 
+    b.TextColor3 = Color3.fromRGB(180, 180, 195) 
+    b.Font = Enum.Font.SourceSansBold 
+    b.TextSize = 10 
+    b.Text = txt 
+    b.Parent = parent
     Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
-    
-    local grad = Instance.new("UIGradient")
-    grad.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 170, 185))
-    }
-    grad.Rotation = 90
-    grad.Parent = b
     return b
 end
 
--- 2-COLUMN SCROLL GENERATOR
-local function makeGridScroll(parent, hasSidebar)
+-- VERTICAL SCROLL GENERATOR FOR CONTENT
+local function makeVerticalScroll(parent, hasSubsidebar)
     local s = Instance.new("ScrollingFrame")
-    if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
-    s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); s.Visible = false; s.Parent = parent 
-    
-    local grid = Instance.new("UIGridLayout") grid.CellSize = UDim2.new(0.5, -6, 0, 30) grid.CellPadding = UDim2.new(0, 6, 0, 5) grid.SortOrder = Enum.SortOrder.LayoutOrder; grid.Parent = s
-    grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, grid.AbsoluteContentSize.Y + 10) end)
-    return s 
-end
-
--- SINGLE-COLUMN STACKED VERTICAL SCROLL GENERATOR
-local function makeVerticalScroll(parent, hasSidebar)
-    local s = Instance.new("ScrollingFrame")
-    if hasSidebar then s.Size = UDim2.new(1, -105, 1, -5) s.Position = UDim2.new(0, 105, 0, 5) else s.Size = UDim2.new(1, 0, 1, -5) s.Position = UDim2.new(0, 0, 0, 5) end
-    s.BackgroundTransparency = 1; s.BorderSizePixel = 0; s.ScrollBarThickness = 3; s.ScrollBarImageColor3 = Color3.fromRGB(0, 136, 255); s.Visible = false; s.Parent = parent 
+    if hasSubsidebar then 
+        s.Size = UDim2.new(1, -100, 1, 0) 
+        s.Position = UDim2.new(0, 100, 0, 0) 
+    else 
+        s.Size = UDim2.new(1, 0, 1, 0) 
+        s.Position = UDim2.new(0, 0, 0, 0) 
+    end
+    s.BackgroundTransparency = 1 
+    s.BorderSizePixel = 0 
+    s.ScrollBarThickness = 3 
+    s.ScrollBarImageColor3 = Color3.fromRGB(147, 51, 234) 
+    s.Visible = false 
+    s.Parent = parent 
     
     local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 6) list.SortOrder = Enum.SortOrder.LayoutOrder; list.Parent = s
     list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 20) end)
     return s 
 end
 
-local function gridRow(txt, scr, vKey)
-    local f = Instance.new("Frame") f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
-
-    local dot = Instance.new("Frame")
-    dot.Name = "StatusDot"
-    dot.Size = UDim2.new(0, 5, 0, 5)
-    dot.Position = UDim2.new(0, 6, 0.5, -2)
-    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-    dot.BorderSizePixel = 0
-    dot.Parent = f
-    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-
-    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.58, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
-    local b = Instance.new("TextButton") b.Size = UDim2.new(0.40, -4, 0, 20) b.Position = UDim2.new(0.58, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 10; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4) 
-    return b
-end
-
 -- ======================================================================================
--- UPGRADES PAGE
+-- UPGRADES PAGE SETUP
 -- ======================================================================================
-local upSidebar = makeSidebar(upgradesPage)
-local bUpR1 = makeSideBtn("Realm 1", upSidebar) bUpR1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bUpR1.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bUpR2 = makeSideBtn("Realm 2", upSidebar)
-local bUpR3 = makeSideBtn("Realm 3", upSidebar)
+local upSidebar = makeSubSidebar(upgradesPage)
+local bUpR1 = makeSubBtn("Realm 1", upSidebar) bUpR1.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bUpR1.TextColor3 = Color3.fromRGB(255, 255, 255)
+local bUpR2 = makeSubSubSidebarTargetId if true then end -- placeholder
+local bUpR2Btn = makeSubBtn("Realm 2", upSidebar)
+local bUpR3Btn = makeSubBtn("Realm 3", upSidebar)
 
-local upScrollR1 = makeGridScroll(upgradesPage, true) upScrollR1.Visible = true
-local upScrollR2 = makeVerticalScroll(upgradesPage, true) 
-local upScrollR3 = makeGridScroll(upgradesPage, true)
+local upScrollR1 = makeVerticalScroll(upgradesPage, true) upScrollR1.Visible = true
+local upScrollR2 = makeVerticalScroll(upgradesPage, true)
+local upScrollR3 = makeVerticalScroll(upgradesPage, true)
 
-local function masterToggle(txt, flagsTable, scr)
-    local f = Instance.new("Frame") f.Size = UDim2.new(1, -6, 0, 30) f.BackgroundColor3 = Color3.fromRGB(35, 35, 45) f.BorderSizePixel = 0; f.Parent = scr
-    local dot = Instance.new("Frame") dot.Name = "StatusDot" dot.Size = UDim2.new(0, 5, 0, 5) dot.Position = UDim2.new(0, 6, 0.5, -2) dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80) dot.BorderSizePixel = 0; dot.Parent = f
-    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.55, -8, 1, 0) l.Position = UDim2.new(0, 16, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(230, 230, 235) l.TextSize = 10; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.TextWrapped = true; l.Parent = f
-    local b = Instance.new("TextButton") b.Size = UDim2.new(0.42, -4, 0, 20) b.Position = UDim2.new(0.57, 0, 0.5, -10) b.BackgroundColor3 = Color3.fromRGB(60, 20, 20) b.TextColor3 = Color3.fromRGB(255, 120, 120) b.TextSize = 9; b.Font = Enum.Font.SourceSansBold; b.Text = "DISABLED" b.Parent = f
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5) Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
+local function masterToggleGroup(txt, flagsTable, scr)
+    local f = Instance.new("Frame") f.Size = UDim2.new(1, -6, 0, 32) f.BackgroundColor3 = Color3.fromRGB(26, 26, 36) f.BorderSizePixel = 0; f.Parent = scr
+    local l = Instance.new("TextLabel") l.Size = UDim2.new(0.6, 0, 1, 0) l.Position = UDim2.new(0, 12, 0, 0) l.BackgroundTransparency = 1; l.TextColor3 = Color3.fromRGB(220, 220, 230) l.TextSize = 11; l.Font = Enum.Font.SourceSansBold; l.Text = txt; l.TextXAlignment = Enum.TextXAlignment.Left; l.Parent = f
+    
+    local switchTrack = Instance.new("TextButton")
+    switchTrack.Size = UDim2.new(0, 40, 0, 20)
+    switchTrack.Position = UDim2.new(1, -50, 0.5, -10)
+    switchTrack.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+    switchTrack.Text = ""
+    switchTrack.AutoButtonColor = false
+    switchTrack.Parent = f
+    Instance.new("UICorner", switchTrack).CornerRadius = UDim.new(1, 0)
 
-    b.MouseButton1Click:Connect(function()
+    local switchThumb = Instance.new("Frame")
+    switchThumb.Size = UDim2.new(0, 16, 0, 16)
+    switchThumb.Position = UDim2.new(0, 2, 0.5, -8)
+    switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    switchThumb.BorderSizePixel = 0
+    switchThumb.Parent = switchTrack
+    Instance.new("UICorner", switchThumb).CornerRadius = UDim.new(1, 0)
+
+    switchTrack.MouseButton1Click:Connect(function()
         local activeState = false
         for _, flag in ipairs(flagsTable) do
             if not Env[flag] then activeState = true break end
@@ -570,76 +654,84 @@ local function masterToggle(txt, flagsTable, scr)
         for _, flag in ipairs(flagsTable) do
             Env[flag] = activeState
         end
-        b.Text = activeState and "ACTIVE" or "DISABLED"
-        b.BackgroundColor3 = activeState and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-        b.TextColor3 = activeState and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-        dot.BackgroundColor3 = activeState and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+        TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = activeState and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)}):Play()
+        TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = activeState and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
     end)
-    return b
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 6)
+    return switchTrack
 end
 
--- ROBUST ACCORDION DROPDOWN USING NATIVE VISIBLE TOGGLING
+masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScrollR1)
+masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScrollR1)
+masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScrollR1)
+masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScrollR1)
+masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScrollR1)
+masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScrollR1)
+
+masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScrollR2)
+masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, upScrollR2)
+masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScrollR2)
+masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScrollR2)
+masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScrollR2)
+
+-- GEM UPGRADES SECTION ON REALM 2
 local function makeAccordionDropdown(title, optionsList, scr)
     local headerBtn = Instance.new("TextButton")
-    headerBtn.Size = UDim2.new(1, -6, 0, 30)
-    headerBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-    headerBtn.TextColor3 = Color3.fromRGB(230, 230, 235)
-    headerBtn.TextSize = 10
+    headerBtn.Size = UDim2.new(1, -6, 0, 32)
+    headerBtn.BackgroundColor3 = Color3.fromRGB(26, 26, 36)
+    headerBtn.TextColor3 = Color3.fromRGB(220, 220, 230)
+    headerBtn.TextSize = 11
     headerBtn.Font = Enum.Font.SourceSansBold
     headerBtn.Text = "  ▼ " .. title
     headerBtn.TextXAlignment = Enum.TextXAlignment.Left
     headerBtn.Parent = scr
-    Instance.new("UICorner", headerBtn).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", headerBtn).CornerRadius = UDim.new(0, 6)
 
     local expanded = false
     local createdRows = {}
 
     for _, opt in ipairs(optionsList) do
         local row = Instance.new("Frame")
-        row.Size = UDim2.new(1, -6, 0, 26)
-        row.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        row.Size = UDim2.new(1, -6, 0, 30)
+        row.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
         row.BorderSizePixel = 0
-        row.Visible = false -- Hidden by default
+        row.Visible = false
         row.Parent = scr
-        Instance.new("UICorner", row).CornerRadius = UDim.new(0, 4)
-
-        local dot = Instance.new("Frame")
-        dot.Name = "StatusDot"
-        dot.Size = UDim2.new(0, 4, 0, 4)
-        dot.Position = UDim2.new(0, 6, 0.5, -2)
-        dot.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-        dot.BorderSizePixel = 0
-        dot.Parent = row
-        Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+        Instance.new("UICorner", row).CornerRadius = UDim.new(0, 6)
 
         local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(0.58, -8, 1, 0)
+        lbl.Size = UDim2.new(0.6, 0, 1, 0)
         lbl.Position = UDim2.new(0, 16, 0, 0)
         lbl.BackgroundTransparency = 1
-        lbl.TextColor3 = Color3.fromRGB(200, 200, 215)
-        lbl.TextSize = 9
+        lbl.TextColor3 = Color3.fromRGB(190, 190, 205)
+        lbl.TextSize = 10
         lbl.Font = Enum.Font.SourceSans
         lbl.Text = opt.Name
         lbl.TextXAlignment = Enum.TextXAlignment.Left
         lbl.Parent = row
 
-        local togBtn = Instance.new("TextButton")
-        togBtn.Size = UDim2.new(0.40, -4, 0, 20)
-        togBtn.Position = UDim2.new(0.58, 0, 0.5, -10)
-        togBtn.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-        togBtn.TextColor3 = Env[opt.Var] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-        togBtn.TextSize = 9
-        togBtn.Font = Enum.Font.SourceSansBold
-        togBtn.Text = Env[opt.Var] and "ACTIVE" or "DISABLED"
-        togBtn.Parent = row
-        Instance.new("UICorner", togBtn).CornerRadius = UDim.new(0, 4)
+        local switchTrack = Instance.new("TextButton")
+        switchTrack.Size = UDim2.new(0, 40, 0, 20)
+        switchTrack.Position = UDim2.new(1, -50, 0.5, -10)
+        switchTrack.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)
+        switchTrack.Text = ""
+        switchTrack.AutoButtonColor = false
+        switchTrack.Parent = row
+        Instance.new("UICorner", switchTrack).CornerRadius = UDim.new(1, 0)
 
-        togBtn.MouseButton1Click:Connect(function()
+        local switchThumb = Instance.new("Frame")
+        switchThumb.Size = UDim2.new(0, 16, 0, 16)
+        switchThumb.Position = Env[opt.Var] and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+        switchThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        switchThumb.BorderSizePixel = 0
+        switchThumb.Parent = switchTrack
+        Instance.new("UICorner", switchThumb).CornerRadius = UDim.new(1, 0)
+
+        switchTrack.MouseButton1Click:Connect(function()
             Env[opt.Var] = not Env[opt.Var]
-            togBtn.Text = Env[opt.Var] and "ACTIVE" or "DISABLED"
-            togBtn.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-            togBtn.TextColor3 = Env[opt.Var] and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-            dot.BackgroundColor3 = Env[opt.Var] and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
+            local active = Env[opt.Var]
+            TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)}):Play()
+            TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
         end)
 
         table.insert(createdRows, row)
@@ -654,20 +746,6 @@ local function makeAccordionDropdown(title, optionsList, scr)
     end)
 end
 
-masterToggle("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScrollR1)
-masterToggle("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScrollR1)
-masterToggle("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScrollR1)
-masterToggle("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScrollR1)
-masterToggle("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScrollR1)
-masterToggle("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScrollR1)
-
-masterToggle("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScrollR2)
-masterToggle("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, upScrollR2)
-masterToggle("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScrollR2)
-masterToggle("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScrollR2)
-masterToggle("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScrollR2)
-
--- GEM UPGRADES DROPDOWN ACCORDION ON REALM 2
 local gemUpgradesList = {
     {Name = "More Oof (Gem)", Var = "AutoGemMoreOof"},
     {Name = "More Gems", Var = "AutoGemMoreGems"},
@@ -678,53 +756,52 @@ local gemUpgradesList = {
 }
 makeAccordionDropdown("Gem Upgrades", gemUpgradesList, upScrollR2)
 
-masterToggle("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScrollR3)
+masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScrollR3)
 
 -- ======================================================================================
--- NOOBS PAGE
+-- NOOBS PAGE SETUP
 -- ======================================================================================
-local noobSidebar = makeSidebar(noobsPage)
-local bNoobR1 = makeSideBtn("Realm 1 Noobs", noobSidebar) bNoobR1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bNoobR1.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bNoobR2 = makeSideBtn("Realm 2 Noobs", noobSidebar)
+local noobSidebar = makeSubSidebar(noobsPage)
+local bNoobR1 = makeSubBtn("Realm 1 Noobs", noobSidebar) bNoobR1.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bNoobR1.TextColor3 = Color3.fromRGB(255, 255, 255)
+local bNoobR2 = makeSubBtn("Realm 2 Noobs", noobSidebar)
 
-local noobScrollR1 = makeGridScroll(noobsPage, true) noobScrollR1.Visible = true
-local noobScrollR2 = makeGridScroll(noobsPage, true)
+local noobScrollR1 = makeVerticalScroll(noobsPage, true) noobScrollR1.Visible = true
+local noobScrollR2 = makeVerticalScroll(noobsPage, true)
 
-UI.Starter = gridRow("Starter Auto Upgrade", noobScrollR1, "AutoUpgradeStarter") 
-UI.Cooker = gridRow("Cooker Auto Upgrade", noobScrollR1, "AutoUpgradeCooker") 
-UI.Farmer = gridRow("Farmer Auto Upgrade", noobScrollR1, "AutoUpgradeFarmer") 
-UI.Magician = gridRow("Magician Auto Upgrade", noobScrollR1, "AutoUpgradeMagician") 
-UI.Archer = gridRow("Archer Auto Upgrade", noobScrollR1, "AutoUpgradeArcher") 
-UI.Soldier = gridRow("Soldier Auto Upgrade", noobScrollR1, "AutoUpgradeSoldier")
-UI.MoreOof = gridRow("More Oof Auto Upgrade", noobScrollR1, "AutoUpgradeMoreOof") 
-UI.FasterNoobs = gridRow("Faster Noobs Upgrade", noobScrollR1, "AutoUpgradeFasterNoobs")
+createToggleRow(noobScrollR1, "Starter Auto Upgrade", "AutoUpgradeStarter")
+createToggleRow(noobScrollR1, "Cooker Auto Upgrade", "AutoUpgradeCooker")
+createToggleRow(noobScrollR1, "Farmer Auto Upgrade", "AutoUpgradeFarmer")
+createToggleRow(noobScrollR1, "Magician Auto Upgrade", "AutoUpgradeMagician")
+createToggleRow(noobScrollR1, "Archer Auto Upgrade", "AutoUpgradeArcher")
+createToggleRow(noobScrollR1, "Soldier Auto Upgrade", "AutoUpgradeSoldier")
+createToggleRow(noobScrollR1, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
+createToggleRow(noobScrollR1, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
 
-UI.R2Fisherman = gridRow("Auto Upgrade Fisherman", noobScrollR2, "AutoUpgradeFishermanNoob") 
-UI.R2Knight = gridRow("Auto Upgrade Knight", noobScrollR2, "AutoUpgradeKnightNoob") 
-UI.R2Explorer = gridRow("Auto Upgrade Explorer", noobScrollR2, "AutoUpgradeExplorerNoob") 
-UI.R2Magician = gridRow("Auto Upgrade Magician", noobScrollR2, "AutoUpgradeMagicianNoob")
+createToggleRow(noobScrollR2, "Auto Upgrade Fisherman", "AutoUpgradeFishermanNoob")
+createToggleRow(noobScrollR2, "Auto Upgrade Knight", "AutoUpgradeKnightNoob")
+createToggleRow(noobScrollR2, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
+createToggleRow(noobScrollR2, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
--- MINES PAGE
+-- MINES PAGE SETUP
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage, false) minesScroll.Visible = true
 
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
-bestTierBtn.Size = UDim2.new(1, -6, 0, 28)
-bestTierBtn.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
-bestTierBtn.TextColor3 = Color3.fromRGB(255, 120, 120)
+bestTierBtn.Size = UDim2.new(1, -6, 0, 30)
+bestTierBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+bestTierBtn.TextColor3 = Color3.fromRGB(220, 220, 230)
 bestTierBtn.TextSize = 11
 bestTierBtn.Font = Enum.Font.SourceSansBold
 bestTierBtn.Text = "Best Tier Only: DISABLED"
 bestTierBtn.Parent = minesScroll
-Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 5)
+Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 6)
 
 bestTierBtn.MouseButton1Click:Connect(function()
     bestTierActive = not bestTierActive
     bestTierBtn.Text = bestTierActive and "Best Tier Only: ACTIVE" or "Best Tier Only: DISABLED"
-    bestTierBtn.BackgroundColor3 = bestTierActive and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    bestTierBtn.TextColor3 = bestTierActive and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
+    bestTierBtn.BackgroundColor3 = bestTierActive and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)
 
     local topOres = {"AutoMineVoidsteel", "AutoMineCelestium", "AutoMineRuby"}
     local allOres = {
@@ -732,388 +809,108 @@ bestTierBtn.MouseButton1Click:Connect(function()
         "AutoMineGold", "AutoMinePlatinum", "AutoMineTitanium", "AutoMineCobalt", "AutoMineUranium",
         "AutoMinePalladium", "AutoMineAetherite", "AutoMineRuby", "AutoMineVoidsteel", "AutoMineCelestium"
     }
-    
-    for _, ore in ipairs(allOres) do
-        Env[ore] = false
-    end
-    
-    if bestTierActive then
-        for _, ore in ipairs(topOres) do
-            Env[ore] = true
-        end
-    end
-    
+    for _, ore in ipairs(allOres) do Env[ore] = false end
+    if bestTierActive then for _, ore in ipairs(topOres) do Env[ore] = true end end
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
-local function mineSectionHeader(txt, scr)
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, -6, 0, 24)
-    lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(130, 130, 145)
-    lbl.TextSize = 10
-    lbl.Font = Enum.Font.SourceSansBold
-    lbl.Text = txt
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = scr
-end
-
-local function sleekMineRow(txt, scr, vKey)
-    local f = Instance.new("Frame")
-    f.Size = UDim2.new(1, -6, 0, 26)
-    f.BackgroundTransparency = 1
-    f.BorderSizePixel = 0
-    f.Parent = scr
-
-    local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(0.58, -8, 1, 0)
-    l.Position = UDim2.new(0, 16, 0, 0)
-    l.BackgroundTransparency = 1
-    l.TextColor3 = Color3.fromRGB(180, 180, 195)
-    l.TextSize = 10
-    l.Font = Enum.Font.SourceSans
-    l.Text = txt
-    l.TextXAlignment = Enum.TextXAlignment.Left
-    l.Parent = f
-
-    local dot = Instance.new("Frame")
-    dot.Name = "StatusDot"
-    dot.Size = UDim2.new(0, 4, 0, 4)
-    dot.Position = UDim2.new(0, 6, 0.5, -2)
-    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-    dot.BorderSizePixel = 0
-    dot.Parent = f
-    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(0.40, -4, 0, 20)
-    b.Position = UDim2.new(0.58, 0, 0.5, -10)
-    b.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = Color3.fromRGB(255, 120, 120)
-    b.TextSize = 9
-    b.Font = Enum.Font.SourceSansBold
-    b.Text = "DISABLED"
-    b.Parent = f
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
-
-    UI[vKey] = b
-    return b
-end
-
-mineSectionHeader("Basic Ores", minesScroll)
-UI.MineStone = sleekMineRow("Stone", minesScroll, "AutoMineStone")
-UI.MineCoal = sleekMineRow("Coal", minesScroll, "AutoMineCoal")
-UI.MineSilver = sleekMineRow("Silver", minesScroll, "AutoMineSilver")
-UI.MineIron = sleekMineRow("Iron", minesScroll, "AutoMineIron")
-UI.MineCopper = sleekMineRow("Copper", minesScroll, "AutoMineCopper")
-
-mineSectionHeader("Advanced Ores", minesScroll)
-UI.MineGold = sleekMineRow("Gold", minesScroll, "AutoMineGold")
-UI.MinePlatinum = sleekMineRow("Platinum", minesScroll, "AutoMinePlatinum")
-UI.MineTitanium = sleekMineRow("Titanium", minesScroll, "AutoMineTitanium")
-UI.MineCobalt = sleekMineRow("Cobalt", minesScroll, "AutoMineCobalt")
-UI.MineUranium = sleekMineRow("Uranium", minesScroll, "AutoMineUranium")
-
-mineSectionHeader("End-Game Ores", minesScroll)
-UI.MinePalladium = sleekMineRow("Palladium", minesScroll, "AutoMinePalladium")
-UI.MineAetherite = sleekMineRow("Aetherite", minesScroll, "AutoMineAetherite")
-UI.MineRuby = sleekMineRow("Ruby", minesScroll, "AutoMineRuby")
-UI.MineVoidsteel = sleekMineRow("Voidsteel", minesScroll, "AutoMineVoidsteel")
-UI.MineCelestium = sleekMineRow("Celestium", minesScroll, "AutoMineCelestium")
+createToggleRow(minesScroll, "Stone", "AutoMineStone")
+createToggleRow(minesScroll, "Coal", "AutoMineCoal")
+createToggleRow(minesScroll, "Silver", "AutoMineSilver")
+createToggleRow(minesScroll, "Iron", "AutoMineIron")
+createToggleRow(minesScroll, "Copper", "AutoMineCopper")
+createToggleRow(minesScroll, "Gold", "AutoMineGold")
+createToggleRow(minesScroll, "Platinum", "AutoMinePlatinum")
+createToggleRow(minesScroll, "Titanium", "AutoMineTitanium")
+createToggleRow(minesScroll, "Cobalt", "AutoMineCobalt")
+createToggleRow(minesScroll, "Uranium", "AutoMineUranium")
+createToggleRow(minesScroll, "Palladium", "AutoMinePalladium")
+createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
+createToggleRow(minesScroll, "Ruby", "AutoMineRuby")
+createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
+createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 
 -- ======================================================================================
--- FOOTBALL PAGE
+-- FOOTBALL PAGE SETUP
 -- ======================================================================================
-local fSidebar = makeSidebar(footballPage)
-local bFNoobs = makeSideBtn("Noobs", fSidebar) bFNoobs.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bFNoobs.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bFUpgrades = makeSideBtn("Upgrades", fSidebar)
-local fNoobScroll = makeGridScroll(footballPage, true) fNoobScroll.Visible = true
-local fUpgradeScroll = makeGridScroll(footballPage, true)
+local fSidebar = makeSubSidebar(footballPage)
+local bFNoobs = makeSubBtn("Noobs", fSidebar) bFNoobs.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bFNoobs.TextColor3 = Color3.fromRGB(255, 255, 255)
+local bFUpgrades = makeSubBtn("Upgrades", fSidebar)
+local fNoobScroll = makeVerticalScroll(footballPage, true) fNoobScroll.Visible = true
+local fUpgradeScroll = makeVerticalScroll(footballPage, true)
 
-UI.Goalkeeper = gridRow("Upgrade Goalkeeper", fNoobScroll, "AutoUpgradeGoalkeeper") 
-UI.LeftBack = gridRow("Upgrade Left Back", fNoobScroll, "AutoUpgradeLeftBack") 
-UI.LeftCenterBack = gridRow("Upgrade L-Center Back", fNoobScroll, "AutoUpgradeLeftCenterBack") 
-UI.RightCenterBack = gridRow("Upgrade R-Center Back", fNoobScroll, "AutoUpgradeRightCenterBack") 
-UI.RightBack = gridRow("Upgrade Right Back", fNoobScroll, "AutoUpgradeRightBack") 
-UI.LeftDefensiveMid = gridRow("Upgrade L-Defensive Mid", fNoobScroll, "AutoUpgradeLeftDefensiveMid") 
-UI.RightDefensiveMid = gridRow("Upgrade R-Defensive Mid", fNoobScroll, "AutoUpgradeRightDefensiveMid") 
-UI.AttackingMid = gridRow("Upgrade Attacking Mid", fNoobScroll, "AutoUpgradeAttackingMid") 
-UI.LeftWing = gridRow("Upgrade Left Wing", fNoobScroll, "AutoUpgradeLeftWing") 
-UI.RightWing = gridRow("Upgrade Right Wing", fNoobScroll, "AutoUpgradeRightWing") 
-UI.Striker = gridRow("Upgrade Striker", fNoobScroll, "AutoUpgradeStriker")
+createToggleRow(fNoobScroll, "Upgrade Goalkeeper", "AutoUpgradeGoalkeeper")
+createToggleRow(fNoobScroll, "Upgrade Left Back", "AutoUpgradeLeftBack")
+createToggleRow(fNoobScroll, "Upgrade L-Center Back", "AutoUpgradeLeftCenterBack")
+createToggleRow(fNoobScroll, "Upgrade R-Center Back", "AutoUpgradeRightCenterBack")
+createToggleRow(fNoobScroll, "Upgrade Right Back", "AutoUpgradeRightBack")
+createToggleRow(fNoobScroll, "Upgrade L-Defensive Mid", "AutoUpgradeLeftDefensiveMid")
+createToggleRow(fNoobScroll, "Upgrade R-Defensive Mid", "AutoUpgradeRightDefensiveMid")
+createToggleRow(fNoobScroll, "Upgrade Attacking Mid", "AutoUpgradeAttackingMid")
+createToggleRow(fNoobScroll, "Upgrade Left Wing", "AutoUpgradeLeftWing")
+createToggleRow(fNoobScroll, "Upgrade Right Wing", "AutoUpgradeRightWing")
+createToggleRow(fNoobScroll, "Upgrade Striker", "AutoUpgradeStriker")
 
-UI.ScoreGoal = gridRow("Auto Score Goal", fUpgradeScroll, "AutoScoreGoal") 
-UI.MoreGoals = gridRow("More Goals Upgrade", fUpgradeScroll, "AutoGoalsMoreGoals") 
-UI.GoalsRuneBulk = gridRow("Goals Rune Bulk", fUpgradeScroll, "AutoGoalsRuneBulk") 
-UI.GoalsRuneLuck = gridRow("Goals Rune Luck", fUpgradeScroll, "AutoGoalsRuneLuck") 
-UI.AutoBuyKicker = gridRow("Auto-Buy Auto Kick", fUpgradeScroll, "AutoBuyAutoKick") 
-UI.FootballTree = gridRow("Auto Football Tree", fUpgradeScroll, "AutoFootballTree") 
-UI.ClaimTrophies = gridRow("Auto Buy Trophies", fUpgradeScroll, "AutoClaimTrophies")
-
--- ======================================================================================
--- MISC PAGE
--- ======================================================================================
-local miscSidebar = makeSidebar(miscPage)
-local bMiscRu1 = makeSideBtn("Runes R1", miscSidebar) bMiscRu1.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bMiscRu1.TextColor3 = Color3.fromRGB(15, 15, 15)
-local bMiscRu2 = makeSideBtn("Runes R2", miscSidebar)
-local bMiscRuE = makeSideBtn("Runes Events", miscSidebar)
-local bMiscCap = makeSideBtn("Capsules", miscSidebar)
-
-local miscScrollRu1 = makeGridScroll(miscPage, true) miscScrollRu1.Visible = true
-local miscScrollRu2 = makeGridScroll(miscPage, true)
-local miscScrollRuE = makeGridScroll(miscPage, true)
-local miscScrollCap = makeGridScroll(miscPage, true)
-
-UI.RollBasicRuneCard = gridRow("Auto Basic Rune Circle", miscScrollRu1, "AutoRollBasicRune") 
-UI.RollSuperRuneCard = gridRow("Auto Super Rune Circle", miscScrollRu1, "AutoRollSuperRune") 
-UI.RollAdvancedRuneCard = gridRow("Auto Advanced Rune", miscScrollRu1, "AutoRollAdvancedRune") 
-UI.RollCosmicRuneCard = gridRow("Auto Cosmic Prism", miscScrollRu1, "AutoRollCosmicRune")
-
-UI.RollSnowyRuneCard = gridRow("Auto Snowy Rune Circle", miscScrollRu2, "AutoRollSnowyRune")
-
-UI.FootballRuneCard = gridRow("Auto Football Rune", miscScrollRuE, "AutoRollFootballRune")
-
-UI.ClassicCapsule = gridRow("Hatch Classic Capsule", miscScrollCap, "AutoOpenClassicCapsule") 
-UI.FootballCapsule = gridRow("Hatch Football Capsule", miscScrollCap, "AutoOpenFootballCapsule") 
-UI.SuperCapsule = gridRow("Hatch Super Capsule", miscScrollCap, "AutoOpenSuperCapsule")
+createToggleRow(fUpgradeScroll, "Auto Score Goal", "AutoScoreGoal")
+createToggleRow(fUpgradeScroll, "More Goals Upgrade", "AutoGoalsMoreGoals")
+createToggleRow(fUpgradeScroll, "Goals Rune Bulk", "AutoGoalsRuneBulk")
+createToggleRow(fUpgradeScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
+createToggleRow(fUpgradeScroll, "Auto-Buy Auto Kick", "AutoBuyAutoKick")
+createToggleRow(fUpgradeScroll, "Auto Football Tree", "AutoFootballTree")
+createToggleRow(fUpgradeScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- ======================================================================================
--- SETTINGS PAGE
+-- MISC PAGE SETUP
 -- ======================================================================================
-local setSidebar = makeSidebar(settingsPage)
-local bSetGen = makeSideBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(240, 240, 245) bSetGen.TextColor3 = Color3.fromRGB(15, 15, 15)
+local miscSidebar = makeSubSidebar(miscPage)
+local bMiscRu1 = makeSubBtn("Runes R1", miscSidebar) bMiscRu1.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bMiscRu1.TextColor3 = Color3.fromRGB(255, 255, 255)
+local bMiscRu2 = makeSubBtn("Runes R2", miscSidebar)
+local bMiscRuE = makeSubBtn("Events", miscSidebar)
+local bMiscCap = makeSubBtn("Capsules", miscSidebar)
+
+local miscScrollRu1 = makeVerticalScroll(miscPage, true) miscScrollRu1.Visible = true
+local miscScrollRu2 = makeVerticalScroll(miscPage, true)
+local miscScrollRuE = makeVerticalScroll(miscPage, true)
+local miscScrollCap = makeVerticalScroll(miscPage, true)
+
+createToggleRow(miscScrollRu1, "Auto Basic Rune Circle", "AutoRollBasicRune")
+createToggleRow(miscScrollRu1, "Auto Super Rune Circle", "AutoRollSuperRune")
+createToggleRow(miscScrollRu1, "Auto Advanced Rune", "AutoRollAdvancedRune")
+createToggleRow(miscScrollRu1, "Auto Cosmic Prism", "AutoRollCosmicRune")
+
+createToggleRow(miscScrollRu2, "Auto Snowy Rune Circle", "AutoRollSnowyRune")
+createToggleRow(miscScrollRuE, "Auto Football Rune", "AutoRollFootballRune")
+
+createToggleRow(miscScrollCap, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
+createToggleRow(miscScrollCap, "Hatch Football Capsule", "AutoOpenFootballCapsule")
+createToggleRow(miscScrollCap, "Hatch Super Capsule", "AutoOpenSuperCapsule")
+
+-- ======================================================================================
+-- SETTINGS PAGE SETUP
+-- ======================================================================================
+local setSidebar = makeSubSidebar(settingsPage)
+local bSetGen = makeSubBtn("General", setSidebar) bSetGen.BackgroundColor3 = Color3.fromRGB(147, 51, 234) bSetGen.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 local setGenScroll = makeVerticalScroll(settingsPage, true) setGenScroll.Visible = true
 
-local function genRow(txt, vKey, callback)
-    local f = Instance.new("Frame")
-    f.Size = UDim2.new(1, -6, 0, 32)
-    f.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-    f.BorderSizePixel = 0
-    f.Parent = setGenScroll
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5)
+createToggleRow(setGenScroll, "Anti AFK Protection", "AntiAFK")
+createToggleRow(setGenScroll, "FPS Booster Mode", "FPSBoostMode")
+createToggleRow(setGenScroll, "Stats HUD Overlay", "ShowStatsHUD")
+createToggleRow(setGenScroll, "CPU Saver Mode", "CPUSaverMode")
+createToggleRow(setGenScroll, "Auto Rebirth", "AutoRebirthTimer")
+createToggleRow(setGenScroll, "Auto Prestige", "AutoPrestige")
+createToggleRow(setGenScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
+createToggleRow(setGenScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
 
-    local dot = Instance.new("Frame")
-    dot.Name = "StatusDot"
-    dot.Size = UDim2.new(0, 5, 0, 5)
-    dot.Position = UDim2.new(0, 6, 0.5, -2)
-    dot.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-    dot.BorderSizePixel = 0
-    dot.Parent = f
-    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+-- EMERGENCY KILL SWITCH ROW
+local killRow = Instance.new("Frame") killRow.Size = UDim2.new(1, -6, 0, 32) killRow.BackgroundColor3 = Color3.fromRGB(40, 20, 20) killRow.BorderSizePixel = 0; killRow.Parent = setGenScroll
+Instance.new("UICorner", killRow).CornerRadius = UDim.new(0, 6)
+local killLbl = Instance.new("TextLabel") killLbl.Size = UDim2.new(0.6, 0, 1, 0) killLbl.Position = UDim2.new(0, 12, 0, 0) killLbl.BackgroundTransparency = 1; killLbl.TextColor3 = Color3.fromRGB(255, 180, 180) killLbl.TextSize = 11; killLbl.Font = Enum.Font.SourceSansBold; killLbl.Text = "Emergency Kill Switch"; killLbl.TextXAlignment = Enum.TextXAlignment.Left; killLbl.Parent = killRow
 
-    local l = Instance.new("TextLabel")
-    l.Size = UDim2.new(0.58, -8, 1, 0)
-    l.Position = UDim2.new(0, 16, 0, 0)
-    l.BackgroundTransparency = 1
-    l.TextColor3 = Color3.fromRGB(230, 230, 235)
-    l.TextSize = 10
-    l.Font = Enum.Font.SourceSansBold
-    l.Text = txt
-    l.TextXAlignment = Enum.TextXAlignment.Left
-    l.Parent = f
+local killBtn = Instance.new("TextButton") killBtn.Size = UDim2.new(0, 75, 0, 20) killBtn.Position = UDim2.new(1, -85, 0.5, -10) killBtn.BackgroundColor3 = Color3.fromRGB(120, 20, 20) killBtn.TextColor3 = Color3.fromRGB(255, 200, 200) killBtn.TextSize = 10; killBtn.Font = Enum.Font.SourceSansBold; killBtn.Text = "TERMINATE" killBtn.Parent = killRow
+Instance.new("UICorner", killBtn).CornerRadius = UDim.new(0, 4)
 
-    local b = Instance.new("TextButton")
-    b.Size = UDim2.new(0.40, -4, 0, 20)
-    b.Position = UDim2.new(0.58, 0, 0.5, -10)
-    b.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = Color3.fromRGB(255, 120, 120)
-    b.TextSize = 10
-    b.Font = Enum.Font.SourceSansBold
-    b.Text = "DISABLED"
-    b.Parent = f
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 4)
-
-    if callback then
-        b.MouseButton1Click:Connect(function()
-            callback(b)
-        end)
-    end
-    return b
-end
-
-local function genSpacer(h)
-    local sp = Instance.new("Frame")
-    sp.Size = UDim2.new(1, -6, 0, h or 12)
-    sp.BackgroundTransparency = 1
-    sp.Parent = setGenScroll
-end
-
-local function toggleFPSBoost(b)
-    Env.FPSBoostMode = not Env.FPSBoostMode
-    b.Text = Env.FPSBoostMode and "ACTIVE" or "DISABLED"
-    b.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = Env.FPSBoostMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    local dot = b.Parent:FindFirstChild("StatusDot")
-    if dot then dot.BackgroundColor3 = Env.FPSBoostMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-    
-    if Env.FPSBoostMode then
-        pcall(function()
-            Lighting.GlobalShadows = false
-            Lighting.FogEnd = 9e9
-            for _, v in ipairs(workspace:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.Material = Enum.Material.SmoothPlastic
-                    v.Reflectance = 0
-                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-                    v.Enabled = false
-                end
-            end
-        end)
-        showToast("FPS Booster Enabled!")
-    else
-        showToast("FPS Booster Disabled!")
-    end
-end
-
-UI.AFK = genRow("Anti AFK Protection", "AntiAFK", function(b) tV2(b, "AntiAFK") end)
-UI.FPSBoostToggle = genRow("FPS Booster Mode", "FPSBoostMode", function(b) toggleFPSBoost(b) end)
-UI.HUDToggle = genRow("Stats HUD Overlay", "ShowStatsHUD", function(b)
-    Env.ShowStatsHUD = not Env.ShowStatsHUD
-    b.Text = Env.ShowStatsHUD and "ACTIVE" or "DISABLED"
-    b.BackgroundColor3 = Env.ShowStatsHUD and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = Env.ShowStatsHUD and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    local dot = b.Parent:FindFirstChild("StatusDot")
-    if dot then dot.BackgroundColor3 = Env.ShowStatsHUD and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-end)
-
-UI.CPUSaverToggle = genRow("CPU Saver Mode", "CPUSaverMode", function(b) 
-    Env.CPUSaverMode = not Env.CPUSaverMode
-    b.Text = Env.CPUSaverMode and "ACTIVE" or "DISABLED"
-    b.BackgroundColor3 = Env.CPUSaverMode and Color3.fromRGB(20, 60, 20) or Color3.fromRGB(60, 20, 20)
-    b.TextColor3 = Env.CPUSaverMode and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(255, 120, 120)
-    local dot = b.Parent:FindFirstChild("StatusDot")
-    if dot then dot.BackgroundColor3 = Env.CPUSaverMode and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80) end
-    showToast(Env.CPUSaverMode and "CPU Saver Mode Enabled (Background loops throttled)" or "CPU Saver Mode Disabled")
-end)
-
-genSpacer(10)
-
-UI.RebirthTimerCard = genRow("Auto Rebirth", "AutoRebirthTimer", function(b) tV2(b, "AutoRebirthTimer") end)
-UI.Prestige = genRow("Auto Prestige", "AutoPrestige", function(b) tV2(b, "AutoPrestige") end)
-UI.OpenT1ChestCard = genRow("Mass Open T1 Chest", "AutoOpenT1Chest", function(b) tV2(b, "AutoOpenT1Chest") end)
-UI.OpenT2ChestCard = genRow("Mass Open T2 Chest", "AutoOpenT2Chest", function(b) tV2(b, "AutoOpenT2Chest") end)
-
-genSpacer(10)
-
-local speedRow = Instance.new("Frame")
-speedRow.Size = UDim2.new(1, -6, 0, 32)
-speedRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-speedRow.BorderSizePixel = 0
-speedRow.Parent = setGenScroll
-Instance.new("UICorner", speedRow).CornerRadius = UDim.new(0, 5)
-
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0.58, -8, 1, 0)
-speedLabel.Position = UDim2.new(0, 16, 0, 0)
-speedLabel.BackgroundTransparency = 1
-speedLabel.TextColor3 = Color3.fromRGB(230, 230, 235)
-speedLabel.TextSize = 10
-speedLabel.Font = Enum.Font.SourceSansBold
-speedLabel.Text = "Glide Speed"
-speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-speedLabel.Parent = speedRow
-
-UI.MiningSpeedSwitch = Instance.new("TextButton")
-UI.MiningSpeedSwitch.Size = UDim2.new(0.40, -4, 0, 20)
-UI.MiningSpeedSwitch.Position = UDim2.new(0.58, 0, 0.5, -10)
-UI.MiningSpeedSwitch.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
-UI.MiningSpeedSwitch.TextColor3 = Color3.fromRGB(255, 255, 255)
-UI.MiningSpeedSwitch.TextSize = 10
-UI.MiningSpeedSwitch.Font = Enum.Font.SourceSansBold
-UI.MiningSpeedSwitch.Text = "0.8 S/s"
-UI.MiningSpeedSwitch.Parent = speedRow
-Instance.new("UICorner", UI.MiningSpeedSwitch).CornerRadius = UDim.new(0, 4)
-
-local ms = {0.3, 0.5, 0.8, 1.2, 2.0} 
-local ml = {"0.3 S/s", "0.5 S/s", "0.8 S/s", "1.2 S/s", "2.0 S/s"} 
-local mi = 3
-UI.MiningSpeedSwitch.MouseButton1Click:Connect(function() 
-    mi = mi + 1 
-    if mi > #ms then mi = 1 end 
-    Env.MiningJumpSpeed = ms[mi] 
-    UI.MiningSpeedSwitch.Text = ml[mi] 
-end)
-
-genSpacer(10)
-
-local themeRow = Instance.new("Frame")
-themeRow.Size = UDim2.new(1, -6, 0, 32)
-themeRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-themeRow.BorderSizePixel = 0
-themeRow.Parent = setGenScroll
-Instance.new("UICorner", themeRow).CornerRadius = UDim.new(0, 5)
-
-local themeLabel = Instance.new("TextLabel")
-themeLabel.Size = UDim2.new(0.58, -8, 1, 0)
-themeLabel.Position = UDim2.new(0, 16, 0, 0)
-themeLabel.BackgroundTransparency = 1
-themeLabel.TextColor3 = Color3.fromRGB(230, 230, 235)
-themeLabel.TextSize = 10
-themeLabel.Font = Enum.Font.SourceSansBold
-themeLabel.Text = "Hub Theme"
-themeLabel.TextXAlignment = Enum.TextXAlignment.Left
-themeLabel.Parent = themeRow
-
-local themeBtn = Instance.new("TextButton")
-themeBtn.Size = UDim2.new(0.40, -4, 0, 20)
-themeBtn.Position = UDim2.new(0.58, 0, 0.5, -10)
-themeBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 160)
-themeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-themeBtn.TextSize = 9
-themeBtn.Font = Enum.Font.SourceSansBold
-themeBtn.Text = "Theme: Neon Blue"
-themeBtn.Parent = themeRow
-Instance.new("UICorner", themeBtn).CornerRadius = UDim.new(0, 4)
-
-local themes = {
-    {Name = "Neon Blue", Color = Color3.fromRGB(0, 136, 255)},
-    {Name = "Purple Glow", Color = Color3.fromRGB(138, 43, 226)},
-    {Name = "Emerald Green", Color = Color3.fromRGB(0, 200, 100)},
-    {Name = "Crimson Red", Color = Color3.fromRGB(220, 20, 60)}
-}
-local currentThemeIdx = 1
-
-themeBtn.MouseButton1Click:Connect(function()
-    currentThemeIdx = currentThemeIdx + 1
-    if currentThemeIdx > #themes then currentThemeIdx = 1 end
-    local th = themes[currentThemeIdx]
-    themeBtn.Text = "Theme: " .. th.Name
-    minBtn.TextColor3 = th.Color
-    hudTitle.TextColor3 = th.Color
-    showToast("Theme changed to " .. th.Name)
-end)
-
-local killRow = Instance.new("Frame")
-killRow.Size = UDim2.new(1, -6, 0, 32)
-killRow.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
-killRow.BorderSizePixel = 0
-killRow.Parent = setGenScroll
-Instance.new("UICorner", killRow).CornerRadius = UDim.new(0, 5)
-
-local killLabel = Instance.new("TextLabel")
-killLabel.Size = UDim2.new(0.58, -8, 1, 0)
-killLabel.Position = UDim2.new(0, 16, 0, 0)
-killLabel.BackgroundTransparency = 1
-killLabel.TextColor3 = Color3.fromRGB(255, 200, 200)
-killLabel.TextSize = 10
-killLabel.Font = Enum.Font.SourceSansBold
-killLabel.Text = "Emergency Kill Switch"
-killLabel.TextXAlignment = Enum.TextXAlignment.Left
-killLabel.Parent = killRow
-
-UI.KillSwitch = Instance.new("TextButton")
-UI.KillSwitch.Size = UDim2.new(0.40, -4, 0, 20)
-UI.KillSwitch.Position = UDim2.new(0.58, 0, 0.5, -10)
-UI.KillSwitch.BackgroundColor3 = Color3.fromRGB(120, 20, 20)
-UI.KillSwitch.TextColor3 = Color3.fromRGB(255, 200, 200)
-UI.KillSwitch.TextSize = 9
-UI.KillSwitch.Font = Enum.Font.SourceSansBold
-UI.KillSwitch.Text = "TERMINATE"
-UI.KillSwitch.Parent = killRow
-Instance.new("UICorner", UI.KillSwitch).CornerRadius = UDim.new(0, 4)
-
-UI.KillSwitch.MouseButton1Click:Connect(function()
+killBtn.MouseButton1Click:Connect(function()
     Running = false Env.DominateHubLoaded = nil 
     for k, _ in pairs(Env) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then Env[k] = false end end
     pcall(function() 
@@ -1124,77 +921,12 @@ UI.KillSwitch.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- WIRE UP NOOBS
-UI.Starter.MouseButton1Click:Connect(function() tV2(UI.Starter, "AutoUpgradeStarter") end) 
-UI.Cooker.MouseButton1Click:Connect(function() tV2(UI.Cooker, "AutoUpgradeCooker") end) 
-UI.Farmer.MouseButton1Click:Connect(function() tV2(UI.Farmer, "AutoUpgradeFarmer") end) 
-UI.Magician.MouseButton1Click:Connect(function() tV2(UI.Magician, "AutoUpgradeMagician") end) 
-UI.Archer.MouseButton1Click:Connect(function() tV2(UI.Archer, "AutoUpgradeArcher") end) 
-UI.Soldier.MouseButton1Click:Connect(function() tV2(UI.Soldier, "AutoUpgradeSoldier") end) 
-UI.MoreOof.MouseButton1Click:Connect(function() tV2(UI.MoreOof, "AutoUpgradeMoreOof") end) 
-UI.FasterNoobs.MouseButton1Click:Connect(function() tV2(UI.FasterNoobs, "AutoUpgradeFasterNoobs") end)
-
-UI.R2Fisherman.MouseButton1Click:Connect(function() tV2(UI.R2Fisherman, "AutoUpgradeFishermanNoob") end) 
-UI.R2Knight.MouseButton1Click:Connect(function() tV2(UI.R2Knight, "AutoUpgradeKnightNoob") end) 
-UI.R2Explorer.MouseButton1Click:Connect(function() tV2(UI.R2Explorer, "AutoUpgradeExplorerNoob") end) 
-UI.R2Magician.MouseButton1Click:Connect(function() tV2(UI.R2Magician, "AutoUpgradeMagicianNoob") end)
-
--- WIRE UP FOOTBALL
-UI.Goalkeeper.MouseButton1Click:Connect(function() tV2(UI.Goalkeeper, "AutoUpgradeGoalkeeper") end) 
-UI.LeftBack.MouseButton1Click:Connect(function() tV2(UI.LeftBack, "AutoUpgradeLeftBack") end) 
-UI.LeftCenterBack.MouseButton1Click:Connect(function() tV2(UI.LeftCenterBack, "AutoUpgradeLeftCenterBack") end) 
-UI.RightCenterBack.MouseButton1Click:Connect(function() tV2(UI.RightCenterBack, "AutoUpgradeRightCenterBack") end) 
-UI.RightBack.MouseButton1Click:Connect(function() tV2(UI.RightBack, "AutoUpgradeRightBack") end) 
-UI.LeftDefensiveMid.MouseButton1Click:Connect(function() tV2(UI.LeftDefensiveMid, "AutoUpgradeLeftDefensiveMid") end) 
-UI.RightDefensiveMid.MouseButton1Click:Connect(function() tV2(UI.RightDefensiveMid, "AutoUpgradeRightDefensiveMid") end) 
-UI.AttackingMid.MouseButton1Click:Connect(function() tV2(UI.AttackingMid, "AutoUpgradeAttackingMid") end) 
-UI.LeftWing.MouseButton1Click:Connect(function() tV2(UI.LeftWing, "AutoUpgradeLeftWing") end) 
-UI.RightWing.MouseButton1Click:Connect(function() tV2(UI.RightWing, "AutoUpgradeRightWing") end) 
-UI.Striker.MouseButton1Click:Connect(function() tV2(UI.Striker, "AutoUpgradeStriker") end)
-
-UI.ScoreGoal.MouseButton1Click:Connect(function() tV2(UI.ScoreGoal, "AutoScoreGoal") end) 
-UI.MoreGoals.MouseButton1Click:Connect(function() tV2(UI.MoreGoals, "AutoGoalsMoreGoals") end) 
-UI.GoalsRuneBulk.MouseButton1Click:Connect(function() tV2(UI.GoalsRuneBulk, "AutoGoalsRuneBulk") end) 
-UI.GoalsRuneLuck.MouseButton1Click:Connect(function() tV2(UI.GoalsRuneLuck, "AutoGoalsRuneLuck") end) 
-UI.AutoBuyKicker.MouseButton1Click:Connect(function() tV2(UI.AutoBuyKicker, "AutoBuyAutoKick") end) 
-UI.FootballTree.MouseButton1Click:Connect(function() tV2(UI.FootballTree, "AutoFootballTree") end) 
-UI.ClaimTrophies.MouseButton1Click:Connect(function() tV2(UI.ClaimTrophies, "AutoClaimTrophies") end)
-
--- WIRE UP RUNES & CAPSULES
-UI.RollBasicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollBasicRuneCard, "AutoRollBasicRune") end) 
-UI.RollSuperRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollSuperRuneCard, "AutoRollSuperRune") end) 
-UI.RollAdvancedRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollAdvancedRuneCard, "AutoRollAdvancedRune") end) 
-UI.RollCosmicRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollCosmicRuneCard, "AutoRollCosmicRune") end) 
-UI.RollSnowyRuneCard.MouseButton1Click:Connect(function() tV2(UI.RollSnowyRuneCard, "AutoRollSnowyRune") end) 
-UI.FootballRuneCard.MouseButton1Click:Connect(function() tV2(UI.FootballRuneCard, "AutoRollFootballRune") end)
-
-UI.ClassicCapsule.MouseButton1Click:Connect(function() tV2(UI.ClassicCapsule, "AutoOpenClassicCapsule") end) 
-UI.FootballCapsule.MouseButton1Click:Connect(function() tV2(UI.FootballCapsule, "AutoOpenFootballCapsule") end) 
-UI.SuperCapsule.MouseButton1Click:Connect(function() tV2(UI.SuperCapsule, "AutoOpenSuperCapsule") end)
-
--- WIRE UP MINES
-UI.MineStone.MouseButton1Click:Connect(function() tV2(UI.MineStone, "AutoMineStone") end) 
-UI.MineCoal.MouseButton1Click:Connect(function() tV2(UI.MineCoal, "AutoMineCoal") end) 
-UI.MineSilver.MouseButton1Click:Connect(function() tV2(UI.MineSilver, "AutoMineSilver") end) 
-UI.MineIron.MouseButton1Click:Connect(function() tV2(UI.MineIron, "AutoMineIron") end) 
-UI.MineCopper.MouseButton1Click:Connect(function() tV2(UI.MineCopper, "AutoMineCopper") end) 
-UI.MineGold.MouseButton1Click:Connect(function() tV2(UI.MineGold, "AutoMineGold") end) 
-UI.MinePlatinum.MouseButton1Click:Connect(function() tV2(UI.MinePlatinum, "AutoMinePlatinum") end) 
-UI.MineTitanium.MouseButton1Click:Connect(function() tV2(UI.MineTitanium, "AutoMineTitanium") end) 
-UI.MineCobalt.MouseButton1Click:Connect(function() tV2(UI.MineCobalt, "AutoMineCobalt") end) 
-UI.MineUranium.MouseButton1Click:Connect(function() tV2(UI.MineUranium, "AutoMineUranium") end) 
-UI.MinePalladium.MouseButton1Click:Connect(function() tV2(UI.MinePalladium, "AutoMinePalladium") end) 
-UI.MineAetherite.MouseButton1Click:Connect(function() tV2(UI.MineAetherite, "AutoMineAetherite") end) 
-UI.MineRuby.MouseButton1Click:Connect(function() tV2(UI.MineRuby, "AutoMineRuby") end) 
-UI.MineVoidsteel.MouseButton1Click:Connect(function() tV2(UI.MineVoidsteel, "AutoMineVoidsteel") end) 
-UI.MineCelestium.MouseButton1Click:Connect(function() tV2(UI.MineCelestium, "AutoMineCelestium") end)
-
--- TAB ROUTERS
+-- TAB ROUTING SYSTEM
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
-    for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(55, 55, 65), Color3.fromRGB(210, 210, 220) end
-    bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(240, 240, 245), Color3.fromRGB(15, 15, 15) 
+    for _, t in ipairs(tabs) do t.BackgroundColor3, t.TextColor3 = Color3.fromRGB(24, 24, 32), Color3.fromRGB(180, 180, 195) end
+    bActive.BackgroundColor3, bActive.TextColor3 = Color3.fromRGB(147, 51, 234), Color3.fromRGB(255, 255, 255) 
 end
 tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) 
 tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
@@ -1205,20 +937,21 @@ tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSett
 
 local function sideRoute(tScroll, aBtn, aScrolls, aBtns)
     for i, s in ipairs(aScrolls) do s.Visible = (s == tScroll) end
-    for i, b in ipairs(aBtns) do b.BackgroundColor3 = (b == aBtn) and Color3.fromRGB(240, 240, 245) or Color3.fromRGB(55, 55, 65) b.TextColor3 = (b == aBtn) and Color3.fromRGB(15, 15, 15) or Color3.fromRGB(210, 210, 220) end
+    for i, b in ipairs(aBtns) do b.BackgroundColor3 = (b == aBtn) and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(26, 26, 36) b.TextColor3 = (b == aBtn) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 180, 195) end
 end
 
-local upS, upB = {upScrollR1, upScrollR2, upScrollR3}, {bUpR1, bUpR2, bUpR3}
+local upS, upB = {upScrollR1, upScrollR2, upScrollR3}, {bUpR1, bUpR2Btn, bUpR3Btn}
 bUpR1.MouseButton1Click:Connect(function() sideRoute(upScrollR1, bUpR1, upS, upB) end)
-bUpR2.MouseButton1Click:Connect(function() sideRoute(upScrollR2, bUpR2, upS, upB) end)
-bUpR3.MouseButton1Click:Connect(function() sideRoute(upScrollR3, bUpR3, upS, upB) end)
+bUpR2Btn.MouseButton1Click:Connect(function() sideRoute(upScrollR2, bUpR2Btn, upS, upB) end)
+bUpR3Btn.MouseButton1Click:Connect(function() sideRoute(upScrollR3, bUpR3Btn, upS, upB) end)
 
 local noobS, noobB = {noobScrollR1, noobScrollR2}, {bNoobR1, bNoobR2}
 bNoobR1.MouseButton1Click:Connect(function() sideRoute(noobScrollR1, bNoobR1, noobS, noobB) end)
 bNoobR2.MouseButton1Click:Connect(function() sideRoute(noobScrollR2, bNoobR2, noobS, noobB) end)
 
 local fS, fB = {fNoobScroll, fUpgradeScroll}, {bFNoobs, bFUpgrades}
-bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS, fB) end) bFUpgrades.MouseButton1Click:Connect(function() sideRoute(fUpgradeScroll, bFUpgrades, fS, fB) end)
+bFNoobs.MouseButton1Click:Connect(function() sideRoute(fNoobScroll, bFNoobs, fS, fB) end) 
+bFUpgrades.MouseButton1Click:Connect(function() sideRoute(fUpgradeScroll, bFUpgrades, fS, fB) end)
 
 local miscSubS, miscSubB = {miscScrollRu1, miscScrollRu2, miscScrollRuE, miscScrollCap}, {bMiscRu1, bMiscRu2, bMiscRuE, bMiscCap}
 bMiscRu1.MouseButton1Click:Connect(function() sideRoute(miscScrollRu1, bMiscRu1, miscSubS, miscSubB) end)
@@ -1229,6 +962,7 @@ bMiscCap.MouseButton1Click:Connect(function() sideRoute(miscScrollCap, bMiscCap,
 local setS, setB = {setGenScroll}, {bSetGen}
 bSetGen.MouseButton1Click:Connect(function() sideRoute(setGenScroll, bSetGen, setS, setB) end)
 
+-- WINDOW DRAGGING ENGINE
 local dragging, dragInput, dragStart, startPos
 mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
 mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
@@ -1240,7 +974,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & TELEPORT ENGINES
+-- LOCOMOTION & AUTOMATION ENGINES
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1277,7 +1011,7 @@ local OrePriorityList = {
 }
 
 local currentOreIndex = 1
-lastOreJumpTick = 0
+local lastOreJumpTick = 0
 
 local function isOreRespawning(oreModel)
     for _, desc in ipairs(oreModel:GetDescendants()) do
@@ -1405,7 +1139,6 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED FAST GEM UPGRADE LOOP
 local GemUpgradeList = {
     {F="AutoGemMoreOof", T="UpgradeUpgradeMax", A={"Gem","MoreOof"}},
     {F="AutoGemMoreGems", T="UpgradeUpgradeMax", A={"Gem","MoreGems"}},
@@ -1433,7 +1166,6 @@ end)
 
 task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
 
--- GEM SHOP PITSTOP LOOP (WITH 6S STORE DELAY)
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1444,7 +1176,7 @@ task.spawn(function()
                 if NetRemote and Running then
                     pcall(function()
                         MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
-                        task.wait(6.0) -- Delayed by 6 seconds for the store to process updates and purchases
+                        task.wait(6.0)
                         if Env.AutoGemExchange then
                             NetRemote:FireServer("ExchangeAllMinerals")
                         end
@@ -1499,4 +1231,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.6 Base Loaded Successfully with Native Visible Accordion Dropdown!")
+print("[Dominate Hub] V11.4 Cyber-Purple Aesthetic Theme Loaded Successfully!")
