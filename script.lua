@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (CLEAN CODE & WORST-TO-BEST MINES ORDER)
+-- DOMINATE HUB | PRO EDITION (CLEANED FOOTBALL LABELS & WORKING LOGIC)
 --======================================================================================
 local Env = getgenv()
 
@@ -668,7 +668,7 @@ end
 local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR WITH BOLD PURPLE SCROLLBAR & CLEAN PADDING (`UIListLayout.Padding = 8`)
+-- VERTICAL SCROLL GENERATOR WITH BOLD PURPLE SCROLLBAR & CLEAN PADDING
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -861,29 +861,28 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- FOOTBALL PAGE SETUP
+-- FOOTBALL PAGE SETUP (UPDATED LABELS & REMOVED AUTO BUY KICK)
 -- ======================================================================================
 local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
 
 createSectionHeader(footballScroll, "Football Noobs")
-createToggleRow(footballScroll, "Upgrade Goalkeeper", "AutoUpgradeGoalkeeper")
-createToggleRow(footballScroll, "Upgrade Left Back", "AutoUpgradeLeftBack")
-createToggleRow(footballScroll, "Upgrade L-Center Back", "AutoUpgradeLeftCenterBack")
-createToggleRow(footballScroll, "Upgrade R-Center Back", "AutoUpgradeRightCenterBack")
-createToggleRow(footballScroll, "Upgrade Right Back", "AutoUpgradeRightBack")
-createToggleRow(footballScroll, "Upgrade L-Defensive Mid", "AutoUpgradeLeftDefensiveMid")
-createToggleRow(footballScroll, "Upgrade R-Defensive Mid", "AutoUpgradeRightDefensiveMid")
-createToggleRow(footballScroll, "Upgrade Attacking Mid", "AutoUpgradeAttackingMid")
-createToggleRow(footballScroll, "Upgrade Left Wing", "AutoUpgradeLeftWing")
-createToggleRow(footballScroll, "Upgrade Right Wing", "AutoUpgradeRightWing")
-createToggleRow(footballScroll, "Upgrade Striker", "AutoUpgradeStriker")
+createToggleRow(footballScroll, "Goalkeeper", "AutoUpgradeGoalkeeper")
+createToggleRow(footballScroll, "Left Back", "AutoUpgradeLeftBack")
+createToggleRow(footballScroll, "Left Centerback", "AutoUpgradeLeftCenterBack")
+createToggleRow(footballScroll, "Right Centerback", "AutoUpgradeRightCenterBack")
+createToggleRow(footballScroll, "Right Back", "AutoUpgradeRightBack")
+createToggleRow(footballScroll, "Left Defensive Midfield", "AutoUpgradeLeftDefensiveMid")
+createToggleRow(footballScroll, "Right Defensive Midfield", "AutoUpgradeRightDefensiveMid")
+createToggleRow(footballScroll, "Attacking Mid", "AutoUpgradeAttackingMid")
+createToggleRow(footballScroll, "Left Wing", "AutoUpgradeLeftWing")
+createToggleRow(footballScroll, "Right Wing", "AutoUpgradeRightWing")
+createToggleRow(footballScroll, "Striker", "AutoUpgradeStriker")
 
 createSectionHeader(footballScroll, "Football Upgrades & Features")
 createToggleRow(footballScroll, "Auto Score Goal", "AutoScoreGoal")
 createToggleRow(footballScroll, "More Goals Upgrade", "AutoGoalsMoreGoals")
 createToggleRow(footballScroll, "Goals Rune Bulk", "AutoGoalsRuneBulk")
 createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
-createToggleRow(footballScroll, "Auto-Buy Auto Kick", "AutoBuyAutoKick")
 createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
@@ -1225,4 +1224,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.16 Clean Spaced Cards & Ordered Mines Loaded Successfully!")
+print("[Dominate Hub] V11.18 Stable Build Loaded Successfully!")
