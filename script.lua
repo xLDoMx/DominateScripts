@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (CLEAN SPACED CARDS & MATCHING REFERENCE STYLING)
+-- DOMINATE HUB | PRO EDITION (CLEAN CODE & WORST-TO-BEST MINES ORDER)
 --======================================================================================
 local Env = getgenv()
 
@@ -230,7 +230,7 @@ Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 Env.DiscordWebhookURL = ""
 
--- MATCHING REFERENCE CARD ROW WITH PROPER SPACING & SOFT PURPLE STROKE
+-- CARD ROW HELPER
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -288,7 +288,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- MATCHING MASTER TOGGLE GROUP (CARD STYLE)
+-- MASTER TOGGLE GROUP HELPER
 local function masterToggleGroup(txt, flagsTable, scr)
     local f = Instance.new("Frame") 
     f.Size = UDim2.new(1, -10, 0, 42) 
@@ -350,7 +350,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
     return switchTrack
 end
 
--- VIBRANT SECTION HEADER HELPER FUNCTION (MATCHING REFERENCE PINK/MAGENTA HEADERS)
+-- SECTION HEADER HELPER
 local function createSectionHeader(parent, txt)
     local header = Instance.new("TextLabel")
     header.Size = UDim2.new(1, -10, 0, 32)
@@ -608,7 +608,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION - CROPPED TIGHTLY & CENTERED TEXT)
+-- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION - CROPPED TIGHTLY TO FIT EMOJI & TEXT)
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -738,7 +738,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 -- ======================================================================================
--- MINES PAGE SETUP
+-- MINES PAGE SETUP (SORTED WORST TO BEST)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 
@@ -842,23 +842,23 @@ end)
 createSectionHeader(minesScroll, "Basic Ores")
 createToggleRow(minesScroll, "Stone", "AutoMineStone")
 createToggleRow(minesScroll, "Coal", "AutoMineCoal")
-createToggleRow(minesScroll, "Silver", "AutoMineSilver")
-createToggleRow(minesScroll, "Iron", "AutoMineIron")
 createToggleRow(minesScroll, "Copper", "AutoMineCopper")
+createToggleRow(minesScroll, "Iron", "AutoMineIron")
+createToggleRow(minesScroll, "Silver", "AutoMineSilver")
 
 createSectionHeader(minesScroll, "Advanced Ores")
 createToggleRow(minesScroll, "Gold", "AutoMineGold")
 createToggleRow(minesScroll, "Platinum", "AutoMinePlatinum")
 createToggleRow(minesScroll, "Titanium", "AutoMineTitanium")
-createToggleRow(minesScroll, "Cobalt", "AutoMineCobalt")
 createToggleRow(minesScroll, "Uranium", "AutoMineUranium")
+createToggleRow(minesScroll, "Cobalt", "AutoMineCobalt")
 
 createSectionHeader(minesScroll, "End-Game Ores")
 createToggleRow(minesScroll, "Palladium", "AutoMinePalladium")
-createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
 createToggleRow(minesScroll, "Ruby", "AutoMineRuby")
-createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
+createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
 createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
+createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1225,4 +1225,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.14 Reference-Matching Card Layout Loaded Successfully!")
+print("[Dominate Hub] V11.16 Clean Spaced Cards & Ordered Mines Loaded Successfully!")
