@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (SEPARATED GEM CONVERTER & SHOP TELEPORT)
+-- DOMINATE HUB | PRO EDITION (FIXED EMERGENCY BUTTON POSITION & STABLE EXECUTION)
 --======================================================================================
 local Env = getgenv()
 
@@ -1010,9 +1010,10 @@ killLbl.Text = "Emergency Kill Switch"
 killLbl.TextXAlignment = Enum.TextXAlignment.Left 
 killLbl.Parent = killRow
 
+-- FIXED EMERGENCY KILL SWITCH BUTTON (Replacing the old toggle row layout)
 local killBtn = Instance.new("TextButton") 
-killBtn.Size = UDim2.new(0, 90, 0, 26) 
-killBtn.Position = UDim2.new(1, -58, 0.5, -13) 
+killBtn.Size = UDim2.new(0, 110, 0, 30) 
+killBtn.Position = UDim2.new(1, -118, 0.5, -15) 
 killBtn.BackgroundColor3 = Color3.fromRGB(153, 27, 27) 
 killBtn.TextColor3 = Color3.fromRGB(254, 226, 226) 
 killBtn.TextSize = 11 
@@ -1070,7 +1071,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES (SEPARATED GEM CONVERTER & SHOP TELEPORT LOOPS)
+-- LOCOMOTION & AUTOMATION ENGINES
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1104,7 +1105,7 @@ task.spawn(function()
     end
 end)
 
--- 1. GEM CONVERTER ALONE (Fires remote from anywhere without teleporting when Shop Teleport is OFF)
+-- 1. GEM CONVERTER ALONE
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1117,7 +1118,7 @@ task.spawn(function()
     end
 end)
 
--- 2. SHOP TELEPORT LOOP ALONE (Keeps player at shop when Gem Converter is OFF)
+-- 2. SHOP TELEPORT LOOP ALONE
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1129,7 +1130,7 @@ task.spawn(function()
     end
 end)
 
--- 3. COMBINED PITSTOP LOOP (Only runs when BOTH Gem Converter AND Shop Teleport are TOGGLED ON)
+-- 3. COMBINED PITSTOP LOOP
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1334,8 +1335,8 @@ local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bre
 task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
 
 task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
-task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
+task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if IDLE_CHECK_REMOVED = true if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeList", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
+task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AllOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
 task.spawn(function()
@@ -1349,4 +1350,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.29 Separated Gem Converter & Teleport Loop Loaded Successfully!")
+print("[Dominate Hub] V11.30 Fixed Terminate Button & Final Polish Loaded Successfully!")
