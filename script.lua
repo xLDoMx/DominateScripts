@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (REVERTED GEM CONVERTER & SEAMLESS FLAT UI)
+-- DOMINATE HUB | PRO EDITION (BLENDED PURPLE THEME & WORKING GEM CONVERTER)
 --======================================================================================
 local Env = getgenv()
 
@@ -51,7 +51,7 @@ local function showToast(msg)
         local toast = Instance.new("Frame")
         toast.Size = UDim2.new(0, 220, 0, 38)
         toast.Position = UDim2.new(1, 10, 1, -60)
-        toast.BackgroundColor3 = Color3.fromRGB(22, 18, 32)
+        toast.BackgroundColor3 = Color3.fromRGB(28, 18, 42)
         toast.BackgroundTransparency = 0.2
         toast.BorderSizePixel = 0
         toast.Parent = (gethui and gethui()) or player:WaitForChild("PlayerGui")
@@ -252,7 +252,7 @@ local function createToggleRow(parent, txt, vKey)
     local switchTrack = Instance.new("TextButton")
     switchTrack.Size = UDim2.new(0, 40, 0, 20)
     switchTrack.Position = UDim2.new(1, -45, 0.5, -10)
-    switchTrack.BackgroundColor3 = Env[vKey] and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)
+    switchTrack.BackgroundColor3 = Env[vKey] and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(45, 40, 65)
     switchTrack.Text = ""
     switchTrack.AutoButtonColor = false
     switchTrack.Parent = row
@@ -269,7 +269,7 @@ local function createToggleRow(parent, txt, vKey)
     switchTrack.MouseButton1Click:Connect(function()
         Env[vKey] = not Env[vKey]
         local active = Env[vKey]
-        TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)}):Play()
+        TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(45, 40, 65)}):Play()
         TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
     end)
 
@@ -281,7 +281,7 @@ local function createSectionHeader(parent, txt)
     local header = Instance.new("TextLabel")
     header.Size = UDim2.new(1, -6, 0, 28)
     header.BackgroundTransparency = 1
-    header.TextColor3 = Color3.fromRGB(192, 132, 252)
+    header.TextColor3 = Color3.fromRGB(216, 180, 254)
     header.TextSize = 12
     header.Font = Enum.Font.SourceSansBold
     header.Text = txt
@@ -343,14 +343,14 @@ end)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 96)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
-statsHud.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+statsHud.BackgroundColor3 = Color3.fromRGB(20, 14, 32)
 statsHud.BackgroundTransparency = 0.35
 statsHud.BorderSizePixel = 0
 statsHud.Parent = sg
 Instance.new("UICorner", statsHud).CornerRadius = UDim.new(0, 8)
 
 local hudStroke = Instance.new("UIStroke")
-hudStroke.Color = Color3.fromRGB(147, 51, 234)
+hudStroke.Color = Color3.fromRGB(168, 85, 247)
 hudStroke.Transparency = 0.4
 hudStroke.Parent = statsHud
 
@@ -358,7 +358,7 @@ local hudTitle = Instance.new("TextLabel")
 hudTitle.Size = UDim2.new(1, 0, 0, 20)
 hudTitle.Position = UDim2.new(0, 0, 0, 2)
 hudTitle.BackgroundTransparency = 1
-hudTitle.TextColor3 = Color3.fromRGB(192, 132, 252)
+hudTitle.TextColor3 = Color3.fromRGB(216, 180, 254)
 hudTitle.TextSize = 10
 hudTitle.Font = Enum.Font.SourceSansBold
 hudTitle.Text = "PERFORMANCE HUD"
@@ -403,19 +403,19 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER (BLENDED PURPLE-TONED DARK BACKGROUND)
+-- MAIN WINDOW CONTAINER (RICH BLENDED PURPLE-TONED DARK BACKGROUND)
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 580, 0, 370) 
 mainFrame.Position = UDim2.new(0.5, -290, 0.5, -185) 
-mainFrame.BackgroundColor3 = Color3.fromRGB(15, 12, 22) 
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 30) 
 mainFrame.BackgroundTransparency = 0.05
 mainFrame.BorderSizePixel = 0 
 mainFrame.Parent = sg
 
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 12)
 local mainStroke = Instance.new("UIStroke")
-mainStroke.Color = Color3.fromRGB(147, 51, 234)
-mainStroke.Transparency = 0.3
+mainStroke.Color = Color3.fromRGB(168, 85, 247)
+mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
 
 -- HEADER TITLE & TELEMETRY
@@ -434,7 +434,7 @@ local headerTelemetry = Instance.new("TextLabel")
 headerTelemetry.Size = UDim2.new(0.35, 0, 0, 35)
 headerTelemetry.Position = UDim2.new(0.63, 0, 0, 4)
 headerTelemetry.BackgroundTransparency = 1
-headerTelemetry.TextColor3 = Color3.fromRGB(192, 132, 252)
+headerTelemetry.TextColor3 = Color3.fromRGB(216, 180, 254)
 headerTelemetry.TextSize = 11
 headerTelemetry.Font = Enum.Font.SourceSansBold
 headerTelemetry.Text = "FPS: 60 | 30ms"
@@ -455,16 +455,16 @@ end)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 115, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -57, 0.01, 0) 
-minBtn.BackgroundColor3 = Color3.fromRGB(22, 18, 32) 
+minBtn.BackgroundColor3 = Color3.fromRGB(24, 16, 40) 
 minBtn.BackgroundTransparency = 0.5 
-minBtn.TextColor3 = Color3.fromRGB(192, 132, 252) 
+minBtn.TextColor3 = Color3.fromRGB(216, 180, 254) 
 minBtn.TextSize = 11 
 minBtn.Font = Enum.Font.SourceSansBold 
 minBtn.Text = "Dominate Hub" 
 minBtn.Parent = sg
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 13)
 local minStroke = Instance.new("UIStroke")
-minStroke.Color = Color3.fromRGB(147, 51, 234)
+minStroke.Color = Color3.fromRGB(168, 85, 247)
 minStroke.Transparency = 0.4
 minStroke.Parent = minBtn
 
@@ -497,15 +497,15 @@ minBtn.MouseButton1Click:Connect(function()
         mainFrame.Visible = true
         local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 580, 0, 370), BackgroundTransparency = 0.05})
         tween:Play()
-        minBtn.TextColor3 = Color3.fromRGB(192, 132, 252)
+        minBtn.TextColor3 = Color3.fromRGB(216, 180, 254)
     end
 end)
 
--- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION - NO STROKE AROUND TAB TEXT)
+-- SIDEBAR CONTAINER (VERTICAL LEFT NAVIGATION - BLENDED PURPLE CARDS, NO TEXT STROKE)
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 140, 1, -45)
 sidebarFrame.Position = UDim2.new(0, 10, 0, 40)
-sidebarFrame.BackgroundColor3 = Color3.fromRGB(11, 9, 16)
+sidebarFrame.BackgroundColor3 = Color3.fromRGB(14, 9, 24)
 sidebarFrame.BorderSizePixel = 0
 sidebarFrame.Parent = mainFrame
 Instance.new("UICorner", sidebarFrame).CornerRadius = UDim.new(0, 8)
@@ -518,8 +518,8 @@ local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
     t.Size = UDim2.new(1, -12, 0, 42)
     t.Position = UDim2.new(0, 6, 0, 0)
-    t.BackgroundColor3 = Color3.fromRGB(22, 18, 32)
-    t.TextColor3 = Color3.fromRGB(200, 200, 215)
+    t.BackgroundColor3 = Color3.fromRGB(28, 20, 46)
+    t.TextColor3 = Color3.fromRGB(210, 190, 235)
     t.TextSize = 12
     t.Font = Enum.Font.SourceSansBold
     t.Text = emoji .. "    " .. txt
@@ -536,7 +536,7 @@ local function makeMainTab(emoji, txt)
 end
 
 local tabUpgrades = makeMainTab("⚡", "Upgrades") 
-tabUpgrades.BackgroundColor3 = Color3.fromRGB(126, 34, 206) 
+tabUpgrades.BackgroundColor3 = Color3.fromRGB(147, 51, 234) 
 tabUpgrades.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 local tabNoobs = makeMainTab("🤖", "Noobs")
@@ -571,7 +571,7 @@ local function makeVerticalScroll(parent)
     s.BackgroundTransparency = 1 
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 3 
-    s.ScrollBarImageColor3 = Color3.fromRGB(147, 51, 234) 
+    s.ScrollBarImageColor3 = Color3.fromRGB(168, 85, 247) 
     s.Visible = false 
     s.Parent = parent 
     
@@ -592,7 +592,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
     local switchTrack = Instance.new("TextButton")
     switchTrack.Size = UDim2.new(0, 40, 0, 20)
     switchTrack.Position = UDim2.new(1, -45, 0.5, -10)
-    switchTrack.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+    switchTrack.BackgroundColor3 = Color3.fromRGB(45, 40, 65)
     switchTrack.Text = ""
     switchTrack.AutoButtonColor = false
     switchTrack.Parent = f
@@ -614,7 +614,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
         for _, flag in ipairs(flagsTable) do
             Env[flag] = activeState
         end
-        TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = activeState and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)}):Play()
+        TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = activeState and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(45, 40, 65)}):Play()
         TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = activeState and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)}):Play()
     end)
     return switchTrack
@@ -675,7 +675,7 @@ local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
 bestTierBtn.Size = UDim2.new(1, -6, 0, 30)
-bestTierBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+bestTierBtn.BackgroundColor3 = Color3.fromRGB(45, 40, 65)
 bestTierBtn.TextColor3 = Color3.fromRGB(220, 220, 230)
 bestTierBtn.TextSize = 11
 bestTierBtn.Font = Enum.Font.SourceSansBold
@@ -686,7 +686,7 @@ Instance.new("UICorner", bestTierBtn).CornerRadius = UDim.new(0, 6)
 bestTierBtn.MouseButton1Click:Connect(function()
     bestTierActive = not bestTierActive
     bestTierBtn.Text = bestTierActive and "Best Tier Only: ACTIVE" or "Best Tier Only: DISABLED"
-    bestTierBtn.BackgroundColor3 = bestTierActive and Color3.fromRGB(147, 51, 234) or Color3.fromRGB(45, 45, 60)
+    bestTierBtn.BackgroundColor3 = bestTierActive and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(45, 40, 65)
 
     local topOres = {"AutoMineVoidsteel", "AutoMineCelestium", "AutoMineRuby"}
     local allOres = {
@@ -720,7 +720,7 @@ speedLabel.Parent = speedContainer
 local sliderTrack = Instance.new("TextButton")
 sliderTrack.Size = UDim2.new(1, -16, 0, 12)
 sliderTrack.Position = UDim2.new(0, 8, 0, 28)
-sliderTrack.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+sliderTrack.BackgroundColor3 = Color3.fromRGB(45, 40, 65)
 sliderTrack.Text = ""
 sliderTrack.AutoButtonColor = false
 sliderTrack.Parent = speedContainer
@@ -729,7 +729,7 @@ Instance.new("UICorner", sliderTrack).CornerRadius = UDim.new(1, 0)
 local sliderFill = Instance.new("Frame")
 local initialPercent = math.clamp(((Env.MiningJumpSpeed or 0.8) - 0.1) / 2.9, 0, 1)
 sliderFill.Size = UDim2.new(initialPercent, 0, 1, 0)
-sliderFill.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
+sliderFill.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
 sliderFill.BorderSizePixel = 0
 sliderFill.Parent = sliderTrack
 Instance.new("UICorner", sliderFill).CornerRadius = UDim.new(1, 0)
@@ -866,10 +866,10 @@ local function mainRoute(pOpen, bActive)
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
     for _, t in ipairs(tabs) do 
-        t.BackgroundColor3 = Color3.fromRGB(22, 18, 32)
-        t.TextColor3 = Color3.fromRGB(200, 200, 215)
+        t.BackgroundColor3 = Color3.fromRGB(28, 20, 46)
+        t.TextColor3 = Color3.fromRGB(210, 190, 235)
     end
-    bActive.BackgroundColor3 = Color3.fromRGB(126, 34, 206)
+    bActive.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
     bActive.TextColor3 = Color3.fromRGB(255, 255, 255)
 end
 
@@ -1087,27 +1087,17 @@ task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running t
 -- RESTORED WORKING GEM CONVERTER & 6-SECOND PITSTOP LOOP
 task.spawn(function()
     while Running do
-        task.wait(1.0)
-        if Env.AutoGemShopTeleport then
-            gemExchangeCountdown = gemExchangeCountdown - 1
-            if gemExchangeCountdown <= 0 then
-                gemExchangeCountdown = 60
-                if NetRemote and Running then
-                    pcall(function()
-                        MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
-                        task.wait(6.0)
-                        if Env.AutoGemExchange then
-                            NetRemote:FireServer("ExchangeAllMinerals")
-                        end
-                        task.wait(1.0)
-                        MasterTargetVector = nil
-                    end)
-                    showToast("Gem Shop Pitstop: Stayed 6s to update upgrades & convert!")
-                    sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop!")
-                end
-            end
-        else
-            gemExchangeCountdown = 60
+        task.wait(60.0)
+        if NetRemote and Running and Env.AutoGemExchange then
+            pcall(function()
+                MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
+                task.wait(6.0)
+                NetRemote:FireServer("ExchangeAllMinerals")
+                task.wait(1.0)
+                MasterTargetVector = nil
+            end)
+            showToast("Gem Shop Pitstop: Exchanged minerals successfully!")
+            sendDiscordWebhook("Dominate Hub: Successfully performed Gem Shop Pitstop & Converted Minerals!")
         end
     end
 end)
@@ -1150,4 +1140,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.9 Blended Theme, Seamless Layout & Restored Gem Converter Loaded Successfully!")
+print("[Dominate Hub] V11.10 Blended Purple Theme, Seamless Layout & Restored Gem Converter Loaded Successfully!")
