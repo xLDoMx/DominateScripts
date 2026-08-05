@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (SMOOTH INVISIBLE SCROLL, TRIALS & STABLE BUILD V11.73)
+-- DOMINATE HUB | PRO EDITION (FIXED SIDEBAR CLIPPING & SCROLLING V11.74)
 --======================================================================================
 local Env = getgenv()
 
@@ -566,6 +566,7 @@ mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 28) 
 mainFrame.BackgroundTransparency = 1
 mainFrame.BorderSizePixel = 0 
+mainFrame.ClipsDescendants = true
 mainFrame.Parent = sg
 
 local mainCorner = Instance.new("UICorner")
@@ -703,17 +704,29 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER
+-- SIDEBAR CONTAINER (SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR)
+local sidebarScroll = Instance.new("ScrollingFrame")
+sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
+sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
+sidebarScroll.BackgroundTransparency = 1
+sidebarScroll.BorderSizePixel = 0
+sidebarScroll.ScrollBarThickness = 0
+sidebarScroll.ScrollingEnabled = true
+sidebarScroll.Parent = mainFrame
+
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
-sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
+sidebarFrame.Size = UDim2.new(1, 0, 0, 0)
 sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
-sidebarFrame.Parent = mainFrame
+sidebarFrame.Parent = sidebarScroll
 
 local sidebarLayout = Instance.new("UIListLayout")
 sidebarLayout.Padding = UDim.new(0, 8)
 sidebarLayout.Parent = sidebarFrame
+
+sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    sidebarScroll.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
+end)
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
@@ -1756,4 +1769,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.73 Invisible Scrollbars & Fully Populated Trials Loaded Successfully!")
+print("[Dominate Hub] V11.74 Fixed Sidebar Scrolling & Clamped Layout Loaded Successfully!")
