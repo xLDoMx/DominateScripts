@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (INDIVIDUAL LOWEST-TO-HIGHEST MOB TOGGLES & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (FIXED MOB RESPAWN FILTER & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -1181,6 +1181,16 @@ task.spawn(function()
     end
 end)
 
+-- HELPER TO CHECK IF MOB IS RESPAWNING
+local function isMobRespawning(mobModel)
+    for _, desc in ipairs(mobModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text:lower():find("respawning") then
+            return true
+        end
+    end
+    return false
+end
+
 -- INDIVIDUAL MOB PRIORITY LIST (LOWEST TO HIGHEST)
 local MobPriorityList = {
     {F = "AutoMobGoblin", N = "Goblin"},
@@ -1197,7 +1207,7 @@ local MobPriorityList = {
     {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
 }
 
--- AUTO MOB TARGETING ENGINE
+-- AUTO MOB TARGETING ENGINE (LOWEST TO HIGHEST WITH RESPAWN FILTER)
 task.spawn(function()
     while Running do
         task.wait(0.1)
@@ -1217,23 +1227,20 @@ task.spawn(function()
                 local foundTargetPart = nil
 
                 if mobsFolder then
-                    for _, mobItem in ipairs(mobsFolder:GetChildren()) do
-                        if enabledMobNames[mobItem.Name] then
-                            -- It could be a folder or direct model
-                            if mobItem:IsA("Folder") then
-                                for _, mobModel in ipairs(mobItem:GetChildren()) do
-                                    if mobModel:IsA("Model") then
+                    -- Iterate from lowest to highest priority as defined in MobPriorityList
+                    for i = 1, #MobPriorityList do
+                        local mobName = MobPriorityList[i].N
+                        if enabledMobNames[mobName] then
+                            local categoryFolder = mobsFolder:FindFirstChild(mobName)
+                            if categoryFolder then
+                                for _, mobModel in ipairs(categoryFolder:GetChildren()) do
+                                    if mobModel:IsA("Model") and not isMobRespawning(mobModel) then
                                         local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
                                         if part then
                                             foundTargetPart = part
                                             break
                                         end
                                     end
-                                end
-                            elseif mobItem:IsA("Model") then
-                                local part = mobItem.PrimaryPart or mobItem:FindFirstChildWhichIsA("BasePart")
-                                if part then
-                                    foundTargetPart = part
                                 end
                             end
                         end
@@ -1498,4 +1505,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.40 Individual Mob Toggles & Bones Upgrades Loaded Successfully!")
+print("[Dominate Hub] V11.41 Individual Mob Respawn Filter & Sorted Toggles Loaded Successfully!")
