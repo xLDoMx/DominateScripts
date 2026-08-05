@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.77 - V11.72 SCROLL FIX & MUMMY NOOB)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.78 - SCROLLABLE SIDEBAR, MUMMY NOOB & TRIALS)
 --======================================================================================
 local Env = getgenv()
 
@@ -279,8 +279,8 @@ Env.AutoRollBasicRune = false
 Env.AutoRollSuperRune = false
 Env.AutoRollAdvancedRune = false
 Env.AutoRollCosmicRune = false
-Env.AutoRollSnowyRune = false
 Env.AutoRollFootballRune = false
+Env.AutoRollSnowyRune = false
 Env.AutoRollDunesRune = false
 
 Env.AutoOpenT1Chest = false
@@ -673,17 +673,29 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (FIXED NON-SCROLLABLE SIDEBAR TO KEEP ALL TABS VISIBLE)
+-- SIDEBAR CONTAINER (SCROLLABLE SIDEBAR TO KEEP ALL 8 TABS FULLY ACCESSIBLE WITHOUT CLIPPING)
+local sidebarScroll = Instance.new("ScrollingFrame")
+sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
+sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
+sidebarScroll.BackgroundTransparency = 1
+sidebarScroll.BorderSizePixel = 0
+sidebarScroll.ScrollBarThickness = 0
+sidebarScroll.ScrollingEnabled = true
+sidebarScroll.Parent = mainFrame
+
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
-sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
+sidebarFrame.Size = UDim2.new(1, 0, 0, 0)
 sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
-sidebarFrame.Parent = mainFrame
+sidebarFrame.Parent = sidebarScroll
 
 local sidebarLayout = Instance.new("UIListLayout")
 sidebarLayout.Padding = UDim.new(0, 8)
 sidebarLayout.Parent = sidebarFrame
+
+sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    sidebarScroll.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
+end)
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
@@ -746,7 +758,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR (V11.72 SCROLL FIX RESTORED)
+-- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR WITH FULL VISIBILITY)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -1701,7 +1713,7 @@ task.spawn(function()
     end 
 end)
 
-task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpdateMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
+task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
@@ -1716,4 +1728,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.77 Stable Base V11.72 Restored, Mummy Noob Added Successfully!")
+print("[Dominate Hub] V11.78 Stable Base with Scrollable Sidebar & Mummy Noob Loaded Successfully!")
