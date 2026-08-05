@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (LOCKED-ON KILL-CONFIRMATION MOB FARMING)
+-- DOMINATE HUB | PRO EDITION (FIXED MINING PRIORITY & KILL-CONFIRMATION MOBS)
 --======================================================================================
 local Env = getgenv()
 
@@ -1149,7 +1149,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES
+-- LOCOMOTION & AUTOMATION ENGINES (RESTORED MINING PRIORITY & LOCKED MOB TARGETING)
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1163,7 +1163,7 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Mining prioritized first)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1171,8 +1171,8 @@ task.spawn(function()
         if hrp and Running then
             local act = nil
             if MasterTargetVector then act = MasterTargetVector 
-            elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
+            elseif MobTargetVector then act = MobTargetVector
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
@@ -1212,7 +1212,7 @@ local MobPriorityList = {
     {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
 }
 
--- AUTO MOB FARMING ENGINE (STAYS LOCKED ON UNTIL MOB DIES/RESPAWNS)
+-- LOCKED-ON KILL-CONFIRMATION MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -1229,7 +1229,7 @@ task.spawn(function()
             if hasAnyMobEnabled then
                 local needsNewMobTarget = false
                 
-                -- Only pick a new target if the current one is dead, gone, or respawning
+                -- Stay locked onto current target until it is completely dead or respawning
                 if not currentTargetMob or not currentTargetMob.Parent or not currentTargetMob:IsDescendantOf(workspace) then 
                     needsNewMobTarget = true
                 elseif currentTargetMob.Parent and isMobRespawning(currentTargetMob.Parent) then 
@@ -1237,33 +1237,32 @@ task.spawn(function()
                 end
 
                 if needsNewMobTarget then
-                    local foundPart = nil
+                    local foundMobPart = nil
                     local gc = workspace:FindFirstChild("__GAME_CONTENT") 
                     local mobsFolder = gc and gc:FindFirstChild("Mobs")
                     
                     if mobsFolder then
-                        -- Iterate through priority list (lowest to highest)
                         for i = 1, #MobPriorityList do
-                            local targetMobName = MobPriorityList[i].N
-                            if enabledMobNames[targetMobName] then
+                            local mobName = MobPriorityList[i].N
+                            if enabledMobNames[mobName] then
                                 for _, categoryFolder in ipairs(mobsFolder:GetChildren()) do
                                     for _, mobModel in ipairs(categoryFolder:GetChildren()) do
-                                        if mobModel:IsA("Model") and mobModel.Name == targetMobName and not isMobRespawning(mobModel) then
+                                        if mobModel:IsA("Model") and mobModel.Name == mobName and not isMobRespawning(mobModel) then
                                             local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
                                             if part then
-                                                foundPart = part
+                                                foundMobPart = part
                                                 break
                                             end
                                         end
                                     end
-                                    if foundPart then break end
+                                    if foundMobPart then break end
                                 end
                             end
-                            if foundPart then break end
+                            if foundMobPart then break end
                         end
                     end
                     
-                    currentTargetMob = foundPart
+                    currentTargetMob = foundMobPart
                 end
                 
                 if currentTargetMob and currentTargetMob.Parent then 
@@ -1524,4 +1523,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.46 Locked-On Kill Confirmation Mob Farming Loaded Successfully!")
+print("[Dominate Hub] V11.47 Restored Mining Priority & Locked-On Mob Farming Loaded Successfully!")
