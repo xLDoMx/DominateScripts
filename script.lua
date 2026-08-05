@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (MASTER TOGGLE GROUPS, DUNES RUNE & SAFE BREAK)
+-- DOMINATE HUB | PRO EDITION (UPDATED BONES UPGRADES, DUNES RUNE & SAFE BREAK)
 --======================================================================================
 local Env = getgenv()
 
@@ -144,11 +144,15 @@ Env.AutoUpgradePharaoh = false
 Env.AutoMeatMoreMeat = false
 Env.AutoMeatStrongerSwords = false
 Env.AutoMeatMoreOof = false
+Env.AutoMeatMoreBones = false
 Env.AutoDepositMeat = false
 
 Env.AutoBonesMoreBones = false
 Env.AutoBonesFasterSwords = false
 Env.AutoBonesBiggerMeatDeposit = false
+Env.AutoBonesFasterMeatConversion = false
+Env.AutoBonesMoreOof = false
+Env.AutoBonesEvenMoreBones = false
 
 Env.AutoUpgradeFishermanNoob = false
 Env.AutoUpgradeKnightNoob = false
@@ -813,7 +817,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
-masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof"}, upScroll)
+masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
 masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 
 -- ======================================================================================
@@ -1516,11 +1520,12 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT MEAT UPGRADE LOOP
+-- DEDICATED INDEPENDENT MEAT UPGRADE LOOP (MASTER GROUP)
 local MeatUpgradeList = {
     {F = "AutoMeatMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
     {F = "AutoMeatStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
-    {F = "AutoMeatMoreOof", T = "UpgradeUpgradeMax", A = {"Meat", "MoreOof"}}
+    {F = "AutoMeatMoreOof", T = "UpgradeUpgradeMax", A = {"Meat", "MoreOof"}},
+    {F = "AutoMeatMoreBones", T = "UpgradeUpgradeMax", A = {"Meat", "MoreBones"}}
 }
 
 task.spawn(function()
@@ -1542,7 +1547,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT BONES UPGRADE LOOP
+-- DEDICATED INDEPENDENT BONES UPGRADE LOOP (MASTER GROUP)
 local BonesUpgradeList = {
     {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
@@ -1643,4 +1648,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.62 Master Toggle Groups for Meat & Bones Loaded Successfully!")
+print("[Dominate Hub] V11.64 Master Toggle Groups with More Bones under Meat Loaded Successfully!")
