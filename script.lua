@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED BONES UPGRADES, 1-MIN MEAT, DUNES & SAFE BREAK)
+-- DOMINATE HUB | PRO EDITION (ALIGNED BONES & MEAT LOGIC, DUNES & SAFE BREAK)
 --======================================================================================
 local Env = getgenv()
 
@@ -151,7 +151,6 @@ Env.AutoBonesMoreBones = false
 Env.AutoBonesFasterSwords = false
 Env.AutoBonesBiggerMeatDeposit = false
 Env.AutoBonesFasterMeatConversion = false
-Env.AutoBonesMoreOof = false
 Env.AutoBonesEvenMoreBones = false
 
 Env.AutoUpgradeFishermanNoob = false
@@ -820,7 +819,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit", "AutoBonesFasterMeatConversion", "AutoBonesMoreOof", "AutoBonesEvenMoreBones"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit", "AutoBonesFasterMeatConversion", "AutoBonesEvenMoreBones"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1549,7 +1548,7 @@ task.spawn(function()
                 mIdx = (mIdx % #MeatUpgradeList) + 1
                 att = att + 1
                 if Env[cur.F] then
-                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    pcall(function() NetRemote:FireServer(cur.T, unpack(item and item.A or cur.A)) end)
                     break
                 end
             until att >= #MeatUpgradeList
@@ -1557,13 +1556,12 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT BONES UPGRADE LOOP (FIXED ARGUMENT STRUCTURE FOR BONES)
+-- DEDICATED INDEPENDENT BONES UPGRADE LOOP (USING IDENTICAL LOGIC TO MEAT)
 local BonesUpgradeList = {
     {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
     {F = "AutoBonesBiggerMeatDeposit", T = "UpgradeUpgradeMax", A = {"Bones", "BiggerMeatDeposit"}},
     {F = "AutoBonesFasterMeatConversion", T = "UpgradeUpgradeMax", A = {"Bones", "FasterMeatConversion"}},
-    {F = "AutoBonesMoreOof", T = "UpgradeUpgradeMax", A = {"Bones", "More Oof"}},
     {F = "AutoBonesEvenMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "evenMoreBones"}}
 }
 
@@ -1670,4 +1668,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.68 Fixed Bones Arguments & 1-Minute Meat Conversion Loaded Successfully!")
+print("[Dominate Hub] V11.69 Aligned Bones Upgrades & Stable Build Loaded Successfully!")
