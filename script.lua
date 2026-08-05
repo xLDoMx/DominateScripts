@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED MINING PRIORITY & KILL-CONFIRMATION MOBS)
+-- DOMINATE HUB | PRO EDITION (FIXED MOB MOVEMENT PRIORITY & LOCKED-ON FARMING)
 --======================================================================================
 local Env = getgenv()
 
@@ -522,10 +522,10 @@ task.spawn(function()
             local secs = elapsed % 60
             
             local targetName = "None"
-            if currentTargetPanel and currentTargetPanel.Parent then
-                targetName = currentTargetPanel.Parent.Name
-            elseif currentTargetMob and currentTargetMob.Parent then
+            if currentTargetMob and currentTargetMob.Parent then
                 targetName = currentTargetMob.Parent.Name
+            elseif currentTargetPanel and currentTargetPanel.Parent then
+                targetName = currentTargetPanel.Parent.Name
             end
             
             hudText.Text = string.format(
@@ -1149,7 +1149,7 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES (RESTORED MINING PRIORITY & LOCKED MOB TARGETING)
+-- LOCOMOTION & AUTOMATION ENGINES
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1163,7 +1163,7 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Mining prioritized first)
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Mob target prioritized when active)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1171,8 +1171,8 @@ task.spawn(function()
         if hrp and Running then
             local act = nil
             if MasterTargetVector then act = MasterTargetVector 
-            elseif MiningTargetVector then act = MiningTargetVector
             elseif MobTargetVector then act = MobTargetVector
+            elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
@@ -1523,4 +1523,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.47 Restored Mining Priority & Locked-On Mob Farming Loaded Successfully!")
+print("[Dominate Hub] V11.48 Fixed Movement Priority & Locked-On Mob Farming Loaded Successfully!")
