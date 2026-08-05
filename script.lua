@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (BONES UPGRADES & STABLE EXECUTION)
+-- DOMINATE HUB | PRO EDITION (INDIVIDUAL LOWEST-TO-HIGHEST MOB TOGGLES & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -193,8 +193,19 @@ Env.AutoMineVoidsteel = false
 Env.AutoMineCelestium = false
 Env.MiningJumpSpeed = 0.8 
 
--- AUTO MOB FARMING FLAG
-Env.AutoFarmMobs = false
+-- INDIVIDUAL MOB FARMING FLAGS (LOWEST TO HIGHEST)
+Env.AutoMobGoblin = false
+Env.AutoMobSkeleton = false
+Env.AutoMobPirate = false
+Env.AutoMobOrc = false
+Env.AutoMobNinja = false
+Env.AutoMobWarrior = false
+Env.AutoMobSamurai = false
+Env.AutoMobPirateCaptain = false
+Env.AutoMobDarkKnight = false
+Env.AutoMobDarkCommander = false
+Env.AutoMobSamuraiMaster = false
+Env.AutoMobPirateAdmiral = false
 
 Env.AutoUpgradeHacker1 = false
 Env.AutoUpgradeHacker2 = false
@@ -938,12 +949,55 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- MOBS PAGE SETUP
+-- MOBS PAGE SETUP (INDIVIDUAL LOWEST-TO-HIGHEST TOGGLES)
 -- ======================================================================================
 local mobsScroll = makeVerticalScroll(mobsPage) mobsScroll.Visible = true
 
-createSectionHeader(mobsScroll, "Realm 3 Mob Farming")
-createToggleRow(mobsScroll, "Auto Farm Mobs", "AutoFarmMobs")
+local bestMobTierActive = false
+local bestMobTierBtn = Instance.new("TextButton")
+bestMobTierBtn.Size = UDim2.new(1, -10, 0, 48)
+bestMobTierBtn.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
+bestMobTierBtn.BackgroundTransparency = 0.5
+bestMobTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
+bestMobTierBtn.TextSize = 13
+bestMobTierBtn.Font = Enum.Font.GothamBold
+bestMobTierBtn.Text = "Best Mob Tier Only: DISABLED"
+bestMobTierBtn.Parent = mobsScroll
+
+local bmtCorner = Instance.new("UICorner")
+bmtCorner.CornerRadius = UDim.new(0, 8)
+bmtCorner.Parent = bestMobTierBtn
+
+bestMobTierBtn.MouseButton1Click:Connect(function()
+    bestMobTierActive = not bestMobTierActive
+    bestMobTierBtn.Text = bestMobTierActive and "Best Mob Tier Only: ACTIVE" or "Best Mob Tier Only: DISABLED"
+    bestMobTierBtn.BackgroundColor3 = bestMobTierActive and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(35, 20, 55)
+    bestMobTierBtn.BackgroundTransparency = bestMobTierActive and 0 or 0.5
+
+    local topMobs = {"AutoMobPirateAdmiral", "AutoMobSamuraiMaster", "AutoMobDarkCommander"}
+    local allMobs = {
+        "AutoMobGoblin", "AutoMobSkeleton", "AutoMobPirate", "AutoMobOrc", "AutoMobNinja",
+        "AutoMobWarrior", "AutoMobSamurai", "AutoMobPirateCaptain", "AutoMobDarkKnight",
+        "AutoMobDarkCommander", "AutoMobSamuraiMaster", "AutoMobPirateAdmiral"
+    }
+    for _, mob in ipairs(allMobs) do Env[mob] = false end
+    if bestMobTierActive then for _, mob in ipairs(topMobs) do Env[mob] = true end end
+    showToast(bestMobTierActive and "Best Mob Tier Only activated!" or "Best Mob Tier Only deactivated.")
+end)
+
+createSectionHeader(mobsScroll, "Realm 3 Mobs (Lowest to Highest)")
+createToggleRow(mobsScroll, "Goblin", "AutoMobGoblin")
+createToggleRow(mobsScroll, "Skeleton", "AutoMobSkeleton")
+createToggleRow(mobsScroll, "Pirate", "AutoMobPirate")
+createToggleRow(mobsScroll, "Orc", "AutoMobOrc")
+createToggleRow(mobsScroll, "Ninja", "AutoMobNinja")
+createToggleRow(mobsScroll, "Warrior", "AutoMobWarrior")
+createToggleRow(mobsScroll, "Samurai", "AutoMobSamurai")
+createToggleRow(mobsScroll, "Pirate Captain", "AutoMobPirateCaptain")
+createToggleRow(mobsScroll, "Dark Knight", "AutoMobDarkKnight")
+createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
+createToggleRow(mobsScroll, "Samurai Master", "AutoMobSamuraiMaster")
+createToggleRow(mobsScroll, "Pirate Admiral", "AutoMobPirateAdmiral")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1127,37 +1181,74 @@ task.spawn(function()
     end
 end)
 
+-- INDIVIDUAL MOB PRIORITY LIST (LOWEST TO HIGHEST)
+local MobPriorityList = {
+    {F = "AutoMobGoblin", N = "Goblin"},
+    {F = "AutoMobSkeleton", N = "Skeleton"},
+    {F = "AutoMobPirate", N = "Pirate"},
+    {F = "AutoMobOrc", N = "Orc"},
+    {F = "AutoMobNinja", N = "Ninja"},
+    {F = "AutoMobWarrior", N = "Warrior"},
+    {F = "AutoMobSamurai", N = "Samurai"},
+    {F = "AutoMobPirateCaptain", N = "Pirate Captain"},
+    {F = "AutoMobDarkKnight", N = "Dark Knight"},
+    {F = "AutoMobDarkCommander", N = "Dark Commander"},
+    {F = "AutoMobSamuraiMaster", N = "Samurai Master"},
+    {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
+}
+
 -- AUTO MOB TARGETING ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.1)
-        if Running and Env.AutoFarmMobs then
-            local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-            local mobsFolder = gameContent and gameContent:FindFirstChild("Mobs")
-            local foundTargetPart = nil
-            
-            if mobsFolder then
-                for _, categoryFolder in ipairs(mobsFolder:GetChildren()) do
-                    for _, mobModel in ipairs(categoryFolder:GetChildren()) do
-                        if mobModel:IsA("Model") then
-                            local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
-                            if part then
-                                foundTargetPart = part
-                                break
-                            end
-                        end
-                    end
-                    if foundTargetPart then break end
+        if Running then
+            local enabledMobNames = {}
+            local hasAnyMobEnabled = false
+            for i = 1, #MobPriorityList do
+                if Env[MobPriorityList[i].F] then
+                    enabledMobNames[MobPriorityList[i].N] = true
+                    hasAnyMobEnabled = true
                 end
             end
-            
-            if foundTargetPart and foundTargetPart.Parent then
-                MobTargetVector = foundTargetPart.Position
+
+            if hasAnyMobEnabled then
+                local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
+                local mobsFolder = gameContent and gameContent:FindFirstChild("Mobs")
+                local foundTargetPart = nil
+
+                if mobsFolder then
+                    for _, mobItem in ipairs(mobsFolder:GetChildren()) do
+                        if enabledMobNames[mobItem.Name] then
+                            -- It could be a folder or direct model
+                            if mobItem:IsA("Folder") then
+                                for _, mobModel in ipairs(mobItem:GetChildren()) do
+                                    if mobModel:IsA("Model") then
+                                        local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            foundTargetPart = part
+                                            break
+                                        end
+                                    end
+                                end
+                            elseif mobItem:IsA("Model") then
+                                local part = mobItem.PrimaryPart or mobItem:FindFirstChildWhichIsA("BasePart")
+                                if part then
+                                    foundTargetPart = part
+                                end
+                            end
+                        end
+                        if foundTargetPart then break end
+                    end
+                end
+
+                if foundTargetPart and foundTargetPart.Parent then
+                    MobTargetVector = foundTargetPart.Position
+                else
+                    MobTargetVector = nil
+                end
             else
                 MobTargetVector = nil
             end
-        else
-            MobTargetVector = nil
         end
     end
 end)
@@ -1407,4 +1498,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.39 Auto-Mob Farming & Bones Upgrades Loaded Successfully!")
+print("[Dominate Hub] V11.40 Individual Mob Toggles & Bones Upgrades Loaded Successfully!")
