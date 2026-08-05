@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED MOB FOLDER SCANNING & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (MINER-STYLE CYCLING AUTO-MOB FARMING & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -33,8 +33,11 @@ local UI = {}
 
 -- STATS TRACKING VARIABLES FOR HUD
 local oresMined = 0
+local mobsKilled = 0
 local lastTrackedPart = nil
+local lastTrackedMobPart = nil
 local currentTargetPanel = nil
+local currentTargetMob = nil
 local gemExchangeCountdown = 60
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
@@ -521,6 +524,8 @@ task.spawn(function()
             local targetName = "None"
             if currentTargetPanel and currentTargetPanel.Parent then
                 targetName = currentTargetPanel.Parent.Name
+            elseif currentTargetMob and currentTargetMob.Parent then
+                targetName = currentTargetMob.Parent.Name
             end
             
             hudText.Text = string.format(
@@ -1181,6 +1186,16 @@ task.spawn(function()
     end
 end)
 
+-- HELPER TO CHECK IF MOB IS RESPAWNING
+local function isMobRespawning(mobModel)
+    for _, desc in ipairs(mobModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text:lower():find("respawning") then
+            return true
+        end
+    end
+    return false
+end
+
 -- INDIVIDUAL MOB PRIORITY LIST (LOWEST TO HIGHEST)
 local MobPriorityList = {
     {F = "AutoMobGoblin", N = "Goblin"},
@@ -1197,54 +1212,73 @@ local MobPriorityList = {
     {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
 }
 
--- AUTO MOB TARGETING ENGINE (LOWEST TO HIGHEST WITH RESPAWN FILTER)
+local currentMobIndex = 1
+local lastMobJumpTick = 0
+
+-- MINER-STYLE AUTO MOB FARMING ENGINE (SEQUENTIAL CYCLING)
 task.spawn(function()
     while Running do
-        task.wait(0.1)
+        task.wait(Env.CPUSaverMode and 0.25 or 0.1)
         if Running then
-            local enabledMobNames = {}
+            local enabledMobNames = {} 
             local hasAnyMobEnabled = false
-            for i = 1, #MobPriorityList do
-                if Env[MobPriorityList[i].F] then
-                    enabledMobNames[MobPriorityList[i].N] = true
-                    hasAnyMobEnabled = true
-                end
+            for i = 1, #MobPriorityList do 
+                if Env[MobPriorityList[i].F] then 
+                    enabledMobNames[MobPriorityList[i].N] = true 
+                    hasAnyMobEnabled = true 
+                end 
             end
 
             if hasAnyMobEnabled then
-                local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
-                local mobsFolder = gameContent and gameContent:FindFirstChild("Mobs")
-                local foundTargetPart = nil
+                local needsNewMobTarget = false
+                if not currentTargetMob or not currentTargetMob.Parent or not currentTargetMob:IsDescendantOf(workspace) then 
+                    needsNewMobTarget = true
+                elseif currentTargetMob.Parent and isMobRespawning(currentTargetMob.Parent) then 
+                    needsNewMobTarget = true
+                elseif tick() - lastMobJumpTick >= (Env.MiningJumpSpeed or 0.8) then 
+                    needsNewMobTarget = true 
+                end
 
-                if mobsFolder then
-                    for i = 1, #MobPriorityList do
-                        local mobName = MobPriorityList[i].N
-                        if enabledMobNames[mobName] then
-                            -- Scan through the MobCharacter folders in workspace.__GAME_CONTENT.Mobs
-                            for _, mobCharFolder in ipairs(mobsFolder:GetChildren()) do
-                                for _, mobModel in ipairs(mobCharFolder:GetChildren()) do
-                                    if mobModel:IsA("Model") and mobModel.Name == mobName and not isMobRespawning(mobModel) then
-                                        local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
-                                        if part then
-                                            foundTargetPart = part
-                                            break
-                                        end
-                                    end
-                                end
-                                if foundTargetPart then break end
+                if needsNewMobTarget then
+                    local freshMobList = {} 
+                    local gc = workspace:FindFirstChild("__GAME_CONTENT") 
+                    local mobsFolder = gc and gc:FindFirstChild("Mobs")
+                    
+                    if mobsFolder then
+                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                            if enabledMobNames[mobObj.Name] and mobObj:IsA("Model") and not isMobRespawning(mobObj) then
+                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                if part then table.insert(freshMobList, part) end
                             end
                         end
-                        if foundTargetPart then break end
+                    end
+                    
+                    if #freshMobList > 0 then
+                        table.sort(freshMobList, function(a, b) return a.Position.X < b.Position.X end)
+                        currentMobIndex = currentMobIndex + 1 
+                        if currentMobIndex > #freshMobList then currentMobIndex = 1 end
+                        currentTargetMob = freshMobList[currentMobIndex] 
+                        lastMobJumpTick = tick()
+                        
+                        if currentTargetMob and currentTargetMob ~= lastTrackedMobPart then
+                            lastTrackedMobPart = currentTargetMob
+                            mobsKilled = mobsKilled + 1
+                        end
+                    else 
+                        currentTargetMob = nil 
                     end
                 end
-
-                if foundTargetPart and foundTargetPart.Parent then
-                    MobTargetVector = foundTargetPart.Position
-                else
-                    MobTargetVector = nil
+                
+                if currentTargetMob and currentTargetMob.Parent then 
+                    MobTargetVector = currentTargetMob.Position 
+                else 
+                    MobTargetVector = nil 
                 end
-            else
-                MobTargetVector = nil
+            else 
+                currentTargetMob = nil 
+                MobTargetVector = nil 
+                mobsKilled = 0
+                lastTrackedMobPart = nil
             end
         end
     end
@@ -1495,4 +1529,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.42 Fully Fixed Mob Folder Targeting Loaded Successfully!")
+print("[Dominate Hub] V11.43 Miner-Style Sequential Mob Cycling Loaded Successfully!")
