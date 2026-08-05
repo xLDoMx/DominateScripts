@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED TOGGLES, STATIC WINDOW & STABLE BUILD V11.75)
+-- DOMINATE HUB | PRO EDITION (FIXED SCROLL VISIBILITY, TRIALS & STABLE BUILD V11.72)
 --======================================================================================
 local Env = getgenv()
 
@@ -559,14 +559,13 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER (FIXED POSITION CENTERED, NON-DRAGGABLE)
+-- MAIN WINDOW CONTAINER
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 620, 0, 410)
-mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205)
+mainFrame.Size = UDim2.new(0, 0, 0, 0) 
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) 
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 28) 
-mainFrame.BackgroundTransparency = 0.02
+mainFrame.BackgroundTransparency = 1
 mainFrame.BorderSizePixel = 0 
-mainFrame.ClipsDescendants = true
 mainFrame.Parent = sg
 
 local mainCorner = Instance.new("UICorner")
@@ -577,6 +576,15 @@ local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = Color3.fromRGB(168, 85, 247)
 mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
+
+task.spawn(function()
+    task.wait(0.1)
+    TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 620, 0, 410),
+        Position = UDim2.new(0.5, -310, 0.5, -205),
+        BackgroundTransparency = 0.02
+    }):Play()
+end)
 
 -- HEADER LOGO IMAGE CONTAINER WITH FADED SHINY TOP STROKE EFFECT
 local logoBox = Instance.new("ImageLabel")
@@ -661,40 +669,51 @@ minStroke.Color = Color3.fromRGB(168, 85, 247)
 minStroke.Transparency = 0.4
 minStroke.Parent = minBtn
 
+local pDragging, pDragInput, pDragStart, pStartPos
+minBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        pDragging = true pDragStart = input.Position pStartPos = minBtn.Position
+        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then pDragging = false end end)
+    end
+end)
+minBtn.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then pDragInput = input end end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == pDragInput and pDragging then
+        local delta = input.Position - pDragStart
+        minBtn.Position = UDim2.new(pStartPos.X.Scale, pStartPos.X.Offset + delta.X, pStartPos.Y.Scale, pStartPos.Y.Offset + delta.Y)
+    end
+end)
+
 minBtn.MouseButton1Click:Connect(function()
     local isVisible = mainFrame.Visible
     if isVisible then
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), Position = minBtn.Position, BackgroundTransparency = 1})
+        tween:Play()
+        task.wait(0.25)
         mainFrame.Visible = false
         minBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
     else
+        mainFrame.Size = UDim2.new(0, 0, 0, 0)
+        mainFrame.Position = minBtn.Position
+        mainFrame.BackgroundTransparency = 0.02
         mainFrame.Visible = true
+        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 620, 0, 410), Position = UDim2.new(0.5, -310, 0.5, -205), BackgroundTransparency = 0.02})
+        tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(216, 180, 254)
     end
 end)
 
--- SIDEBAR CONTAINER (SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR INSIDE BOUNDS)
-local sidebarScroll = Instance.new("ScrollingFrame")
-sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
-sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
-sidebarScroll.BackgroundTransparency = 1
-sidebarScroll.BorderSizePixel = 0
-sidebarScroll.ScrollBarThickness = 0
-sidebarScroll.ScrollingEnabled = true
-sidebarScroll.Parent = mainFrame
-
+-- SIDEBAR CONTAINER
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(1, 0, 0, 0)
+sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
+sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
 sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
-sidebarFrame.Parent = sidebarScroll
+sidebarFrame.Parent = mainFrame
 
 local sidebarLayout = Instance.new("UIListLayout")
 sidebarLayout.Padding = UDim.new(0, 8)
 sidebarLayout.Parent = sidebarFrame
-
-sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    sidebarScroll.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
-end)
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
@@ -743,7 +762,6 @@ local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
 pageArea.BackgroundTransparency = 1
-pageArea.ClipsDescendants = true
 pageArea.Parent = mainFrame
 
 local function makePage()
@@ -757,7 +775,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR WITH FULL MOUSE WHEEL SUPPORT)
+-- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR, DEFAULT VISIBLE)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -766,7 +784,7 @@ local function makeVerticalScroll(parent)
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 0 
     s.ScrollingEnabled = true
-    s.Visible = false 
+    s.Visible = true
     s.Parent = parent 
     
     local list = Instance.new("UIListLayout") 
@@ -783,7 +801,7 @@ end
 -- ======================================================================================
 -- UPGRADES PAGE
 -- ======================================================================================
-local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
+local upScroll = makeVerticalScroll(upgradesPage)
 
 createSectionHeader(upScroll, "Realm 1 Upgrades")
 createToggleRow(upScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
@@ -1165,6 +1183,17 @@ tabTrials.MouseButton1Click:Connect(function() mainRoute(trialsPage, tabTrials) 
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
+
+-- WINDOW DRAGGING ENGINE
+local dragging, dragInput, dragStart, startPos
+mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
+mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
 
 -- ======================================================================================
 -- LOCOMOTION & AUTOMATION ENGINES
@@ -1726,4 +1755,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.75 Fixed All Toggles, Static Non-Draggable Window & Sidebar Scroll Loaded Successfully!")
+print("[Dominate Hub] V11.72 Invisible Scrollbar & Trials Tab Loaded Successfully!")
