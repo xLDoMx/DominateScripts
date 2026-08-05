@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED SCROLL VISIBILITY, TRIALS & STABLE BUILD V11.72)
+-- DOMINATE HUB | PRO EDITION (FIXED SCROLL VISIBILITY, TRIALS & STABLE BUILD V11.72)l
 --======================================================================================
 local Env = getgenv()
 
