@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED MOB RESPAWN FILTER & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (FIXED MOB FOLDER SCANNING & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -1181,16 +1181,6 @@ task.spawn(function()
     end
 end)
 
--- HELPER TO CHECK IF MOB IS RESPAWNING
-local function isMobRespawning(mobModel)
-    for _, desc in ipairs(mobModel:GetDescendants()) do
-        if desc:IsA("TextLabel") and desc.Text:lower():find("respawning") then
-            return true
-        end
-    end
-    return false
-end
-
 -- INDIVIDUAL MOB PRIORITY LIST (LOWEST TO HIGHEST)
 local MobPriorityList = {
     {F = "AutoMobGoblin", N = "Goblin"},
@@ -1227,14 +1217,13 @@ task.spawn(function()
                 local foundTargetPart = nil
 
                 if mobsFolder then
-                    -- Iterate from lowest to highest priority as defined in MobPriorityList
                     for i = 1, #MobPriorityList do
                         local mobName = MobPriorityList[i].N
                         if enabledMobNames[mobName] then
-                            local categoryFolder = mobsFolder:FindFirstChild(mobName)
-                            if categoryFolder then
-                                for _, mobModel in ipairs(categoryFolder:GetChildren()) do
-                                    if mobModel:IsA("Model") and not isMobRespawning(mobModel) then
+                            -- Scan through the MobCharacter folders in workspace.__GAME_CONTENT.Mobs
+                            for _, mobCharFolder in ipairs(mobsFolder:GetChildren()) do
+                                for _, mobModel in ipairs(mobCharFolder:GetChildren()) do
+                                    if mobModel:IsA("Model") and mobModel.Name == mobName and not isMobRespawning(mobModel) then
                                         local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
                                         if part then
                                             foundTargetPart = part
@@ -1242,6 +1231,7 @@ task.spawn(function()
                                         end
                                     end
                                 end
+                                if foundTargetPart then break end
                             end
                         end
                         if foundTargetPart then break end
@@ -1505,4 +1495,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.41 Individual Mob Respawn Filter & Sorted Toggles Loaded Successfully!")
+print("[Dominate Hub] V11.42 Fully Fixed Mob Folder Targeting Loaded Successfully!")
