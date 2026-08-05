@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (OPTIONAL SAFE ZONE COMBAT BREAK & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (SAFE ZONE COMBAT BREAK - 2S PAUSE & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -1011,7 +1011,7 @@ createToggleRow(mobsScroll, "Samurai Master", "AutoMobSamuraiMaster")
 createToggleRow(mobsScroll, "Pirate Admiral", "AutoMobPirateAdmiral")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
-createToggleRow(mobsScroll, "Combat Upgrade Break (Safe Spot)", "AutoCombatBreak")
+createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1221,7 +1221,7 @@ local MobPriorityList = {
     {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
 }
 
--- SAFE ZONE COMBAT BREAK ROUTINE (TOGGLE CONTROLLED)
+-- SAFE ZONE COMBAT BREAK ROUTINE (2S TOTAL PAUSE & SAFE SPOT GLIDE)
 task.spawn(function()
     while Running do
         task.wait(40.0)
@@ -1239,17 +1239,18 @@ task.spawn(function()
             if anyActive then
                 MobTargetVector = nil
                 currentTargetMob = nil
-                MasterTargetVector = Env.SafeZoneVector
-                showToast("Combat Break: Gliding to safe zone for upgrades...")
-                task.wait(1.5)
+                -- Glide to safe zone vector
+                MasterTargetVector = Vector3.new(919.1552, 4.8658, 7905.8755)
+                showToast("Safe Spot Break: Gliding to safe zone for upgrades...")
+                task.wait(0.5) -- wait for glide arrival
                 MasterTargetVector = nil
                 
-                task.wait(3.5)
+                task.wait(1.5) -- hold at safe spot for remaining duration (2s total break)
                 
                 for flag, state in pairs(activeMobStates) do
                     Env[flag] = state
                 end
-                showToast("Combat Break: Resuming mob farming!")
+                showToast("Safe Spot Break: Resuming mob farming!")
             end
         end
     end
@@ -1399,7 +1400,7 @@ task.spawn(function()
                     local freshList = {} local gc = workspace:FindFirstChild("__GAME_CONTENT") local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model"] and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then table.insert(freshList, part) end
                             end
@@ -1490,6 +1491,7 @@ local PrimaryUpgradeQueue = {
     {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}
 }
 
+-- MAIN UPGRADE LOOP
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 2.0 or 1.0)
@@ -1502,6 +1504,7 @@ task.spawn(function()
     end
 end)
 
+-- DEDICATED INDEPENDENT BONES UPGRADE LOOP (FIRES CONSTANTLY WITHOUT WAITING IN THE MAIN QUEUE)
 local BonesUpgradeList = {
     {F = "AutoBonesMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
     {F = "AutoBonesStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
@@ -1593,4 +1596,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.54 Safe Zone Combat Break Feature Loaded Successfully!")
+print("[Dominate Hub] V11.55 Safe Spot Combat Break Toggle Loaded Successfully!")
