@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED SCROLL VISIBILITY, TRIALS & STABLE BUILD V11.72)
+-- DOMINATE HUB | PRO EDITION (SMOOTH INVISIBLE SCROLL, TRIALS & STABLE BUILD V11.73)
 --======================================================================================
 local Env = getgenv()
 
@@ -762,6 +762,7 @@ local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
 pageArea.BackgroundTransparency = 1
+pageArea.ClipsDescendants = true
 pageArea.Parent = mainFrame
 
 local function makePage()
@@ -775,7 +776,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR, DEFAULT VISIBLE)
+-- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR WITH FULL MOUSE WHEEL SUPPORT)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -784,7 +785,7 @@ local function makeVerticalScroll(parent)
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 0 
     s.ScrollingEnabled = true
-    s.Visible = true
+    s.Visible = false 
     s.Parent = parent 
     
     local list = Instance.new("UIListLayout") 
@@ -801,7 +802,7 @@ end
 -- ======================================================================================
 -- UPGRADES PAGE
 -- ======================================================================================
-local upScroll = makeVerticalScroll(upgradesPage)
+local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
 createSectionHeader(upScroll, "Realm 1 Upgrades")
 createToggleRow(upScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
@@ -1755,4 +1756,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.72 Invisible Scrollbar & Trials Tab Loaded Successfully!")
+print("[Dominate Hub] V11.73 Invisible Scrollbars & Fully Populated Trials Loaded Successfully!")
