@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (SPLIT MEAT & BONES, DUNES RUNE & SAFE ZONE BREAK)
+-- DOMINATE HUB | PRO EDITION (BEST-TO-WORST MOB PRIORITY & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -203,19 +203,19 @@ Env.AutoMineVoidsteel = false
 Env.AutoMineCelestium = false
 Env.MiningJumpSpeed = 0.8 
 
--- INDIVIDUAL MOB FARMING FLAGS (LOWEST TO HIGHEST)
+-- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST ORDER FOR UI DISPLAY)
 Env.AutoMobGoblin = false
 Env.AutoMobSkeleton = false
-Env.AutoMobPirate = false
 Env.AutoMobOrc = false
+Env.AutoMobPirate = false
 Env.AutoMobNinja = false
 Env.AutoMobWarrior = false
-Env.AutoMobSamurai = false
 Env.AutoMobPirateCaptain = false
+Env.AutoMobSamurai = false
+Env.AutoMobPirateAdmiral = false
+Env.AutoMobSamuraiMaster = false
 Env.AutoMobDarkKnight = false
 Env.AutoMobDarkCommander = false
-Env.AutoMobSamuraiMaster = false
-Env.AutoMobPirateAdmiral = false
 
 -- COMBAT UPGRADE BREAK FLAG
 Env.AutoCombatBreak = false
@@ -813,7 +813,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
-masterToggleGroup("Meat Upgrades", {"AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoDepositMeat"}, upScroll)
+masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof"}, upScroll)
 masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 
 -- ======================================================================================
@@ -966,7 +966,7 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- MOBS PAGE SETUP (INDIVIDUAL LOWEST-TO-HIGHEST TOGGLES)
+-- MOBS PAGE SETUP (WORST TO BEST ORDER: GOBLIN AT TOP, DARK COMMANDER AT BOTTOM)
 -- ======================================================================================
 local mobsScroll = makeVerticalScroll(mobsPage) mobsScroll.Visible = true
 
@@ -991,30 +991,30 @@ bestMobTierBtn.MouseButton1Click:Connect(function()
     bestMobTierBtn.BackgroundColor3 = bestMobTierActive and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(35, 20, 55)
     bestMobTierBtn.BackgroundTransparency = bestMobTierActive and 0 or 0.5
 
-    local topMobs = {"AutoMobPirateAdmiral", "AutoMobSamuraiMaster", "AutoMobDarkCommander"}
+    local topMobs = {"AutoMobDarkCommander", "AutoMobDarkKnight", "AutoMobSamuraiMaster"}
     local allMobs = {
-        "AutoMobGoblin", "AutoMobSkeleton", "AutoMobPirate", "AutoMobOrc", "AutoMobNinja",
-        "AutoMobWarrior", "AutoMobSamurai", "AutoMobPirateCaptain", "AutoMobDarkKnight",
-        "AutoMobDarkCommander", "AutoMobSamuraiMaster", "AutoMobPirateAdmiral"
+        "AutoMobGoblin", "AutoMobSkeleton", "AutoMobOrc", "AutoMobPirate", "AutoMobNinja",
+        "AutoMobWarrior", "AutoMobPirateCaptain", "AutoMobSamurai", "AutoMobPirateAdmiral",
+        "AutoMobSamuraiMaster", "AutoMobDarkKnight", "AutoMobDarkCommander"
     }
     for _, mob in ipairs(allMobs) do Env[mob] = false end
     if bestMobTierActive then for _, mob in ipairs(topMobs) do Env[mob] = true end end
     showToast(bestMobTierActive and "Best Mob Tier Only activated!" or "Best Mob Tier Only deactivated.")
 end)
 
-createSectionHeader(mobsScroll, "Realm 3 Mobs (Lowest to Highest)")
+createSectionHeader(mobsScroll, "Realm 3 Mobs (Worst to Best)")
 createToggleRow(mobsScroll, "Goblin", "AutoMobGoblin")
 createToggleRow(mobsScroll, "Skeleton", "AutoMobSkeleton")
-createToggleRow(mobsScroll, "Pirate", "AutoMobPirate")
 createToggleRow(mobsScroll, "Orc", "AutoMobOrc")
+createToggleRow(mobsScroll, "Pirate", "AutoMobPirate")
 createToggleRow(mobsScroll, "Ninja", "AutoMobNinja")
 createToggleRow(mobsScroll, "Warrior", "AutoMobWarrior")
-createToggleRow(mobsScroll, "Samurai", "AutoMobSamurai")
 createToggleRow(mobsScroll, "Pirate Captain", "AutoMobPirateCaptain")
+createToggleRow(mobsScroll, "Samurai", "AutoMobSamurai")
+createToggleRow(mobsScroll, "Pirate Admiral", "AutoMobPirateAdmiral")
+createToggleRow(mobsScroll, "Samurai Master", "AutoMobSamuraiMaster")
 createToggleRow(mobsScroll, "Dark Knight", "AutoMobDarkKnight")
 createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
-createToggleRow(mobsScroll, "Samurai Master", "AutoMobSamuraiMaster")
-createToggleRow(mobsScroll, "Pirate Admiral", "AutoMobPirateAdmiral")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
@@ -1214,20 +1214,20 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- INDIVIDUAL MOB PRIORITY LIST (LOWEST TO HIGHEST)
+-- MOB PRIORITY LIST (INDEX 1 = WORST/LOWEST, INDEX 12 = BEST/HIGHEST)
 local MobPriorityList = {
     {F = "AutoMobGoblin", N = "Goblin"},
     {F = "AutoMobSkeleton", N = "Skeleton"},
-    {F = "AutoMobPirate", N = "Pirate"},
     {F = "AutoMobOrc", N = "Orc"},
+    {F = "AutoMobPirate", N = "Pirate"},
     {F = "AutoMobNinja", N = "Ninja"},
     {F = "AutoMobWarrior", N = "Warrior"},
-    {F = "AutoMobSamurai", N = "Samurai"},
     {F = "AutoMobPirateCaptain", N = "Pirate Captain"},
-    {F = "AutoMobDarkKnight", N = "Dark Knight"},
-    {F = "AutoMobDarkCommander", N = "Dark Commander"},
+    {F = "AutoMobSamurai", N = "Samurai"},
+    {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"},
     {F = "AutoMobSamuraiMaster", N = "Samurai Master"},
-    {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
+    {F = "AutoMobDarkKnight", N = "Dark Knight"},
+    {F = "AutoMobDarkCommander", N = "Dark Commander"}
 }
 
 -- SAFE ZONE COMBAT BREAK ROUTINE (2S TOTAL PAUSE & SAFE SPOT GLIDE)
@@ -1267,7 +1267,7 @@ end)
 local currentMobIndex = 1
 local lastMobJumpTick = 0
 
--- MINER-STYLE AUTO MOB FARMING ENGINE WITH KILL CONFIRMATION LOCK-ON
+-- MINER-STYLE AUTO MOB FARMING ENGINE (BEST TO WORST CHECK PRIORITY)
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -1291,29 +1291,33 @@ task.spawn(function()
                 end
 
                 if needsNewMobTarget then
-                    local freshMobList = {} 
+                    local foundMobPart = nil
                     local gc = workspace:FindFirstChild("__GAME_CONTENT") 
                     local mobsFolder = gc and gc:FindFirstChild("Mobs")
                     
                     if mobsFolder then
-                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                            if enabledMobNames[mobObj.Name] and mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                if part then table.insert(freshMobList, part) end
+                        -- Loop BACKWARDS (from best/highest down to worst/lowest) so best is targeted first
+                        for i = #MobPriorityList, 1, -1 do
+                            local targetMobName = MobPriorityList[i].N
+                            if enabledMobNames[targetMobName] then
+                                for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                                    if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
+                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            foundMobPart = part
+                                            break
+                                        end
+                                    end
+                                end
                             end
+                            if foundMobPart then break end
                         end
                     end
                     
-                    if #freshMobList > 0 then
-                        table.sort(freshMobList, function(a, b) return a.Position.X < b.Position.X end)
-                        currentTargetMob = freshMobList[1] 
-                        
-                        if currentTargetMob and currentTargetMob ~= lastTrackedMobPart then
-                            lastTrackedMobPart = currentTargetMob
-                            mobsKilled = mobsKilled + 1
-                        end
-                    else 
-                        currentTargetMob = nil 
+                    currentTargetMob = foundMobPart
+                    if currentTargetMob and currentTargetMob ~= lastTrackedMobPart then
+                        lastTrackedMobPart = currentTargetMob
+                        mobsKilled = mobsKilled + 1
                     end
                 end
                 
@@ -1639,4 +1643,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.58 Split Meat & Bones Upgrades Loaded Successfully!")
+print("[Dominate Hub] V11.59 Split Meat & Bones Upgrades, Dunes Rune & 2s Safe Spot Break Loaded Successfully!")
