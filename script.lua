@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STRICTLY VERIFIED & STABLE STYLED BUILD)
+-- DOMINATE HUB | PRO EDITION (BONES UPGRADES & STABLE EXECUTION)
 --======================================================================================
 local Env = getgenv()
 
@@ -134,6 +134,12 @@ Env.AutoBlazeConvert = false
 
 Env.AutoUpgradePharaoh = false
 
+-- BONES / MEAT UPGRADE FLAGS
+Env.AutoBonesMoreMeat = false
+Env.AutoBonesStrongerSwords = false
+Env.AutoBonesMoreOof = false
+Env.AutoBonesMoreBones = false
+
 Env.AutoUpgradeFishermanNoob = false
 Env.AutoUpgradeKnightNoob = false
 Env.AutoUpgradeExplorerNoob = false
@@ -186,6 +192,9 @@ Env.AutoMineRuby = false
 Env.AutoMineVoidsteel = false
 Env.AutoMineCelestium = false
 Env.MiningJumpSpeed = 0.8 
+
+-- AUTO MOB FARMING FLAG
+Env.AutoFarmMobs = false
 
 Env.AutoUpgradeHacker1 = false
 Env.AutoUpgradeHacker2 = false
@@ -246,7 +255,6 @@ Env.AutoOpenSuperCapsule = false
 
 Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
-Env.DiscordWebhookURL = ""
 
 -- FEATURE ROW CONTAINER (50% TRANSPARENT DEEP PURPLE, NO STROKE)
 local function createToggleRow(parent, txt, vKey)
@@ -434,22 +442,6 @@ end)
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
-local function sendDiscordWebhook(message)
-    if Env.DiscordWebhookURL ~= "" then
-        pcall(function()
-            local requestFunc = syn and syn.request or http_request or request
-            if requestFunc then
-                requestFunc({
-                    Url = Env.DiscordWebhookURL,
-                    Method = "POST",
-                    Headers = {["Content-Type"] = "application/json"},
-                    Body = HttpService:JSONEncode({content = message})
-                })
-            end
-        end)
-    end
-end
-
 -- FPS & PING TRACKING UTILS
 local fps = 60
 local frameCount = 0
@@ -557,13 +549,14 @@ task.spawn(function()
     }):Play()
 end)
 
--- BLANK LOGO BOX WITH FADED SHINY TOP STROKE EFFECT
-local logoBox = Instance.new("Frame")
+-- HEADER LOGO IMAGE CONTAINER WITH FADED SHINY TOP STROKE EFFECT
+local logoBox = Instance.new("ImageLabel")
 logoBox.Size = UDim2.new(0, 34, 0, 34)
 logoBox.Position = UDim2.new(0, 14, 0, 10)
 logoBox.BackgroundColor3 = Color3.fromRGB(147, 51, 234)
 logoBox.BackgroundTransparency = 0.2
 logoBox.BorderSizePixel = 0
+logoBox.Image = "rbxassetid://0"
 logoBox.Parent = mainFrame
 
 local logoCorner = Instance.new("UICorner")
@@ -579,7 +572,7 @@ local headerTitle = Instance.new("TextLabel")
 headerTitle.Size = UDim2.new(0.5, 0, 0, 20) 
 headerTitle.Position = UDim2.new(0, 56, 0, 8) 
 headerTitle.BackgroundTransparency = 1 
-headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255) 
+headerTitle.TextColor3 = Color3.fromRGB(216, 180, 254)
 headerTitle.TextSize = 15 
 headerTitle.Font = Enum.Font.GothamBold 
 headerTitle.Text = "Dominate Hub v1.4 (Pro Edition)" 
@@ -721,6 +714,7 @@ if activeTabStroke then activeTabStroke.Transparency = 0.1 end
 
 local tabNoobs = makeMainTab("🤖", "Noobs")
 local tabMines = makeMainTab("⛏️", "Mines")
+local tabMobs = makeMainTab("⚔️", "Mobs")
 local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
@@ -740,7 +734,7 @@ local function makePage()
     p.Parent = pageArea 
     return p
 end
-local upgradesPage, noobsPage, minesPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
+local upgradesPage, noobsPage, minesPage, mobsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
 -- VERTICAL SCROLL GENERATOR
@@ -792,6 +786,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreMeat", "AutoBonesStrongerSwords", "AutoBonesMoreOof", "AutoBonesMoreBones"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -943,6 +938,14 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
+-- MOBS PAGE SETUP
+-- ======================================================================================
+local mobsScroll = makeVerticalScroll(mobsPage) mobsScroll.Visible = true
+
+createSectionHeader(mobsScroll, "Realm 3 Mob Farming")
+createToggleRow(mobsScroll, "Auto Farm Mobs", "AutoFarmMobs")
+
+-- ======================================================================================
 -- FOOTBALL PAGE SETUP
 -- ======================================================================================
 local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
@@ -1053,8 +1056,8 @@ end)
 
 -- TAB ROUTING SYSTEM
 local function mainRoute(pOpen, bActive) 
-    upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabUpgrades, tabNoobs, tabMines, tabFootball, tabMisc, tabSettings}
+    upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, mobsPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabFootball, tabMisc, tabSettings}
     for _, t in ipairs(tabs) do 
         t.BackgroundColor3 = Color3.fromRGB(18, 12, 28)
         t.TextColor3 = Color3.fromRGB(210, 190, 235)
@@ -1070,6 +1073,7 @@ end
 tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgrades) end) 
 tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
 tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
+tabMobs.MouseButton1Click:Connect(function() mainRoute(mobsPage, tabMobs) end)
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
@@ -1090,6 +1094,7 @@ end)
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
+local MobTargetVector = nil
 
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
@@ -1106,7 +1111,9 @@ task.spawn(function()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
-            if MasterTargetVector then act = MasterTargetVector elseif MiningTargetVector then act = MiningTargetVector
+            if MasterTargetVector then act = MasterTargetVector 
+            elseif MobTargetVector then act = MobTargetVector
+            elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
@@ -1116,6 +1123,41 @@ task.spawn(function()
                 local alpha = math.clamp(0.08 / speed, 0.01, 1.0)
                 hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(act + Vector3.new(0, 3, 0)), alpha)
             end
+        end
+    end
+end)
+
+-- AUTO MOB TARGETING ENGINE
+task.spawn(function()
+    while Running do
+        task.wait(0.1)
+        if Running and Env.AutoFarmMobs then
+            local gameContent = workspace:FindFirstChild("__GAME_CONTENT")
+            local mobsFolder = gameContent and gameContent:FindFirstChild("Mobs")
+            local foundTargetPart = nil
+            
+            if mobsFolder then
+                for _, categoryFolder in ipairs(mobsFolder:GetChildren()) do
+                    for _, mobModel in ipairs(categoryFolder:GetChildren()) do
+                        if mobModel:IsA("Model") then
+                            local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
+                            if part then
+                                foundTargetPart = part
+                                break
+                            end
+                        end
+                    end
+                    if foundTargetPart then break end
+                end
+            end
+            
+            if foundTargetPart and foundTargetPart.Parent then
+                MobTargetVector = foundTargetPart.Position
+            else
+                MobTargetVector = nil
+            end
+        else
+            MobTargetVector = nil
         end
     end
 end)
@@ -1158,7 +1200,6 @@ task.spawn(function()
                 MasterTargetVector = nil
             end)
             showToast("Gem Shop Pitstop: Teleported & Exchanged minerals!")
-            sendDiscordWebhook("Dominate Hub: Performed Combined Gem Shop Teleport & Conversion!")
         end
     end
 end)
@@ -1275,6 +1316,7 @@ end)
 
 local PrimaryUpgradeQueue = {
     {F="AutoUpgradeStarter",T="UpgradeNoob",A={"Starter"}}, {F="AutoUpgradeCooker",T="UpgradeNoobMax",A={"Cooker"}}, {F="AutoUpgradeFarmer",T="UpgradeNoobMax",A={"Farmer"}}, {F="AutoUpgradeMagician",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeArcher",T="UpgradeNoobMax",A={"Archer"}}, {F="AutoUpgradeSoldier",T="UpgradeNoobMax",A={"Soldier"}}, {F="AutoUpgradePharaoh",T="UpgradeNoobMax",A={"Pharaoh"}},
+    {F="AutoBonesMoreMeat",T="UpgradeUpgradeMax",A={"Meat","MoreMeat"}}, {F="AutoBonesStrongerSwords",T="UpgradeUpgradeMax",A={"Meat","StrongerSwords"}}, {F="AutoBonesMoreOof",T="UpgradeUpgradeMax",A={"Meat","MoreOof"}}, {F="AutoBonesMoreBones",T="UpgradeUpgradeMax",A={"Meat","MoreBones"}},
     {F="AutoUpgradeHacker1",T="UpgradeNoobMax",A={"Hacker 1"}}, {F="AutoUpgradeHacker2",T="UpgradeNoobMax",A={"Hacker 2"}}, {F="AutoUpgradeHacker3",T="UpgradeNoobMax",A={"Hacker 3"}}, {F="AutoUpgradeHacker4",T="UpgradeNoobMax",A={"Hacker 4"}},
     {F="AutoUpgradeFishermanNoob",T="UpgradeNoobMax",A={"Fisherman"}}, {F="AutoUpgradeKnightNoob",T="UpgradeNoobMax",A={"Knight"}}, {F="AutoUpgradeExplorerNoob",T="UpgradeNoobMax",A={"Explorer"}}, {F="AutoUpgradeMagicianNoob",T="UpgradeNoobMax",A={"Magician"}},
     {F="AutoUpgradeGoalkeeper",T="UpgradeNoobMax",A={"Goalkeeper"}}, {F="AutoUpgradeLeftBack",T="UpgradeNoobMax",A={"LeftBack"}}, {F="AutoUpgradeLeftCenterBack",T="UpgradeNoobMax",A={"LeftCenterBack"}}, {F="AutoUpgradeRightCenterBack",T="UpgradeNoobMax",A={"RightCenterBack"}}, {F="AutoUpgradeRightBack",T="UpgradeNoobMax",A={"RightBack"}}, {F="AutoUpgradeLeftDefensiveMid",T="UpgradeNoobMax",A={"LeftDefensiveMid"}}, {F="AutoUpgradeRightDefensiveMid",T="UpgradeNoobMax",A={"RightDefensiveMid"}}, {F="AutoUpgradeAttackingMid",T="UpgradeNoobMax",A={"AttackingMid"}}, {F="AutoUpgradeLeftWing",T="UpgradeNoobMax",A={"LeftWing"}}, {F="AutoUpgradeRightWing",T="UpgradeNoobMax",A={"RightWing"}}, {F="AutoUpgradeStriker",T="UpgradeNoobMax",A={"Striker"}},
@@ -1365,4 +1407,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.34 Fully Verified & Fixed Script Loaded Successfully!")
+print("[Dominate Hub] V11.39 Auto-Mob Farming & Bones Upgrades Loaded Successfully!")
