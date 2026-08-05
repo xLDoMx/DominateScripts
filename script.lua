@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED SIDEBAR CLIPPING & SCROLLING V11.74)
+-- DOMINATE HUB | PRO EDITION (FIXED TOGGLES, STATIC WINDOW & STABLE BUILD V11.75)
 --======================================================================================
 local Env = getgenv()
 
@@ -559,12 +559,12 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER
+-- MAIN WINDOW CONTAINER (FIXED POSITION CENTERED, NON-DRAGGABLE)
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 0, 0, 0) 
-mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) 
+mainFrame.Size = UDim2.new(0, 620, 0, 410)
+mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205)
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 28) 
-mainFrame.BackgroundTransparency = 1
+mainFrame.BackgroundTransparency = 0.02
 mainFrame.BorderSizePixel = 0 
 mainFrame.ClipsDescendants = true
 mainFrame.Parent = sg
@@ -577,15 +577,6 @@ local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = Color3.fromRGB(168, 85, 247)
 mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
-
-task.spawn(function()
-    task.wait(0.1)
-    TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 620, 0, 410),
-        Position = UDim2.new(0.5, -310, 0.5, -205),
-        BackgroundTransparency = 0.02
-    }):Play()
-end)
 
 -- HEADER LOGO IMAGE CONTAINER WITH FADED SHINY TOP STROKE EFFECT
 local logoBox = Instance.new("ImageLabel")
@@ -670,41 +661,18 @@ minStroke.Color = Color3.fromRGB(168, 85, 247)
 minStroke.Transparency = 0.4
 minStroke.Parent = minBtn
 
-local pDragging, pDragInput, pDragStart, pStartPos
-minBtn.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        pDragging = true pDragStart = input.Position pStartPos = minBtn.Position
-        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then pDragging = false end end)
-    end
-end)
-minBtn.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then pDragInput = input end end)
-UserInputService.InputChanged:Connect(function(input)
-    if input == pDragInput and pDragging then
-        local delta = input.Position - pDragStart
-        minBtn.Position = UDim2.new(pStartPos.X.Scale, pStartPos.X.Offset + delta.X, pStartPos.Y.Scale, pStartPos.Y.Offset + delta.Y)
-    end
-end)
-
 minBtn.MouseButton1Click:Connect(function()
     local isVisible = mainFrame.Visible
     if isVisible then
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), Position = minBtn.Position, BackgroundTransparency = 1})
-        tween:Play()
-        task.wait(0.25)
         mainFrame.Visible = false
         minBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
     else
-        mainFrame.Size = UDim2.new(0, 0, 0, 0)
-        mainFrame.Position = minBtn.Position
-        mainFrame.BackgroundTransparency = 0.02
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 620, 0, 410), Position = UDim2.new(0.5, -310, 0.5, -205), BackgroundTransparency = 0.02})
-        tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(216, 180, 254)
     end
 end)
 
--- SIDEBAR CONTAINER (SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR)
+-- SIDEBAR CONTAINER (SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR INSIDE BOUNDS)
 local sidebarScroll = Instance.new("ScrollingFrame")
 sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
 sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
@@ -1197,17 +1165,6 @@ tabTrials.MouseButton1Click:Connect(function() mainRoute(trialsPage, tabTrials) 
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
-
--- WINDOW DRAGGING ENGINE
-local dragging, dragInput, dragStart, startPos
-mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
-mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
 
 -- ======================================================================================
 -- LOCOMOTION & AUTOMATION ENGINES
@@ -1769,4 +1726,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.74 Fixed Sidebar Scrolling & Clamped Layout Loaded Successfully!")
+print("[Dominate Hub] V11.75 Fixed All Toggles, Static Non-Draggable Window & Sidebar Scroll Loaded Successfully!")
