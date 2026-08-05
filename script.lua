@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED SCROLL VISIBILITY, TRIALS & STABLE BUILD V11.72)l
+-- DOMINATE HUB | PRO EDITION (STABLE V11.76 - FIXED V11.72 BASE, MUMMY NOOB & STATIC UI)
 --======================================================================================
 local Env = getgenv()
 
@@ -163,6 +163,7 @@ Env.AutoUpgradeKnightNoob = false
 Env.AutoUpgradeExplorerNoob = false
 Env.AutoUpgradeMagicianNoob = false
 Env.AutoUpgradeMerchantNoob = false
+Env.AutoUpgradeMummyNoob = false
 
 Env.AutoRealm2MoreWalkSpeed = false
 Env.AutoRealm2MoreWater = false
@@ -278,8 +279,8 @@ Env.AutoRollBasicRune = false
 Env.AutoRollSuperRune = false
 Env.AutoRollAdvancedRune = false
 Env.AutoRollCosmicRune = false
-Env.AutoRollFootballRune = false
 Env.AutoRollSnowyRune = false
+Env.AutoRollFootballRune = false
 Env.AutoRollDunesRune = false
 
 Env.AutoOpenT1Chest = false
@@ -559,13 +560,14 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER
+-- MAIN WINDOW CONTAINER (STATIC NON-DRAGGABLE)
 local mainFrame = Instance.new("Frame") 
-mainFrame.Size = UDim2.new(0, 0, 0, 0) 
-mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) 
+mainFrame.Size = UDim2.new(0, 620, 0, 410)
+mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205)
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 28) 
-mainFrame.BackgroundTransparency = 1
+mainFrame.BackgroundTransparency = 0.02
 mainFrame.BorderSizePixel = 0 
+mainFrame.ClipsDescendants = true
 mainFrame.Parent = sg
 
 local mainCorner = Instance.new("UICorner")
@@ -576,15 +578,6 @@ local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = Color3.fromRGB(168, 85, 247)
 mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
-
-task.spawn(function()
-    task.wait(0.1)
-    TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 620, 0, 410),
-        Position = UDim2.new(0.5, -310, 0.5, -205),
-        BackgroundTransparency = 0.02
-    }):Play()
-end)
 
 -- HEADER LOGO IMAGE CONTAINER WITH FADED SHINY TOP STROKE EFFECT
 local logoBox = Instance.new("ImageLabel")
@@ -669,41 +662,18 @@ minStroke.Color = Color3.fromRGB(168, 85, 247)
 minStroke.Transparency = 0.4
 minStroke.Parent = minBtn
 
-local pDragging, pDragInput, pDragStart, pStartPos
-minBtn.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        pDragging = true pDragStart = input.Position pStartPos = minBtn.Position
-        input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then pDragging = false end end)
-    end
-end)
-minBtn.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then pDragInput = input end end)
-UserInputService.InputChanged:Connect(function(input)
-    if input == pDragInput and pDragging then
-        local delta = input.Position - pDragStart
-        minBtn.Position = UDim2.new(pStartPos.X.Scale, pStartPos.X.Offset + delta.X, pStartPos.Y.Scale, pStartPos.Y.Offset + delta.Y)
-    end
-end)
-
 minBtn.MouseButton1Click:Connect(function()
     local isVisible = mainFrame.Visible
     if isVisible then
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 0, 0, 0), Position = minBtn.Position, BackgroundTransparency = 1})
-        tween:Play()
-        task.wait(0.25)
         mainFrame.Visible = false
         minBtn.TextColor3 = Color3.fromRGB(74, 222, 128)
     else
-        mainFrame.Size = UDim2.new(0, 0, 0, 0)
-        mainFrame.Position = minBtn.Position
-        mainFrame.BackgroundTransparency = 0.02
         mainFrame.Visible = true
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 620, 0, 410), Position = UDim2.new(0.5, -310, 0.5, -205), BackgroundTransparency = 0.02})
-        tween:Play()
         minBtn.TextColor3 = Color3.fromRGB(216, 180, 254)
     end
 end)
 
--- SIDEBAR CONTAINER
+-- SIDEBAR CONTAINER (FIXED NON-SCROLLABLE SIDEBAR TO KEEP ALL TABS VISIBLE)
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -762,6 +732,7 @@ local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
 pageArea.BackgroundTransparency = 1
+pageArea.ClipsDescendants = true
 pageArea.Parent = mainFrame
 
 local function makePage()
@@ -775,7 +746,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR, DEFAULT VISIBLE)
+-- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR WITH FULL VISIBILITY)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -784,7 +755,7 @@ local function makeVerticalScroll(parent)
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 0 
     s.ScrollingEnabled = true
-    s.Visible = true
+    s.Visible = false 
     s.Parent = parent 
     
     local list = Instance.new("UIListLayout") 
@@ -801,7 +772,7 @@ end
 -- ======================================================================================
 -- UPGRADES PAGE
 -- ======================================================================================
-local upScroll = makeVerticalScroll(upgradesPage)
+local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
 createSectionHeader(upScroll, "Realm 1 Upgrades")
 createToggleRow(upScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
@@ -854,6 +825,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 createSectionHeader(noobsScroll, "Realm 3 Noobs")
 createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 
 -- ======================================================================================
 -- TRIALS PAGE SETUP
@@ -1183,17 +1155,6 @@ tabTrials.MouseButton1Click:Connect(function() mainRoute(trialsPage, tabTrials) 
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
-
--- WINDOW DRAGGING ENGINE
-local dragging, dragInput, dragStart, startPos
-mainFrame.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true dragStart = input.Position startPos = mainFrame.Position input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end) end end)
-mainFrame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end end)
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
 
 -- ======================================================================================
 -- LOCOMOTION & AUTOMATION ENGINES
@@ -1591,7 +1552,7 @@ end)
 local PrimaryUpgradeQueue = {
     {F="AutoUpgradeStarter",T="UpgradeNoob",A={"Starter"}}, {F="AutoUpgradeCooker",T="UpgradeNoobMax",A={"Cooker"}}, {F="AutoUpgradeFarmer",T="UpgradeNoobMax",A={"Farmer"}}, {F="AutoUpgradeMagician",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeArcher",T="UpgradeNoobMax",A={"Archer"}}, {F="AutoUpgradeSoldier",T="UpgradeNoobMax",A={"Soldier"}}, {F="AutoUpgradePharaoh",T="UpgradeNoobMax",A={"Pharaoh"}},
     {F="AutoUpgradeHacker1",T="UpgradeNoobMax",A={"Hacker 1"}}, {F="AutoUpgradeHacker2",T="UpgradeNoobMax",A={"Hacker 2"}}, {F="AutoUpgradeHacker3",T="UpgradeNoobMax",A={"Hacker 3"}}, {F="AutoUpgradeHacker4",T="UpgradeNoobMax",A={"Hacker 4"}},
-    {F="AutoUpgradeFishermanNoob",T="UpgradeNoobMax",A={"Fisherman"}}, {F="AutoUpgradeKnightNoob",T="UpgradeNoobMax",A={"Knight"}}, {F="AutoUpgradeExplorerNoob",T="UpgradeNoobMax",A={"Explorer"}}, {F="AutoUpgradeMagicianNoob",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeMerchantNoob",T="UpgradeNoobMax",A={"Merchant"}},
+    {F="AutoUpgradeFishermanNoob",T="UpgradeNoobMax",A={"Fisherman"}}, {F="AutoUpgradeKnightNoob",T="UpgradeNoobMax",A={"Knight"}}, {F="AutoUpgradeExplorerNoob",T="UpgradeNoobMax",A={"Explorer"}}, {F="AutoUpgradeMagicianNoob",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeMerchantNoob",T="UpgradeNoobMax",A={"Merchant"}}, {F="AutoUpgradeMummyNoob",T="UpgradeNoobMax",A={"Mummy"}},
     {F="AutoUpgradeGoalkeeper",T="UpgradeNoobMax",A={"Goalkeeper"}}, {F="AutoUpgradeLeftBack",T="UpgradeNoobMax",A={"LeftBack"}}, {F="AutoUpgradeLeftCenterBack",T="UpgradeNoobMax",A={"LeftCenterBack"}}, {F="AutoUpgradeRightCenterBack",T="UpgradeNoobMax",A={"RightCenterBack"}}, {F="AutoUpgradeRightBack",T="UpgradeNoobMax",A={"RightBack"}}, {F="AutoUpgradeLeftDefensiveMid",T="UpgradeNoobMax",A={"LeftDefensiveMid"}}, {F="AutoUpgradeRightDefensiveMid",T="UpgradeNoobMax",A={"RightDefensiveMid"}}, {F="AutoUpgradeAttackingMid",T="UpgradeNoobMax",A={"AttackingMid"}}, {F="AutoUpgradeLeftWing",T="UpgradeNoobMax",A={"LeftWing"}}, {F="AutoUpgradeRightWing",T="UpgradeNoobMax",A={"RightWing"}}, {F="AutoUpgradeStriker",T="UpgradeNoobMax",A={"Striker"}},
     {F="AutoUpgradeMoreOof",T="UpgradeUpgradeMax",A={"Oof","MoreOof"}}, {F="AutoUpgradeFasterNoobs",T="UpgradeUpgradeMax",A={"Oof","FasterNoobs"}},
     {F="AutoRealm2MoreOof",T="UpgradeUpgradeMax",A={"Oof","MoreOofRealm2"}}, {F="AutoRealm2MoreWalkSpeed",T="UpgradeUpgradeMax",A={"Oof","MoreWalkSpeedRealm2"}}, {F="AutoRealm2MoreWater",T="UpgradeUpgradeMax",A={"Water","MoreWater"}}, {F="AutoRealm2MoreOofWater",T="UpgradeUpgradeMax",A={"Water","MoreOof"}}, {F="AutoRealm2MorePlanks",T="UpgradeUpgradeMax",A={"Water","MorePlanks"}}, {F="AutoRealm2MoreIce",T="UpgradeUpgradeMax",A={"Ice","MoreIce"}}, {F="AutoRealm2WaterPump1",T="UpgradeUpgradeMax",A={"Ice","WaterPumpNoobHire"}}, {F="AutoRealm2WaterPump2",T="UpgradeUpgradeMax",A={"Ice","WaterFromIce"}}, {F="AutoRealm2MoreOofIce",T="UpgradeUpgradeMax",A={"Ice","MoreOof"}},
@@ -1755,4 +1716,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.72 Invisible Scrollbar & Trials Tab Loaded Successfully!")
+print("[Dominate Hub] V11.76 Stable Base V11.72, Static Non-Draggable Window, Mummy Noob & Trials Loaded Successfully!")
