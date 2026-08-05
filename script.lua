@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (BEST-TO-WORST MOB PRIORITY & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (SPLIT UPGRADES, DUNES RUNE & SAFE BREAK)
 --======================================================================================
 local Env = getgenv()
 
@@ -203,7 +203,7 @@ Env.AutoMineVoidsteel = false
 Env.AutoMineCelestium = false
 Env.MiningJumpSpeed = 0.8 
 
--- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST ORDER FOR UI DISPLAY)
+-- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST)
 Env.AutoMobGoblin = false
 Env.AutoMobSkeleton = false
 Env.AutoMobOrc = false
@@ -813,8 +813,17 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
-masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
+
+createSectionHeader(upScroll, "Meat Upgrades")
+createToggleRow(upScroll, "Auto Deposit Meat", "AutoDepositMeat")
+createToggleRow(upScroll, "More Meat", "AutoMeatMoreMeat")
+createToggleRow(upScroll, "Stronger Swords", "AutoMeatStrongerSwords")
+createToggleRow(upScroll, "More Oofs", "AutoMeatMoreOof")
+
+createSectionHeader(upScroll, "Bones Upgrades")
+createToggleRow(upScroll, "More Bones", "AutoBonesMoreBones")
+createToggleRow(upScroll, "Faster Swords", "AutoBonesFasterSwords")
+createToggleRow(upScroll, "Bigger Meat Deposit", "AutoBonesBiggerMeatDeposit")
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -966,7 +975,7 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- MOBS PAGE SETUP (WORST TO BEST ORDER: GOBLIN AT TOP, DARK COMMANDER AT BOTTOM)
+-- MOBS PAGE SETUP (WORST AT TOP, BEST AT BOTTOM)
 -- ======================================================================================
 local mobsScroll = makeVerticalScroll(mobsPage) mobsScroll.Visible = true
 
@@ -1643,4 +1652,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.59 Split Meat & Bones Upgrades, Dunes Rune & 2s Safe Spot Break Loaded Successfully!")
+print("[Dominate Hub] V11.61 Split Meat & Bones, Best-to-Worst Mobs & Safe Break Loaded Successfully!")
