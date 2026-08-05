@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (LOCKED-ON KILL CONFIRMATION MOB FARMING & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (DEDICATED BONES LOOP & LOCKED-ON MOB FARMING)
 --======================================================================================
 local Env = getgenv()
 
@@ -1171,8 +1171,8 @@ task.spawn(function()
         if hrp and Running then
             local act = nil
             if MasterTargetVector then act = MasterTargetVector 
-            elseif MiningTargetVector then act = MiningTargetVector
             elseif MobTargetVector then act = MobTargetVector
+            elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
@@ -1211,6 +1211,9 @@ local MobPriorityList = {
     {F = "AutoMobSamuraiMaster", N = "Samurai Master"},
     {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
 }
+
+local currentMobIndex = 1
+local lastMobJumpTick = 0
 
 -- MINER-STYLE AUTO MOB FARMING ENGINE WITH KILL CONFIRMATION LOCK-ON
 task.spawn(function()
@@ -1432,7 +1435,6 @@ end)
 
 local PrimaryUpgradeQueue = {
     {F="AutoUpgradeStarter",T="UpgradeNoob",A={"Starter"}}, {F="AutoUpgradeCooker",T="UpgradeNoobMax",A={"Cooker"}}, {F="AutoUpgradeFarmer",T="UpgradeNoobMax",A={"Farmer"}}, {F="AutoUpgradeMagician",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeArcher",T="UpgradeNoobMax",A={"Archer"}}, {F="AutoUpgradeSoldier",T="UpgradeNoobMax",A={"Soldier"}}, {F="AutoUpgradePharaoh",T="UpgradeNoobMax",A={"Pharaoh"}},
-    {F="AutoBonesMoreMeat",T="UpgradeUpgradeMax",A={"Meat","MoreMeat"}}, {F="AutoBonesStrongerSwords",T="UpgradeUpgradeMax",A={"Meat","StrongerSwords"}}, {F="AutoBonesMoreOof",T="UpgradeUpgradeMax",A={"Meat","MoreOof"}}, {F="AutoBonesMoreBones",T="UpgradeUpgradeMax",A={"Meat","MoreBones"}},
     {F="AutoUpgradeHacker1",T="UpgradeNoobMax",A={"Hacker 1"}}, {F="AutoUpgradeHacker2",T="UpgradeNoobMax",A={"Hacker 2"}}, {F="AutoUpgradeHacker3",T="UpgradeNoobMax",A={"Hacker 3"}}, {F="AutoUpgradeHacker4",T="UpgradeNoobMax",A={"Hacker 4"}},
     {F="AutoUpgradeFishermanNoob",T="UpgradeNoobMax",A={"Fisherman"}}, {F="AutoUpgradeKnightNoob",T="UpgradeNoobMax",A={"Knight"}}, {F="AutoUpgradeExplorerNoob",T="UpgradeNoobMax",A={"Explorer"}}, {F="AutoUpgradeMagicianNoob",T="UpgradeNoobMax",A={"Magician"}},
     {F="AutoUpgradeGoalkeeper",T="UpgradeNoobMax",A={"Goalkeeper"}}, {F="AutoUpgradeLeftBack",T="UpgradeNoobMax",A={"LeftBack"}}, {F="AutoUpgradeLeftCenterBack",T="UpgradeNoobMax",A={"LeftCenterBack"}}, {F="AutoUpgradeRightCenterBack",T="UpgradeNoobMax",A={"RightCenterBack"}}, {F="AutoUpgradeRightBack",T="UpgradeNoobMax",A={"RightBack"}}, {F="AutoUpgradeLeftDefensiveMid",T="UpgradeNoobMax",A={"LeftDefensiveMid"}}, {F="AutoUpgradeRightDefensiveMid",T="UpgradeNoobMax",A={"RightDefensiveMid"}}, {F="AutoUpgradeAttackingMid",T="UpgradeNoobMax",A={"AttackingMid"}}, {F="AutoUpgradeLeftWing",T="UpgradeNoobMax",A={"LeftWing"}}, {F="AutoUpgradeRightWing",T="UpgradeNoobMax",A={"RightWing"}}, {F="AutoUpgradeStriker",T="UpgradeNoobMax",A={"Striker"}},
@@ -1446,6 +1448,7 @@ local PrimaryUpgradeQueue = {
     {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}
 }
 
+-- MAIN UPGRADE LOOP
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 2.0 or 1.0)
@@ -1454,6 +1457,33 @@ task.spawn(function()
                 if not Running then break end local item = PrimaryUpgradeQueue[i]
                 if Env[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.25) end
             end
+        end
+    end
+end)
+
+-- DEDICATED INDEPENDENT BONES UPGRADE LOOP (FIRES CONSTANTLY WITHOUT WAITING IN THE MAIN QUEUE)
+local BonesUpgradeList = {
+    {F = "AutoBonesMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
+    {F = "AutoBonesStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
+    {F = "AutoBonesMoreOof", T = "UpgradeUpgradeMax", A = {"Meat", "MoreOof"}},
+    {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Meat", "MoreBones"}}
+}
+
+task.spawn(function()
+    local bIdx = 1
+    while Running do
+        task.wait(0.4)
+        if NetRemote and Running then
+            local att = 0
+            repeat
+                local cur = BonesUpgradeList[bIdx]
+                bIdx = (bIdx % #BonesUpgradeList) + 1
+                att = att + 1
+                if Env[cur.F] then
+                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    break
+                end
+            until att >= #BonesUpgradeList
         end
     end
 end)
@@ -1523,4 +1553,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.50 Kill-Confirmation Lock-On Mob Farming Loaded Successfully!")
+print("[Dominate Hub] V11.51 Dedicated Bones Upgrade Loop Loaded Successfully!")
