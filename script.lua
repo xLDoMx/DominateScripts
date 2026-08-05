@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.83 - FIXED UPGRADE LOOPS & MUMMY NOOB)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.84 - FIXED SCROLL FRAME VISIBILITY & MUMMY NOOB)
 --======================================================================================
 local Env = getgenv()
 
@@ -746,7 +746,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR (V11.72 SCROLL FIX RESTORED)
+-- VERTICAL SCROLL GENERATOR (FIXED: Visible = true BY DEFAULT SO ALL TABS POPULATE)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -755,7 +755,7 @@ local function makeVerticalScroll(parent)
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 0 
     s.ScrollingEnabled = true
-    s.Visible = false 
+    s.Visible = true -- Fixed: Enabled by default so contents are visible across all tabs
     s.Parent = parent 
     
     local list = Instance.new("UIListLayout") 
@@ -802,7 +802,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit", "AutoBonesFasterMeatConversion", "AutoBonesEvenMoreBones"}, upScroll) -- Fixed master toggle to include all 5 flags
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit", "AutoBonesFasterMeatConversion", "AutoBonesEvenMoreBones"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1702,7 +1702,6 @@ task.spawn(function()
 end)
 
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
-task.swrite = nil
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
@@ -1717,4 +1716,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.83 Fixed Meat/Bones Loops & Mummy Noob Loaded Successfully!")
+print("[Dominate Hub] V11.84 Fixed Scrolling Frame Visibility & Mummy Noob Loaded Successfully!")
