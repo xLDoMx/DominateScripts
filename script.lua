@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (2S SAFE ZONE BREAK, BONES UPGRADES & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (SPLIT MEAT & BONES, DUNES RUNE & SAFE ZONE BREAK)
 --======================================================================================
 local Env = getgenv()
 
@@ -140,10 +140,12 @@ Env.AutoBlazeConvert = false
 
 Env.AutoUpgradePharaoh = false
 
--- BONES / MEAT UPGRADE FLAGS
-Env.AutoBonesMoreMeat = false
-Env.AutoBonesStrongerSwords = false
-Env.AutoBonesMoreOof = false
+-- MEAT / BONES UPGRADE FLAGS
+Env.AutoMeatMoreMeat = false
+Env.AutoMeatStrongerSwords = false
+Env.AutoMeatMoreOof = false
+Env.AutoDepositMeat = false
+
 Env.AutoBonesMoreBones = false
 Env.AutoBonesFasterSwords = false
 Env.AutoBonesBiggerMeatDeposit = false
@@ -268,6 +270,7 @@ Env.AutoRollAdvancedRune = false
 Env.AutoRollCosmicRune = false
 Env.AutoRollFootballRune = false
 Env.AutoRollSnowyRune = false
+Env.AutoRollDunesRune = false
 
 Env.AutoOpenT1Chest = false
 Env.AutoOpenT2Chest = false
@@ -810,7 +813,8 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreMeat", "AutoBonesStrongerSwords", "AutoBonesMoreOof", "AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
+masterToggleGroup("Meat Upgrades", {"AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoDepositMeat"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1053,6 +1057,7 @@ createToggleRow(miscScroll, "Auto Advanced Rune", "AutoRollAdvancedRune")
 createToggleRow(miscScroll, "Auto Cosmic Prism", "AutoRollCosmicRune")
 createToggleRow(miscScroll, "Auto Snowy Rune Circle", "AutoRollSnowyRune")
 createToggleRow(miscScroll, "Auto Football Rune", "AutoRollFootballRune")
+createToggleRow(miscScroll, "Auto Dunes Rune Circle", "AutoRollDunesRune")
 
 createSectionHeader(miscScroll, "Capsules")
 createToggleRow(miscScroll, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
@@ -1169,7 +1174,8 @@ local MobTargetVector = nil
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
-    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149)
+    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
+    Dunes = Vector3.new(982.733, 4.822, 7769.393)
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
@@ -1184,6 +1190,7 @@ task.spawn(function()
             if MasterTargetVector then act = MasterTargetVector 
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
+            elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
@@ -1241,7 +1248,7 @@ task.spawn(function()
             if anyActive then
                 MobTargetVector = nil
                 currentTargetMob = nil
-                MasterTargetVector = Env.SafeZoneVector
+                MasterTargetVector = Vector3.new(919.1552, 4.8658, 7905.8755)
                 showToast("Safe Spot Break: Gliding to safe zone for upgrades...")
                 task.wait(0.5) -- wait for glide arrival
                 MasterTargetVector = nil
@@ -1505,11 +1512,34 @@ task.spawn(function()
     end
 end)
 
+-- DEDICATED INDEPENDENT MEAT UPGRADE LOOP
+local MeatUpgradeList = {
+    {F = "AutoMeatMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
+    {F = "AutoMeatStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
+    {F = "AutoMeatMoreOof", T = "UpgradeUpgradeMax", A = {"Meat", "MoreOof"}}
+}
+
+task.spawn(function()
+    local mIdx = 1
+    while Running do
+        task.wait(0.4)
+        if NetRemote and Running then
+            local att = 0
+            repeat
+                local cur = MeatUpgradeList[mIdx]
+                mIdx = (mIdx % #MeatUpgradeList) + 1
+                att = att + 1
+                if Env[cur.F] then
+                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    break
+                end
+            until att >= #MeatUpgradeList
+        end
+    end
+end)
+
 -- DEDICATED INDEPENDENT BONES UPGRADE LOOP
 local BonesUpgradeList = {
-    {F = "AutoBonesMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
-    {F = "AutoBonesStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
-    {F = "AutoBonesMoreOof", T = "UpgradeUpgradeMax", A = {"Meat", "MoreOof"}},
     {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
     {F = "AutoBonesBiggerMeatDeposit", T = "UpgradeUpgradeMax", A = {"Bones", "BiggerMeatDeposit"}}
@@ -1589,7 +1619,7 @@ task.spawn(function()
         if NetRemote and Running then 
             if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end 
             if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end 
-            if Env.AutoBonesMoreMeat then pcall(function() NetRemote:FireServer("DepositMeat") end) end
+            if Env.AutoDepositMeat then pcall(function() NetRemote:FireServer("DepositMeat") end) end
         end 
     end 
 end)
@@ -1609,4 +1639,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.56 Safe Spot Combat Break & Bones Upgrades Loaded Successfully!")
+print("[Dominate Hub] V11.58 Split Meat & Bones Upgrades Loaded Successfully!")
