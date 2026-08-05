@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.80 - SCRIPT 6 BASE + MUMMY NOOB)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.81 - FIXED SCROLLING FRAME VISIBILITY BUG)
 --======================================================================================
 local Env = getgenv()
 
@@ -40,7 +40,7 @@ local currentTargetPanel = nil
 local currentTargetMob = nil
 local gemExchangeCountdown = 60
 
--- LIVE GEM EXCHANGE COUNTDOWN TICKER[cite: 1]
+-- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -55,7 +55,7 @@ task.spawn(function()
     end
 end)
 
--- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING[cite: 1]
+-- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
     local blur = Instance.new("BlurEffect")
     blur.Name = "DominateHubBlur"
@@ -63,7 +63,7 @@ pcall(function()
     blur.Parent = Lighting
 end)
 
--- TOAST NOTIFICATION HELPER[cite: 1]
+-- TOAST NOTIFICATION HELPER
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
@@ -105,10 +105,10 @@ Env.AntiAFK = true
 Env.AutoPrestige = false
 Env.CPUSaverMode = false
 
--- SAFE ZONE VECTOR FOR COMBAT BREAK[cite: 1]
+-- SAFE ZONE VECTOR FOR COMBAT BREAK
 Env.SafeZoneVector = Vector3.new(919.1552, 4.8658, 7905.8755)
 
--- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV[cite: 1]
+-- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
 Env.AutoUpgradeStarter = false
 Env.AutoUpgradeCooker = false
 Env.AutoUpgradeFarmer = false
@@ -140,7 +140,7 @@ Env.AutoBlazeConvert = false
 
 Env.AutoUpgradePharaoh = false
 
--- MEAT / BONES UPGRADE FLAGS[cite: 1]
+-- MEAT / BONES UPGRADE FLAGS
 Env.AutoMeatMoreMeat = false
 Env.AutoMeatStrongerSwords = false
 Env.AutoMeatMoreOof = false
@@ -153,7 +153,7 @@ Env.AutoBonesBiggerMeatDeposit = false
 Env.AutoBonesFasterMeatConversion = false
 Env.AutoBonesEvenMoreBones = false
 
--- TRIALS FLAGS[cite: 1]
+-- TRIALS FLAGS
 Env.AutoEasyTrial = false
 Env.AutoMediumTrial = false
 Env.AutoHardTrial = false
@@ -163,7 +163,7 @@ Env.AutoUpgradeKnightNoob = false
 Env.AutoUpgradeExplorerNoob = false
 Env.AutoUpgradeMagicianNoob = false
 Env.AutoUpgradeMerchantNoob = false
-Env.AutoUpgradeMummyNoob = false -- Added Mummy Noob flag[cite: 1]
+Env.AutoUpgradeMummyNoob = false
 
 Env.AutoRealm2MoreWalkSpeed = false
 Env.AutoRealm2MoreWater = false
@@ -214,7 +214,7 @@ Env.AutoMineVoidsteel = false
 Env.AutoMineCelestium = false
 Env.MiningJumpSpeed = 0.8 
 
--- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST)[cite: 1]
+-- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST)
 Env.AutoMobGoblin = false
 Env.AutoMobSkeleton = false
 Env.AutoMobOrc = false
@@ -228,7 +228,7 @@ Env.AutoMobSamuraiMaster = false
 Env.AutoMobDarkKnight = false
 Env.AutoMobDarkCommander = false
 
--- COMBAT UPGRADE BREAK FLAG[cite: 1]
+-- COMBAT UPGRADE BREAK FLAG
 Env.AutoCombatBreak = false
 
 Env.AutoUpgradeHacker1 = false
@@ -292,7 +292,7 @@ Env.AutoOpenSuperCapsule = false
 Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 
--- FEATURE ROW CONTAINER (50% TRANSPARENT DEEP PURPLE, NO STROKE)[cite: 1]
+-- FEATURE ROW CONTAINER (50% TRANSPARENT DEEP PURPLE, NO STROKE)
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -366,7 +366,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- MASTER TOGGLE GROUP CONTAINER[cite: 1]
+-- MASTER TOGGLE GROUP CONTAINER
 local function masterToggleGroup(txt, flagsTable, scr)
     local f = Instance.new("Frame") 
     f.Size = UDim2.new(1, -10, 0, 42) 
@@ -444,7 +444,7 @@ local function masterToggleGroup(txt, flagsTable, scr)
     return switchTrack
 end
 
--- SECTION HEADER HELPER[cite: 1]
+-- SECTION HEADER HELPER
 local function createSectionHeader(parent, txt)
     local header = Instance.new("TextLabel")
     header.Size = UDim2.new(1, -10, 0, 32)
@@ -474,11 +474,11 @@ task.spawn(function()
     until NetRemote or not Running
 end)
 
--- UI MASTER ALLOCATION[cite: 1]
+-- UI MASTER ALLOCATION
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui") sg.Name = "DominateHubMirror" sg.ResetOnSpawn = false sg.Parent = parentTarget
 
--- FPS & PING TRACKING UTILS[cite: 1]
+-- FPS & PING TRACKING UTILS
 local fps = 60
 local frameCount = 0
 local lastFpsUpdate = tick()
@@ -491,7 +491,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)[cite: 1]
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 96)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -560,13 +560,14 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER[cite: 1]
+-- MAIN WINDOW CONTAINER (STATIC NON-DRAGGABLE)
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 620, 0, 410)
 mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205)
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 12, 28) 
 mainFrame.BackgroundTransparency = 0.02
 mainFrame.BorderSizePixel = 0 
+mainFrame.ClipsDescendants = true
 mainFrame.Parent = sg
 
 local mainCorner = Instance.new("UICorner")
@@ -578,7 +579,7 @@ mainStroke.Color = Color3.fromRGB(168, 85, 247)
 mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
 
--- HEADER LOGO IMAGE CONTAINER[cite: 1]
+-- HEADER LOGO IMAGE CONTAINER WITH FADED SHINY TOP STROKE EFFECT
 local logoBox = Instance.new("ImageLabel")
 logoBox.Size = UDim2.new(0, 34, 0, 34)
 logoBox.Position = UDim2.new(0, 14, 0, 10)
@@ -640,7 +641,7 @@ task.spawn(function()
     end
 end)
 
--- FLOATING PILL (MINIMIZE / RESTORE)[cite: 1]
+-- FLOATING PILL (MINIMIZE / RESTORE)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 115, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -57, 0.01, 0) 
@@ -672,7 +673,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER[cite: 1]
+-- SIDEBAR CONTAINER (FIXED NON-SCROLLABLE SIDEBAR TO KEEP ALL TABS VISIBLE)
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -726,7 +727,7 @@ local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
 
--- PAGE CONTAINER AREA[cite: 1]
+-- PAGE CONTAINER AREA
 local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
@@ -745,7 +746,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR[cite: 1]
+-- VERTICAL SCROLL GENERATOR (FIXED: SETTING Visible = true BY DEFAULT SO ALL TABS POPULATE PROPERLY)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -754,7 +755,7 @@ local function makeVerticalScroll(parent)
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 0 
     s.ScrollingEnabled = true
-    s.Visible = false 
+    s.Visible = true -- Fixed: Enabled by default so page contents are visible across all tabs
     s.Parent = parent 
     
     local list = Instance.new("UIListLayout") 
@@ -769,7 +770,7 @@ local function makeVerticalScroll(parent)
 end
 
 -- ======================================================================================
--- UPGRADES PAGE[cite: 1]
+-- UPGRADES PAGE
 -- ======================================================================================
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
@@ -804,7 +805,7 @@ masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "Auto
 masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 
 -- ======================================================================================
--- NOOBS PAGE SETUP[cite: 1]
+-- NOOBS PAGE SETUP
 -- ======================================================================================
 local noobsScroll = makeVerticalScroll(noobsPage)
 
@@ -824,10 +825,10 @@ createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 createSectionHeader(noobsScroll, "Realm 3 Noobs")
 createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
-createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob") -- Added Mummy Noob toggle row[cite: 1]
+createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 
 -- ======================================================================================
--- TRIALS PAGE SETUP[cite: 1]
+-- TRIALS PAGE SETUP
 -- ======================================================================================
 local trialsScroll = makeVerticalScroll(trialsPage)
 
@@ -837,7 +838,7 @@ createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
 createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 
 -- ======================================================================================
--- MINES PAGE SETUP (SORTED WORST TO BEST)[cite: 1]
+-- MINES PAGE SETUP (SORTED WORST TO BEST)
 -- ======================================================================================
 local minesScroll = makeVerticalScroll(minesPage)
 
@@ -873,7 +874,7 @@ bestTierBtn.MouseButton1Click:Connect(function()
     showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
 end)
 
--- GLIDE SPEED SCROLLER[cite: 1]
+-- GLIDE SPEED SCROLLER
 local speedContainer = Instance.new("Frame")
 speedContainer.Size = UDim2.new(1, -10, 0, 60)
 speedContainer.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
@@ -967,7 +968,7 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- MOBS PAGE SETUP (WORST AT TOP, BEST AT BOTTOM)[cite: 1]
+-- MOBS PAGE SETUP (WORST AT TOP, BEST AT BOTTOM)
 -- ======================================================================================
 local mobsScroll = makeVerticalScroll(mobsPage)
 
@@ -1021,7 +1022,7 @@ createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 
 -- ======================================================================================
--- FOOTBALL PAGE SETUP[cite: 1]
+-- FOOTBALL PAGE SETUP
 -- ======================================================================================
 local footballScroll = makeVerticalScroll(footballPage)
 
@@ -1047,7 +1048,7 @@ createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- ======================================================================================
--- MISC PAGE SETUP[cite: 1]
+-- MISC PAGE SETUP
 -- ======================================================================================
 local miscScroll = makeVerticalScroll(miscPage)
 
@@ -1066,7 +1067,7 @@ createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 
 -- ======================================================================================
--- SETTINGS PAGE SETUP[cite: 1]
+-- SETTINGS PAGE SETUP
 -- ======================================================================================
 local settingsScroll = makeVerticalScroll(settingsPage)
 
@@ -1130,7 +1131,7 @@ killBtn.MouseButton1Click:Connect(function()
     sg:Destroy()
 end)
 
--- TAB ROUTING SYSTEM[cite: 1]
+-- TAB ROUTING SYSTEM
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, mobsPage.Visible, trialsPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabTrials, tabFootball, tabMisc, tabSettings}
@@ -1156,7 +1157,7 @@ tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
 -- ======================================================================================
--- LOCOMOTION & AUTOMATION ENGINES[cite: 1]
+-- LOCOMOTION & AUTOMATION ENGINES
 -- ======================================================================================
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
@@ -1175,7 +1176,7 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop[cite: 1]
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1200,7 +1201,7 @@ task.spawn(function()
     end
 end)
 
--- HELPER TO CHECK IF MOB IS RESPAWNING[cite: 1]
+-- HELPER TO CHECK IF MOB IS RESPAWNING
 local function isMobRespawning(mobModel)
     for _, desc in ipairs(mobModel:GetDescendants()) do
         if desc:IsA("TextLabel") and desc.Text:lower():find("respawning") then
@@ -1210,7 +1211,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- TRIALS AUTOMATION & ARENA ATTACK ENGINE[cite: 1]
+-- TRIALS AUTOMATION & ARENA ATTACK ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1269,7 +1270,7 @@ task.spawn(function()
     end
 end)
 
--- MOB PRIORITY LIST (INDEX 1 = WORST/LOWEST, INDEX 12 = BEST/HIGHEST)[cite: 1]
+-- MOB PRIORITY LIST (INDEX 1 = WORST/LOWEST, INDEX 12 = BEST/HIGHEST)
 local MobPriorityList = {
     {F = "AutoMobGoblin", N = "Goblin"},
     {F = "AutoMobSkeleton", N = "Skeleton"},
@@ -1285,7 +1286,7 @@ local MobPriorityList = {
     {F = "AutoMobDarkCommander", N = "Dark Commander"}
 }
 
--- SAFE ZONE COMBAT BREAK ROUTINE[cite: 1]
+-- SAFE ZONE COMBAT BREAK ROUTINE
 task.spawn(function()
     while Running do
         task.wait(40.0)
@@ -1327,7 +1328,7 @@ end)
 local currentMobIndex = 1
 local lastMobJumpTick = 0
 
--- MINER-STYLE AUTO MOB FARMING ENGINE[cite: 1]
+-- MINER-STYLE AUTO MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -1396,7 +1397,7 @@ task.spawn(function()
     end
 end)
 
--- 1. GEM CONVERTER ALONE[cite: 1]
+-- 1. GEM CONVERTER ALONE
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1409,7 +1410,7 @@ task.spawn(function()
     end
 end)
 
--- 2. SHOP TELEPORT LOOP ALONE[cite: 1]
+-- 2. SHOP TELEPORT LOOP ALONE
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1421,7 +1422,7 @@ task.spawn(function()
     end
 end)
 
--- 3. COMBINED PITSTOP LOOP[cite: 1]
+-- 3. COMBINED PITSTOP LOOP
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1563,7 +1564,7 @@ local PrimaryUpgradeQueue = {
     {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}
 }
 
--- MAIN UPGRADE LOOP[cite: 1]
+-- MAIN UPGRADE LOOP
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 2.0 or 1.0)
@@ -1576,7 +1577,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT MEAT UPGRADE LOOP[cite: 1]
+-- DEDICATED INDEPENDENT MEAT UPGRADE LOOP
 local MeatUpgradeList = {
     {F = "AutoMeatMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
     {F = "AutoMeatStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
@@ -1603,7 +1604,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT BONES UPGRADE LOOP[cite: 1]
+-- DEDICATED INDEPENDENT BONES UPGRADE LOOP
 local BonesUpgradeList = {
     {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
@@ -1680,7 +1681,7 @@ task.spawn(function() while Running do task.wait(3.0) if NetRemote and Running a
 local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
 task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
 
--- 1-MINUTE MEAT CONVERSION LOOP[cite: 1]
+-- 1-MINUTE MEAT CONVERSION LOOP (INDEPENDENT)
 task.spawn(function() 
     while Running do 
         task.wait(60.0) 
@@ -1715,4 +1716,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.80 Script 6 Base Restored with Mummy Noob Added Successfully!")
+print("[Dominate Hub] V11.81 Fixed Scrolling Frame Visibility Bug & Mummy Noob Added Successfully!")
