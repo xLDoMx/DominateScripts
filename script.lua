@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (SAFE ZONE COMBAT BREAK - 2S PAUSE & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (2S SAFE ZONE BREAK, BONES UPGRADES & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -105,7 +105,7 @@ Env.AntiAFK = true
 Env.AutoPrestige = false
 Env.CPUSaverMode = false
 
--- SAFE ZONE VECTOR FOR COMBAT BREAK (Configured from your prompt screenshot)
+-- SAFE ZONE VECTOR FOR COMBAT BREAK
 Env.SafeZoneVector = Vector3.new(919.1552, 4.8658, 7905.8755)
 
 -- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
@@ -145,6 +145,8 @@ Env.AutoBonesMoreMeat = false
 Env.AutoBonesStrongerSwords = false
 Env.AutoBonesMoreOof = false
 Env.AutoBonesMoreBones = false
+Env.AutoBonesFasterSwords = false
+Env.AutoBonesBiggerMeatDeposit = false
 
 Env.AutoUpgradeFishermanNoob = false
 Env.AutoUpgradeKnightNoob = false
@@ -808,7 +810,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreMeat", "AutoBonesStrongerSwords", "AutoBonesMoreOof", "AutoBonesMoreBones"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreMeat", "AutoBonesStrongerSwords", "AutoBonesMoreOof", "AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1239,8 +1241,7 @@ task.spawn(function()
             if anyActive then
                 MobTargetVector = nil
                 currentTargetMob = nil
-                -- Glide to safe zone vector
-                MasterTargetVector = Vector3.new(919.1552, 4.8658, 7905.8755)
+                MasterTargetVector = Env.SafeZoneVector
                 showToast("Safe Spot Break: Gliding to safe zone for upgrades...")
                 task.wait(0.5) -- wait for glide arrival
                 MasterTargetVector = nil
@@ -1400,7 +1401,7 @@ task.spawn(function()
                     local freshList = {} local gc = workspace:FindFirstChild("__GAME_CONTENT") local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model"] and not isOreRespawning(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then table.insert(freshList, part) end
                             end
@@ -1504,12 +1505,14 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT BONES UPGRADE LOOP (FIRES CONSTANTLY WITHOUT WAITING IN THE MAIN QUEUE)
+-- DEDICATED INDEPENDENT BONES UPGRADE LOOP
 local BonesUpgradeList = {
     {F = "AutoBonesMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
     {F = "AutoBonesStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
     {F = "AutoBonesMoreOof", T = "UpgradeUpgradeMax", A = {"Meat", "MoreOof"}},
-    {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Meat", "MoreBones"}}
+    {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
+    {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
+    {F = "AutoBonesBiggerMeatDeposit", T = "UpgradeUpgradeMax", A = {"Bones", "BiggerMeatDeposit"}}
 }
 
 task.spawn(function()
@@ -1580,7 +1583,17 @@ task.spawn(function() while Running do task.wait(3.0) if NetRemote and Running a
 local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
 task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
 
-task.spawn(function() while Running do task.wait(30.0) if NetRemote and Running then if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end end end end)
+task.spawn(function() 
+    while Running do 
+        task.wait(30.0) 
+        if NetRemote and Running then 
+            if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end 
+            if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end 
+            if Env.AutoBonesMoreMeat then pcall(function() NetRemote:FireServer("DepositMeat") end) end
+        end 
+    end 
+end)
+
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
@@ -1596,4 +1609,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.55 Safe Spot Combat Break Toggle Loaded Successfully!")
+print("[Dominate Hub] V11.56 Safe Spot Combat Break & Bones Upgrades Loaded Successfully!")
