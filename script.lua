@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (MINER-STYLE CYCLING AUTO-MOB FARMING & STABLE BUILD)
+-- DOMINATE HUB | PRO EDITION (LOCKED-ON KILL-CONFIRMATION MOB FARMING)
 --======================================================================================
 local Env = getgenv()
 
@@ -1215,7 +1215,7 @@ local MobPriorityList = {
 local currentMobIndex = 1
 local lastMobJumpTick = 0
 
--- MINER-STYLE AUTO MOB FARMING ENGINE (SEQUENTIAL CYCLING)
+-- MINER-STYLE AUTO MOB FARMING ENGINE WITH LOCK-ON KILL CONFIRMATION
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -1231,12 +1231,12 @@ task.spawn(function()
 
             if hasAnyMobEnabled then
                 local needsNewMobTarget = false
+                
+                -- Check if current target mob is dead, destroyed, or respawning
                 if not currentTargetMob or not currentTargetMob.Parent or not currentTargetMob:IsDescendantOf(workspace) then 
                     needsNewMobTarget = true
                 elseif currentTargetMob.Parent and isMobRespawning(currentTargetMob.Parent) then 
                     needsNewMobTarget = true
-                elseif tick() - lastMobJumpTick >= (Env.MiningJumpSpeed or 0.8) then 
-                    needsNewMobTarget = true 
                 end
 
                 if needsNewMobTarget then
@@ -1245,10 +1245,12 @@ task.spawn(function()
                     local mobsFolder = gc and gc:FindFirstChild("Mobs")
                     
                     if mobsFolder then
-                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                            if enabledMobNames[mobObj.Name] and mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                if part then table.insert(freshMobList, part) end
+                        for _, categoryFolder in ipairs(mobsFolder:GetChildren()) do
+                            for _, mobModel in ipairs(categoryFolder:GetChildren()) do
+                                if enabledMobNames[mobModel.Name] and mobModel:IsA("Model") and not isMobRespawning(mobModel) then
+                                    local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
+                                    if part then table.insert(freshMobList, part) end
+                                end
                             end
                         end
                     end
@@ -1529,4 +1531,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.43 Miner-Style Sequential Mob Cycling Loaded Successfully!")
+print("[Dominate Hub] V11.44 Locked-On Kill-Confirmation Mob Farming Loaded Successfully!")
