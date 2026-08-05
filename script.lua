@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.81 - FIXED SCROLLING FRAME VISIBILITY BUG)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.83 - FIXED UPGRADE LOOPS & MUMMY NOOB)
 --======================================================================================
 local Env = getgenv()
 
@@ -746,7 +746,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR (FIXED: SETTING Visible = true BY DEFAULT SO ALL TABS POPULATE PROPERLY)
+-- VERTICAL SCROLL GENERATOR (V11.72 SCROLL FIX RESTORED)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -755,7 +755,7 @@ local function makeVerticalScroll(parent)
     s.BorderSizePixel = 0 
     s.ScrollBarThickness = 0 
     s.ScrollingEnabled = true
-    s.Visible = true -- Fixed: Enabled by default so page contents are visible across all tabs
+    s.Visible = false 
     s.Parent = parent 
     
     local list = Instance.new("UIListLayout") 
@@ -802,7 +802,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit", "AutoBonesFasterMeatConversion", "AutoBonesEvenMoreBones"}, upScroll) -- Fixed master toggle to include all 5 flags
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1596,7 +1596,7 @@ task.spawn(function()
                 mIdx = (mIdx % #MeatUpgradeList) + 1
                 att = att + 1
                 if Env[cur.F] then
-                    pcall(function() NetRemote:FireServer(cur.T, unpack(item and item.A or cur.A)) end)
+                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
                     break
                 end
             until att >= #MeatUpgradeList
@@ -1610,7 +1610,7 @@ local BonesUpgradeList = {
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
     {F = "AutoBonesBiggerMeatDeposit", T = "UpgradeUpgradeMax", A = {"Bones", "BiggerMeatDeposit"}},
     {F = "AutoBonesFasterMeatConversion", T = "UpgradeUpgradeMax", A = {"Bones", "FasterMeatConversion"}},
-    {F = "AutoBonesEvenMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "evenMoreBones"}}
+    {F = "AutoBonesEvenMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "EvenMoreBones"}}
 }
 
 task.spawn(function()
@@ -1702,6 +1702,7 @@ task.spawn(function()
 end)
 
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
+task.swrite = nil
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
@@ -1716,4 +1717,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.81 Fixed Scrolling Frame Visibility Bug & Mummy Noob Added Successfully!")
+print("[Dominate Hub] V11.83 Fixed Meat/Bones Loops & Mummy Noob Loaded Successfully!")
