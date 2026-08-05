@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (FIXED MOB MOVEMENT PRIORITY & LOCKED-ON FARMING)
+-- DOMINATE HUB | PRO EDITION (LOCKED-ON KILL CONFIRMATION MOB FARMING & STABLE BUILD)
 --======================================================================================
 local Env = getgenv()
 
@@ -1163,7 +1163,7 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Mob target prioritized when active)
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1171,8 +1171,8 @@ task.spawn(function()
         if hrp and Running then
             local act = nil
             if MasterTargetVector then act = MasterTargetVector 
-            elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
+            elseif MobTargetVector then act = MobTargetVector
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
@@ -1212,7 +1212,7 @@ local MobPriorityList = {
     {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"}
 }
 
--- LOCKED-ON KILL-CONFIRMATION MOB FARMING ENGINE
+-- MINER-STYLE AUTO MOB FARMING ENGINE WITH KILL CONFIRMATION LOCK-ON
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -1229,7 +1229,7 @@ task.spawn(function()
             if hasAnyMobEnabled then
                 local needsNewMobTarget = false
                 
-                -- Stay locked onto current target until it is completely dead or respawning
+                -- STRICT KILL CONFIRMATION: Only pick a new mob if current one is completely gone or respawning
                 if not currentTargetMob or not currentTargetMob.Parent or not currentTargetMob:IsDescendantOf(workspace) then 
                     needsNewMobTarget = true
                 elseif currentTargetMob.Parent and isMobRespawning(currentTargetMob.Parent) then 
@@ -1237,32 +1237,30 @@ task.spawn(function()
                 end
 
                 if needsNewMobTarget then
-                    local foundMobPart = nil
+                    local freshMobList = {} 
                     local gc = workspace:FindFirstChild("__GAME_CONTENT") 
                     local mobsFolder = gc and gc:FindFirstChild("Mobs")
                     
                     if mobsFolder then
-                        for i = 1, #MobPriorityList do
-                            local mobName = MobPriorityList[i].N
-                            if enabledMobNames[mobName] then
-                                for _, categoryFolder in ipairs(mobsFolder:GetChildren()) do
-                                    for _, mobModel in ipairs(categoryFolder:GetChildren()) do
-                                        if mobModel:IsA("Model") and mobModel.Name == mobName and not isMobRespawning(mobModel) then
-                                            local part = mobModel.PrimaryPart or mobModel:FindFirstChildWhichIsA("BasePart")
-                                            if part then
-                                                foundMobPart = part
-                                                break
-                                            end
-                                        end
-                                    end
-                                    if foundMobPart then break end
-                                end
+                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                            if enabledMobNames[mobObj.Name] and mobObj:IsA("Model") and not isMobRespawning(mobObj) then
+                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                if part then table.insert(freshMobList, part) end
                             end
-                            if foundMobPart then break end
                         end
                     end
                     
-                    currentTargetMob = foundMobPart
+                    if #freshMobList > 0 then
+                        table.sort(freshMobList, function(a, b) return a.Position.X < b.Position.X end)
+                        currentTargetMob = freshMobList[1] 
+                        
+                        if currentTargetMob and currentTargetMob ~= lastTrackedMobPart then
+                            lastTrackedMobPart = currentTargetMob
+                            mobsKilled = mobsKilled + 1
+                        end
+                    else 
+                        currentTargetMob = nil 
+                    end
                 end
                 
                 if currentTargetMob and currentTargetMob.Parent then 
@@ -1273,6 +1271,8 @@ task.spawn(function()
             else 
                 currentTargetMob = nil 
                 MobTargetVector = nil 
+                mobsKilled = 0
+                lastTrackedMobPart = nil
             end
         end
     end
@@ -1523,4 +1523,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.48 Fixed Movement Priority & Locked-On Mob Farming Loaded Successfully!")
+print("[Dominate Hub] V11.50 Kill-Confirmation Lock-On Mob Farming Loaded Successfully!")
