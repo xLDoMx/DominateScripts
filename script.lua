@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (SPLIT UPGRADES, DUNES RUNE & SAFE BREAK)
+-- DOMINATE HUB | PRO EDITION (MASTER TOGGLE GROUPS, DUNES RUNE & SAFE BREAK)
 --======================================================================================
 local Env = getgenv()
 
@@ -813,17 +813,8 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
-
-createSectionHeader(upScroll, "Meat Upgrades")
-createToggleRow(upScroll, "Auto Deposit Meat", "AutoDepositMeat")
-createToggleRow(upScroll, "More Meat", "AutoMeatMoreMeat")
-createToggleRow(upScroll, "Stronger Swords", "AutoMeatStrongerSwords")
-createToggleRow(upScroll, "More Oofs", "AutoMeatMoreOof")
-
-createSectionHeader(upScroll, "Bones Upgrades")
-createToggleRow(upScroll, "More Bones", "AutoBonesMoreBones")
-createToggleRow(upScroll, "Faster Swords", "AutoBonesFasterSwords")
-createToggleRow(upScroll, "Bigger Meat Deposit", "AutoBonesBiggerMeatDeposit")
+masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1652,4 +1643,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.61 Split Meat & Bones, Best-to-Worst Mobs & Safe Break Loaded Successfully!")
+print("[Dominate Hub] V11.62 Master Toggle Groups for Meat & Bones Loaded Successfully!")
