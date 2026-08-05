@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (TRIALS SYSTEM, MEAT CONVERSION, STABLE BUILD V11.70)
+-- DOMINATE HUB | PRO EDITION (FIXED SCROLL VISIBILITY, TRIALS & STABLE BUILD V11.72)
 --======================================================================================
 local Env = getgenv()
 
@@ -775,27 +775,33 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
--- VERTICAL SCROLL GENERATOR
+-- VERTICAL SCROLL GENERATOR (INVISIBLE SCROLLBAR, DEFAULT VISIBLE)
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
     s.Position = UDim2.new(0, 0, 0, 0)
     s.BackgroundTransparency = 1 
     s.BorderSizePixel = 0 
-    s.ScrollBarThickness = 6 
-    s.ScrollBarImageColor3 = Color3.fromRGB(168, 85, 247) 
-    s.Visible = false 
+    s.ScrollBarThickness = 0 
+    s.ScrollingEnabled = true
+    s.Visible = true
     s.Parent = parent 
     
-    local list = Instance.new("UIListLayout") list.Padding = UDim.new(0, 10) list.SortOrder = Enum.SortOrder.LayoutOrder; list.Parent = s
-    list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() s.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 20) end)
+    local list = Instance.new("UIListLayout") 
+    list.Padding = UDim.new(0, 10) 
+    list.SortOrder = Enum.SortOrder.LayoutOrder
+    list.Parent = s
+    
+    list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() 
+        s.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 20) 
+    end)
     return s 
 end
 
 -- ======================================================================================
 -- UPGRADES PAGE
 -- ======================================================================================
-local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
+local upScroll = makeVerticalScroll(upgradesPage)
 
 createSectionHeader(upScroll, "Realm 1 Upgrades")
 createToggleRow(upScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
@@ -830,7 +836,7 @@ masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSword
 -- ======================================================================================
 -- NOOBS PAGE SETUP
 -- ======================================================================================
-local noobsScroll = makeVerticalScroll(noobsPage) noobsScroll.Visible = true
+local noobsScroll = makeVerticalScroll(noobsPage)
 
 createSectionHeader(noobsScroll, "Realm 1 Noobs")
 createToggleRow(noobsScroll, "Starter Auto Upgrade", "AutoUpgradeStarter")
@@ -862,7 +868,7 @@ createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 -- ======================================================================================
 -- MINES PAGE SETUP (SORTED WORST TO BEST)
 -- ======================================================================================
-local minesScroll = makeVerticalScroll(minesPage) minesScroll.Visible = true
+local minesScroll = makeVerticalScroll(minesPage)
 
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
@@ -992,7 +998,7 @@ createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 -- ======================================================================================
 -- MOBS PAGE SETUP (WORST AT TOP, BEST AT BOTTOM)
 -- ======================================================================================
-local mobsScroll = makeVerticalScroll(mobsPage) mobsScroll.Visible = true
+local mobsScroll = makeVerticalScroll(mobsPage)
 
 local bestMobTierActive = false
 local bestMobTierBtn = Instance.new("TextButton")
@@ -1046,7 +1052,7 @@ createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
 -- ======================================================================================
-local footballScroll = makeVerticalScroll(footballPage) footballScroll.Visible = true
+local footballScroll = makeVerticalScroll(footballPage)
 
 createSectionHeader(footballScroll, "Football Noobs")
 createToggleRow(footballScroll, "Goalkeeper", "AutoUpgradeGoalkeeper")
@@ -1072,7 +1078,7 @@ createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 -- ======================================================================================
 -- MISC PAGE SETUP
 -- ======================================================================================
-local miscScroll = makeVerticalScroll(miscPage) miscScroll.Visible = true
+local miscScroll = makeVerticalScroll(miscPage)
 
 createSectionHeader(miscScroll, "Runes")
 createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
@@ -1091,7 +1097,7 @@ createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 -- ======================================================================================
 -- SETTINGS PAGE SETUP
 -- ======================================================================================
-local settingsScroll = makeVerticalScroll(settingsPage) settingsScroll.Visible = true
+local settingsScroll = makeVerticalScroll(settingsPage)
 
 createSectionHeader(settingsScroll, "General Settings")
 createToggleRow(settingsScroll, "Anti AFK Protection", "AntiAFK")
@@ -1749,4 +1755,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.70 Trials System, Arena Auto-Attack & Stable Build Loaded Successfully!")
+print("[Dominate Hub] V11.72 Invisible Scrollbar & Trials Tab Loaded Successfully!")
