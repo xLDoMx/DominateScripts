@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (ALIGNED BONES & MEAT LOGIC, DUNES & SAFE BREAK)
+-- DOMINATE HUB | PRO EDITION (TRIALS SYSTEM, MEAT CONVERSION, STABLE BUILD V11.70)
 --======================================================================================
 local Env = getgenv()
 
@@ -152,6 +152,11 @@ Env.AutoBonesFasterSwords = false
 Env.AutoBonesBiggerMeatDeposit = false
 Env.AutoBonesFasterMeatConversion = false
 Env.AutoBonesEvenMoreBones = false
+
+-- TRIALS FLAGS
+Env.AutoEasyTrial = false
+Env.AutoMediumTrial = false
+Env.AutoHardTrial = false
 
 Env.AutoUpgradeFishermanNoob = false
 Env.AutoUpgradeKnightNoob = false
@@ -747,6 +752,7 @@ if activeTabStroke then activeTabStroke.Transparency = 0.1 end
 local tabNoobs = makeMainTab("🤖", "Noobs")
 local tabMines = makeMainTab("⛏️", "Mines")
 local tabMobs = makeMainTab("⚔️", "Mobs")
+local tabTrials = makeMainTab("🛡️", "Trials")
 local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
@@ -766,7 +772,7 @@ local function makePage()
     p.Parent = pageArea 
     return p
 end
-local upgradesPage, noobsPage, minesPage, mobsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
+local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
 -- VERTICAL SCROLL GENERATOR
@@ -819,7 +825,7 @@ createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit", "AutoBonesFasterMeatConversion", "AutoBonesEvenMoreBones"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -842,6 +848,16 @@ createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
 createSectionHeader(noobsScroll, "Realm 3 Noobs")
 createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
+
+-- ======================================================================================
+-- TRIALS PAGE SETUP
+-- ======================================================================================
+local trialsScroll = makeVerticalScroll(trialsPage)
+
+createSectionHeader(trialsScroll, "Realm 3 Trials Automation")
+createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
+createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
+createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 
 -- ======================================================================================
 -- MINES PAGE SETUP (SORTED WORST TO BEST)
@@ -1139,8 +1155,8 @@ end)
 
 -- TAB ROUTING SYSTEM
 local function mainRoute(pOpen, bActive) 
-    upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, mobsPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false; pOpen.Visible = true; 
-    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabFootball, tabMisc, tabSettings}
+    upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, mobsPage.Visible, trialsPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false, false; pOpen.Visible = true; 
+    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabTrials, tabFootball, tabMisc, tabSettings}
     for _, t in ipairs(tabs) do 
         t.BackgroundColor3 = Color3.fromRGB(18, 12, 28)
         t.TextColor3 = Color3.fromRGB(210, 190, 235)
@@ -1157,6 +1173,7 @@ tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgr
 tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
 tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
 tabMobs.MouseButton1Click:Connect(function() mainRoute(mobsPage, tabMobs) end)
+tabTrials.MouseButton1Click:Connect(function() mainRoute(trialsPage, tabTrials) end)
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
@@ -1178,12 +1195,16 @@ end)
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
 local MobTargetVector = nil
+local TrialTargetVector = nil
 
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
-    Dunes = Vector3.new(982.733, 4.822, 7769.393)
+    Dunes = Vector3.new(982.733, 4.822, 7769.393),
+    EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
+    MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
+    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009)
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
@@ -1196,6 +1217,7 @@ task.spawn(function()
         if hrp and Running then
             local act = nil
             if MasterTargetVector then act = MasterTargetVector 
+            elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
@@ -1222,6 +1244,65 @@ local function isMobRespawning(mobModel)
     return false
 end
 
+-- TRIALS AUTOMATION & ARENA ATTACK ENGINE
+task.spawn(function()
+    while Running do
+        task.wait(0.5)
+        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
+            local targetGate = nil
+            if Env.AutoEasyTrial then targetGate = Dest.EasyTrial
+            elseif Env.AutoMediumTrial then targetGate = Dest.MediumTrial
+            elseif Env.AutoHardTrial then targetGate = Dest.HardTrial end
+
+            if targetGate then
+                -- Glide to trial gate to enter arena
+                TrialTargetVector = targetGate
+                task.wait(1.0)
+                
+                -- Arena combat loop while inside trial session
+                local inArena = true
+                showToast("Trials: Entered arena! Auto-clearing waves...")
+                while inArena and Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) do
+                    task.wait(0.1)
+                    local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                    local mobsFolder = gc and gc:FindFirstChild("Mobs")
+                    local closestMobPart = nil
+                    local shortestDist = math.huge
+                    local hrp = GetWorldRoot()
+
+                    if mobsFolder and hrp then
+                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                            if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
+                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                if part then
+                                    local dist = (part.Position - hrp.Position).Magnitude
+                                    if dist < shortestDist then
+                                        shortestDist = dist
+                                        closestMobPart = part
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    if closestMobPart then
+                        TrialTargetVector = closestMobPart.Position
+                    else
+                        -- If no mobs are present, check if trial is complete or waiting for next wave
+                        TrialTargetVector = targetGate + Vector3.new(0, 5, 0)
+                        -- If player is back outside or trial finished, break out of arena loop
+                        if hrp and (hrp.Position - targetGate).Magnitude > 100 then
+                            inArena = false
+                        end
+                    end
+                end
+                TrialTargetVector = nil
+                showToast("Trials: Completed! Resuming previous tasks...")
+            end
+        end
+    end
+end)
+
 -- MOB PRIORITY LIST (INDEX 1 = WORST/LOWEST, INDEX 12 = BEST/HIGHEST)
 local MobPriorityList = {
     {F = "AutoMobGoblin", N = "Goblin"},
@@ -1242,7 +1323,7 @@ local MobPriorityList = {
 task.spawn(function()
     while Running do
         task.wait(40.0)
-        if Running and Env.AutoCombatBreak then
+        if Running and Env.AutoCombatBreak and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
             local activeMobStates = {}
             local anyActive = false
             for i = 1, #MobPriorityList do
@@ -1284,7 +1365,7 @@ local lastMobJumpTick = 0
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running then
+        if Running and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
             for i = 1, #MobPriorityList do 
@@ -1411,7 +1492,7 @@ end
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running then
+        if Running and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
             local enabledOreNames = {} local hasAnyEnabled = false
             for i = 1, #OrePriorityList do if Env[OrePriorityList[i].F] then enabledOreNames[OrePriorityList[i].N] = true hasAnyEnabled = true end end
 
@@ -1474,12 +1555,12 @@ end)
 task.spawn(function()
     while Running do
         task.wait(0.5)
-        if Env.AutoFarmCash and Running then
+        if Env.AutoFarmCash and Running and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") local ty = gc and gc:FindFirstChild("Tycoon") local btnF = ty and ty:FindFirstChild("Buttons")
             if btnF and Running then
                 local locked = {} 
                 repeat
-                    if not Running or not Env.AutoFarmCash then break end
+                    if not Running or not Env.AutoFarmCash or (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then break end
                     local vis = btnF:GetChildren() local att = false
                     for i = 1, #vis do
                         if not Running or not Env.AutoFarmCash then break end
@@ -1556,7 +1637,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT BONES UPGRADE LOOP (USING IDENTICAL LOGIC TO MEAT)
+-- DEDICATED INDEPENDENT BONES UPGRADE LOOP
 local BonesUpgradeList = {
     {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
@@ -1668,4 +1749,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.69 Aligned Bones Upgrades & Stable Build Loaded Successfully!")
+print("[Dominate Hub] V11.70 Trials System, Arena Auto-Attack & Stable Build Loaded Successfully!")
