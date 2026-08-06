@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.98 - RUNTIME TRIAL STATE LOCK FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.99 - RITUAL FLOW & TRIAL DETECTION FIXED)
 --======================================================================================
 local Env = getgenv()
 
@@ -1094,7 +1094,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (3m Loop & 1m CD)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (3m Farm & 5s Vector)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1305,7 +1305,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (3-MIN FARM, GLIDE TO CHAMBER, 5S PAUSE, 1-MIN COOLDOWN)
+-- RITUAL LOOP AUTOMATION (GLIDE TO VECTOR -> WAIT 5S -> FARM MOBS 3M -> RETURN TO VECTOR)
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1313,9 +1313,16 @@ task.spawn(function()
             pcall(function()
                 NetRemote:FireServer("StartRitual")
             end)
-            showToast("Ritual Chamber: Started ritual! Farming souls for 3 minutes...")
+            showToast("Ritual Chamber: Started ritual! Gliding to chamber...")
             
-            -- Run for 3 minutes (180 seconds)
+            -- Glide to chamber vector and wait 5 seconds
+            RitualTargetVector = Dest.RitualChamber
+            task.wait(5.0)
+            
+            -- Release vector to farm selected mobs for 3 minutes (180 seconds)
+            RitualTargetVector = nil
+            showToast("Ritual Chamber: Farming selected mobs for 3 minutes...")
+            
             local timer = 180
             while timer > 0 and Running and Env.AutoStartRitual do
                 task.wait(1.0)
@@ -1323,24 +1330,11 @@ task.spawn(function()
             end
             
             if Running and Env.AutoStartRitual then
-                -- Glide back to chamber coords after 3 minutes
+                -- After 3 minutes, come back to the vector
                 RitualTargetVector = Dest.RitualChamber
-                showToast("Ritual Chamber: Time's up! Gliding back to chamber...")
-                task.wait(3.0) -- wait for glide arrival
-                
-                -- Stay there for 5 seconds to view kills/souls
-                showToast("Ritual Chamber: Pausing at chamber for 5s...")
-                task.wait(5.0)
-                
+                showToast("Ritual Chamber: Returning to chamber vector...")
+                task.wait(5.0) -- wait 5s at vector before repeating cycle
                 RitualTargetVector = nil
-                
-                -- 1-minute cooldown before restarting ritual loop
-                showToast("Ritual Chamber: Cooldown active (1m)...")
-                local cdTimer = 60
-                while cdTimer > 0 and Running and Env.AutoStartRitual do
-                    task.wait(1.0)
-                    cdTimer = cdTimer - 1
-                end
             end
         end
     end
@@ -1356,7 +1350,7 @@ local function isTrialOpen(trialRoomName)
             for _, desc in ipairs(room:GetDescendants()) do
                 if desc:IsA("TextLabel") then
                     local txt = desc.Text:lower()
-                    if txt:find("is open") or txt:find("left to join") then
+                    if txt:find("open") or txt:find("left to join") then
                         return true
                     end
                 end
@@ -1366,7 +1360,7 @@ local function isTrialOpen(trialRoomName)
     return false
 end
 
--- ADVANCED TRIAL STATE-MACHINE AUTOMATION (USING RUNTIME STATE LOCK)
+-- ADVANCED TRIAL STATE-MACHINE AUTOMATION (USING CORRECTED MODEL NAMES)
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -1375,13 +1369,13 @@ task.spawn(function()
             local targetPad = nil
             
             if Env.AutoEasyTrial then
-                targetRoomName = "EasyTrialRoom Model"
+                targetRoomName = "EasyTrialRoom"
                 targetPad = Dest.EasyTrial
             elseif Env.AutoMediumTrial then
-                targetRoomName = "MediumTrialRoom Model"
+                targetRoomName = "MediumTrialRoom"
                 targetPad = Dest.MediumTrial
             elseif Env.AutoHardTrial then
-                targetRoomName = "HardTrialRoom Model"
+                targetRoomName = "HardTrialRoom"
                 targetPad = Dest.HardTrial
             end
             
@@ -1918,4 +1912,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.98 Runtime Trial State Lock Loaded Successfully!")
+print("[Dominate Hub] V11.99 Ritual Flow & Trial Detection Fixed Successfully!")
