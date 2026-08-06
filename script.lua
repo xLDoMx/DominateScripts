@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V12.6 - GLIDE MAGNITUDE & JITTER FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V12.7 - INSTANT RITUAL TELEPORT & EXCLUSIVE LOCK)
 --======================================================================================
 local Env = getgenv()
 
@@ -1095,7 +1095,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (3m Farm & 5s Vector)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Instant Teleport & 3m Loop)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1239,7 +1239,6 @@ local MasterTargetVector = nil
 local MiningTargetVector = nil
 local MobTargetVector = nil
 local TrialTargetVector = nil
-local RitualTargetVector = nil
 
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
@@ -1255,12 +1254,12 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
--- CONDITIONAL GLIDE NOCLIP ENGINE (ACTIVE ONLY DURING AUTOMATED GLIDING/TELEPORTS)
+-- CONDITIONAL GLIDE NOCLIP ENGINE
 RunService.Stepped:Connect(function()
     if not Running then return end
     local char = player.Character
     if char then
-        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
         
         for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
@@ -1270,15 +1269,14 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Fixed Elevation Magnitude Jitter)
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
-            if RitualTargetVector then act = RitualTargetVector
-            elseif MasterTargetVector then act = MasterTargetVector 
+            if MasterTargetVector then act = MasterTargetVector 
             elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
@@ -1313,25 +1311,38 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (EXCLUSIVE PRIORITY: GLIDE TO VECTOR -> 5S HOLD -> 3M MOB FARM -> RETURN)
+-- RITUAL LOOP AUTOMATION (INSTANT TELEPORT TO CHAMBER -> START RITUAL -> FARM MOBS 3M -> REPEAT)
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if NetRemote and Running and Env.AutoStartRitual and not trialIsRunning then
             ritualIsActive = true
+            
+            -- Step 1: Instant Teleport straight to the Ritual Chamber vector (with high-altitude chunk buffer)
+            local hrp = GetWorldRoot()
+            if hrp then
+                hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 20, 0))
+                hrp.AssemblyLinearVelocity = Vector3.zero
+            end
+            showToast("Ritual Chamber: Teleported to chamber! Streaming terrain...")
+            task.wait(2.0)
+            
+            hrp = GetWorldRoot()
+            if hrp then
+                hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 3, 0))
+                hrp.AssemblyLinearVelocity = Vector3.zero
+            end
+            task.wait(1.0)
+            
+            -- Step 2: Instantly trigger/start the ritual right as we arrive
             pcall(function()
                 NetRemote:FireServer("StartRitual")
             end)
-            showToast("Ritual Chamber: Started ritual! Gliding to chamber...")
+            showToast("Ritual Chamber: Started ritual successfully!")
+            task.wait(3.0)
             
-            -- Step 1: Glide to ritual chamber vector and hold for 5 seconds
-            RitualTargetVector = Dest.RitualChamber
-            task.wait(5.0)
-            
-            -- Step 2: Release ritual vector so character farms selected mobs for 3 minutes (180s)
-            RitualTargetVector = nil
+            -- Step 3: Farm selected mobs for 3 minutes (180 seconds)
             showToast("Ritual Chamber: Farming selected mobs for 3 minutes...")
-            
             local timer = 180
             while timer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
                 task.wait(1.0)
@@ -1339,18 +1350,20 @@ task.spawn(function()
             end
             
             if Running and Env.AutoStartRitual then
-                -- Step 3: Return back to chamber vector after 3 minutes
-                RitualTargetVector = Dest.RitualChamber
-                showToast("Ritual Chamber: Returning to chamber vector...")
-                task.wait(5.0)
-                RitualTargetVector = nil
+                hrp = GetWorldRoot()
+                if hrp then
+                    hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 3, 0))
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                end
+                showToast("Ritual Chamber: Returning to chamber for next cycle...")
+                task.wait(3.0)
             end
             ritualIsActive = false
         end
     end
 end)
 
--- ACCURATE TRIAL OPEN CHECK USING ATTRIBUTE DIFFICULTY & TIMER VERIFICATION
+-- ACCURATE TRIAL OPEN CHECK
 local function isTrialOpen(trialRoomName)
     local gc = workspace:FindFirstChild("__GAME_CONTENT")
     local trialsFolder = gc and gc:FindFirstChild("Trials")
@@ -1370,7 +1383,7 @@ local function isTrialOpen(trialRoomName)
     return false
 end
 
--- ADVANCED TRIAL STATE-MACHINE AUTOMATION (EXCLUSIVE PRIORITY OVER RITUAL & MOBS)
+-- ADVANCED TRIAL STATE-MACHINE AUTOMATION
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -1393,7 +1406,6 @@ task.spawn(function()
                 trialIsRunning = true
                 showToast("Trials: Trial is open! Pausing background tasks...")
                 
-                -- Cache & temporarily disable active mob flags and ritual
                 local cachedMobs = {}
                 for _, mInfo in ipairs(MobPriorityList) do
                     if Env[mInfo.F] then
@@ -1403,9 +1415,7 @@ task.spawn(function()
                 end
                 local wasRitualActive = Env.AutoStartRitual
                 Env.AutoStartRitual = false
-                RitualTargetVector = nil
                 
-                -- Stage 1 & 2: Direct Teleport straight onto the Trial Pad with High Altitude Terrain Buffer
                 local hrp = GetWorldRoot()
                 if hrp then
                     hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 25, 0))
@@ -1421,7 +1431,6 @@ task.spawn(function()
                 end
                 task.wait(1.0)
                 
-                -- Stage 3: Wave Clearing Loop
                 local inArena = true
                 showToast("Trials: Entered arena! Auto-clearing waves...")
                 while inArena and Running do
@@ -1463,7 +1472,6 @@ task.spawn(function()
                 
                 TrialTargetVector = nil
                 
-                -- Stabilize upon returning to main map to prevent falling under terrain
                 hrp = GetWorldRoot()
                 if hrp then
                     hrp.AssemblyLinearVelocity = Vector3.zero
@@ -1471,7 +1479,6 @@ task.spawn(function()
                 showToast("Trials: Returned to main map, stabilizing chunks...")
                 task.wait(2.0)
                 
-                -- Restore previous background tasks
                 for flag, state in pairs(cachedMobs) do
                     Env[flag] = state
                 end
@@ -1526,11 +1533,11 @@ end)
 local currentMobIndex = 1
 local lastMobJumpTick = 0
 
--- MINER-STYLE AUTO MOB FARMING ENGINE (SUPPRESSED DURING RITUAL HOLD & TRIALS)
+-- MINER-STYLE AUTO MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning and not (ritualIsActive and RitualTargetVector ~= nil) then
+        if Running and not trialIsRunning and not ritualIsActive then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
             for i = 1, #MobPriorityList do 
@@ -1934,4 +1941,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.6 Glide Magnitude Jitter & Ritual Priority Fix Loaded Successfully!")
+print("[Dominate Hub] V12.7 Instant Ritual Teleport & Stability Overhaul Loaded Successfully!")
