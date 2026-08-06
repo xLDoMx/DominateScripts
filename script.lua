@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.15 - PURE TRIAL MOBS FOLDER TARGETING)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.18 - HIGH-SPEED BLAZING TRIAL ARENA ENGINE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1429,7 +1429,7 @@ RunService.Stepped:Connect(function()
     if not Running then return end
     local char = player.Character
     if char then
-        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        local isGliding = (MasterTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
         
         if isGliding ~= lastGlidingState then
             lastGlidingState = isGliding
@@ -1442,6 +1442,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
+-- UNIFIED HIGH-SPEED SMOOTH MOVEMENT LOOP (0.85 SNAP ALPHA, UNANCHORED FOR COMBAT/TRIALS)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1450,7 +1451,6 @@ task.spawn(function()
             local act = nil
             if RitualTargetVector then act = RitualTargetVector
             elseif MasterTargetVector then act = MasterTargetVector 
-            elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
             elseif SandTargetVector then act = SandTargetVector
@@ -1463,14 +1463,18 @@ task.spawn(function()
                 local targetCF = CFrame.new(act)
                 if (hrp.Position - act).Magnitude > 0.3 then
                     hrp.Anchored = false
-                    local speed = TrialTargetVector and 0.15 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
-                    local alpha = math.clamp(0.4 / speed, 0.05, 1.0)
-                    hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
+                    -- High-speed smooth tracking (0.85 alpha) for blazing fast snapping with zero delay
+                    hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.85)
+                    hrp.AssemblyLinearVelocity = Vector3.zero
                 else
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
-                    hrp.Anchored = true
+                    if not MobTargetVector and not trialIsRunning then
+                        hrp.Anchored = true
+                    else
+                        hrp.Anchored = false
+                    end
                 end
             else
                 hrp.Anchored = false
@@ -1542,7 +1546,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (DIRECTLY SCANNING TRIAL ROOMS -> MOBS FOLDER)
+-- SCHEDULED TRIAL AUTOMATION (FEEDS HIGH-SPEED ARENA SCAN INTO UNIFIED MOB ENGINE)
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1563,13 +1567,6 @@ task.spawn(function()
                     trialIsRunning = true
                     showToast("Trials: Scheduled trial time reached! Teleporting...")
                     
-                    local cachedMobs = {}
-                    for _, mInfo in ipairs(MobPriorityList) do
-                        if Env[mInfo.F] then
-                            cachedMobs[mInfo.F] = true
-                            Env[mInfo.F] = false
-                        end
-                    end
                     local wasRitualActive = Env.AutoStartRitual
                     Env.AutoStartRitual = false
                     RitualTargetVector = nil
@@ -1589,66 +1586,42 @@ task.spawn(function()
                         waitElapsed = waitElapsed + 1
                     end
                     
-                    showToast("Trials: Scanning trial room Mobs folders directly...")
+                    showToast("Trials: Blazing high-speed mob clearing active...")
+                    
                     local clearingActive = true
                     local noMobCounter = 0
-                    
                     while clearingActive and Running do
                         task.wait(0.2)
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
                         local trialsFolder = gc and gc:FindFirstChild("Trials")
-                        local closestMobPart = nil
-                        local shortestDist = math.huge
-                        hrp = GetWorldRoot()
-
-                        local mobsFoundCount = 0
-                        if trialsFolder and hrp then
+                        local totalMobsLeft = 0
+                        
+                        if trialsFolder then
                             for _, roomObj in ipairs(trialsFolder:GetChildren()) do
                                 local mobsFolder = roomObj:FindFirstChild("Mobs")
                                 if mobsFolder then
                                     for _, mobObj in ipairs(mobsFolder:GetChildren()) do
                                         if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                            if part then
-                                                mobsFoundCount = mobsFoundCount + 1
-                                                local dist = (part.Position - hrp.Position).Magnitude
-                                                if dist < shortestDist and dist <= 300 then
-                                                    shortestDist = dist
-                                                    closestMobPart = part
-                                                end
-                                            end
+                                            totalMobsLeft = totalMobsLeft + 1
                                         end
                                     end
                                 end
                             end
                         end
-
-                        if closestMobPart then
-                            noMobCounter = 0
-                            TrialTargetVector = closestMobPart.Position + Vector3.new(0, 2, 0)
-                        else
-                            TrialTargetVector = nil
-                            if mobsFoundCount == 0 then
-                                noMobCounter = noMobCounter + 1
-                                if noMobCounter >= 15 then
-                                    clearingActive = false
-                                end
+                        
+                        if totalMobsLeft == 0 then
+                            noMobCounter = noMobCounter + 1
+                            if noMobCounter >= 6 then
+                                clearingActive = false
                             end
+                        else
+                            noMobCounter = 0
                         end
                     end
                     
-                    TrialTargetVector = nil
-                    hrp = GetWorldRoot()
-                    if hrp then
-                        hrp.Anchored = false
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                    end
                     showToast("Trials: Completed! Returning to map...")
                     task.wait(2.0)
                     
-                    for flag, state in pairs(cachedMobs) do
-                        Env[flag] = state
-                    end
                     Env.AutoStartRitual = wasRitualActive
                     trialIsRunning = false
                 end
@@ -1698,15 +1671,17 @@ local currentMobIndex = 1
 local mobTargetLockTime = 0
 local lastTargetedPart = nil
 
--- MINER-STYLE AUTO MOB FARMING ENGINE
+-- UNIFIED BLAZING AUTO MOB & TRIAL ARENA FARMING ENGINE
 task.spawn(function()
     while Running do
-        task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
+        task.wait(0.05) -- Ultra-fast poll rate for zero delay snapping
+        if Running and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
 
-            if Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
+            if trialIsRunning then
+                hasAnyMobEnabled = true
+            elseif Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
                 for mobName, selected in pairs(Env.RitualSelectedMobs) do
                     if selected then
                         enabledMobNames[mobName] = true
@@ -1735,24 +1710,50 @@ task.spawn(function()
 
                 if needsNewMobTarget then
                     local foundMobPart = nil
-                    local gc = workspace:FindFirstChild("__GAME_CONTENT") 
-                    local mobsFolder = gc and gc:FindFirstChild("Mobs")
                     
-                    if mobsFolder then
-                        for i = #MobPriorityList, 1, -1 do
-                            local targetMobName = MobPriorityList[i].N
-                            if enabledMobNames[targetMobName] then
-                                for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                                    if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
-                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                        if part and part ~= lastTargetedPart then
-                                            foundMobPart = part
-                                            break
+                    if trialIsRunning then
+                        local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                        local trialsFolder = gc and gc:FindFirstChild("Trials")
+                        if trialsFolder then
+                            local shortestDist = math.huge
+                            local hrp = GetWorldRoot()
+                            for _, roomObj in ipairs(trialsFolder:GetChildren()) do
+                                local mFolder = roomObj:FindFirstChild("Mobs")
+                                if mFolder then
+                                    for _, mobObj in ipairs(molds or mFolder:GetChildren()) do
+                                        if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
+                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                            if part and hrp then
+                                                local dist = (part.Position - hrp.Position).Magnitude
+                                                if dist < shortestDist then
+                                                    shortestDist = dist
+                                                    foundMobPart = part
+                                                end
+                                            end
                                         end
                                     end
                                 end
                             end
-                            if foundMobPart then break end
+                        end
+                    else
+                        local gc = workspace:FindFirstChild("__GAME_CONTENT") 
+                        local mobsFolder = gc and gc:FindFirstChild("Mobs")
+                        if mobsFolder then
+                            for i = #MobPriorityList, 1, -1 do
+                                local targetMobName = MobPriorityList[i].N
+                                if enabledMobNames[targetMobName] then
+                                    for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                                        if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
+                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                            if part and part ~= lastTargetedPart then
+                                                foundMobPart = part
+                                                break
+                                            end
+                                        end
+                                    end
+                                end
+                                if foundMobPart then break end
+                            end
                         end
                     end
                     
@@ -1768,7 +1769,7 @@ task.spawn(function()
                 end
                 
                 if currentTargetMob and currentTargetMob.Parent then 
-                    MobTargetVector = currentTargetMob.Position 
+                    MobTargetVector = currentTargetMob.Position + Vector3.new(0, 1, 0)
                 else 
                     MobTargetVector = nil 
                 end
@@ -2217,4 +2218,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.15 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.18 Stable Loaded Successfully!")
