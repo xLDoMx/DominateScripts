@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.12 - FULLY RECOMPILED & PARSER-SAFE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.15 - PURE TRIAL MOBS FOLDER TARGETING)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1542,7 +1542,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION WITH VERIFIED BILLBOARD + HUMANOID FILTER
+-- SCHEDULED TRIAL AUTOMATION (DIRECTLY SCANNING TRIAL ROOMS -> MOBS FOLDER)
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1589,7 +1589,7 @@ task.spawn(function()
                         waitElapsed = waitElapsed + 1
                     end
                     
-                    showToast("Trials: Clearing arena with Verified Billboard+Humanoid Filter...")
+                    showToast("Trials: Scanning trial room Mobs folders directly...")
                     local clearingActive = true
                     local noMobCounter = 0
                     
@@ -1604,17 +1604,15 @@ task.spawn(function()
                         local mobsFoundCount = 0
                         if trialsFolder and hrp then
                             for _, roomObj in ipairs(trialsFolder:GetChildren()) do
-                                for _, mobObj in ipairs(roomObj:GetDescendants()) do
-                                    if mobObj:IsA("Model") then
-                                        local humanoid = mobObj:FindFirstChildOfClass("Humanoid")
-                                        local billboard = mobObj:FindFirstChildWhichIsA("BillboardGui", true)
-                                        
-                                        if humanoid and billboard and not isMobRespawning(mobObj) then
+                                local mobsFolder = roomObj:FindFirstChild("Mobs")
+                                if mobsFolder then
+                                    for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                                        if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
                                             local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
                                             if part then
                                                 mobsFoundCount = mobsFoundCount + 1
                                                 local dist = (part.Position - hrp.Position).Magnitude
-                                                if dist < shortestDist and dist <= 200 then
+                                                if dist < shortestDist and dist <= 300 then
                                                     shortestDist = dist
                                                     closestMobPart = part
                                                 end
@@ -1632,7 +1630,7 @@ task.spawn(function()
                             TrialTargetVector = nil
                             if mobsFoundCount == 0 then
                                 noMobCounter = noMobCounter + 1
-                                if noMobCounter >= 12 then
+                                if noMobCounter >= 15 then
                                     clearingActive = false
                                 end
                             end
@@ -2219,4 +2217,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.12 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.15 Stable Loaded Successfully!")
