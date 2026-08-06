@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V12.4 - SYNTAX FIX & DIRECT TRIAL TELEPORT)
+-- DOMINATE HUB | PRO EDITION (STABLE V12.5 - RITUAL/MOB PRIORITY LOCK & STABILIZATION)
 --======================================================================================
 local Env = getgenv()
 
@@ -40,8 +40,9 @@ local currentTargetPanel = nil
 local currentTargetMob = nil
 local gemExchangeCountdown = 60
 
--- RUNTIME STATE LOCK FOR TRIALS
+-- RUNTIME STATE LOCKS
 local trialIsRunning = false
+local ritualIsActive = false
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -1311,42 +1312,44 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (GLIDE TO VECTOR -> WAIT 5S -> FARM MOBS 3M -> RETURN TO VECTOR)
+-- RITUAL LOOP AUTOMATION (EXCLUSIVE PRIORITY: GLIDE TO VECTOR -> 5S HOLD -> 3M MOB FARM -> RETURN)
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if NetRemote and Running and Env.AutoStartRitual then
+        if NetRemote and Running and Env.AutoStartRitual and not trialIsRunning then
+            ritualIsActive = true
             pcall(function()
                 NetRemote:FireServer("StartRitual")
             end)
             showToast("Ritual Chamber: Started ritual! Gliding to chamber...")
             
-            -- Glide to chamber vector and wait 5 seconds
+            -- Step 1: Glide to ritual chamber vector and hold for 5 seconds
             RitualTargetVector = Dest.RitualChamber
             task.wait(5.0)
             
-            -- Release vector to farm selected mobs for 3 minutes (180 seconds)
+            -- Step 2: Release ritual vector so character farms selected mobs for 3 minutes (180s)
             RitualTargetVector = nil
             showToast("Ritual Chamber: Farming selected mobs for 3 minutes...")
             
             local timer = 180
-            while timer > 0 and Running and Env.AutoStartRitual do
+            while timer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
                 task.wait(1.0)
                 timer = timer - 1
             end
             
             if Running and Env.AutoStartRitual then
-                -- After 3 minutes, come back to the vector
+                -- Step 3: Return back to chamber vector after 3 minutes
                 RitualTargetVector = Dest.RitualChamber
                 showToast("Ritual Chamber: Returning to chamber vector...")
-                task.wait(5.0) -- wait 5s at vector before repeating cycle
+                task.wait(5.0)
                 RitualTargetVector = nil
             end
+            ritualIsActive = false
         end
     end
 end)
 
--- STRICT TRIAL OPEN CHECK (IGNORES COUNTDOWNS)
+-- ACCURATE TRIAL OPEN CHECK USING ATTRIBUTE DIFFICULTY & TIMER VERIFICATION
 local function isTrialOpen(trialRoomName)
     local gc = workspace:FindFirstChild("__GAME_CONTENT")
     local trialsFolder = gc and gc:FindFirstChild("Trials")
@@ -1356,6 +1359,7 @@ local function isTrialOpen(trialRoomName)
             for _, desc in ipairs(room:GetDescendants()) do
                 if desc:IsA("TextLabel") then
                     local txt = desc.Text:lower()
+                    -- Verifies that the trial is actively open and joinable now, ignoring future countdown timers
                     if (txt:find("is open") or txt:find("left to join")) and not txt:find("opens in") then
                         return true
                     end
@@ -1366,11 +1370,11 @@ local function isTrialOpen(trialRoomName)
     return false
 end
 
--- ADVANCED TRIAL STATE-MACHINE AUTOMATION (BYPASSING CASTLE & CHUNK BUFFER)
+-- ADVANCED TRIAL STATE-MACHINE AUTOMATION (EXCLUSIVE PRIORITY OVER RITUAL & MOBS)
 task.spawn(function()
     while Running do
         task.wait(2.0)
-        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
+        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive then
             local targetRoomName = nil
             local targetPad = nil
             
@@ -1399,15 +1403,16 @@ task.spawn(function()
                 end
                 local wasRitualActive = Env.AutoStartRitual
                 Env.AutoStartRitual = false
+                RitualTargetVector = nil
                 
-                -- Stage 1 & 2: Direct Teleport straight onto the Trial Pad (Bypassing castle entrance)
+                -- Stage 1 & 2: Direct Teleport straight onto the Trial Pad with High Altitude Terrain Buffer
                 local hrp = GetWorldRoot()
                 if hrp then
-                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 20, 0))
+                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 25, 0))
                     hrp.AssemblyLinearVelocity = Vector3.zero
                 end
-                showToast("Trials: Teleported to trial room! Streaming terrain...")
-                task.wait(2.0)
+                showToast("Trials: Teleported to trial room! Streaming chunks...")
+                task.wait(2.5)
                 
                 hrp = GetWorldRoot()
                 if hrp then
@@ -1458,6 +1463,15 @@ task.spawn(function()
                 
                 TrialTargetVector = nil
                 
+                -- Stabilize upon returning to main map to prevent falling under terrain
+                hrp = GetWorldRoot()
+                if hrp then
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                end
+                showToast("Trials: Returned to main map, stabilizing chunks...")
+                task.wait(2.0)
+                
+                -- Restore previous background tasks
                 for flag, state in pairs(cachedMobs) do
                     Env[flag] = state
                 end
@@ -1475,7 +1489,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(40.0)
-        if Running and Env.AutoCombatBreak and not trialIsRunning then
+        if Running and Env.AutoCombatBreak and not trialIsRunning and not ritualIsActive then
             local activeMobStates = {}
             local anyActive = false
             for i = 1, #MobPriorityList do
@@ -1512,11 +1526,11 @@ end)
 local currentMobIndex = 1
 local lastMobJumpTick = 0
 
--- MINER-STYLE AUTO MOB FARMING ENGINE
+-- MINER-STYLE AUTO MOB FARMING ENGINE (SUPPRESSED DURING RITUAL HOLD & TRIALS)
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning then
+        if Running and not trialIsRunning and not (ritualIsActive and RitualTargetVector ~= nil) then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
             for i = 1, #MobPriorityList do 
@@ -1634,7 +1648,7 @@ end
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning then
+        if Running and not trialIsRunning and not ritualIsActive then
             local enabledOreNames = {} local hasAnyEnabled = false
             for i = 1, #OrePriorityList do if Env[OrePriorityList[i].F] then enabledOreNames[OrePriorityList[i].N] = true hasAnyEnabled = true end end
 
@@ -1697,12 +1711,12 @@ end)
 task.spawn(function()
     while Running do
         task.wait(0.5)
-        if Env.AutoFarmCash and Running and not trialIsRunning then
+        if Env.AutoFarmCash and Running and not trialIsRunning and not ritualIsActive then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") local ty = gc and gc:FindFirstChild("Tycoon") local btnF = ty and ty:FindFirstChild("Buttons")
             if btnF and Running then
                 local locked = {} 
                 repeat
-                    if not Running or not Env.AutoFarmCash or trialIsRunning then break end
+                    if not Running or not Env.AutoFarmCash or trialIsRunning or ritualIsActive then break end
                     local vis = btnF:GetChildren() local att = false
                     for i = 1, #vis do
                         if not Running or not Env.AutoFarmCash then break end
@@ -1920,4 +1934,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.4 Direct Teleport & Strict Trial Validation Loaded Successfully!")
+print("[Dominate Hub] V12.5 Exclusive Priority & Stability Overhaul Loaded Successfully!")
