@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.1 - WORKING ATTACK + WIDER RANGE & FASTER SNAP)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.2 - WORKING ATTACK + WIDER RANGE + BUSH IGNORE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1476,7 +1476,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- MOVEMENT LOOP WITH FASTER SNAP SPEED FOR TRIALS
+-- MOVEMENT LOOP WITH FASTER SNAP SPEED & SCENERY BLACKLIST
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1498,8 +1498,8 @@ task.spawn(function()
                 local targetCF = CFrame.new(act)
                 if (hrp.Position - act).Magnitude > 0.3 then
                     hrp.Anchored = false
-                    -- Boosted snap speed specifically for trial targets so it moves faster
-                    local speed = TrialTargetVector and 0.2 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
+                    -- Boosted snap speed for trial targets so it moves faster
+                    local speed = TrialTargetVector and 0.15 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
                     local alpha = math.clamp(0.4 / speed, 0.05, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
                 else
@@ -1588,7 +1588,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - WIDER STUDS (200)
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59) - 200 STUDS + BUSH BLACKLIST
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1641,7 +1641,7 @@ task.spawn(function()
                         waitElapsed = waitElapsed + 1
                     end
                     
-                    -- 3. Turn on mob attack with expanded 200-stud range to catch all mobs
+                    -- 3. Turn on mob attack with expanded 200-stud range and explicit prop exclusion
                     showToast("Trials: 60s elapsed! Turning on mob attack and clearing arena...")
                     local clearingActive = true
                     local noMobCounter = 0
@@ -1656,17 +1656,20 @@ task.spawn(function()
 
                         local mobsFoundCount = 0
                         if trialsFolder and hrp then
-                            -- Scan inside workspace.__GAME_CONTENT.Trials rooms (V16.9 unconstrained model scanner)
                             for _, roomObj in ipairs(trialsFolder:GetChildren()) do
                                 for _, mobObj in ipairs(roomObj:GetDescendants()) do
                                     if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                        if part then
-                                            mobsFoundCount = mobsFoundCount + 1
-                                            local dist = (part.Position - hrp.Position).Magnitude
-                                            if dist < shortestDist and dist <= 200 then -- Increased to 200 studs
-                                                shortestDist = dist
-                                                closestMobPart = part
+                                        local mName = mobObj.Name:lower()
+                                        -- Explicitly ignore environmental scenery props so you never get stuck in bushes
+                                        if not mName:find("bush") and not mName:find("tree") and not mName:find("wall") and not mName:find("scenery") then
+                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                            if part then
+                                                mobsFoundCount = mobsFoundCount + 1
+                                                local dist = (part.Position - hrp.Position).Magnitude
+                                                if dist < shortestDist and dist <= 200 then
+                                                    shortestDist = dist
+                                                    closestMobPart = part
+                                                end
                                             end
                                         end
                                     end
@@ -2284,4 +2287,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.1 Rolled Back with Wider Range & Faster Snap Successfully!")
+print("[Dominate Hub] V16.9.2 Stable Rollback with Bush Exemption Loaded Successfully!")
