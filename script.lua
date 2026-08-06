@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.94 - STAGGERED LOOPS & DYNAMIC HUD)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.95 - SCROLLABLE SIDEBAR & UPDATED RITUAL LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -736,17 +736,24 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (STATIC NON-SCROLLABLE CONTAINER RESTORED TO PREVENT TABS BREAKING)
-local sidebarFrame = Instance.new("Frame")
+-- SCROLLABLE SIDEBAR CONTAINER WITH COMPLETELY INVISIBLE SCROLLBAR
+local sidebarFrame = Instance.new("ScrollingFrame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
 sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
+sidebarFrame.ScrollBarThickness = 0
+sidebarFrame.ScrollingEnabled = true
 sidebarFrame.Parent = mainFrame
 
 local sidebarLayout = Instance.new("UIListLayout")
 sidebarLayout.Padding = UDim.new(0, 8)
+sidebarLayout.SortOrder = Enum.SortOrder.LayoutOrder
 sidebarLayout.Parent = sidebarFrame
+
+sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    sidebarFrame.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
+end)
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
@@ -1084,7 +1091,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (2m Loop)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (3m Loop & 1m CD)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1294,7 +1301,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (2-MINUTE COUNTDOWN, GLIDE TO CHAMBER, 5S PAUSE, RE-TRIGGER)
+-- RITUAL LOOP AUTOMATION (3-MIN FARM, GLIDE TO CHAMBER, 5S PAUSE, 1-MIN COOLDOWN)
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1302,17 +1309,17 @@ task.spawn(function()
             pcall(function()
                 NetRemote:FireServer("StartRitual")
             end)
-            showToast("Ritual Chamber: Started ritual! Farming souls for 2 minutes...")
+            showToast("Ritual Chamber: Started ritual! Farming souls for 3 minutes...")
             
-            -- Run for 2 minutes (120 seconds)
-            local timer = 120
+            -- Run for 3 minutes (180 seconds)
+            local timer = 180
             while timer > 0 and Running and Env.AutoStartRitual do
                 task.wait(1.0)
                 timer = timer - 1
             end
             
             if Running and Env.AutoStartRitual then
-                -- Glide back to chamber coords after 2 minutes
+                -- Glide back to chamber coords after 3 minutes
                 RitualTargetVector = Dest.RitualChamber
                 showToast("Ritual Chamber: Time's up! Gliding back to chamber...")
                 task.wait(3.0) -- wait for glide arrival
@@ -1322,6 +1329,14 @@ task.spawn(function()
                 task.wait(5.0)
                 
                 RitualTargetVector = nil
+                
+                -- 1-minute cooldown before restarting ritual loop
+                showToast("Ritual Chamber: Cooldown active (1m)...")
+                local cdTimer = 60
+                while cdTimer > 0 and Running and Env.AutoStartRitual do
+                    task.wait(1.0)
+                    cdTimer = cdTimer - 1
+                end
             end
         end
     end
@@ -1831,4 +1846,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.94 Staggered Loops & Dynamic HUD Loaded Successfully!")
+print("[Dominate Hub] V11.95 Scrollable Sidebar & Updated Ritual Loop Loaded Successfully!")
