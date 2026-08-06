@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V14.2 - RITUAL MOB DROPDOWN & INFINITE LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V14.8 - EXCAVATION RANK UP & SAND AUTOMATION)
 --======================================================================================
 local Env = getgenv()
 
@@ -48,11 +48,16 @@ local trialIsRunning = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
 
--- RITUAL PRE-SELECTED MOBS TABLE INITIALIZATION
+-- RITUAL PRE-SELECTED MOBS & SAND CONFIG
 Env.RitualSelectedMobs = {
     ["Dark Knight"] = true,
     ["Dark Commander"] = true
 }
+
+Env.AutoSandUpgrades = false
+Env.AutoShovelLevelUp = false
+Env.AutoExcavationRankUp = false
+Env.AutoRegenSandLayers = false
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -310,6 +315,7 @@ Env.AutoOpenT2Chest = false
 Env.AutoOpenClassicCapsule = false
 Env.AutoOpenFootballCapsule = false
 Env.AutoOpenSuperCapsule = false
+Env.AutoOpenAncientCapsule = false
 
 Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
@@ -484,7 +490,7 @@ local function createRitualMobDropdown(parent, title, mobList)
     local isOpen = false
     headerBtn.MouseButton1Click:Connect(function()
         isOpen = not isOpen
-        arrow.Text = isOpen and "▲" : "▼"
+        arrow.Text = isOpen and "▲" or "▼"
         TweenService:Create(dropFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = isOpen and UDim2.new(1, -10, 0, 204) or UDim2.new(1, -10, 0, 42)}):Play()
     end)
 
@@ -670,7 +676,7 @@ hudText.Font = Enum.Font.GothamBold
 hudText.TextXAlignment = Enum.TextXAlignment.Left
 hudText.TextYAlignment = Enum.TextYAlignment.Top
 hudText.TextWrapped = true
-hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Ground-Lock Active"
+hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Smooth Ground-Lock Active"
 hudText.Parent = statsHud
 
 local sessionStartTime = tick()
@@ -991,6 +997,11 @@ masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "Auto
 masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, upScroll)
 
+createSectionHeader(upScroll, "Sand Upgrades")
+createToggleRow(upScroll, "Auto Sand Upgrades", "AutoSandUpgrades")
+createToggleRow(upScroll, "Auto Shovel Level Up", "AutoShovelLevelUp")
+createToggleRow(upScroll, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
+
 -- ======================================================================================
 -- NOOBS PAGE SETUP
 -- ======================================================================================
@@ -1015,11 +1026,11 @@ createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 
 -- ======================================================================================
--- TRIALS PAGE SETUP
+-- TRIALS PAGE SETUP (TIME-BASED SCHEDULE: :29 & :59)
 -- ======================================================================================
 local trialsScroll = makeVerticalScroll(trialsPage)
 
-createSectionHeader(trialsScroll, "Realm 3 Trials Automation")
+createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
 createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
 createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
 createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
@@ -1256,6 +1267,7 @@ createSectionHeader(miscScroll, "Capsules")
 createToggleRow(miscScroll, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
 createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
+createToggleRow(miscScroll, "Hatch Ancient Capsule", "AutoOpenAncientCapsule")
 
 -- ======================================================================================
 -- SETTINGS PAGE SETUP
@@ -1355,17 +1367,20 @@ local MiningTargetVector = nil
 local MobTargetVector = nil
 local TrialTargetVector = nil
 local RitualTargetVector = nil
+local SandTargetVector = nil
 
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
-    Dunes = Vector3.new(982.733, 4.822, 7769.393),
+    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
+    Dunes = Vector3.new(547.2037963867188, 4.579018592834473, 7826.806640625), -- Real Sand Pit Vector from Image 2
     EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
     MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
     HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
-    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763)
+    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875) -- Real Regen Pad Vector from Image 1
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
@@ -1375,7 +1390,7 @@ RunService.Stepped:Connect(function()
     if not Running then return end
     local char = player.Character
     if char then
-        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
         
         for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
@@ -1385,28 +1400,29 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- GROUND-LOCKED MOVEMENT LOOP WITH HARD-SNAP ARRIVAL
+-- SMOOTH STRICT GROUND-LOCKED MOVEMENT LOOP (ZERO JITTER / ZERO BOUNCE)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
-            if RitualTargetVector then act = RitualTargetVector
+            if SandTargetVector then act = SandTargetVector
+            elseif RitualTargetVector then act = RitualTargetVector
             elseif MasterTargetVector then act = MasterTargetVector 
             elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
-            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Env.Advanced
-            elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Env.Basic end
+            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
+            elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
                 local targetCF = CFrame.new(act)
-                if (hrp.Position - act).Magnitude > 1.5 then
+                if (hrp.Position - act).Magnitude > 0.5 then
                     local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
-                    local alpha = math.clamp(0.12 / speed, 0.01, 1.0)
+                    local alpha = math.clamp(0.2 / speed, 0.01, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
                 else
                     hrp.CFrame = targetCF
@@ -1429,13 +1445,11 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL INFINITE LOOP WITH PRE-SELECTED DROPDOWN MOBS & MULTI-FIRE
+-- RITUAL INFINITE LOOP WITH MULTI-FIRE ACTIVATION
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if Running and Env.AutoStartRitual and not trialIsRunning then
-            
-            -- Step 1: Teleport straight to the Ritual Chamber vector (Ground level)
             local hrp = GetWorldRoot()
             if hrp then
                 hrp.CFrame = CFrame.new(Dest.RitualChamber)
@@ -1452,7 +1466,6 @@ task.spawn(function()
             ritualIsActive = true
             RitualTargetVector = Dest.RitualChamber
             
-            -- Step 2: Continuously fire StartRitual every second during the 5-second hold to guarantee acceptance
             showToast("Ritual Chamber: Activating ritual...")
             for _ = 1, 5 do
                 if not Running or not Env.AutoStartRitual or trialIsRunning then break end
@@ -1464,13 +1477,12 @@ task.spawn(function()
                 ritualTimer = math.max(0, ritualTimer - 1)
             end
             
-            -- Step 3: Release vector and farm pre-selected ritual mobs for the remaining countdown duration
             RitualTargetVector = nil
             ritualIsActive = false
             ritualSuppressMobs = false
             currentTargetMob = nil
             MobTargetVector = nil
-            showToast("Ritual Chamber: Farming pre-selected ritual mobs...")
+            showToast("Ritual Chamber: Farming selected mobs for remaining duration...")
             
             while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
                 task.wait(1.0)
@@ -1494,130 +1506,111 @@ task.spawn(function()
     end
 end)
 
--- ACCURATE TRIAL OPEN CHECK
-local function isTrialOpen(trialRoomName)
-    local gc = workspace:FindFirstChild("__GAME_CONTENT")
-    local trialsFolder = gc and gc:FindFirstChild("Trials")
-    if trialsFolder then
-        local room = trialsFolder:FindFirstChild(trialRoomName)
-        if room then
-            for _, desc in ipairs(room:GetDescendants()) do
-                if desc:IsA("TextLabel") then
-                    local txt = desc.Text:lower()
-                    if (txt:find("is open") or txt:find("left to join")) and not txt:find("opens in") then
-                        return true
-                    end
-                end
-            end
-        end
-    end
-    return false
-end
-
--- ADVANCED TRIAL STATE-MACHINE AUTOMATION
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour)
+local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
-        task.wait(2.0)
+        task.wait(1.0)
         if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive then
-            local targetRoomName = nil
-            local targetPad = nil
+            local timeTable = os.date("*t")
+            local min = timeTable.min
             
-            if Env.AutoEasyTrial then
-                targetRoomName = "EasyTrialRoom"
-                targetPad = Dest.EasyTrial
-            elseif Env.AutoMediumTrial then
-                targetRoomName = "MediumTrialRoom"
-                targetPad = Dest.MediumTrial
-            elseif Env.AutoHardTrial then
-                targetRoomName = "HardTrialRoom"
-                targetPad = Dest.HardTrial
-            end
-            
-            if targetRoomName and targetPad and isTrialOpen(targetRoomName) then
-                trialIsRunning = true
-                showToast("Trials: Trial is open! Pausing background tasks...")
+            if (min == 29 or min == 59) and min ~= lastTrialTriggeredMinute then
+                lastTrialTriggeredMinute = min
                 
-                local cachedMobs = {}
-                for _, mInfo in ipairs(MobPriorityList) do
-                    if Env[mInfo.F] then
-                        cachedMobs[mInfo.F] = true
-                        Env[mInfo.F] = false
+                local targetPad = nil
+                if Env.AutoEasyTrial then
+                    targetPad = Dest.EasyTrial
+                elseif Env.AutoMediumTrial then
+                    targetPad = Dest.MediumTrial
+                elseif Env.AutoHardTrial then
+                    targetPad = Dest.HardTrial
+                end
+                
+                if targetPad then
+                    trialIsRunning = true
+                    showToast("Trials: Scheduled trial time reached (:29 / :59)! Teleporting...")
+                    
+                    local cachedMobs = {}
+                    for _, mInfo in ipairs(MobPriorityList) do
+                        if Env[mInfo.F] then
+                            cachedMobs[mInfo.F] = true
+                            Env[mInfo.F] = false
+                        end
                     end
-                end
-                local wasRitualActive = Env.AutoStartRitual
-                Env.AutoStartRitual = false
-                
-                local hrp = GetWorldRoot()
-                if hrp then
-                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 15, 0))
-                    hrp.AssemblyLinearVelocity = Vector3.zero
-                end
-                showToast("Trials: Teleported to trial room! Streaming chunks...")
-                task.wait(2.5)
-                
-                hrp = GetWorldRoot()
-                if hrp then
-                    hrp.CFrame = CFrame.new(targetPad)
-                    hrp.AssemblyLinearVelocity = Vector3.zero
-                end
-                task.wait(1.0)
-                
-                local inArena = true
-                showToast("Trials: Entered arena! Auto-clearing waves...")
-                while inArena and Running do
-                    task.wait(0.1)
-                    local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                    local mobsFolder = gc and gc:FindFirstChild("Mobs")
-                    local closestMobPart = nil
-                    local shortestDist = math.huge
+                    local wasRitualActive = Env.AutoStartRitual
+                    Env.AutoStartRitual = false
+                    RitualTargetVector = nil
+                    
+                    local hrp = GetWorldRoot()
+                    if hrp then
+                        hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 15, 0))
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                    end
+                    showToast("Trials: Teleported to trial room! Streaming chunks...")
+                    task.wait(2.5)
+                    
                     hrp = GetWorldRoot()
+                    if hrp then
+                        hrp.CFrame = CFrame.new(targetPad)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                    end
+                    task.wait(1.0)
+                    
+                    local inArena = true
+                    showToast("Trials: Entered arena! Auto-clearing waves...")
+                    while inArena and Running do
+                        task.wait(0.1)
+                        local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                        local mobsFolder = gc and gc:FindFirstChild("Mobs")
+                        local closestMobPart = nil
+                        local shortestDist = math.huge
+                        hrp = GetWorldRoot()
 
-                    if mobsFolder and hrp then
-                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                            if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                if part then
-                                    local dist = (part.Position - hrp.Position).Magnitude
-                                    if dist < shortestDist then
-                                        shortestDist = dist
-                                        closestMobPart = part
+                        if mobsFolder and hrp then
+                            for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                                if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
+                                    local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                    if part then
+                                        local dist = (part.Position - hrp.Position).Magnitude
+                                        if dist < shortestDist then
+                                            shortestDist = dist
+                                            closestMobPart = part
+                                        end
                                     end
                                 end
                             end
                         end
-                    end
 
-                    if closestMobPart then
-                        TrialTargetVector = closestMobPart.Position
-                    else
-                        TrialTargetVector = targetPad
-                        if hrp and (hrp.Position - targetPad).Magnitude > 80 then
+                        if closestMobPart then
+                            TrialTargetVector = closestMobPart.Position
+                        else
+                            TrialTargetVector = targetPad
+                            if hrp and (hrp.Position - targetPad).Magnitude > 80 then
+                                inArena = false
+                            end
+                        end
+                        
+                        if hrp and (hrp.Position - targetPad).Magnitude > 150 then
                             inArena = false
                         end
                     end
                     
-                    if hrp and (hrp.Position - targetPad).Magnitude > 150 then
-                        inArena = false
+                    TrialTargetVector = nil
+                    
+                    hrp = GetWorldRoot()
+                    if hrp then
+                        hrp.AssemblyLinearVelocity = Vector3.zero
                     end
+                    showToast("Trials: Completed! Returning to main map...")
+                    task.wait(2.0)
+                    
+                    for flag, state in pairs(cachedMobs) do
+                        Env[flag] = state
+                    end
+                    Env.AutoStartRitual = wasRitualActive
+                    trialIsRunning = false
                 end
-                
-                TrialTargetVector = nil
-                
-                hrp = GetWorldRoot()
-                if hrp then
-                    hrp.AssemblyLinearVelocity = Vector3.zero
-                end
-                showToast("Trials: Returned to main map, stabilizing chunks...")
-                task.wait(2.0)
-                
-                for flag, state in pairs(cachedMobs) do
-                    Env[flag] = state
-                end
-                Env.AutoStartRitual = wasRitualActive
-                trialIsRunning = false
-                showToast("Trials: Completed! Resuming previous tasks...")
-                
-                task.wait(15.0)
             end
         end
     end
@@ -1666,15 +1659,14 @@ local currentMobIndex = 1
 local mobTargetLockTime = 0
 local lastTargetedPart = nil
 
--- MINER-STYLE AUTO MOB FARMING ENGINE (USES RITUAL DROPDOWN SELECTION WHEN RITUAL ACTIVE)
+-- MINER-STYLE AUTO MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil then
+        if Running and not trialIsRunning and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
 
-            -- If ritual is actively farming, use Env.RitualSelectedMobs dropdown pre-selection
             if Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
                 for mobName, selected in pairs(Env.RitualSelectedMobs) do
                     if selected then
@@ -1683,7 +1675,6 @@ task.spawn(function()
                     end
                 end
             else
-                -- Otherwise use global mob toggles
                 for i = 1, #MobPriorityList do 
                     if Env[MobPriorityList[i].F] then 
                         enabledMobNames[MobPriorityList[i].N] = true 
@@ -1749,6 +1740,27 @@ task.spawn(function()
                 lastTrackedMobPart = nil
                 lastTargetedPart = nil
             end
+        end
+    end
+end)
+
+-- SAND LAYER REGENERATION AUTOMATION LOOP (USES REAL COORDS)
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
+            pcall(function()
+                showToast("Sand Regen: Teleporting to regeneration pad...")
+                SandTargetVector = Dest.SandRegenPad
+                task.wait(2.0)
+                SandTargetVector = nil
+                task.wait(1.0)
+                showToast("Sand Regen: Returning to sand pit...")
+                SandTargetVector = Dest.Dunes
+                task.wait(2.0)
+                SandTargetVector = nil
+            end)
+            task.wait(60.0) -- Regenerate layers every 60 seconds
         end
     end
 end)
@@ -1863,7 +1875,8 @@ task.spawn(function()
             if hrp then
                 if Env.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Classic" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
                 elseif Env.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Football" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
-                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end
+                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
+                elseif Env.AutoOpenAncientCapsule then if (hrp.Position - Dest.AncientCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.AncientCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Ancient" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end
             end
         end
     end
@@ -1911,7 +1924,16 @@ local PrimaryUpgradeQueue = {
     {F="AutoRebirthMoreOof",T="UpgradeUpgradeMax",A={"Rebirth","MoreOof"}}, {F="AutoRebirthMoreRebirth",T="UpgradeUpgradeMax",A={"Rebirth","MoreRebirth"}}, {F="AutoRebirthMoreFire",T="UpgradeUpgradeMax",A={"Rebirth","MoreFire"}},
     {F="AutoFireMoreFire",T="UpgradeUpgradeMax",A={"Fire","MoreFire"}}, {F="AutoFireMoreBulk",T="UpgradeUpgradeMax",A={"Fire","MoreBulk"}}, {F="AutoFireMoreOof",T="UpgradeUpgradeMax",A={"Fire","MoreOof"}}, {F="AutoFireMoreRebirth",T="UpgradeUpgradeMax",A={"Fire","MoreRebirth"}}, {F="AutoFireMoreTierLuck",T="UpgradeUpgradeMax",A={"Fire","MoreTierLuck"}}, {F="AutoFireMoreCashBonus",T="UpgradeUpgradeMax",A={"Fire","MoreCashBonus"}},
     {F="AutoUpgradeMoreCash",T="UpgradeUpgradeMax",A={"Cash","MoreCash"}}, {F="AutoUpgradeFasterDropper",T="UpgradeUpgradeMax",A={"Cash","FasterDropper"}}, {F="AutoUpgradeMoreRuneLuck",T="UpgradeUpgradeMax",A={"Cash","MoreRuneLuck"}},
-    {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}}
+    {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}},
+    -- SAND UPGRADES
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreSand"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MultiSand"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","StrongerShovels"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","FasterShovels"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","AlotSand"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreOof"}},
+    -- SHOVEL LEVEL UP
+    {F="AutoShovelLevelUp",T="ShovelLevelUp",A={}}
 }
 
 -- MAIN UPGRADE LOOP
@@ -2125,4 +2147,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V14.2 Ritual Mob Dropdown & Multi-Fire Loop Loaded Successfully!")
+print("[Dominate Hub] V14.8 Auto Shovel Level Up & Sand Upgrades Loaded Successfully!")
