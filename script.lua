@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.92 - RITUAL COORD GLIDE & SOULS LOOP FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.93 - SOULS UPGRADE LOOP FIXED)
 --======================================================================================
 local Env = getgenv()
 
@@ -1687,7 +1687,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT SOULS UPGRADE LOOP (FIXED)
+-- DEDICATED INDEPENDENT SOULS UPGRADE LOOP (COPIED EXACT MEAT LOGIC WITH FIXED BOUNDARY)
 local SoulsUpgradeList = {
     {F = "AutoSoulsMoreSouls", T = "UpgradeUpgradeMax", A = {"Souls", "MoreSouls"}},
     {F = "AutoSoulsLuckierSwords", T = "UpgradeUpgradeMax", A = {"Souls", "LuckierSwords"}},
@@ -1799,4 +1799,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.92 Ritual Chamber Chamber-Return & Souls Upgrade Loop Fixed!")
+print("[Dominate Hub] V11.93 Souls Upgrade Loop Fixed with Meat Logic!")
