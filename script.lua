@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.4 - CLEAN SYNTAX & SAND REGEN LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.5 - JITTER-FREE ANCHORED MOVEMENT & SAND REGEN)
 --======================================================================================
 local Env = getgenv()
 
@@ -1462,7 +1462,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- SMOOTH STRICT GROUND-LOCKED MOVEMENT LOOP (ZERO JITTER / ZERO BOUNCE)
+-- SMOOTH STRICT GROUND-LOCKED MOVEMENT LOOP WITH SMART ANCHORING (ZERO JITTER)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1483,6 +1483,7 @@ task.spawn(function()
             if act then
                 local targetCF = CFrame.new(act)
                 if (hrp.Position - act).Magnitude > 0.5 then
+                    hrp.Anchored = false
                     local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
                     local alpha = math.clamp(0.2 / speed, 0.01, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
@@ -1490,7 +1491,10 @@ task.spawn(function()
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
+                    hrp.Anchored = true -- Anchor when stationary to completely eliminate jitter
                 end
+            else
+                hrp.Anchored = false
             end
         end
     end
@@ -1514,6 +1518,7 @@ task.spawn(function()
         if Running and Env.AutoStartRitual and not trialIsRunning then
             local hrp = GetWorldRoot()
             if hrp then
+                hrp.Anchored = false
                 hrp.CFrame = CFrame.new(Dest.RitualChamber)
                 hrp.AssemblyLinearVelocity = Vector3.zero
                 hrp.AssemblyAngularVelocity = Vector3.zero
@@ -1606,6 +1611,7 @@ task.spawn(function()
                     
                     local hrp = GetWorldRoot()
                     if hrp then
+                        hrp.Anchored = false
                         hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 15, 0))
                         hrp.AssemblyLinearVelocity = Vector3.zero
                     end
@@ -1614,6 +1620,7 @@ task.spawn(function()
                     
                     hrp = GetWorldRoot()
                     if hrp then
+                        hrp.Anchored = false
                         hrp.CFrame = CFrame.new(targetPad)
                         hrp.AssemblyLinearVelocity = Vector3.zero
                     end
@@ -1662,6 +1669,7 @@ task.spawn(function()
                     
                     hrp = GetWorldRoot()
                     if hrp then
+                        hrp.Anchored = false
                         hrp.AssemblyLinearVelocity = Vector3.zero
                     end
                     showToast("Trials: Completed! Returning to main map...")
@@ -1839,7 +1847,6 @@ task.spawn(function()
                             reachedTarget = true
                         end
                     else
-                        -- Fallback depth calculation from pit vector Y
                         local hrp = GetWorldRoot()
                         if hrp then
                             local depth = math.abs(hrp.Position.Y - Dest.Dunes.Y)
@@ -1857,7 +1864,7 @@ task.spawn(function()
                 SandTargetVector = Dest.SandRegenPad
                 task.wait(2.5)
                 SandTargetVector = nil
-                task.wait(1.5) -- wait for layers to regenerate
+                task.wait(1.5)
             end
         end
     end
@@ -2247,4 +2254,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V15.4 Clean Syntax & Seamless Sand Regen Loop Loaded Successfully!")
+print("[Dominate Hub] V15.5 Jitter-Free Anchored Movement & Sand Regen Loop Loaded Successfully!")
