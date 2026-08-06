@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V13.7 - STREAMLINED RITUAL LOOP & TIMER SYNC)
+-- DOMINATE HUB | PRO EDITION (STABLE V13.8 - SYNTAX FIX & STREAMLINED RITUAL LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -1107,7 +1107,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Streamlined Infinite Loop)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Fixed Syntax & Loop)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1326,7 +1326,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL INFINITE SEQUENTIAL LOOP (STREAMLINED FOR RELIABLE INFINITE RE-ACTIVATION)
+-- RITUAL INFINITE SEQUENTIAL LOOP
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1706,7 +1706,7 @@ task.spawn(function()
                     local freshList = {} local gc = workspace:FindFirstChild("__GAME_CONTENT") local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model"] and not isOreRespawning(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then table.insert(freshList, part) end
                             end
@@ -1978,4 +1978,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V13.7 Streamlined Ritual Infinite Loop Fix Loaded Successfully!")
+print("[Dominate Hub] V13.8 Syntax Fix & Streamlined Ritual Loop Loaded Successfully!")
