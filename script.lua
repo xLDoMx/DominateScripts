@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.6 - CLEAN TRIAL TARGETING, NO GATE FALLBACK)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.7 - GATE TELEPORT, 60S WAIT & ARENA CLEARING)
 --======================================================================================
 local Env = getgenv()
 
@@ -1587,7 +1587,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - GATE RETURN FALLBACK REMOVED
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - GATE TELEPORT & 60S WAIT LOGIC
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1610,7 +1610,7 @@ task.spawn(function()
                 
                 if targetPad then
                     trialIsRunning = true
-                    showToast("Trials: Scheduled trial time reached (:29 / :59)! Teleporting...")
+                    showToast("Trials: Scheduled trial time reached (:29 / :59)! Teleporting to gate...")
                     
                     local cachedMobs = {}
                     for _, mInfo in ipairs(MobPriorityList) do
@@ -1623,42 +1623,46 @@ task.spawn(function()
                     Env.AutoStartRitual = false
                     RitualTargetVector = nil
                     
+                    -- 1. Teleport directly to the gate/pad
                     local hrp = GetWorldRoot()
-                    if hrp then
-                        hrp.Anchored = false
-                        hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 15, 0))
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                    end
-                    showToast("Trials: Teleported to trial room! Streaming chunks...")
-                    task.wait(2.5)
-                    
-                    hrp = GetWorldRoot()
                     if hrp then
                         hrp.Anchored = false
                         hrp.CFrame = CFrame.new(targetPad)
                         hrp.AssemblyLinearVelocity = Vector3.zero
+                        hrp.AssemblyAngularVelocity = Vector3.zero
                     end
-                    task.wait(1.0)
                     
-                    local inArena = true
-                    showToast("Trials: Entered arena! Auto-clearing waves (free movement when idle)...")
-                    while inArena and Running do
-                        task.wait(0.3) -- 0.3 seconds check delay
+                    -- 2. Wait 60 seconds for the lobby countdown to finish and mobs to spawn
+                    showToast("Trials: Waiting 60s for trial countdown & mob spawn...")
+                    local waitElapsed = 0
+                    while waitElapsed < 60 and Running and trialIsRunning do
+                        task.wait(1.0)
+                        waitElapsed = waitElapsed + 1
+                    end
+                    
+                    -- 3. Turn on mob attack / start clearing arena mobs
+                    showToast("Trials: 60s elapsed! Turning on mob attack and clearing arena...")
+                    local clearingActive = true
+                    local noMobCounter = 0
+                    
+                    while clearingActive and Running do
+                        task.wait(0.3)
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
                         local trialsFolder = gc and gc:FindFirstChild("Trials")
                         local closestMobPart = nil
                         local shortestDist = math.huge
                         hrp = GetWorldRoot()
 
+                        local mobsFoundCount = 0
                         if trialsFolder and hrp then
-                            -- Scan inside workspace.__GAME_CONTENT.Trials rooms
                             for _, roomObj in ipairs(trialsFolder:GetChildren()) do
                                 for _, mobObj in ipairs(roomObj:GetDescendants()) do
                                     if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
                                         local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
                                         if part then
+                                            mobsFoundCount = mobsFoundCount + 1
                                             local dist = (part.Position - hrp.Position).Magnitude
-                                            if dist < shortestDist and dist <= 60 then
+                                            if dist < shortestDist and dist <= 80 then
                                                 shortestDist = dist
                                                 closestMobPart = part
                                             end
@@ -1669,11 +1673,16 @@ task.spawn(function()
                         end
 
                         if closestMobPart then
-                            -- Only lock movement onto actual mobs when they are present in the arena
+                            noMobCounter = 0
                             TrialTargetVector = closestMobPart.Position
                         else
-                            -- When no mobs are present (countdown / lobby), release movement completely so player is never stuck or dragged back to gate
                             TrialTargetVector = nil
+                            if mobsFoundCount == 0 then
+                                noMobCounter = noMobCounter + 1
+                                if noMobCounter >= 15 then -- ~4.5 seconds of zero mobs means trial cleared
+                                    clearingActive = false
+                                end
+                            end
                         end
                     end
                     
@@ -2273,4 +2282,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.6 Clean Trial Targeting Loaded Successfully!")
+print("[Dominate Hub] V16.7 Gate Teleport & 60s Wait Logic Loaded Successfully!")
