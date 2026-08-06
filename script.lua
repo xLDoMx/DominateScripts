@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.6 - CLEAN BASE + 250 LAYERS EXTENSION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.7 - HUMANOID TRIAL FILTER FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1476,7 +1476,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- MOVEMENT LOOP WITH FASTER SNAP SPEED & SCENERY BLACKLIST
+-- MOVEMENT LOOP WITH FASTER SNAP SPEED
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1498,7 +1498,6 @@ task.spawn(function()
                 local targetCF = CFrame.new(act)
                 if (hrp.Position - act).Magnitude > 0.3 then
                     hrp.Anchored = false
-                    -- Boosted snap speed for trial targets so it moves faster
                     local speed = TrialTargetVector and 0.15 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
                     local alpha = math.clamp(0.4 / speed, 0.05, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
@@ -1588,7 +1587,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59) - 200 STUDS + BUSH BLACKLIST
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59) - 200 STUDS + HUMANOID CHECK (NO BUSH STICKING)
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1641,7 +1640,7 @@ task.spawn(function()
                         waitElapsed = waitElapsed + 1
                     end
                     
-                    -- 3. Turn on mob attack with expanded 200-stud range and explicit prop exclusion
+                    -- 3. Turn on mob attack with 200-stud range and Humanoid filter (ignores static bushes)
                     showToast("Trials: 60s elapsed! Turning on mob attack and clearing arena...")
                     local clearingActive = true
                     local noMobCounter = 0
@@ -1658,18 +1657,15 @@ task.spawn(function()
                         if trialsFolder and hrp then
                             for _, roomObj in ipairs(trialsFolder:GetChildren()) do
                                 for _, mobObj in ipairs(roomObj:GetDescendants()) do
-                                    if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                        local mName = mobObj.Name:lower()
-                                        -- Explicitly ignore environmental scenery props so you never get stuck in bushes
-                                        if not mName:find("bush") and not mName:find("tree") and not mName:find("wall") and not mName:find("scenery") then
-                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                            if part then
-                                                mobsFoundCount = mobsFoundCount + 1
-                                                local dist = (part.Position - hrp.Position).Magnitude
-                                                if dist < shortestDist and dist <= 200 then
-                                                    shortestDist = dist
-                                                    closestMobPart = part
-                                                end
+                                    -- A real trial mob must be a Model and contain a Humanoid (bushes/props do not have humanoids)
+                                    if mobObj:IsA("Model") and mobObj:FindFirstChildOfClass("Humanoid") and not isMobRespawning(mobObj) then
+                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            mobsFoundCount = mobsFoundCount + 1
+                                            local dist = (part.Position - hrp.Position).Magnitude
+                                            if dist < shortestDist and dist <= 200 then
+                                                shortestDist = dist
+                                                closestMobPart = part
                                             end
                                         end
                                     end
@@ -2246,7 +2242,7 @@ end)
 task.spawn(function() while Running do task.wait(3.0) if Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() local args = { [1] = "BuyTrophy", [2] = i } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.2) end end end end)
 
 local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
-task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) break end until att >= #BreadUpgradeList end end end)
+task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] === false and false or true } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) break end until att >= #BreadUpgradeList end end end)
 
 -- 1-MINUTE MEAT CONVERSION LOOP (INDEPENDENT)
 task.spawn(function() 
@@ -2271,8 +2267,8 @@ task.spawn(function()
     end 
 end)
 
-task.spawn(function() while Running do task.wait(1.0) if Running then if Env.AutoBlazeMoreBlaze then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
+task.spawn(function() while Running do task.wait(1.0) if Running then if Env.AutoBlazeMoreBlaze then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end end end end)
+task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and Running then pcall(function() local args = { [1] = "Prestige" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end)
 
 task.spawn(function()
@@ -2281,10 +2277,10 @@ task.spawn(function()
         if Running and Env.AutoBlazeConvert then
             pcall(function()
                 local args = { [1] = "Blaze" }
-                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack] = nil)
             end)
         end
     end
 end)
 
-print("[Dominate Hub] V16.9.6 Clean Base Loaded Successfully!")
+print("[Dominate Hub] V16.9.7 Fixed Loader Successfully!")
