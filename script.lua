@@ -1,10 +1,7 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V17.3 - GENERIC "MODEL" TRIAL SCANNING FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.1 - WORKING ATTACK + WIDER RANGE & FASTER SNAP)
 --======================================================================================
-local success, result = pcall(function()
-    return (getgenv and getgenv()) or _G
-end)
-local Env = success and result or _G
+local Env = (getgenv and getgenv()) or _G
 
 if Env.DominateHubLoaded then 
     pcall(function()
@@ -61,7 +58,7 @@ Env.AutoSandUpgrades = false
 Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
-Env.TargetSandLayer = 3
+Env.TargetSandLayer = 3 -- User configurable layer 1-100
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -323,7 +320,7 @@ Env.AutoOpenAncientCapsule = false
 Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 
--- FEATURE ROW CONTAINER
+-- FEATURE ROW CONTAINER (50% TRANSPARENT DEEP PURPLE, NO STROKE)
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -397,7 +394,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- TEXT INPUT ROW FOR TARGET LAYER
+-- TEXT INPUT ROW FOR TARGET LAYER (1-100)
 local function createTextBoxRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -456,7 +453,7 @@ local function createTextBoxRow(parent, txt, vKey)
     return row
 end
 
--- EXPANDABLE MULTI-SELECT DROPDOWN
+-- EXPANDABLE MULTI-SELECT DROPDOWN FOR RITUAL TARGET MOBS
 local function createRitualMobDropdown(parent, title, mobList)
     local dropFrame = Instance.new("Frame")
     dropFrame.Size = UDim2.new(1, -10, 0, 42)
@@ -810,6 +807,7 @@ task.spawn(function()
                 finalHudText = finalHudText .. "\n" .. table.concat(extraLines, " | ")
             end
             
+            hudText.Text = finalHudText
             statsHud.Size = UDim2.new(0, 210, 0, 52 + (#extraLines * 18))
         else
             statsHud.Visible = false
@@ -817,7 +815,7 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER
+-- MAIN WINDOW CONTAINER (STATIC NON-DRAGGABLE)
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 620, 0, 410)
 mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205)
@@ -836,7 +834,7 @@ mainStroke.Color = Color3.fromRGB(168, 85, 247)
 mainStroke.Transparency = 0.25
 mainStroke.Parent = mainFrame
 
--- HEADER LOGO IMAGE CONTAINER
+-- HEADER LOGO IMAGE CONTAINER WITH FADED SHINY TOP STROKE EFFECT
 local logoBox = Instance.new("ImageLabel")
 logoBox.Size = UDim2.new(0, 34, 0, 34)
 logoBox.Position = UDim2.new(0, 14, 0, 10)
@@ -898,7 +896,7 @@ task.spawn(function()
     end
 end)
 
--- FLOATING PILL
+-- FLOATING PILL (MINIMIZE / RESTORE)
 local minBtn = Instance.new("TextButton") 
 minBtn.Size = UDim2.new(0, 115, 0, 26) 
 minBtn.Position = UDim2.new(0.5, -57, 0.01, 0) 
@@ -930,7 +928,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SCROLLABLE SIDEBAR CONTAINER
+-- SCROLLABLE SIDEBAR CONTAINER WITH COMPLETELY INVISIBLE SCROLLBAR
 local sidebarFrame = Instance.new("ScrollingFrame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -1240,7 +1238,7 @@ createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
 -- ======================================================================================
--- MOBS PAGE SETUP
+-- MOBS PAGE SETUP (WORST AT TOP, BEST AT BOTTOM)
 -- ======================================================================================
 local mobsScroll = makeVerticalScroll(mobsPage)
 
@@ -1294,6 +1292,7 @@ createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
 
+-- ADD RITUAL MOB SELECTION DROPDOWN TO MOBS TAB
 createRitualMobDropdown(mobsScroll, "Ritual Target Mobs", MobPriorityList)
 
 -- ======================================================================================
@@ -1447,18 +1446,18 @@ local Dest = {
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
     AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
-    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625),
+    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625), -- Real Sand Pit Vector
     EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
     MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
     HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
-    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875)
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875) -- Real Regen Pad Vector
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
--- STATE-OPTIMIZED NOCLIP ENGINE
+-- STATE-OPTIMIZED NOCLIP ENGINE (ONLY RUNS WHEN GLIDING STATE CHANGES, ZERO FRAME OVERHEAD)
 local lastGlidingState = false
 RunService.Stepped:Connect(function()
     if not Running then return end
@@ -1477,7 +1476,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- MOVEMENT LOOP WITH UNIVERSAL INSTANT TRIAL SNAP
+-- MOVEMENT LOOP WITH FASTER SNAP SPEED FOR TRIALS
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1489,7 +1488,7 @@ task.spawn(function()
             elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
-            elseif SandTargetVector then act = SandTargetVector
+            elseif SandTargetVector then act = SandTargetVector -- Only used for Regen Pad now
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
@@ -1499,8 +1498,9 @@ task.spawn(function()
                 local targetCF = CFrame.new(act)
                 if (hrp.Position - act).Magnitude > 0.3 then
                     hrp.Anchored = false
-                    local speed = TrialTargetVector and 0.1 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
-                    local alpha = math.clamp(0.5 / speed, 0.1, 1.0)
+                    -- Boosted snap speed specifically for trial targets so it moves faster
+                    local speed = TrialTargetVector and 0.2 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
+                    local alpha = math.clamp(0.4 / speed, 0.05, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
                 else
                     hrp.CFrame = targetCF
@@ -1526,7 +1526,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL INFINITE LOOP
+-- RITUAL INFINITE LOOP WITH MULTI-FIRE ACTIVATION
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1588,7 +1588,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59) - GENERIC "MODEL" TRIAL SCANNER
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - WIDER STUDS (200)
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1624,6 +1624,7 @@ task.spawn(function()
                     Env.AutoStartRitual = false
                     RitualTargetVector = nil
                     
+                    -- 1. Teleport directly to the gate/pad
                     local hrp = GetWorldRoot()
                     if hrp then
                         hrp.Anchored = false
@@ -1632,6 +1633,7 @@ task.spawn(function()
                         hrp.AssemblyAngularVelocity = Vector3.zero
                     end
                     
+                    -- 2. Wait 60 seconds for the lobby countdown to finish and mobs to spawn
                     showToast("Trials: Waiting 60s for trial countdown & mob spawn...")
                     local waitElapsed = 0
                     while waitElapsed < 60 and Running and trialIsRunning do
@@ -1639,34 +1641,32 @@ task.spawn(function()
                         waitElapsed = waitElapsed + 1
                     end
                     
+                    -- 3. Turn on mob attack with expanded 200-stud range to catch all mobs
                     showToast("Trials: 60s elapsed! Turning on mob attack and clearing arena...")
                     local clearingActive = true
                     local noMobCounter = 0
                     
                     while clearingActive and Running do
-                        task.wait(0.15)
+                        task.wait(0.2)
+                        local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                        local trialsFolder = gc and gc:FindFirstChild("Trials")
                         local closestMobPart = nil
                         local shortestDist = math.huge
                         hrp = GetWorldRoot()
 
                         local mobsFoundCount = 0
-                        if hrp then
-                            -- Scan inside workspace.__GAME_CONTENT.Trials for any active trial entities named "Model"
-                            local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                            local trialsFolder = gc and gc:FindFirstChild("Trials")
-                            
-                            if trialsFolder then
-                                for _, roomObj in ipairs(trialsFolder:GetChildren()) do
-                                    for _, mobObj in ipairs(roomObj:GetDescendants()) do
-                                        if mobObj:IsA("Model") and mobObj.Name == "Model" and not isMobRespawning(mobObj) then
-                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                            if part then
-                                                mobsFoundCount = mobsFoundCount + 1
-                                                local dist = (part.Position - hrp.Position).Magnitude
-                                                if dist < shortestDist and dist <= 300 then
-                                                    shortestDist = dist
-                                                    closestMobPart = part
-                                                end
+                        if trialsFolder and hrp then
+                            -- Scan inside workspace.__GAME_CONTENT.Trials rooms (V16.9 unconstrained model scanner)
+                            for _, roomObj in ipairs(trialsFolder:GetChildren()) do
+                                for _, mobObj in ipairs(roomObj:GetDescendants()) do
+                                    if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
+                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            mobsFoundCount = mobsFoundCount + 1
+                                            local dist = (part.Position - hrp.Position).Magnitude
+                                            if dist < shortestDist and dist <= 200 then -- Increased to 200 studs
+                                                shortestDist = dist
+                                                closestMobPart = part
                                             end
                                         end
                                     end
@@ -1681,7 +1681,7 @@ task.spawn(function()
                             TrialTargetVector = nil
                             if mobsFoundCount == 0 then
                                 noMobCounter = noMobCounter + 1
-                                if noMobCounter >= 12 then -- ~2 seconds of zero mobs means trial fully cleared
+                                if noMobCounter >= 12 then -- ~2.4 seconds of zero mobs means trial cleared
                                     clearingActive = false
                                 end
                             end
@@ -1837,11 +1837,12 @@ task.spawn(function()
     end
 end)
 
--- SEAMLESS SAND REGENERATION LOOP
+-- SEAMLESS SAND REGENERATION LOOP (INSTANT CLEAN TELEPORT TO PIT, ZERO LERP FRICTION)
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
+            -- 1. Clean, instant one-time teleport snap straight to the pit
             showToast("Sand Regen: Teleporting to sand pit...")
             pcall(function()
                 local hrp = GetWorldRoot()
@@ -1852,8 +1853,9 @@ task.spawn(function()
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 end
             end)
-            task.wait(1.0)
+            task.wait(1.0) -- Let physics settle naturally
             
+            -- 2. Monitor layers until target layer is reached
             local reachedTarget = false
             local targetLayer = tonumber(Env.TargetSandLayer) or 3
             
@@ -1887,6 +1889,7 @@ task.spawn(function()
             end
             
             if reachedTarget and Running and Env.AutoRegenSandLayers then
+                -- 3. Teleport to the regeneration pad
                 showToast("Sand Regen: Target layer reached! Teleporting to regen pad...")
                 SandTargetVector = Dest.SandRegenPad
                 task.wait(2.5)
@@ -1897,7 +1900,7 @@ task.spawn(function()
     end
 end)
 
--- GEM CONVERTER
+-- 1. GEM CONVERTER ALONE
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1911,7 +1914,7 @@ task.spawn(function()
     end
 end)
 
--- SHOP TELEPORT LOOP
+-- 2. SHOP TELEPORT LOOP ALONE
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1923,7 +1926,7 @@ task.spawn(function()
     end
 end)
 
--- COMBINED PITSTOP LOOP
+-- 3. COMBINED PITSTOP LOOP
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -1950,7 +1953,6 @@ local function isOreRespawning(oreModel)
     return false
 end
 
--- ORE MINING ENGINE
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -2000,7 +2002,6 @@ task.spawn(function()
     end
 end)
 
--- CAPSULES LOOP
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.12)
@@ -2016,7 +2017,6 @@ task.spawn(function()
     end
 end)
 
--- CASH TYCOON BUTTON LOOP
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -2060,13 +2060,16 @@ local PrimaryUpgradeQueue = {
     {F="AutoFireMoreFire",T="UpgradeUpgradeMax",A={"Fire","MoreFire"}}, {F="AutoFireMoreBulk",T="UpgradeUpgradeMax",A={"Fire","MoreBulk"}}, {F="AutoFireMoreOof",T="UpgradeUpgradeMax",A={"Fire","MoreOof"}}, {F="AutoFireMoreRebirth",T="UpgradeUpgradeMax",A={"Fire","MoreRebirth"}}, {F="AutoFireMoreTierLuck",T="UpgradeUpgradeMax",A={"Fire","MoreTierLuck"}}, {F="AutoFireMoreCashBonus",T="UpgradeUpgradeMax",A={"Fire","MoreCashBonus"}},
     {F="AutoUpgradeMoreCash",T="UpgradeUpgradeMax",A={"Cash","MoreCash"}}, {F="AutoUpgradeFasterDropper",T="UpgradeUpgradeMax",A={"Cash","FasterDropper"}}, {F="AutoUpgradeMoreRuneLuck",T="UpgradeUpgradeMax",A={"Cash","MoreRuneLuck"}},
     {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}},
+    -- SAND UPGRADES
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreSand"}},
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MultiSand"}},
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","StrongerShovels"}},
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","FasterShovels"}},
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","AlotSand"}},
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreOof"}},
+    -- SHOVEL LEVEL UP
     {F="AutoShovelLevelUp",T="ShovelLevelUp",A={}},
+    -- EXCAVATION RANK UP
     {F="AutoExcavationRankUp",T="ExcavationRankUp",A={}}
 }
 
@@ -2091,7 +2094,7 @@ task.spawn(function()
     end
 end)
 
--- MEAT UPGRADE LOOP
+-- DEDICATED STAGGERED MEAT UPGRADE LOOP (0.35s)
 local MeatUpgradeList = {
     {F = "AutoMeatMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
     {F = "AutoMeatStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
@@ -2121,7 +2124,7 @@ task.spawn(function()
     end
 end)
 
--- BONES UPGRADE LOOP
+-- DEDICATED STAGGERED BONES UPGRADE LOOP (0.45s)
 local BonesUpgradeList = {
     {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
@@ -2152,7 +2155,7 @@ task.spawn(function()
     end
 end)
 
--- SOULS UPGRADE LOOP
+-- DEDICATED STAGGERED SOULS UPGRADE LOOP (0.55s)
 local SoulsUpgradeList = {
     {F = "AutoSoulsMoreSouls", T = "UpgradeUpgradeMax", A = {"Souls", "MoreSouls"}},
     {F = "AutoSoulsLuckierSwords", T = "UpgradeUpgradeMax", A = {"Souls", "LuckierSwords"}},
@@ -2183,7 +2186,7 @@ task.spawn(function()
     end
 end)
 
--- GEM UPGRADE LOOP
+-- DEDICATED STAGGERED GEM UPGRADE LOOP (0.65s)
 local GemUpgradeList = {
     {F="AutoGemMoreOof", T="UpgradeUpgradeMax", A={"Gem","MoreOof"}},
     {F="AutoGemMoreGems", T="UpgradeUpgradeMax", A={"Gem","MoreGems"}},
@@ -2242,7 +2245,7 @@ task.spawn(function() while Running do task.wait(3.0) if Running and Env.AutoCla
 local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
 task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) break end until att >= #BreadUpgradeList end end end)
 
--- MEAT CONVERSION LOOP
+-- 1-MINUTE MEAT CONVERSION LOOP (INDEPENDENT)
 task.spawn(function() 
     while Running do 
         task.wait(60.0) 
@@ -2281,4 +2284,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V17.3 Generic Model Trial Scanning Loaded Successfully!")
+print("[Dominate Hub] V16.9.1 Rolled Back with Wider Range & Faster Snap Successfully!")
