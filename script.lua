@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V17.1 - BULLETPROOF EXECUTION WRAPPER)
+-- DOMINATE HUB | PRO EDITION (STABLE V17.3 - GENERIC "MODEL" TRIAL SCANNING FIX)
 --======================================================================================
 local success, result = pcall(function()
     return (getgenv and getgenv()) or _G
@@ -810,7 +810,6 @@ task.spawn(function()
                 finalHudText = finalHudText .. "\n" .. table.concat(extraLines, " | ")
             end
             
-            hudText.Text = finalHudText
             statsHud.Size = UDim2.new(0, 210, 0, 52 + (#extraLines * 18))
         else
             statsHud.Visible = false
@@ -1478,7 +1477,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- MOVEMENT LOOP WITH INSTANT TRIAL SNAP (V17.0 ENHANCED RANGE & SPEED)
+-- MOVEMENT LOOP WITH UNIVERSAL INSTANT TRIAL SNAP
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1500,8 +1499,8 @@ task.spawn(function()
                 local targetCF = CFrame.new(act)
                 if (hrp.Position - act).Magnitude > 0.3 then
                     hrp.Anchored = false
-                    local speed = TrialTargetVector and 0.15 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
-                    local alpha = math.clamp(0.4 / speed, 0.05, 1.0)
+                    local speed = TrialTargetVector and 0.1 or math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
+                    local alpha = math.clamp(0.5 / speed, 0.1, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
                 else
                     hrp.CFrame = targetCF
@@ -1589,7 +1588,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59) - V17.0 WIDER RANGE (250 STUDS)
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59) - GENERIC "MODEL" TRIAL SCANNER
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1644,31 +1643,30 @@ task.spawn(function()
                     local clearingActive = true
                     local noMobCounter = 0
                     
-                    local validMobLookup = {}
-                    for _, mInfo in ipairs(MobPriorityList) do
-                        validMobLookup[mInfo.N] = true
-                    end
-                    
                     while clearingActive and Running do
-                        task.wait(0.2)
-                        local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                        local trialsFolder = gc and gc:FindFirstChild("Trials")
+                        task.wait(0.15)
                         local closestMobPart = nil
                         local shortestDist = math.huge
                         hrp = GetWorldRoot()
 
                         local mobsFoundCount = 0
-                        if trialsFolder and hrp then
-                            for _, roomObj in ipairs(trialsFolder:GetChildren()) do
-                                for _, mobObj in ipairs(roomObj:GetDescendants()) do
-                                    if mobObj:IsA("Model") and validMobLookup[mobObj.Name] and not isMobRespawning(mobObj) then
-                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                        if part then
-                                            mobsFoundCount = mobsFoundCount + 1
-                                            local dist = (part.Position - hrp.Position).Magnitude
-                                            if dist < shortestDist and dist <= 250 then
-                                                shortestDist = dist
-                                                closestMobPart = part
+                        if hrp then
+                            -- Scan inside workspace.__GAME_CONTENT.Trials for any active trial entities named "Model"
+                            local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                            local trialsFolder = gc and gc:FindFirstChild("Trials")
+                            
+                            if trialsFolder then
+                                for _, roomObj in ipairs(trialsFolder:GetChildren()) do
+                                    for _, mobObj in ipairs(roomObj:GetDescendants()) do
+                                        if mobObj:IsA("Model") and mobObj.Name == "Model" and not isMobRespawning(mobObj) then
+                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                            if part then
+                                                mobsFoundCount = mobsFoundCount + 1
+                                                local dist = (part.Position - hrp.Position).Magnitude
+                                                if dist < shortestDist and dist <= 300 then
+                                                    shortestDist = dist
+                                                    closestMobPart = part
+                                                end
                                             end
                                         end
                                     end
@@ -1683,7 +1681,7 @@ task.spawn(function()
                             TrialTargetVector = nil
                             if mobsFoundCount == 0 then
                                 noMobCounter = noMobCounter + 1
-                                if noMobCounter >= 15 then
+                                if noMobCounter >= 12 then -- ~2 seconds of zero mobs means trial fully cleared
                                     clearingActive = false
                                 end
                             end
@@ -2283,4 +2281,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V17.1 Bulletproof Execution Loaded Successfully!")
+print("[Dominate Hub] V17.3 Generic Model Trial Scanning Loaded Successfully!")
