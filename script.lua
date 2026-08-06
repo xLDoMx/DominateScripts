@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.0 - ADJUSTED TRIAL LOGIC & INSTANT-SNAP PIT)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.1 - ARENA-LOCKED TRIAL TARGETING)
 --======================================================================================
 local Env = getgenv()
 
@@ -1577,7 +1577,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - EXIT CONDITION REMOVED & 0.3s DELAY
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - ARENA DISTANCE LOCKED & 0.3s DELAY
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1633,7 +1633,7 @@ task.spawn(function()
                     local inArena = true
                     showToast("Trials: Entered arena! Auto-clearing waves...")
                     while inArena and Running do
-                        task.wait(0.3) -- Updated to 0.3 seconds per user request
+                        task.wait(0.3) -- 0.3 seconds check delay
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
                         local mobsFolder = gc and gc:FindFirstChild("Mobs")
                         local closestMobPart = nil
@@ -1646,7 +1646,8 @@ task.spawn(function()
                                     local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
                                     if part then
                                         local dist = (part.Position - hrp.Position).Magnitude
-                                        if dist < shortestDist then
+                                        -- Arena-locked constraint: only target mobs within 60 studs of the character inside the arena
+                                        if dist < shortestDist and dist <= 60 then
                                             shortestDist = dist
                                             closestMobPart = part
                                         end
@@ -2258,4 +2259,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.0 Trial Logic Adjusted Successfully!")
+print("[Dominate Hub] V16.1 Arena-Locked Trial Targeting Loaded Successfully!")
