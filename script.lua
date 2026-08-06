@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.95 - SCROLLABLE SIDEBAR & UPDATED RITUAL LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.97 - SEAMLESS CASTLE DOOR PASS-THROUGH)
 --======================================================================================
 local Env = getgenv()
 
@@ -1245,6 +1245,7 @@ local Dest = {
     EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
     MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
     HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
+    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763)
 }
 
@@ -1342,23 +1343,74 @@ task.spawn(function()
     end
 end)
 
--- TRIALS AUTOMATION & ARENA ATTACK ENGINE
+-- HELPER TO CHECK IF A TRIAL IS OPEN
+local function isTrialOpen(trialRoomName)
+    local gc = workspace:FindFirstChild("__GAME_CONTENT")
+    local trialsFolder = gc and gc:FindFirstChild("Trials")
+    if trialsFolder then
+        local room = trialsFolder:FindFirstChild(trialRoomName)
+        if room then
+            for _, desc in ipairs(room:GetDescendants()) do
+                if desc:IsA("TextLabel") then
+                    local txt = desc.Text:lower()
+                    if txt:find("is open") or txt:find("left to join") then
+                        return true
+                    end
+                end
+            end
+        end
+    end
+    return false
+end
+
+-- ADVANCED TRIAL STATE-MACHINE AUTOMATION (WITH SEAMLESS DOOR PASS-THROUGH)
 task.spawn(function()
     while Running do
-        task.wait(0.5)
+        task.wait(2.0)
         if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
-            local targetGate = nil
-            if Env.AutoEasyTrial then targetGate = Dest.EasyTrial
-            elseif Env.AutoMediumTrial then targetGate = Dest.MediumTrial
-            elseif Env.AutoHardTrial then targetGate = Dest.HardTrial end
-
-            if targetGate then
-                TrialTargetVector = targetGate
-                task.wait(1.0)
+            local targetRoomName = nil
+            local targetPad = nil
+            
+            if Env.AutoEasyTrial then
+                targetRoomName = "EasyTrialRoom Model"
+                targetPad = Dest.EasyTrial
+            elseif Env.AutoMediumTrial then
+                targetRoomName = "MediumTrialRoom Model"
+                targetPad = Dest.MediumTrial
+            elseif Env.AutoHardTrial then
+                targetRoomName = "HardTrialRoom Model"
+                targetPad = Dest.HardTrial
+            end
+            
+            if targetRoomName and targetPad and isTrialOpen(targetRoomName) then
+                showToast("Trials: Trial is open! Pausing background tasks...")
                 
+                -- Cache & temporarily disable active mob flags and ritual
+                local cachedMobs = {}
+                for _, mInfo in ipairs(MobPriorityList) do
+                    if Env[mInfo.F] then
+                        cachedMobs[mInfo.F] = true
+                        Env[mInfo.F] = false
+                    end
+                end
+                local wasRitualActive = Env.AutoStartRitual
+                Env.AutoStartRitual = false
+                
+                -- Stage 1: Pass-through Glide to Castle Entrance
+                MasterTargetVector = Dest.CastleEntrance
+                showToast("Trials: Gliding through castle entrance...")
+                task.wait(1.2) -- quick pass-through buffer to walk straight inside
+                MasterTargetVector = nil
+                
+                -- Stage 2: Immediate glide into trial room pad
+                TrialTargetVector = targetPad
+                showToast("Trials: Entering trial room pad...")
+                task.wait(2.0)
+                
+                -- Stage 3: Wave Clearing Loop
                 local inArena = true
                 showToast("Trials: Entered arena! Auto-clearing waves...")
-                while inArena and Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) do
+                while inArena and Running do
                     task.wait(0.1)
                     local gc = workspace:FindFirstChild("__GAME_CONTENT")
                     local mobsFolder = gc and gc:FindFirstChild("Mobs")
@@ -1384,14 +1436,29 @@ task.spawn(function()
                     if closestMobPart then
                         TrialTargetVector = closestMobPart.Position
                     else
-                        TrialTargetVector = targetGate + Vector3.new(0, 5, 0)
-                        if hrp and (hrp.Position - targetGate).Magnitude > 100 then
+                        TrialTargetVector = targetPad + Vector3.new(0, 5, 0)
+                        if hrp and (hrp.Position - targetPad).Magnitude > 80 then
                             inArena = false
                         end
                     end
+                    
+                    -- Exit arena loop if teleported back out to main map
+                    if hrp and (hrp.Position - targetPad).Magnitude > 150 then
+                        inArena = false
+                    end
                 end
+                
                 TrialTargetVector = nil
+                
+                -- Restore previous background tasks
+                for flag, state in pairs(cachedMobs) do
+                    Env[flag] = state
+                end
+                Env.AutoStartRitual = wasRitualActive
                 showToast("Trials: Completed! Resuming previous tasks...")
+                
+                -- Cooldown before checking trial timer again
+                task.wait(15.0)
             end
         end
     end
@@ -1846,4 +1913,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.95 Scrollable Sidebar & Updated Ritual Loop Loaded Successfully!")
+print("[Dominate Hub] V11.97 Seamless Door Pass-Through & Trial Overhaul Loaded Successfully!")
