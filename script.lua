@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V13.8 - SYNTAX FIX & STREAMLINED RITUAL LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V13.9 - EXACT REMOTE PATH & RITUAL FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -27,7 +27,6 @@ local RunService = game:GetService("RunService")
 local Running = true
 local player = Players.LocalPlayer
 local vu = VirtualUser
-local NetRemote = nil
 
 local UI = {}
 
@@ -481,14 +480,6 @@ player.Idled:Connect(function()
         local cf = cam and cam.CFrame or CFrame.new()
         vu:Button2Down(Vector2.new(0,0), cf) task.wait(0.5) vu:Button2Up(Vector2.new(0,0), cf)
     end
-end)
-
-task.spawn(function()
-    repeat
-        local netService = ReplicatedStorage:WaitForChild("__Net", 5)
-        if netService then NetRemote = netService:FindFirstChild("MainRemote") or netService:FindFirstChildWhichIsA("RemoteEvent") end
-        if not NetRemote then task.wait(0.5) end
-    until NetRemote or not Running
 end)
 
 -- UI MASTER ALLOCATION
@@ -1107,7 +1098,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Fixed Syntax & Loop)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Streamlined Loop)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1296,7 +1287,7 @@ task.spawn(function()
             elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
-            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
+            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Env.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
@@ -1326,11 +1317,11 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL INFINITE SEQUENTIAL LOOP
+-- RITUAL INFINITE SEQUENTIAL LOOP WITH EXACT REMOTE ARGUMENTS
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if NetRemote and Running and Env.AutoStartRitual and not trialIsRunning then
+        if Running and Env.AutoStartRitual and not trialIsRunning then
             
             -- Step 1: Teleport straight to the Ritual Chamber vector (Ground level)
             local hrp = GetWorldRoot()
@@ -1342,9 +1333,12 @@ task.spawn(function()
             showToast("Ritual Chamber: Teleported to chamber! Streaming terrain...")
             task.wait(2.0)
             
-            -- Step 2: Start ritual successfully
+            -- Step 2: Fire exact StartRitual arguments via MainRemote
             pcall(function()
-                NetRemote:FireServer("StartRitual")
+                local args = {
+                    [1] = "StartRitual"
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
             end)
             showToast("Ritual Chamber: Started ritual! Waiting 5s at vector...")
             
@@ -1544,9 +1538,10 @@ task.spawn(function()
                 task.wait(0.5)
                 MasterTargetVector = nil
                 
-                if NetRemote then
-                    pcall(function() NetRemote:FireServer("DepositMeat") end)
-                end
+                pcall(function()
+                    local args = { [1] = "DepositMeat" }
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                end)
                 
                 task.wait(1.5)
                 
@@ -1642,9 +1637,10 @@ end)
 task.spawn(function()
     while Running do
         task.wait(60.0)
-        if NetRemote and Running and Env.AutoGemExchange and not Env.AutoGemShopTeleport then
+        if Running and Env.AutoGemExchange and not Env.AutoGemShopTeleport then
             pcall(function()
-                NetRemote:FireServer("ExchangeAllMinerals")
+                local args = { [1] = "ExchangeAllMinerals" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
             end)
             showToast("Gem Converter: Exchanged minerals successfully!")
         end
@@ -1667,11 +1663,12 @@ end)
 task.spawn(function()
     while Running do
         task.wait(60.0)
-        if NetRemote and Running and Env.AutoGemExchange and Env.AutoGemShopTeleport then
+        if Running and Env.AutoGemExchange and Env.AutoGemShopTeleport then
             pcall(function()
                 MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
                 task.wait(6.0)
-                NetRemote:FireServer("ExchangeAllMinerals")
+                local args = { [1] = "ExchangeAllMinerals" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                 task.wait(1.0)
                 MasterTargetVector = nil
             end)
@@ -1741,12 +1738,12 @@ end)
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.12)
-        if NetRemote and Running then
+        if Running then
             local hrp = GetWorldRoot()
             if hrp then
-                if Env.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Classic") end)
-                elseif Env.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Football") end)
-                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Super") end) end
+                if Env.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Classic" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
+                elseif Env.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Football" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
+                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end
             end
         end
     end
@@ -1801,10 +1798,18 @@ local PrimaryUpgradeQueue = {
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 2.0 or 1.0)
-        if NetRemote and Running then
+        if Running then
             for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end local item = PrimaryUpgradeQueue[i]
-                if Env[item.F] then pcall(function() NetRemote:FireServer(item.T, unpack(item.A)) end) task.wait(0.25) end
+                if Env[item.F] then 
+                    pcall(function() 
+                        local args = {}
+                        args[1] = item.T
+                        for _, aVal in ipairs(item.A) do table.insert(args, aVal) end
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end) 
+                    task.wait(0.25) 
+                end
             end
         end
     end
@@ -1822,14 +1827,17 @@ task.spawn(function()
     local mIdx = 1
     while Running do
         task.wait(0.35)
-        if NetRemote and Running then
+        if Running then
             local att = 0
             repeat
                 local cur = MeatUpgradeList[mIdx]
                 mIdx = (mIdx % #MeatUpgradeList) + 1
                 att = att + 1
                 if Env[cur.F] then
-                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
                     break
                 end
             until att >= #MeatUpgradeList
@@ -1850,14 +1858,17 @@ task.spawn(function()
     local bIdx = 1
     while Running do
         task.wait(0.45)
-        if NetRemote and Running then
+        if Running then
             local att = 0
             repeat
                 local cur = BonesUpgradeList[bIdx]
                 bIdx = (bIdx % #BonesUpgradeList) + 1
                 att = att + 1
                 if Env[cur.F] then
-                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
                     break
                 end
             until att >= #BonesUpgradeList
@@ -1878,14 +1889,17 @@ task.spawn(function()
     local sIdx = 1
     while Running do
         task.wait(0.55)
-        if NetRemote and Running then
+        if Running then
             local att = 0
             repeat
                 local cur = SoulsUpgradeList[sIdx]
                 sIdx = (sIdx % #SoulsUpgradeList) + 1
                 att = att + 1
                 if Env[cur.F] then
-                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
                     break
                 end
             until att >= #SoulsUpgradeList
@@ -1904,14 +1918,17 @@ task.spawn(function()
     local gIdx = 1
     while Running do
         task.wait(0.65)
-        if NetRemote and Running then
+        if Running then
             local att = 0
             repeat
                 local cur = GemUpgradeList[gIdx]
                 gIdx = (gIdx % #GemUpgradeList) + 1
                 att = att + 1
                 if Env[cur.F] then
-                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
                     break
                 end
             until att >= #GemUpgradeList
@@ -1919,18 +1936,24 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function() while Running do task.wait(0.5) if NetRemote and Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() NetRemote:FireServer("FillWaterBucket", i) end) task.wait(0.2) end end end end end)
+task.spawn(function() while Running do task.wait(0.5) if Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() local args = { [1] = "FillWaterBucket", [2] = i } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.2) end end end end end)
 
-task.spawn(function() while Running do task.wait(0.2) if NetRemote and Running and Env.AutoScoreGoal then pcall(function() NetRemote:FireServer("RegisterFootballKick") end) task.wait(1.5) if not Running or not Env.AutoScoreGoal then break end pcall(function() NetRemote:FireServer("ScoreGoal") end) task.wait(1.5) end end end)
+task.spawn(function() while Running do task.wait(0.2) if Running and Env.AutoScoreGoal then pcall(function() local args = { [1] = "RegisterFootballKick" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(1.5) if not Running or not Env.AutoScoreGoal then break end pcall(function() local args = { [1] = "ScoreGoal" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(1.5) end end end)
 
 task.spawn(function()
     while Running do
-        if NetRemote and Running and Env.AutoFootballTree then
+        if Running and Env.AutoFootballTree then
             local pGui = player:FindFirstChild("PlayerGui") local treeGui = pGui and pGui:FindFirstChild("FootballUITree")
             if treeGui then
                 for _, obj in pairs(treeGui:GetDescendants()) do
                     if not Running or not Env.AutoFootballTree then break end
-                    if (obj:IsA("GuiButton") or obj:IsA("Frame")) and obj.Name ~= "Main" and obj.Name ~= "Container" then pcall(function() NetRemote:FireServer("BuyFootballUITreeNode", obj.Name) end) task.wait(0.5) end
+                    if (obj:IsA("GuiButton") or obj:IsA("Frame")) and obj.Name ~= "Main" and obj.Name ~= "Container" then 
+                        pcall(function() 
+                            local args = { [1] = "BuyFootballUITreeNode", [2] = obj.Name }
+                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                        end) 
+                        task.wait(0.5) 
+                    end
                 end
             end
         end
@@ -1938,17 +1961,20 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function() while Running do task.wait(3.0) if NetRemote and Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() NetRemote:FireServer("BuyTrophy", i) end) task.wait(0.2) end end end end)
+task.spawn(function() while Running do task.wait(3.0) if Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() local args = { [1] = "BuyTrophy", [2] = i } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.2) end end end end)
 
 local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
-task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if NetRemote and Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end) break end until att >= #BreadUpgradeList end end end)
+task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) break end until att >= #BreadUpgradeList end end end)
 
 -- 1-MINUTE MEAT CONVERSION LOOP (INDEPENDENT)
 task.spawn(function() 
     while Running do 
         task.wait(60.0) 
-        if NetRemote and Running then 
-            pcall(function() NetRemote:FireServer("DepositMeat") end) 
+        if Running then 
+            pcall(function() 
+                local args = { [1] = "DepositMeat" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+            end) 
         end 
     end 
 end)
@@ -1956,26 +1982,27 @@ end)
 task.spawn(function() 
     while Running do 
         task.wait(30.0) 
-        if NetRemote and Running then 
-            if Env.AutoDepositWheat then pcall(function() NetRemote:FireServer("DepositWheat") end) end 
-            if Env.AutoDepositWood then pcall(function() NetRemote:FireServer("DepositWood") end) end 
+        if Running then 
+            if Env.AutoDepositWheat then pcall(function() local args = { [1] = "DepositWheat" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end 
+            if Env.AutoDepositWood then pcall(function() local args = { [1] = "DepositWood" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end 
         end 
     end 
 end)
 
-task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
-task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
+task.spawn(function() while Running do task.wait(1.0) if Running then if Env.AutoBlazeMoreBlaze then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end end end end)
+task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
+task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and Running then pcall(function() local args = { [1] = "Prestige" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end)
 
 task.spawn(function()
     while Running do
         task.wait(60.0)
-        if NetRemote and Running and Env.AutoBlazeConvert then
+        if Running and Env.AutoBlazeConvert then
             pcall(function()
-                NetRemote:FireServer("Blaze")
+                local args = { [1] = "Blaze" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
             end)
         end
     end
 end)
 
-print("[Dominate Hub] V13.8 Syntax Fix & Streamlined Ritual Loop Loaded Successfully!")
+print("[Dominate Hub] V13.9 Streamlined Ritual Loop & Exact Remote Arguments Loaded Successfully!")
