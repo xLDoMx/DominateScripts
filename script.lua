@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.3 - ACCURATE TRIAL ROOM MOB SCANNING)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.5 - PHARAOH MOVED TO REALM 3 NOOBS)
 --======================================================================================
 local Env = getgenv()
 
@@ -750,6 +750,17 @@ task.spawn(function()
             local mins = math.floor((elapsed % 3600) / 60)
             local secs = elapsed % 60
             
+            -- Next Trial Timer Calculation (:29 and :59 intervals)
+            local timeTable = os.date("*t")
+            local curM = timeTable.min
+            local curS = timeTable.sec
+            local targetMin = (curM < 29) and 29 or (curM < 59 and 59 or 89)
+            local diffSec = (targetMin * 60) - (curM * 60 + curS)
+            if diffSec < 0 then diffSec = diffSec + 3600 end
+            local tM = math.floor(diffSec / 60)
+            local tS = diffSec % 60
+            local trialCountdownStr = string.format("Next Trial: %02d:%02d", tM, tS)
+            
             local targetName = "None"
             if currentTargetMob and currentTargetMob.Parent then
                 targetName = currentTargetMob.Parent.Name
@@ -760,7 +771,7 @@ task.spawn(function()
             local uptimeStr = string.format("Uptime: %02d:%02d:%02d | FPS: %d", hours, mins, secs, fps)
             local targetStr = string.format("Target: %s | Ground-Lock", targetName)
             
-            local extraLines = {}
+            local extraLines = {trialCountdownStr}
             
             -- Mining Active Check
             local miningActive = false
@@ -1052,7 +1063,6 @@ createToggleRow(upScroll, "Gem Converter", "AutoGemExchange")
 createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
 
 createSectionHeader(upScroll, "Realm 3 Upgrades")
-masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
 masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
 masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, upScroll)
@@ -1086,6 +1096,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 createSectionHeader(noobsScroll, "Realm 3 Noobs")
 createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
 
 -- ======================================================================================
 -- TRIALS PAGE SETUP (TIME-BASED SCHEDULE: :29 & :59)
@@ -1577,7 +1588,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - UPDATED TRIAL ROOM FOLDER SCANNER
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - TRIAL ROOMS FOLDER SCANNER
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1641,7 +1652,7 @@ task.spawn(function()
                         hrp = GetWorldRoot()
 
                         if trialsFolder and hrp then
-                            -- Scan inside workspace.__GAME_CONTENT.Trials (EasyTrialRoom, MediumTrialRoom, HardTrialRoom, etc.)
+                            -- Scan inside workspace.__GAME_CONTENT.Trials rooms
                             for _, roomObj in ipairs(trialsFolder:GetChildren()) do
                                 for _, mobObj in ipairs(roomObj:GetDescendants()) do
                                     if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
@@ -2261,4 +2272,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.3 Accurate Trial Room Mob Scanning Loaded Successfully!")
+print("[Dominate Hub] V16.5 Pharaoh Moved to Noobs Page Successfully!")
