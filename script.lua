@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V13.9 - EXACT REMOTE PATH & RITUAL FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V14.0 - TRUE INFINITE RITUAL RETURN-LOOP FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -1098,7 +1098,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Streamlined Loop)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Re-activation Loop)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1287,7 +1287,7 @@ task.spawn(function()
             elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
-            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Env.Advanced
+            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
@@ -1317,7 +1317,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL INFINITE SEQUENTIAL LOOP WITH EXACT REMOTE ARGUMENTS
+-- RITUAL INFINITE SEQUENTIAL LOOP WITH RETURN-TO-CHAMBER LOGIC
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1335,9 +1335,7 @@ task.spawn(function()
             
             -- Step 2: Fire exact StartRitual arguments via MainRemote
             pcall(function()
-                local args = {
-                    [1] = "StartRitual"
-                }
+                local args = { [1] = "StartRitual" }
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
             end)
             showToast("Ritual Chamber: Started ritual! Waiting 5s at vector...")
@@ -1375,6 +1373,7 @@ task.spawn(function()
                 end
             end
             
+            -- Step 4: When 3 minutes expire, loop back to top (teleports back to chamber automatically)
             ritualTimer = 0
             ritualInCooldown = false
             ritualSuppressMobs = false
@@ -2005,4 +2004,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V13.9 Streamlined Ritual Loop & Exact Remote Arguments Loaded Successfully!")
+print("[Dominate Hub] V14.0 Infinite Sequential Ritual Loop Loaded Successfully!")
