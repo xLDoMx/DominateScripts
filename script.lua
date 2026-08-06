@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V13.6 - TARGET-WIPE & CLEAN RITUAL-TO-MOB TRANSITION)
+-- DOMINATE HUB | PRO EDITION (STABLE V13.7 - STREAMLINED RITUAL LOOP & TIMER SYNC)
 --======================================================================================
 local Env = getgenv()
 
@@ -1107,7 +1107,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Anti-Stuck & Target Wipe)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Streamlined Infinite Loop)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1326,7 +1326,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION WITH TARGET WIPE & CLEAN TRANSITION
+-- RITUAL INFINITE SEQUENTIAL LOOP (STREAMLINED FOR RELIABLE INFINITE RE-ACTIVATION)
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1342,7 +1342,7 @@ task.spawn(function()
             showToast("Ritual Chamber: Teleported to chamber! Streaming terrain...")
             task.wait(2.0)
             
-            -- Step 2: Start ritual, set HUD countdown timer to 180 seconds (3m)
+            -- Step 2: Start ritual successfully
             pcall(function()
                 NetRemote:FireServer("StartRitual")
             end)
@@ -1357,11 +1357,12 @@ task.spawn(function()
             
             -- Hold at chamber vector for 5 seconds
             for _ = 1, 5 do
+                if not Running or not Env.AutoStartRitual or trialIsRunning then break end
                 task.wait(1.0)
                 ritualTimer = math.max(0, ritualTimer - 1)
             end
             
-            -- Step 3: Release ritual vector, wipe mob targets so no stuck targets remain, and farm
+            -- Step 3: Release vector and farm mobs for the remaining countdown duration
             RitualTargetVector = nil
             ritualIsActive = false
             ritualSuppressMobs = false
@@ -1378,26 +1379,6 @@ task.spawn(function()
                 else
                     ritualInCooldown = false
                 end
-            end
-            
-            -- Step 4: Timer finished -> Suppress mobs, wipe target, and return to ritual vector
-            if Running and Env.AutoStartRitual then
-                ritualSuppressMobs = true
-                ritualIsActive = true
-                currentTargetMob = nil
-                MobTargetVector = nil
-                
-                hrp = GetWorldRoot()
-                if hrp then
-                    hrp.CFrame = CFrame.new(Dest.RitualChamber)
-                    hrp.AssemblyLinearVelocity = Vector3.zero
-                    hrp.AssemblyAngularVelocity = Vector3.zero
-                end
-                RitualTargetVector = Dest.RitualChamber
-                showToast("Ritual Chamber: Cycle complete! Returning to chamber vector...")
-                task.wait(5.0)
-                RitualTargetVector = nil
-                ritualIsActive = false
             end
             
             ritualTimer = 0
@@ -1725,7 +1706,7 @@ task.spawn(function()
                     local freshList = {} local gc = workspace:FindFirstChild("__GAME_CONTENT") local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model"] and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then table.insert(freshList, part) end
                             end
@@ -1997,4 +1978,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V13.6 Target-Wipe & Anti-Stuck Mob Fix Loaded Successfully!")
+print("[Dominate Hub] V13.7 Streamlined Ritual Infinite Loop Fix Loaded Successfully!")
