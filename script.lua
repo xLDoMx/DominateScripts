@@ -1,7 +1,10 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.2 - WORKING ATTACK + WIDER RANGE + BUSH IGNORE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.3 - WORKING ATTACK + 200 STUDS + BUSH BLACKLIST)
 --======================================================================================
-local Env = (getgenv and getgenv()) or _G
+local success, result = pcall(function()
+    return (getgenv and getgenv()) or _G
+end)
+local Env = success and result or _G
 
 if Env.DominateHubLoaded then 
     pcall(function()
@@ -2287,4 +2290,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.2 Stable Rollback with Bush Exemption Loaded Successfully!")
+print("[Dominate Hub] V16.9.3 Stable Rollback with Bush Exemption Loaded Successfully!")
