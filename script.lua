@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V12.9 - INSTANT MOB-HUNT RITUAL FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V13.1 - HUD RITUAL COUNTDOWN & COOLDOWN DISPLAY)
 --======================================================================================
 local Env = getgenv()
 
@@ -39,6 +39,10 @@ local lastTrackedMobPart = nil
 local currentTargetPanel = nil
 local currentTargetMob = nil
 local gemExchangeCountdown = 60
+
+-- RITUAL HUD TIMER VARIABLES
+local ritualTimer = 0
+local ritualInCooldown = false
 
 -- RUNTIME STATE LOCKS
 local trialIsRunning = false
@@ -609,9 +613,16 @@ task.spawn(function()
                 table.insert(extraLines, string.format("Mobs Killed: %d", mobsKilled))
             end
             
-            -- Ritual Active Check
+            -- Ritual Active Check with Live 3-Minute Countdown & 2-Minute Cooldown State
             if Env.AutoStartRitual then
-                table.insert(extraLines, "Ritual: Active")
+                if ritualTimer > 0 then
+                    local rMin = math.floor(ritualTimer / 60)
+                    local rSec = ritualTimer % 60
+                    local stateStr = ritualInCooldown and "Cool Down" or "Active"
+                    table.insert(extraLines, string.format("Ritual: %s (%dm %02ds)", stateStr, rMin, rSec))
+                else
+                    table.insert(extraLines, "Ritual: Starting...")
+                end
             end
             
             local finalHudText = uptimeStr .. "\n" .. targetStr
@@ -1060,7 +1071,7 @@ bestMobTierBtn.Parent = mobsScroll
 
 local bmtCorner = Instance.new("UICorner")
 bmtCorner.CornerRadius = UDim.new(0, 8)
-bmtCorner.Parent = bestMobTierBtn
+bmtCorner.Parent = mobsScroll
 
 bestMobTierBtn.MouseButton1Click:Connect(function()
     bestMobTierActive = not bestMobTierActive
@@ -1239,6 +1250,7 @@ local MasterTargetVector = nil
 local MiningTargetVector = nil
 local MobTargetVector = nil
 local TrialTargetVector = nil
+local RitualTargetVector = nil
 
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
@@ -1259,7 +1271,7 @@ RunService.Stepped:Connect(function()
     if not Running then return end
     local char = player.Character
     if char then
-        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
         
         for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
@@ -1276,7 +1288,8 @@ task.spawn(function()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
-            if MasterTargetVector then act = MasterTargetVector 
+            if RitualTargetVector then act = RitualTargetVector
+            elseif MasterTargetVector then act = MasterTargetVector 
             elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
@@ -1311,12 +1324,30 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (INSTANT TELEPORT -> START RITUAL -> INSTANT MOB HUNT -> 3M LOOP)
+-- RITUAL LOOP AUTOMATION WITH LIVE HUD TIMER & 2-MINUTE COOLDOWN INDICATOR
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if NetRemote and Running and Env.AutoStartRitual and not trialIsRunning then
-            -- Step 1: Instant Teleport straight to the Ritual Chamber vector
+            
+            local function pauseMobs()
+                local cached = {}
+                for _, mInfo in ipairs(MobPriorityList) do
+                    if Env[mInfo.F] then
+                        cached[mInfo.F] = true
+                        Env[mInfo.F] = false
+                    end
+                end
+                return cached
+            end
+
+            local function restoreMobs(cached)
+                for flag, state in pairs(cached) do
+                    Env[flag] = state
+                end
+            end
+
+            -- Step 1: Teleport straight to the Ritual Chamber vector
             local hrp = GetWorldRoot()
             if hrp then
                 hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 20, 0))
@@ -1332,69 +1363,65 @@ task.spawn(function()
             end
             task.wait(1.0)
             
-            -- Step 2: Instantly start the ritual
+            -- Step 2: Start ritual, set HUD countdown timer to 180 seconds (3m)
             pcall(function()
                 NetRemote:FireServer("StartRitual")
             end)
-            showToast("Ritual Chamber: Started ritual successfully!")
-            task.wait(1.5)
+            showToast("Ritual Chamber: Started ritual! Waiting 5s at vector...")
             
-            -- Step 3: Instantly find and teleport to the nearest enabled mob so farming starts immediately
-            local foundMobPart = nil
-            local gc = workspace:FindFirstChild("__GAME_CONTENT") 
-            local mobsFolder = gc and gc:FindFirstChild("Mobs")
-            local enabledMobNames = {}
-            for i = 1, #MobPriorityList do 
-                if Env[MobPriorityList[i].F] then 
-                    enabledMobNames[MobPriorityList[i].N] = true 
-                end 
+            ritualTimer = 180
+            ritualInCooldown = false
+            
+            local activeMobCache = pauseMobs()
+            ritualIsActive = true
+            RitualTargetVector = Dest.RitualChamber
+            
+            -- Hold at chamber vector for 5 seconds
+            for _ = 1, 5 do
+                task.wait(1.0)
+                ritualTimer = math.max(0, ritualTimer - 1)
             end
             
-            if mobsFolder then
-                for i = #MobPriorityList, 1, -1 do
-                    local targetMobName = MobPriorityList[i].N
-                    if enabledMobNames[targetMobName] then
-                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                            if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
-                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                if part then
-                                    foundMobPart = part
-                                    break
-                                end
-                            end
-                        end
-                    end
-                    if foundMobPart then break end
+            -- Step 3: Release ritual vector, restore mobs, run remaining countdown
+            RitualTargetVector = nil
+            ritualIsActive = false
+            restoreMobs(activeMobCache)
+            showToast("Ritual Chamber: Farming selected mobs for remaining duration...")
+            
+            while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
+                task.wait(1.0)
+                ritualTimer = ritualTimer - 1
+                
+                -- When 2 minutes have passed (1 minute / 60s remaining), switch HUD state to Cool Down
+                if ritualTimer <= 60 then
+                    ritualInCooldown = true
+                else
+                    ritualInCooldown = false
                 end
             end
             
-            if foundMobPart and hrp then
-                hrp.CFrame = CFrame.new(foundMobPart.Position + Vector3.new(0, 3, 0))
-                hrp.AssemblyLinearVelocity = Vector3.zero
-                showToast("Ritual Chamber: Hunt started! Teleported to target mob.")
-            end
-            
-            -- Step 4: Run the 3-minute (180s) mob farming phase with normal mob script active
-            ritualIsActive = false
-            showToast("Ritual Chamber: Farming selected mobs for 3 minutes...")
-            
-            local timer = 180
-            while timer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
-                task.wait(1.0)
-                timer = timer - 1
-            end
-            
+            -- Step 4: Timer finished -> Pause mobs and return to ritual vector
             if Running and Env.AutoStartRitual then
+                activeMobCache = pauseMobs()
                 ritualIsActive = true
+                
                 hrp = GetWorldRoot()
                 if hrp then
                     hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 3, 0))
                     hrp.AssemblyLinearVelocity = Vector3.zero
                 end
-                showToast("Ritual Chamber: Returning to chamber for next cycle...")
-                task.wait(3.0)
+                RitualTargetVector = Dest.RitualChamber
+                showToast("Ritual Chamber: Cycle complete! Returning to chamber vector...")
+                task.wait(5.0)
+                RitualTargetVector = nil
                 ritualIsActive = false
             end
+            
+            ritualTimer = 0
+            ritualInCooldown = false
+        else
+            ritualTimer = 0
+            ritualInCooldown = false
         end
     end
 end)
@@ -1451,6 +1478,7 @@ task.spawn(function()
                 end
                 local wasRitualActive = Env.AutoStartRitual
                 Env.AutoStartRitual = false
+                RitualTargetVector = nil
                 
                 local hrp = GetWorldRoot()
                 if hrp then
@@ -1573,7 +1601,7 @@ local lastMobJumpTick = 0
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning and not ritualIsActive then
+        if Running and not trialIsRunning and not ritualIsActive and RitualTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
             for i = 1, #MobPriorityList do 
@@ -1977,4 +2005,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.9 Instant Mob-Hunt Ritual Fix Loaded Successfully!")
+print("[Dominate Hub] V13.1 HUD Ritual Countdown & Cooldown Display Loaded Successfully!")
