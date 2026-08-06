@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.1 - ARENA-LOCKED TRIAL TARGETING)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.2 - COUNTDOWN-FRIENDLY TRIAL TARGETING)
 --======================================================================================
 local Env = getgenv()
 
@@ -1577,7 +1577,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - ARENA DISTANCE LOCKED & 0.3s DELAY
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - COUNTDOWN-FRIENDLY NO-PAD FALLBACK
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1631,7 +1631,7 @@ task.spawn(function()
                     task.wait(1.0)
                     
                     local inArena = true
-                    showToast("Trials: Entered arena! Auto-clearing waves...")
+                    showToast("Trials: Entered arena! Waiting for mobs / auto-clearing waves...")
                     while inArena and Running do
                         task.wait(0.3) -- 0.3 seconds check delay
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
@@ -1659,7 +1659,8 @@ task.spawn(function()
                         if closestMobPart then
                             TrialTargetVector = closestMobPart.Position
                         else
-                            TrialTargetVector = targetPad
+                            -- During countdown/lobby phase when no mobs have spawned yet, do NOT pull to pad—let player roam freely
+                            TrialTargetVector = nil
                         end
                     end
                     
@@ -2259,4 +2260,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.1 Arena-Locked Trial Targeting Loaded Successfully!")
+print("[Dominate Hub] V16.2 Countdown-Friendly Trial Targeting Loaded Successfully!")
