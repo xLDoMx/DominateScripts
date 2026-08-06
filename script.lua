@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V12.7 - INSTANT RITUAL TELEPORT & EXCLUSIVE LOCK)
+-- DOMINATE HUB | PRO EDITION (STABLE V12.8 - RITUAL MOB-FARM RELEASE FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -1311,14 +1311,12 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (INSTANT TELEPORT TO CHAMBER -> START RITUAL -> FARM MOBS 3M -> REPEAT)
+-- RITUAL LOOP AUTOMATION (INSTANT TELEPORT -> START RITUAL -> IMMEDIATE MOB FARM RELEASE 3M -> REPEAT)
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if NetRemote and Running and Env.AutoStartRitual and not trialIsRunning then
-            ritualIsActive = true
-            
-            -- Step 1: Instant Teleport straight to the Ritual Chamber vector (with high-altitude chunk buffer)
+            -- Step 1: Instant Teleport straight to the Ritual Chamber vector
             local hrp = GetWorldRoot()
             if hrp then
                 hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 20, 0))
@@ -1334,15 +1332,17 @@ task.spawn(function()
             end
             task.wait(1.0)
             
-            -- Step 2: Instantly trigger/start the ritual right as we arrive
+            -- Step 2: Instantly start the ritual
             pcall(function()
                 NetRemote:FireServer("StartRitual")
             end)
             showToast("Ritual Chamber: Started ritual successfully!")
-            task.wait(3.0)
+            task.wait(2.0)
             
-            -- Step 3: Farm selected mobs for 3 minutes (180 seconds)
+            -- Step 3: Release lock so mob farming takes over for 3 minutes (180s)
+            ritualIsActive = false
             showToast("Ritual Chamber: Farming selected mobs for 3 minutes...")
+            
             local timer = 180
             while timer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
                 task.wait(1.0)
@@ -1350,6 +1350,7 @@ task.spawn(function()
             end
             
             if Running and Env.AutoStartRitual then
+                ritualIsActive = true
                 hrp = GetWorldRoot()
                 if hrp then
                     hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 3, 0))
@@ -1357,8 +1358,8 @@ task.spawn(function()
                 end
                 showToast("Ritual Chamber: Returning to chamber for next cycle...")
                 task.wait(3.0)
+                ritualIsActive = false
             end
-            ritualIsActive = false
         end
     end
 end)
@@ -1941,4 +1942,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.7 Instant Ritual Teleport & Stability Overhaul Loaded Successfully!")
+print("[Dominate Hub] V12.8 Ritual Mob-Farm Release Fix Loaded Successfully!")
