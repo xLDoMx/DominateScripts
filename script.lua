@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.99 - RITUAL FLOW & TRIAL DETECTION FIXED)
+-- DOMINATE HUB | PRO EDITION (STABLE V12.1 - INSTANT TRIAL TELEPORT & STRICT CHECK)
 --======================================================================================
 local Env = getgenv()
 
@@ -1269,7 +1269,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Jitter-free stabilization)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1286,10 +1286,16 @@ task.spawn(function()
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
-            if act and (hrp.Position - act).Magnitude > 3 then
-                local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
-                local alpha = math.clamp(0.08 / speed, 0.01, 1.0)
-                hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(act + Vector3.new(0, 3, 0)), alpha)
+            if act then
+                local targetCF = CFrame.new(act + Vector3.new(0, 3, 0))
+                if (hrp.Position - act).Magnitude > 2 then
+                    local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
+                    local alpha = math.clamp(0.08 / speed, 0.01, 1.0)
+                    hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
+                else
+                    hrp.CFrame = targetCF
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                end
             end
         end
     end
@@ -1340,7 +1346,7 @@ task.spawn(function()
     end
 end)
 
--- HELPER TO CHECK IF A TRIAL IS OPEN
+-- STRICT TRIAL OPEN CHECK (IGNORES COUNTDOWNS)
 local function isTrialOpen(trialRoomName)
     local gc = workspace:FindFirstChild("__GAME_CONTENT")
     local trialsFolder = gc and gc:FindFirstChild("Trials")
@@ -1350,7 +1356,7 @@ local function isTrialOpen(trialRoomName)
             for _, desc in ipairs(room:GetDescendants()) do
                 if desc:IsA("TextLabel") then
                     local txt = desc.Text:lower()
-                    if txt:find("open") or txt:find("left to join") then
+                    if (txt:find("is open") or txt:find("left to join")) and not txt:find("opens in") then
                         return true
                     end
                 end
@@ -1360,7 +1366,7 @@ local function isTrialOpen(trialRoomName)
     return false
 end
 
--- ADVANCED TRIAL STATE-MACHINE AUTOMATION (USING CORRECTED MODEL NAMES)
+-- ADVANCED TRIAL STATE-MACHINE AUTOMATION (WITH INSTANT TELEPORT TO PREVENT UNDER-MAP CLIPPING)
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -1394,15 +1400,20 @@ task.spawn(function()
                 local wasRitualActive = Env.AutoStartRitual
                 Env.AutoStartRitual = false
                 
-                -- Stage 1: Pass-through Glide to Castle Entrance
-                MasterTargetVector = Dest.CastleEntrance
-                showToast("Trials: Gliding through castle entrance...")
-                task.wait(1.2) -- quick pass-through buffer to walk straight inside
-                MasterTargetVector = nil
+                -- Stage 1: Instant Teleport to Castle Entrance (Bypasses long-distance map clipping)
+                local hrp = GetWorldRoot()
+                if hrp then
+                    hrp.CFrame = CFrame.new(Dest.CastleEntrance + Vector3.new(0, 3, 0))
+                end
+                showToast("Trials: Teleported to castle entrance...")
+                task.wait(1.0)
                 
-                -- Stage 2: Immediate glide into trial room pad
-                TrialTargetVector = targetPad
-                showToast("Trials: Entering trial room pad...")
+                -- Stage 2: Instant Teleport directly onto the Trial Pad
+                hrp = GetWorldRoot()
+                if hrp then
+                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 3, 0))
+                end
+                showToast("Trials: Teleported directly to trial pad!")
                 task.wait(2.0)
                 
                 -- Stage 3: Wave Clearing Loop
@@ -1414,7 +1425,7 @@ task.spawn(function()
                     local mobsFolder = gc and gc:FindFirstChild("Mobs")
                     local closestMobPart = nil
                     local shortestDist = math.huge
-                    local hrp = GetWorldRoot()
+                    hrp = GetWorldRoot()
 
                     if mobsFolder and hrp then
                         for _, mobObj in ipairs(mobsFolder:GetChildren()) do
@@ -1912,4 +1923,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.99 Ritual Flow & Trial Detection Fixed Successfully!")
+print("[Dominate Hub] V12.1 Instant Trial Teleport & Strict Check Loaded Successfully!")
