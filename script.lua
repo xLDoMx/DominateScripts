@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V13.4 - ROBUST RESPAWN DETECTION & BOUNCE ELIMINATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V13.6 - TARGET-WIPE & CLEAN RITUAL-TO-MOB TRANSITION)
 --======================================================================================
 local Env = getgenv()
 
@@ -1107,7 +1107,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Ground-Locked & Robust Respawn Check)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Anti-Stuck & Target Wipe)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1326,7 +1326,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION WITH BACKGROUND SUPPRESSION
+-- RITUAL LOOP AUTOMATION WITH TARGET WIPE & CLEAN TRANSITION
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1361,10 +1361,12 @@ task.spawn(function()
                 ritualTimer = math.max(0, ritualTimer - 1)
             end
             
-            -- Step 3: Release ritual vector and remove suppression so mobs farm automatically
+            -- Step 3: Release ritual vector, wipe mob targets so no stuck targets remain, and farm
             RitualTargetVector = nil
             ritualIsActive = false
             ritualSuppressMobs = false
+            currentTargetMob = nil
+            MobTargetVector = nil
             showToast("Ritual Chamber: Farming selected mobs for remaining duration...")
             
             while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
@@ -1378,10 +1380,12 @@ task.spawn(function()
                 end
             end
             
-            -- Step 4: Timer finished -> Suppress mobs and return to ritual vector
+            -- Step 4: Timer finished -> Suppress mobs, wipe target, and return to ritual vector
             if Running and Env.AutoStartRitual then
                 ritualSuppressMobs = true
                 ritualIsActive = true
+                currentTargetMob = nil
+                MobTargetVector = nil
                 
                 hrp = GetWorldRoot()
                 if hrp then
@@ -1575,9 +1579,10 @@ task.spawn(function()
 end)
 
 local currentMobIndex = 1
-local lastMobJumpTick = 0
+local mobTargetLockTime = 0
+local lastTargetedPart = nil
 
--- MINER-STYLE AUTO MOB FARMING ENGINE (EXCLUDES RESPAWNING MOBS)
+-- MINER-STYLE AUTO MOB FARMING ENGINE WITH 4S ANTI-STUCK TIMEOUT & TARGET WIPE
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -1598,6 +1603,8 @@ task.spawn(function()
                     needsNewMobTarget = true
                 elseif currentTargetMob.Parent and isMobRespawning(currentTargetMob.Parent) then 
                     needsNewMobTarget = true
+                elseif currentTargetMob == lastTargetedPart and (tick() - mobTargetLockTime > 4.0) then
+                    needsNewMobTarget = true
                 end
 
                 if needsNewMobTarget then
@@ -1612,7 +1619,7 @@ task.spawn(function()
                                 for _, mobObj in ipairs(mobsFolder:GetChildren()) do
                                     if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
                                         local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                        if part then
+                                        if part and part ~= lastTargetedPart then
                                             foundMobPart = part
                                             break
                                         end
@@ -1624,9 +1631,13 @@ task.spawn(function()
                     end
                     
                     currentTargetMob = foundMobPart
-                    if currentTargetMob and currentTargetMob ~= lastTrackedMobPart then
-                        lastTrackedMobPart = currentTargetMob
-                        mobsKilled = mobsKilled + 1
+                    if currentTargetMob then
+                        mobTargetLockTime = tick()
+                        lastTargetedPart = currentTargetMob
+                        if currentTargetMob ~= lastTrackedMobPart then
+                            lastTrackedMobPart = currentTargetMob
+                            mobsKilled = mobsKilled + 1
+                        end
                     end
                 end
                 
@@ -1640,6 +1651,7 @@ task.spawn(function()
                 MobTargetVector = nil 
                 mobsKilled = 0
                 lastTrackedMobPart = nil
+                lastTargetedPart = nil
             end
         end
     end
@@ -1985,4 +1997,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V13.4 Ground-Locked Zero-Bounce & Robust Respawn Lock Fix Loaded Successfully!")
+print("[Dominate Hub] V13.6 Target-Wipe & Anti-Stuck Mob Fix Loaded Successfully!")
