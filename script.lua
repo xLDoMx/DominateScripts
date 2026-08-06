@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.8 - STATE-OPTIMIZED NOCLIP & SAND REGEN LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.9 - INSTANT-SNAP PIT ENTRY & NATURAL DIGGING)
 --======================================================================================
 local Env = getgenv()
 
@@ -1466,19 +1466,19 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- GRAVITY-FRIENDLY MOVEMENT LOOP (NO CFrame OVERRIDE IN PIT FOR NATURAL DIGGING)
+-- MOVEMENT LOOP (EXCLUDES SAND PIT FROM CONTINUOUS LERP TO ALLOW NATURAL PHYSICS)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
-            if SandTargetVector then act = SandTargetVector
-            elseif RitualTargetVector then act = RitualTargetVector
+            if RitualTargetVector then act = RitualTargetVector
             elseif MasterTargetVector then act = MasterTargetVector 
             elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
+            elseif SandTargetVector then act = SandTargetVector -- Only used for Regen Pad now
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
@@ -1818,16 +1818,23 @@ task.spawn(function()
     end
 end)
 
--- SEAMLESS SAND REGENERATION LOOP (PHYSICS RELEASED IN PIT FOR NATURAL DIGGING)
+-- SEAMLESS SAND REGENERATION LOOP (INSTANT CLEAN TELEPORT TO PIT, ZERO LERP FRICTION)
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
-            -- 1. Teleport to the sand pit once upon activation
+            -- 1. Clean, instant one-time teleport snap straight to the pit
             showToast("Sand Regen: Teleporting to sand pit...")
-            SandTargetVector = Dest.Dunes
-            task.wait(2.0)
-            SandTargetVector = nil -- Completely release position lock so character falls and digs naturally with physics!
+            pcall(function()
+                local hrp = GetWorldRoot()
+                if hrp then
+                    hrp.Anchored = false
+                    hrp.CFrame = CFrame.new(Dest.Dunes)
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                    hrp.AssemblyAngularVelocity = Vector3.zero
+                end
+            end)
+            task.wait(1.0) -- Let physics settle naturally
             
             -- 2. Monitor layers until target layer is reached
             local reachedTarget = false
@@ -2258,4 +2265,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V15.8 State-Optimized Noclip & Regen Loop Loaded Successfully!")
+print("[Dominate Hub] V15.9 Instant-Snap Pit Entry Loaded Successfully!")
