@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.97 - SEAMLESS CASTLE DOOR PASS-THROUGH)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.98 - RUNTIME TRIAL STATE LOCK FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -39,6 +39,9 @@ local lastTrackedMobPart = nil
 local currentTargetPanel = nil
 local currentTargetMob = nil
 local gemExchangeCountdown = 60
+
+-- RUNTIME STATE LOCK FOR TRIALS
+local trialIsRunning = false
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -1363,7 +1366,7 @@ local function isTrialOpen(trialRoomName)
     return false
 end
 
--- ADVANCED TRIAL STATE-MACHINE AUTOMATION (WITH SEAMLESS DOOR PASS-THROUGH)
+-- ADVANCED TRIAL STATE-MACHINE AUTOMATION (USING RUNTIME STATE LOCK)
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -1383,6 +1386,7 @@ task.spawn(function()
             end
             
             if targetRoomName and targetPad and isTrialOpen(targetRoomName) then
+                trialIsRunning = true
                 showToast("Trials: Trial is open! Pausing background tasks...")
                 
                 -- Cache & temporarily disable active mob flags and ritual
@@ -1455,6 +1459,7 @@ task.spawn(function()
                     Env[flag] = state
                 end
                 Env.AutoStartRitual = wasRitualActive
+                trialIsRunning = false
                 showToast("Trials: Completed! Resuming previous tasks...")
                 
                 -- Cooldown before checking trial timer again
@@ -1468,7 +1473,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(40.0)
-        if Running and Env.AutoCombatBreak and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
+        if Running and Env.AutoCombatBreak and not trialIsRunning then
             local activeMobStates = {}
             local anyActive = false
             for i = 1, #MobPriorityList do
@@ -1509,7 +1514,7 @@ local lastMobJumpTick = 0
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
+        if Running and not trialIsRunning then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
             for i = 1, #MobPriorityList do 
@@ -1627,7 +1632,7 @@ end
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
+        if Running and not trialIsRunning then
             local enabledOreNames = {} local hasAnyEnabled = false
             for i = 1, #OrePriorityList do if Env[OrePriorityList[i].F] then enabledOreNames[OrePriorityList[i].N] = true hasAnyEnabled = true end end
 
@@ -1690,12 +1695,12 @@ end)
 task.spawn(function()
     while Running do
         task.wait(0.5)
-        if Env.AutoFarmCash and Running and not (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
+        if Env.AutoFarmCash and Running and not trialIsRunning then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") local ty = gc and gc:FindFirstChild("Tycoon") local btnF = ty and ty:FindFirstChild("Buttons")
             if btnF and Running then
                 local locked = {} 
                 repeat
-                    if not Running or not Env.AutoFarmCash or (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then break end
+                    if not Running or not Env.AutoFarmCash or trialIsRunning then break end
                     local vis = btnF:GetChildren() local att = false
                     for i = 1, #vis do
                         if not Running or not Env.AutoFarmCash then break end
@@ -1913,4 +1918,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.97 Seamless Door Pass-Through & Trial Overhaul Loaded Successfully!")
+print("[Dominate Hub] V11.98 Runtime Trial State Lock Loaded Successfully!")
