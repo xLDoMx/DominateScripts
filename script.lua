@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V12.5 - RITUAL/MOB PRIORITY LOCK & STABILIZATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V12.6 - GLIDE MAGNITUDE & JITTER FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -1270,7 +1270,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Jitter-free stabilization)
+-- Ultra-smooth continuous frame-by-frame Lerp glide movement loop (Fixed Elevation Magnitude Jitter)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1288,8 +1288,9 @@ task.spawn(function()
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
-                local targetCF = CFrame.new(act + Vector3.new(0, 3, 0))
-                if (hrp.Position - act).Magnitude > 2 then
+                local targetPos = act + Vector3.new(0, 3, 0)
+                local targetCF = CFrame.new(targetPos)
+                if (hrp.Position - targetPos).Magnitude > 2 then
                     local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
                     local alpha = math.clamp(0.08 / speed, 0.01, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
@@ -1359,7 +1360,6 @@ local function isTrialOpen(trialRoomName)
             for _, desc in ipairs(room:GetDescendants()) do
                 if desc:IsA("TextLabel") then
                     local txt = desc.Text:lower()
-                    -- Verifies that the trial is actively open and joinable now, ignoring future countdown timers
                     if (txt:find("is open") or txt:find("left to join")) and not txt:find("opens in") then
                         return true
                     end
@@ -1934,4 +1934,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.5 Exclusive Priority & Stability Overhaul Loaded Successfully!")
+print("[Dominate Hub] V12.6 Glide Magnitude Jitter & Ritual Priority Fix Loaded Successfully!")
