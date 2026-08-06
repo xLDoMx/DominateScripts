@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V13.1 - HUD RITUAL COUNTDOWN & COOLDOWN DISPLAY)
+-- DOMINATE HUB | PRO EDITION (STABLE V13.3 - RITUAL SUPPRESSION & HARD-SNAP ARRIVAL FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -47,6 +47,7 @@ local ritualInCooldown = false
 -- RUNTIME STATE LOCKS
 local trialIsRunning = false
 local ritualIsActive = false
+local ritualSuppressMobs = false
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -569,7 +570,7 @@ hudText.Font = Enum.Font.GothamBold
 hudText.TextXAlignment = Enum.TextXAlignment.Left
 hudText.TextYAlignment = Enum.TextYAlignment.Top
 hudText.TextWrapped = true
-hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Glide: 0.8 S/s"
+hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Ground-Lock Active"
 hudText.Parent = statsHud
 
 local sessionStartTime = tick()
@@ -591,7 +592,7 @@ task.spawn(function()
             end
             
             local uptimeStr = string.format("Uptime: %02d:%02d:%02d | FPS: %d", hours, mins, secs, fps)
-            local targetStr = string.format("Target: %s | Glide: %.1f S/s", targetName, Env.MiningJumpSpeed or 0.8)
+            local targetStr = string.format("Target: %s | Ground-Lock", targetName)
             
             local extraLines = {}
             
@@ -613,7 +614,7 @@ task.spawn(function()
                 table.insert(extraLines, string.format("Mobs Killed: %d", mobsKilled))
             end
             
-            -- Ritual Active Check with Live 3-Minute Countdown & 2-Minute Cooldown State
+            -- Ritual Active Check
             if Env.AutoStartRitual then
                 if ritualTimer > 0 then
                     local rMin = math.floor(ritualTimer / 60)
@@ -1071,7 +1072,7 @@ bestMobTierBtn.Parent = mobsScroll
 
 local bmtCorner = Instance.new("UICorner")
 bmtCorner.CornerRadius = UDim.new(0, 8)
-bmtCorner.Parent = mobsScroll
+bmtCorner.Parent = bestMobTierBtn
 
 bestMobTierBtn.MouseButton1Click:Connect(function()
     bestMobTierActive = not bestMobTierActive
@@ -1106,7 +1107,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Instant Teleport & 3m Loop)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Ground-Locked & Suppressed Sync)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1281,7 +1282,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
+-- GROUND-LOCKED MOVEMENT LOOP WITH HARD-SNAP ARRIVAL
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1299,15 +1300,16 @@ task.spawn(function()
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
-                local targetPos = act + Vector3.new(0, 3, 0)
-                local targetCF = CFrame.new(targetPos)
-                if (hrp.Position - targetPos).Magnitude > 2 then
+                local targetCF = CFrame.new(act)
+                if (hrp.Position - act).Magnitude > 1.5 then
                     local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
-                    local alpha = math.clamp(0.08 / speed, 0.01, 1.0)
+                    local alpha = math.clamp(0.12 / speed, 0.01, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
                 else
+                    -- Hard-snap instantly upon arrival to eliminate bounce/oscillation
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
+                    hrp.AssemblyAngularVelocity = Vector3.zero
                 end
             end
         end
@@ -1316,52 +1318,28 @@ end)
 
 -- HELPER TO CHECK IF MOB IS RESPAWNING
 local function isMobRespawning(mobModel)
-    for _, desc in ipairs(mobModel:GetDescendants()) do
-        if desc:IsA("TextLabel") and desc.Text:lower():find("respawning") then
-            return true
-        end
+    local desc = mobModel:FindFirstChildWhichIsA("TextLabel", true)
+    if desc and desc.Text:lower():find("respawning") then
+        return true
     end
     return false
 end
 
--- RITUAL LOOP AUTOMATION WITH LIVE HUD TIMER & 2-MINUTE COOLDOWN INDICATOR
+-- RITUAL LOOP AUTOMATION WITH BACKGROUND SUPPRESSION (PRESERVES UI TOGGLES)
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if NetRemote and Running and Env.AutoStartRitual and not trialIsRunning then
             
-            local function pauseMobs()
-                local cached = {}
-                for _, mInfo in ipairs(MobPriorityList) do
-                    if Env[mInfo.F] then
-                        cached[mInfo.F] = true
-                        Env[mInfo.F] = false
-                    end
-                end
-                return cached
-            end
-
-            local function restoreMobs(cached)
-                for flag, state in pairs(cached) do
-                    Env[flag] = state
-                end
-            end
-
-            -- Step 1: Teleport straight to the Ritual Chamber vector
+            -- Step 1: Teleport straight to the Ritual Chamber vector (Ground level)
             local hrp = GetWorldRoot()
             if hrp then
-                hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 20, 0))
+                hrp.CFrame = CFrame.new(Dest.RitualChamber)
                 hrp.AssemblyLinearVelocity = Vector3.zero
+                hrp.AssemblyAngularVelocity = Vector3.zero
             end
             showToast("Ritual Chamber: Teleported to chamber! Streaming terrain...")
             task.wait(2.0)
-            
-            hrp = GetWorldRoot()
-            if hrp then
-                hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 3, 0))
-                hrp.AssemblyLinearVelocity = Vector3.zero
-            end
-            task.wait(1.0)
             
             -- Step 2: Start ritual, set HUD countdown timer to 180 seconds (3m)
             pcall(function()
@@ -1372,7 +1350,8 @@ task.spawn(function()
             ritualTimer = 180
             ritualInCooldown = false
             
-            local activeMobCache = pauseMobs()
+            -- Suppress mob farming in background without modifying user's actual UI toggle booleans
+            ritualSuppressMobs = true
             ritualIsActive = true
             RitualTargetVector = Dest.RitualChamber
             
@@ -1382,17 +1361,16 @@ task.spawn(function()
                 ritualTimer = math.max(0, ritualTimer - 1)
             end
             
-            -- Step 3: Release ritual vector, restore mobs, run remaining countdown
+            -- Step 3: Release ritual vector and remove suppression so mobs farm automatically
             RitualTargetVector = nil
             ritualIsActive = false
-            restoreMobs(activeMobCache)
+            ritualSuppressMobs = false
             showToast("Ritual Chamber: Farming selected mobs for remaining duration...")
             
             while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
                 task.wait(1.0)
                 ritualTimer = ritualTimer - 1
                 
-                -- When 2 minutes have passed (1 minute / 60s remaining), switch HUD state to Cool Down
                 if ritualTimer <= 60 then
                     ritualInCooldown = true
                 else
@@ -1400,15 +1378,16 @@ task.spawn(function()
                 end
             end
             
-            -- Step 4: Timer finished -> Pause mobs and return to ritual vector
+            -- Step 4: Timer finished -> Suppress mobs and return to ritual vector
             if Running and Env.AutoStartRitual then
-                activeMobCache = pauseMobs()
+                ritualSuppressMobs = true
                 ritualIsActive = true
                 
                 hrp = GetWorldRoot()
                 if hrp then
-                    hrp.CFrame = CFrame.new(Dest.RitualChamber + Vector3.new(0, 3, 0))
+                    hrp.CFrame = CFrame.new(Dest.RitualChamber)
                     hrp.AssemblyLinearVelocity = Vector3.zero
+                    hrp.AssemblyAngularVelocity = Vector3.zero
                 end
                 RitualTargetVector = Dest.RitualChamber
                 showToast("Ritual Chamber: Cycle complete! Returning to chamber vector...")
@@ -1419,9 +1398,11 @@ task.spawn(function()
             
             ritualTimer = 0
             ritualInCooldown = false
+            ritualSuppressMobs = false
         else
             ritualTimer = 0
             ritualInCooldown = false
+            ritualSuppressMobs = false
         end
     end
 end)
@@ -1478,11 +1459,10 @@ task.spawn(function()
                 end
                 local wasRitualActive = Env.AutoStartRitual
                 Env.AutoStartRitual = false
-                RitualTargetVector = nil
                 
                 local hrp = GetWorldRoot()
                 if hrp then
-                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 25, 0))
+                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 15, 0))
                     hrp.AssemblyLinearVelocity = Vector3.zero
                 end
                 showToast("Trials: Teleported to trial room! Streaming chunks...")
@@ -1490,7 +1470,7 @@ task.spawn(function()
                 
                 hrp = GetWorldRoot()
                 if hrp then
-                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 3, 0))
+                    hrp.CFrame = CFrame.new(targetPad)
                     hrp.AssemblyLinearVelocity = Vector3.zero
                 end
                 task.wait(1.0)
@@ -1523,7 +1503,7 @@ task.spawn(function()
                     if closestMobPart then
                         TrialTargetVector = closestMobPart.Position
                     else
-                        TrialTargetVector = targetPad + Vector3.new(0, 5, 0)
+                        TrialTargetVector = targetPad
                         if hrp and (hrp.Position - targetPad).Magnitude > 80 then
                             inArena = false
                         end
@@ -1597,11 +1577,11 @@ end)
 local currentMobIndex = 1
 local lastMobJumpTick = 0
 
--- MINER-STYLE AUTO MOB FARMING ENGINE
+-- MINER-STYLE AUTO MOB FARMING ENGINE (RESPECTS RITUAL SUPPRESSION FLAG)
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning and not ritualIsActive and RitualTargetVector == nil then
+        if Running and not trialIsRunning and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
             for i = 1, #MobPriorityList do 
@@ -1711,9 +1691,9 @@ local currentOreIndex = 1
 local lastOreJumpTick = 0
 
 local function isOreRespawning(oreModel)
-    for _, desc in ipairs(oreModel:GetDescendants()) do
-        if desc:IsA("TextLabel") and desc.Text:lower():find("respawning") then return true end
-    end return false
+    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
+    if desc and desc.Text:lower():find("respawning") then return true end
+    return false
 end
 
 task.spawn(function()
@@ -1771,9 +1751,9 @@ task.spawn(function()
         if NetRemote and Running then
             local hrp = GetWorldRoot()
             if hrp then
-                if Env.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap + Vector3.new(0, 3, 0)) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Classic") end)
-                elseif Env.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap + Vector3.new(0, 3, 0)) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Football") end)
-                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap + Vector3.new(0, 3, 0)) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Super") end) end
+                if Env.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Classic") end)
+                elseif Env.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Football") end)
+                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end pcall(function() NetRemote:FireServer("ToggleMinionAutoOpen", "Super") end) end
             end
         end
     end
@@ -1795,7 +1775,7 @@ task.spawn(function()
                         if bM and bM:IsA("Model") and not locked[bM.Name] then
                             local tb = bM:FindFirstChild("BuyingButtonPart", true)
                             if tb and tb:IsA("BasePart") and Running then
-                                att = true MasterTargetVector = tb.Position + Vector3.new(0, 3, 0) task.wait(0.4)
+                                att = true MasterTargetVector = tb.Position task.wait(0.4)
                                 if not Running then break end
                                 if bM:IsDescendantOf(btnF) then locked[bM.Name] = true MasterTargetVector = nil task.wait(0.05) else MasterTargetVector = nil task.wait(0.1) break end
                             end
@@ -2005,4 +1985,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V13.1 HUD Ritual Countdown & Cooldown Display Loaded Successfully!")
+print("[Dominate Hub] V13.3 Ground-Locked Zero-Bounce & Ritual Suppression Fix Loaded Successfully!")
