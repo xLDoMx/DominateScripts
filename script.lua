@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.2 - COUNTDOWN-FRIENDLY TRIAL TARGETING)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.3 - ACCURATE TRIAL ROOM MOB SCANNING)
 --======================================================================================
 local Env = getgenv()
 
@@ -1577,7 +1577,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - COUNTDOWN-FRIENDLY NO-PAD FALLBACK
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - UPDATED TRIAL ROOM FOLDER SCANNER
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1635,21 +1635,23 @@ task.spawn(function()
                     while inArena and Running do
                         task.wait(0.3) -- 0.3 seconds check delay
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                        local mobsFolder = gc and gc:FindFirstChild("Mobs")
+                        local trialsFolder = gc and gc:FindFirstChild("Trials")
                         local closestMobPart = nil
                         local shortestDist = math.huge
                         hrp = GetWorldRoot()
 
-                        if mobsFolder and hrp then
-                            for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                                if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                    local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                    if part then
-                                        local dist = (part.Position - hrp.Position).Magnitude
-                                        -- Arena-locked constraint: only target mobs within 60 studs of the character inside the arena
-                                        if dist < shortestDist and dist <= 60 then
-                                            shortestDist = dist
-                                            closestMobPart = part
+                        if trialsFolder and hrp then
+                            -- Scan inside workspace.__GAME_CONTENT.Trials (EasyTrialRoom, MediumTrialRoom, HardTrialRoom, etc.)
+                            for _, roomObj in ipairs(trialsFolder:GetChildren()) do
+                                for _, mobObj in ipairs(roomObj:GetDescendants()) do
+                                    if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
+                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            local dist = (part.Position - hrp.Position).Magnitude
+                                            if dist < shortestDist and dist <= 60 then
+                                                shortestDist = dist
+                                                closestMobPart = part
+                                            end
                                         end
                                     end
                                 end
@@ -1659,7 +1661,6 @@ task.spawn(function()
                         if closestMobPart then
                             TrialTargetVector = closestMobPart.Position
                         else
-                            -- During countdown/lobby phase when no mobs have spawned yet, do NOT pull to pad—let player roam freely
                             TrialTargetVector = nil
                         end
                     end
@@ -2260,4 +2261,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.2 Countdown-Friendly Trial Targeting Loaded Successfully!")
+print("[Dominate Hub] V16.3 Accurate Trial Room Mob Scanning Loaded Successfully!")
