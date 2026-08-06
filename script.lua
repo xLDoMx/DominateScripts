@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.7 - PHYSICS-RELEASED SAND PIT & REGEN LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.8 - STATE-OPTIMIZED NOCLIP & SAND REGEN LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -1447,16 +1447,20 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
--- CONDITIONAL GLIDE NOCLIP ENGINE
+-- STATE-OPTIMIZED NOCLIP ENGINE (ONLY RUNS WHEN GLIDING STATE CHANGES, ZERO FRAME OVERHEAD)
+local lastGlidingState = false
 RunService.Stepped:Connect(function()
     if not Running then return end
     local char = player.Character
     if char then
         local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
         
-        for _, part in ipairs(char:GetDescendants()) do
-            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                part.CanCollide = not isGliding
+        if isGliding ~= lastGlidingState then
+            lastGlidingState = isGliding
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = not isGliding
+                end
             end
         end
     end
@@ -2254,4 +2258,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V15.7 Physics-Released Sand Pit & Regen Loop Loaded Successfully!")
+print("[Dominate Hub] V15.8 State-Optimized Noclip & Regen Loop Loaded Successfully!")
