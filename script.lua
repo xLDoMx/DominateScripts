@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.5 - PHARAOH MOVED TO REALM 3 NOOBS)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.6 - CLEAN TRIAL TARGETING, NO GATE FALLBACK)
 --======================================================================================
 local Env = getgenv()
 
@@ -158,8 +158,6 @@ Env.AutoBlazeMoreOofs = false
 Env.AutoBlazeMoreBulk = false
 Env.AutoBlazeConvert = false
 
-Env.AutoUpgradePharaoh = false
-
 -- SOULS & RITUAL FLAGS
 Env.AutoSoulsMoreSouls = false
 Env.AutoSoulsLuckierSwords = false
@@ -192,6 +190,7 @@ Env.AutoUpgradeExplorerNoob = false
 Env.AutoUpgradeMagicianNoob = false
 Env.AutoUpgradeMerchantNoob = false
 Env.AutoUpgradeMummyNoob = false
+Env.AutoUpgradePharaoh = false
 
 Env.AutoRealm2MoreWalkSpeed = false
 Env.AutoRealm2MoreWater = false
@@ -1588,7 +1587,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - TRIAL ROOMS FOLDER SCANNER
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - GATE RETURN FALLBACK REMOVED
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1642,7 +1641,7 @@ task.spawn(function()
                     task.wait(1.0)
                     
                     local inArena = true
-                    showToast("Trials: Entered arena! Waiting for mobs / auto-clearing waves...")
+                    showToast("Trials: Entered arena! Auto-clearing waves (free movement when idle)...")
                     while inArena and Running do
                         task.wait(0.3) -- 0.3 seconds check delay
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
@@ -1670,8 +1669,10 @@ task.spawn(function()
                         end
 
                         if closestMobPart then
+                            -- Only lock movement onto actual mobs when they are present in the arena
                             TrialTargetVector = closestMobPart.Position
                         else
+                            -- When no mobs are present (countdown / lobby), release movement completely so player is never stuck or dragged back to gate
                             TrialTargetVector = nil
                         end
                     end
@@ -2272,4 +2273,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.5 Pharaoh Moved to Noobs Page Successfully!")
+print("[Dominate Hub] V16.6 Clean Trial Targeting Loaded Successfully!")
