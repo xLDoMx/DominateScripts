@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V13.3 - RITUAL SUPPRESSION & HARD-SNAP ARRIVAL FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V13.4 - ROBUST RESPAWN DETECTION & BOUNCE ELIMINATION)
 --======================================================================================
 local Env = getgenv()
 
@@ -1107,7 +1107,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Ground-Locked & Suppressed Sync)", "AutoStartRitual")
+createToggleRow(mobsScroll, "Auto Start Ritual (Ground-Locked & Robust Respawn Check)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1306,7 +1306,6 @@ task.spawn(function()
                     local alpha = math.clamp(0.12 / speed, 0.01, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
                 else
-                    -- Hard-snap instantly upon arrival to eliminate bounce/oscillation
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
@@ -1316,16 +1315,18 @@ task.spawn(function()
     end
 end)
 
--- HELPER TO CHECK IF MOB IS RESPAWNING
+-- ROBUST HELPER TO CHECK IF MOB IS RESPAWNING
 local function isMobRespawning(mobModel)
-    local desc = mobModel:FindFirstChildWhichIsA("TextLabel", true)
-    if desc and desc.Text:lower():find("respawning") then
-        return true
+    if not mobModel then return true end
+    for _, desc in ipairs(mobModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
+            return true
+        end
     end
     return false
 end
 
--- RITUAL LOOP AUTOMATION WITH BACKGROUND SUPPRESSION (PRESERVES UI TOGGLES)
+-- RITUAL LOOP AUTOMATION WITH BACKGROUND SUPPRESSION
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1350,7 +1351,6 @@ task.spawn(function()
             ritualTimer = 180
             ritualInCooldown = false
             
-            -- Suppress mob farming in background without modifying user's actual UI toggle booleans
             ritualSuppressMobs = true
             ritualIsActive = true
             RitualTargetVector = Dest.RitualChamber
@@ -1577,7 +1577,7 @@ end)
 local currentMobIndex = 1
 local lastMobJumpTick = 0
 
--- MINER-STYLE AUTO MOB FARMING ENGINE (RESPECTS RITUAL SUPPRESSION FLAG)
+-- MINER-STYLE AUTO MOB FARMING ENGINE (EXCLUDES RESPAWNING MOBS)
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -1985,4 +1985,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V13.3 Ground-Locked Zero-Bounce & Ritual Suppression Fix Loaded Successfully!")
+print("[Dominate Hub] V13.4 Ground-Locked Zero-Bounce & Robust Respawn Lock Fix Loaded Successfully!")
