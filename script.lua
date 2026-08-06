@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.1 - UPDATED PIT VECTOR & REGEN SEQUENCE)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.2 - SEAMLESS SAND REGEN & PIT-FIRST LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -58,7 +58,7 @@ Env.AutoSandUpgrades = false
 Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
-Env.TargetSandLayer = 10 -- User configurable layer 1-100
+Env.TargetSandLayer = 3 -- User configurable layer 1-100
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -426,7 +426,7 @@ local function createTextBoxRow(parent, txt, vKey)
     textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     textBox.TextSize = 12
     textBox.Font = Enum.Font.GothamBold
-    textBox.Text = tostring(Env[vKey] or 10)
+    textBox.Text = tostring(Env[vKey] or 3)
     textBox.ClearTextOnFocus = false
     textBox.Parent = row
 
@@ -1806,44 +1806,58 @@ task.spawn(function()
     end
 end)
 
--- SAND LAYER REGENERATION AUTOMATION LOOP (PIT FIRST -> REGEN PAD -> PIT)
+-- SEAMLESS SAND REGENERATION LOOP (PIT FIRST -> REACH TARGET LAYER -> REGEN PAD -> PIT)
 task.spawn(function()
     while Running do
-        task.wait(2.0)
+        task.wait(1.0)
         if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
-            local currentLayer = 0
-            pcall(function()
-                local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                local dunesFolder = gc and gc:FindFirstChild("Dunes")
-                if dunesFolder then
-                    local hrp = GetWorldRoot()
-                    if hrp then
-                        local depth = math.abs(hrp.Position.Y - Dest.Dunes.Y)
-                        currentLayer = math.clamp(math.floor(depth / 5), 0, 100)
-                    end
-                end
-            end)
-
-            if currentLayer >= (Env.TargetSandLayer or 10) then
+            -- 1. Teleport to the sand pit first upon activation
+            showToast("Sand Regen: Teleporting to sand pit...")
+            SandTargetVector = Dest.Dunes
+            task.wait(2.5)
+            SandTargetVector = nil -- Release to let character dig in pit
+            
+            -- 2. Monitor depth/layers until target layer is reached
+            local reachedTarget = false
+            local targetLayer = tonumber(Env.TargetSandLayer) or 3
+            
+            while Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive and not reachedTarget do
+                task.wait(1.0)
                 pcall(function()
-                    showToast("Sand Regen: Target layer reached! Teleporting to pit first...")
-                    -- 1. Teleport onto the pit first
-                    SandTargetVector = Dest.Dunes
-                    task.wait(1.5)
-                    
-                    -- 2. Teleport to the regeneration pad
-                    showToast("Sand Regen: Moving to regen pad...")
-                    SandTargetVector = Dest.SandRegenPad
-                    task.wait(2.0)
-                    SandTargetVector = nil
-                    task.wait(1.0)
-                    
-                    -- 3. Return to the sand pit
-                    showToast("Sand Regen: Returning to sand pit...")
-                    SandTargetVector = Dest.Dunes
-                    task.wait(2.0)
-                    SandTargetVector = nil
+                    local layersFolder = workspace:FindFirstChild("GeneratedSandLayers", true)
+                    if layersFolder then
+                        local targetFound = false
+                        local totalRemaining = 0
+                        for _, child in ipairs(layersFolder:GetChildren()) do
+                            totalRemaining = totalRemaining + 1
+                            local idx = child:GetAttribute("LayerIndex")
+                            if idx and tonumber(idx) <= targetLayer then
+                                targetFound = true
+                            end
+                        end
+                        if not targetFound or totalRemaining <= math.max(0, 20 - targetLayer) then
+                            reachedTarget = true
+                        end
+                    else
+                        -- Fallback depth calculation from pit vector Y
+                        local hrp = GetWorldRoot()
+                        if hrp then
+                            local depth = math.abs(hrp.Position.Y - Dest.Dunes.Y)
+                            if (depth / 5) >= targetLayer then
+                                reachedTarget = true
+                            end
+                        end
+                    end
                 end)
+            end
+            
+            if reachedTarget and Running and Env.AutoRegenSandLayers then
+                -- 3. Teleport to the regeneration pad
+                showToast("Sand Regen: Target layer reached! Teleporting to regen pad...")
+                SandTargetVector = Dest.SandRegenPad
+                task.wait(2.5)
+                SandTargetVector = nil
+                task.wait(1.5) -- wait for layers to regenerate
             end
         end
     end
@@ -1919,7 +1933,7 @@ task.spawn(function()
                     local freshList = {} local gc = workspace:FindFirstChild("__GAME_CONTENT") local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model"] and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then table.insert(freshList, part) end
                             end
@@ -2233,4 +2247,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V15.1 Updated Pit Vector & Regen Sequence Loaded Successfully!")
+print("[Dominate Hub] V15.2 Seamless Sand Regen & Pit Loop Loaded Successfully!")
