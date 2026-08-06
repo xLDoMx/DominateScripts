@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.90 - SYNTAX FIX & GLIDE NOCLIP)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.91 - INVISIBLE SIDEBAR SCROLL RESTORED)
 --======================================================================================
 local Env = getgenv()
 
@@ -681,17 +681,29 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (STATIC NON-SCROLLABLE SIDEBAR RESTORED TO PREVENT TABS BREAKING)
+-- SIDEBAR CONTAINER (ISOLATED SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR)
+local sidebarScroll = Instance.new("ScrollingFrame")
+sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
+sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
+sidebarScroll.BackgroundTransparency = 1
+sidebarScroll.BorderSizePixel = 0
+sidebarScroll.ScrollBarThickness = 0
+sidebarScroll.ScrollingEnabled = true
+sidebarScroll.Parent = mainFrame
+
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
-sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
+sidebarFrame.Size = UDim2.new(1, 0, 0, 0)
 sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
-sidebarFrame.Parent = mainFrame
+sidebarFrame.Parent = sidebarScroll
 
 local sidebarLayout = Instance.new("UIListLayout")
 sidebarLayout.Padding = UDim.new(0, 8)
 sidebarLayout.Parent = sidebarFrame
+
+sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    sidebarScroll.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
+end)
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
