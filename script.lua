@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V14.1 - MULTI-FIRE RITUAL START & INFINITE LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V14.2 - RITUAL MOB DROPDOWN & INFINITE LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -47,6 +47,12 @@ local ritualInCooldown = false
 local trialIsRunning = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
+
+-- RITUAL PRE-SELECTED MOBS TABLE INITIALIZATION
+Env.RitualSelectedMobs = {
+    ["Dark Knight"] = true,
+    ["Dark Commander"] = true
+}
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -380,6 +386,109 @@ local function createToggleRow(parent, txt, vKey)
     end)
 
     return row
+end
+
+-- EXPANDABLE MULTI-SELECT DROPDOWN FOR RITUAL TARGET MOBS
+local function createRitualMobDropdown(parent, title, mobList)
+    local dropFrame = Instance.new("Frame")
+    dropFrame.Size = UDim2.new(1, -10, 0, 42)
+    dropFrame.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
+    dropFrame.BackgroundTransparency = 0.5
+    dropFrame.BorderSizePixel = 0
+    dropFrame.ClipsDescendants = true
+    dropFrame.Parent = parent
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = dropFrame
+
+    local headerBtn = Instance.new("TextButton")
+    headerBtn.Size = UDim2.new(1, 0, 0, 42)
+    headerBtn.BackgroundTransparency = 1
+    headerBtn.Text = ""
+    headerBtn.Parent = dropFrame
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0.75, 0, 1, 0)
+    lbl.Position = UDim2.new(0, 16, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.fromRGB(240, 235, 250)
+    lbl.TextSize = 12
+    lbl.Font = Enum.Font.GothamBold
+    lbl.Text = title .. " (Configure Mobs)"
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = headerBtn
+
+    local arrow = Instance.new("TextLabel")
+    arrow.Size = UDim2.new(0, 30, 0, 42)
+    arrow.Position = UDim2.new(1, -38, 0, 0)
+    arrow.BackgroundTransparency = 1
+    arrow.TextColor3 = Color3.fromRGB(216, 180, 254)
+    arrow.TextSize = 12
+    arrow.Font = Enum.Font.GothamBold
+    arrow.Text = "▼"
+    arrow.Parent = headerBtn
+
+    local container = Instance.new("ScrollingFrame")
+    container.Size = UDim2.new(1, -16, 0, 150)
+    container.Position = UDim2.new(0, 8, 0, 46)
+    container.BackgroundTransparency = 1
+    container.BorderSizePixel = 0
+    container.ScrollBarThickness = 3
+    container.ScrollingEnabled = true
+    container.Parent = dropFrame
+
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.Padding = UDim.new(0, 4)
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Parent = container
+
+    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        container.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
+    end)
+
+    for _, mobInfo in ipairs(mobList) do
+        local mobRow = Instance.new("TextButton")
+        mobRow.Size = UDim2.new(1, -4, 0, 30)
+        mobRow.BackgroundColor3 = Env.RitualSelectedMobs[mobInfo.N] and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)
+        mobRow.BackgroundTransparency = Env.RitualSelectedMobs[mobInfo.N] and 0.2 or 0.6
+        mobRow.Text = ""
+        mobRow.AutoButtonColor = false
+        mobRow.Parent = container
+
+        local rc = Instance.new("UICorner")
+        rc.CornerRadius = UDim.new(0, 6)
+        rc.Parent = mobRow
+
+        local rLbl = Instance.new("TextLabel")
+        rLbl.Size = UDim2.new(1, -12, 1, 0)
+        rLbl.Position = UDim2.new(0, 10, 0, 0)
+        rLbl.BackgroundTransparency = 1
+        rLbl.TextColor3 = Color3.fromRGB(240, 235, 250)
+        rLbl.TextSize = 11
+        rLbl.Font = Enum.Font.GothamBold
+        rLbl.Text = (Env.RitualSelectedMobs[mobInfo.N] and "[✔] " or "[   ] ") .. mobInfo.N
+        rLbl.TextXAlignment = Enum.TextXAlignment.Left
+        rLbl.Parent = mobRow
+
+        mobRow.MouseButton1Click:Connect(function()
+            Env.RitualSelectedMobs[mobInfo.N] = not Env.RitualSelectedMobs[mobInfo.N]
+            local active = Env.RitualSelectedMobs[mobInfo.N]
+            mobRow.BackgroundColor3 = active and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)
+            mobRow.BackgroundTransparency = active and 0.2 or 0.6
+            rLbl.Text = (active and "[✔] " or "[   ] ") .. mobInfo.N
+            showToast("Ritual Mobs: Updated " .. mobInfo.N)
+        end)
+    end
+
+    local isOpen = false
+    headerBtn.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        arrow.Text = isOpen and "▲" : "▼"
+        TweenService:Create(dropFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = isOpen and UDim2.new(1, -10, 0, 204) or UDim2.new(1, -10, 0, 42)}):Play()
+    end)
+
+    return dropFrame
 end
 
 -- MASTER TOGGLE GROUP CONTAINER
@@ -1071,14 +1180,14 @@ bestMobTierBtn.MouseButton1Click:Connect(function()
     bestMobTierBtn.BackgroundColor3 = bestMobTierActive and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(35, 20, 55)
     bestMobTierBtn.BackgroundTransparency = bestMobTierActive and 0 or 0.5
 
-    local topMobs = {"AutoMobDarkCommander", "AutoMobDarkKnight", "AutoMobSamuraiMaster"}
+    local topOres = {"AutoMobDarkCommander", "AutoMobDarkKnight", "AutoMobSamuraiMaster"}
     local allMobs = {
         "AutoMobGoblin", "AutoMobSkeleton", "AutoMobOrc", "AutoMobPirate", "AutoMobNinja",
         "AutoMobWarrior", "AutoMobPirateCaptain", "AutoMobSamurai", "AutoMobPirateAdmiral",
         "AutoMobSamuraiMaster", "AutoMobDarkKnight", "AutoMobDarkCommander"
     }
     for _, mob in ipairs(allMobs) do Env[mob] = false end
-    if bestMobTierActive then for _, mob in ipairs(topMobs) do Env[mob] = true end end
+    if bestMobTierActive then for _, mob in ipairs(topOres) do Env[mob] = true end end
     showToast(bestMobTierActive and "Best Mob Tier Only activated!" or "Best Mob Tier Only deactivated.")
 end)
 
@@ -1099,6 +1208,9 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
+
+-- ADD RITUAL MOB SELECTION DROPDOWN TO MOBS TAB
+createRitualMobDropdown(mobsScroll, "Ritual Target Mobs", MobPriorityList)
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1288,7 +1400,7 @@ task.spawn(function()
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
             elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Env.Advanced
-            elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
+            elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Env.Basic end
             
             if act then
                 local targetCF = CFrame.new(act)
@@ -1317,7 +1429,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL INFINITE LOOP WITH MULTI-FIRE ACTIVATION
+-- RITUAL INFINITE LOOP WITH PRE-SELECTED DROPDOWN MOBS & MULTI-FIRE
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1352,13 +1464,13 @@ task.spawn(function()
                 ritualTimer = math.max(0, ritualTimer - 1)
             end
             
-            -- Step 3: Release vector and farm mobs for the remaining countdown duration
+            -- Step 3: Release vector and farm pre-selected ritual mobs for the remaining countdown duration
             RitualTargetVector = nil
             ritualIsActive = false
             ritualSuppressMobs = false
             currentTargetMob = nil
             MobTargetVector = nil
-            showToast("Ritual Chamber: Farming selected mobs for remaining duration...")
+            showToast("Ritual Chamber: Farming pre-selected ritual mobs...")
             
             while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
                 task.wait(1.0)
@@ -1554,18 +1666,30 @@ local currentMobIndex = 1
 local mobTargetLockTime = 0
 local lastTargetedPart = nil
 
--- MINER-STYLE AUTO MOB FARMING ENGINE WITH 4S ANTI-STUCK TIMEOUT & TARGET WIPE
+-- MINER-STYLE AUTO MOB FARMING ENGINE (USES RITUAL DROPDOWN SELECTION WHEN RITUAL ACTIVE)
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
         if Running and not trialIsRunning and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
-            for i = 1, #MobPriorityList do 
-                if Env[MobPriorityList[i].F] then 
-                    enabledMobNames[MobPriorityList[i].N] = true 
-                    hasAnyMobEnabled = true 
-                end 
+
+            -- If ritual is actively farming, use Env.RitualSelectedMobs dropdown pre-selection
+            if Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
+                for mobName, selected in pairs(Env.RitualSelectedMobs) do
+                    if selected then
+                        enabledMobNames[mobName] = true
+                        hasAnyMobEnabled = true
+                    end
+                end
+            else
+                -- Otherwise use global mob toggles
+                for i = 1, #MobPriorityList do 
+                    if Env[MobPriorityList[i].F] then 
+                        enabledMobNames[MobPriorityList[i].N] = true 
+                        hasAnyMobEnabled = true 
+                    end 
+                end
             end
 
             if hasAnyMobEnabled then
@@ -2001,4 +2125,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V14.1 Infinite Multi-Fire Ritual Loop Loaded Successfully!")
+print("[Dominate Hub] V14.2 Ritual Mob Dropdown & Multi-Fire Loop Loaded Successfully!")
