@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.91 - INVISIBLE SIDEBAR SCROLL RESTORED)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.92 - RITUAL COORD GLIDE & SOULS LOOP FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -681,29 +681,17 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (ISOLATED SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR)
-local sidebarScroll = Instance.new("ScrollingFrame")
-sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
-sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
-sidebarScroll.BackgroundTransparency = 1
-sidebarScroll.BorderSizePixel = 0
-sidebarScroll.ScrollBarThickness = 0
-sidebarScroll.ScrollingEnabled = true
-sidebarScroll.Parent = mainFrame
-
+-- SIDEBAR CONTAINER (STATIC NON-SCROLLABLE CONTAINER RESTORED TO PREVENT TABS BREAKING)
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(1, 0, 0, 0)
+sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
+sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
 sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
-sidebarFrame.Parent = sidebarScroll
+sidebarFrame.Parent = mainFrame
 
 local sidebarLayout = Instance.new("UIListLayout")
 sidebarLayout.Padding = UDim.new(0, 8)
 sidebarLayout.Parent = sidebarFrame
-
-sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    sidebarScroll.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
-end)
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
@@ -1185,6 +1173,7 @@ local MasterTargetVector = nil
 local MiningTargetVector = nil
 local MobTargetVector = nil
 local TrialTargetVector = nil
+local RitualTargetVector = nil
 
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
@@ -1193,7 +1182,8 @@ local Dest = {
     Dunes = Vector3.new(982.733, 4.822, 7769.393),
     EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
     MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
-    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009)
+    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
+    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763)
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
@@ -1203,7 +1193,7 @@ RunService.Stepped:Connect(function()
     if not Running then return end
     local char = player.Character
     if char then
-        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
         
         for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
@@ -1220,7 +1210,8 @@ task.spawn(function()
         local hrp = GetWorldRoot()
         if hrp and Running then
             local act = nil
-            if MasterTargetVector then act = MasterTargetVector 
+            if RitualTargetVector then act = RitualTargetVector
+            elseif MasterTargetVector then act = MasterTargetVector 
             elseif TrialTargetVector then act = TrialTargetVector
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
@@ -1248,7 +1239,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (2-MINUTE COUNTDOWN & RE-TRIGGER)
+-- RITUAL LOOP AUTOMATION (2-MINUTE COUNTDOWN, GLIDE TO CHAMBER, 5S PAUSE, RE-TRIGGER)
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1257,10 +1248,25 @@ task.spawn(function()
                 NetRemote:FireServer("StartRitual")
             end)
             showToast("Ritual Chamber: Started ritual! Farming souls for 2 minutes...")
+            
+            -- Run for 2 minutes (120 seconds)
             local timer = 120
             while timer > 0 and Running and Env.AutoStartRitual do
                 task.wait(1.0)
                 timer = timer - 1
+            end
+            
+            if Running and Env.AutoStartRitual then
+                -- Glide back to chamber coords after 2 minutes
+                RitualTargetVector = Dest.RitualChamber
+                showToast("Ritual Chamber: Time's up! Gliding back to chamber...")
+                task.wait(3.0) -- wait for glide arrival
+                
+                -- Stay there for 5 seconds to view kills/souls
+                showToast("Ritual Chamber: Pausing at chamber for 5s...")
+                task.wait(5.0)
+                
+                RitualTargetVector = nil
             end
         end
     end
@@ -1681,7 +1687,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT SOULS UPGRADE LOOP
+-- DEDICATED INDEPENDENT SOULS UPGRADE LOOP (FIXED)
 local SoulsUpgradeList = {
     {F = "AutoSoulsMoreSouls", T = "UpgradeUpgradeMax", A = {"Souls", "MoreSouls"}},
     {F = "AutoSoulsLuckierSwords", T = "UpgradeUpgradeMax", A = {"Souls", "LuckierSwords"}},
@@ -1793,4 +1799,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.90 Syntax Bug Fixed & Ready!")
+print("[Dominate Hub] V11.92 Ritual Chamber Chamber-Return & Souls Upgrade Loop Fixed!")
