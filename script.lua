@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V14.8 - EXCAVATION RANK UP & SAND AUTOMATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V14.9 - TARGET SAND LAYER SELECTOR & REGEN)
 --======================================================================================
 local Env = getgenv()
 
@@ -58,6 +58,7 @@ Env.AutoSandUpgrades = false
 Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
+Env.TargetSandLayerLevel = 2 -- Default target layer (cycles 0 to 5)
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -389,6 +390,54 @@ local function createToggleRow(parent, txt, vKey)
         TweenService:Create(switchTrack, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)}):Play()
         TweenService:Create(trackStroke, TweenInfo.new(0.2), {Transparency = active and 0.2 or 0.7}):Play()
         TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}):Play()
+    end)
+
+    return row
+end
+
+-- TARGET SAND LAYER SELECTOR BUTTON
+local function createSandLayerSelector(parent)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -10, 0, 42)
+    row.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
+    row.BackgroundTransparency = 0.5
+    row.BorderSizePixel = 0
+    row.Parent = parent
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = row
+
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0.55, 0, 1, 0)
+    lbl.Position = UDim2.new(0, 16, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.fromRGB(240, 235, 250)
+    lbl.TextSize = 12
+    lbl.Font = Enum.Font.GothamBold
+    lbl.Text = "Target Sand Layer"
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = row
+
+    local valBtn = Instance.new("TextButton")
+    valBtn.Size = UDim2.new(0, 100, 0, 26)
+    valBtn.Position = UDim2.new(1, -110, 0.5, -13)
+    valBtn.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
+    valBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    valBtn.TextSize = 11
+    valBtn.Font = Enum.Font.GothamBold
+    valBtn.Text = "Layer " .. tostring(Env.TargetSandLayerLevel)
+    valBtn.AutoButtonColor = false
+    valBtn.Parent = row
+
+    local vbCorner = Instance.new("UICorner")
+    vbCorner.CornerRadius = UDim.new(0, 6)
+    vbCorner.Parent = valBtn
+
+    valBtn.MouseButton1Click:Connect(function()
+        Env.TargetSandLayerLevel = (Env.TargetSandLayerLevel + 1) % 6 -- Cycles 0 to 5
+        valBtn.Text = "Layer " .. tostring(Env.TargetSandLayerLevel)
+        showToast("Sand Regen: Target set to Layer " .. tostring(Env.TargetSandLayerLevel))
     end)
 
     return row
@@ -1000,7 +1049,9 @@ masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwor
 createSectionHeader(upScroll, "Sand Upgrades")
 createToggleRow(upScroll, "Auto Sand Upgrades", "AutoSandUpgrades")
 createToggleRow(upScroll, "Auto Shovel Level Up", "AutoShovelLevelUp")
+createToggleRow(upScroll, "Auto Excavation Rank Up", "AutoExcavationRankUp")
 createToggleRow(upScroll, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
+createSandLayerSelector(upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1744,23 +1795,37 @@ task.spawn(function()
     end
 end)
 
--- SAND LAYER REGENERATION AUTOMATION LOOP (USES REAL COORDS)
+-- SAND LAYER REGENERATION AUTOMATION LOOP (USES SELECTED TARGET LAYER LEVEL)
 task.spawn(function()
     while Running do
-        task.wait(1.0)
+        task.wait(2.0)
         if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
+            local currentLayer = 0
             pcall(function()
-                showToast("Sand Regen: Teleporting to regeneration pad...")
-                SandTargetVector = Dest.SandRegenPad
-                task.wait(2.0)
-                SandTargetVector = nil
-                task.wait(1.0)
-                showToast("Sand Regen: Returning to sand pit...")
-                SandTargetVector = Dest.Dunes
-                task.wait(2.0)
-                SandTargetVector = nil
+                local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                local dunesFolder = gc and gc:FindFirstChild("Dunes")
+                if dunesFolder then
+                    -- Detect current player sand layer level from workspace/character position
+                    local hrp = GetWorldRoot()
+                    if hrp then
+                        local depth = math.abs(hrp.Position.Y - Dest.Dunes.Y)
+                        currentLayer = math.clamp(math.floor(depth / 5), 0, 5)
+                    end
+                end
             end)
-            task.wait(60.0) -- Regenerate layers every 60 seconds
+
+            if currentLayer >= Env.TargetSandLayerLevel then
+                pcall(function()
+                    showToast("Sand Regen: Target layer " .. tostring(Env.TargetSandLayerLevel) .. " reached! Regenerating...")
+                    SandTargetVector = Dest.SandRegenPad
+                    task.wait(2.0)
+                    SandTargetVector = nil
+                    task.wait(1.0)
+                    SandTargetVector = Dest.Dunes
+                    task.wait(2.0)
+                    SandTargetVector = nil
+                end)
+            end
         end
     end
 end)
@@ -1933,7 +1998,9 @@ local PrimaryUpgradeQueue = {
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","AlotSand"}},
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreOof"}},
     -- SHOVEL LEVEL UP
-    {F="AutoShovelLevelUp",T="ShovelLevelUp",A={}}
+    {F="AutoShovelLevelUp",T="ShovelLevelUp",A={}},
+    -- EXCAVATION RANK UP
+    {F="AutoExcavationRankUp",T="ExcavationRankUp",A={}}
 }
 
 -- MAIN UPGRADE LOOP
@@ -2147,4 +2214,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V14.8 Auto Shovel Level Up & Sand Upgrades Loaded Successfully!")
+print("[Dominate Hub] V14.9 Target Sand Layer & Excavation Rank Up Loaded Successfully!")
