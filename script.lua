@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V12.8 - RITUAL MOB-FARM RELEASE FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V12.9 - INSTANT MOB-HUNT RITUAL FIX)
 --======================================================================================
 local Env = getgenv()
 
@@ -1311,7 +1311,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- RITUAL LOOP AUTOMATION (INSTANT TELEPORT -> START RITUAL -> IMMEDIATE MOB FARM RELEASE 3M -> REPEAT)
+-- RITUAL LOOP AUTOMATION (INSTANT TELEPORT -> START RITUAL -> INSTANT MOB HUNT -> 3M LOOP)
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1337,9 +1337,44 @@ task.spawn(function()
                 NetRemote:FireServer("StartRitual")
             end)
             showToast("Ritual Chamber: Started ritual successfully!")
-            task.wait(2.0)
+            task.wait(1.5)
             
-            -- Step 3: Release lock so mob farming takes over for 3 minutes (180s)
+            -- Step 3: Instantly find and teleport to the nearest enabled mob so farming starts immediately
+            local foundMobPart = nil
+            local gc = workspace:FindFirstChild("__GAME_CONTENT") 
+            local mobsFolder = gc and gc:FindFirstChild("Mobs")
+            local enabledMobNames = {}
+            for i = 1, #MobPriorityList do 
+                if Env[MobPriorityList[i].F] then 
+                    enabledMobNames[MobPriorityList[i].N] = true 
+                end 
+            end
+            
+            if mobsFolder then
+                for i = #MobPriorityList, 1, -1 do
+                    local targetMobName = MobPriorityList[i].N
+                    if enabledMobNames[targetMobName] then
+                        for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                            if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
+                                local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                if part then
+                                    foundMobPart = part
+                                    break
+                                end
+                            end
+                        end
+                    end
+                    if foundMobPart then break end
+                end
+            end
+            
+            if foundMobPart and hrp then
+                hrp.CFrame = CFrame.new(foundMobPart.Position + Vector3.new(0, 3, 0))
+                hrp.AssemblyLinearVelocity = Vector3.zero
+                showToast("Ritual Chamber: Hunt started! Teleported to target mob.")
+            end
+            
+            -- Step 4: Run the 3-minute (180s) mob farming phase with normal mob script active
             ritualIsActive = false
             showToast("Ritual Chamber: Farming selected mobs for 3 minutes...")
             
@@ -1942,4 +1977,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.8 Ritual Mob-Farm Release Fix Loaded Successfully!")
+print("[Dominate Hub] V12.9 Instant Mob-Hunt Ritual Fix Loaded Successfully!")
