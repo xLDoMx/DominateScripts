@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.85 - INVISIBLE SIDEBAR SCROLL & MUMMY NOOB)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.87 - ISOLATED SIDEBAR SCROLL & MUMMY NOOB)
 --======================================================================================
 local Env = getgenv()
 
@@ -279,8 +279,8 @@ Env.AutoRollBasicRune = false
 Env.AutoRollSuperRune = false
 Env.AutoRollAdvancedRune = false
 Env.AutoRollCosmicRune = false
-Env.AutoRollFootballRune = false
 Env.AutoRollSnowyRune = false
+Env.AutoRollFootballRune = false
 Env.AutoRollDunesRune = false
 
 Env.AutoOpenT1Chest = false
@@ -673,7 +673,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR)
+-- SIDEBAR CONTAINER (ISOLATED SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR)
 local sidebarScroll = Instance.new("ScrollingFrame")
 sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
 sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
@@ -1713,7 +1713,7 @@ task.spawn(function()
     end 
 end)
 
-task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreHowBulk") end) task.wait(0.25) end end end end)
+task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
@@ -1728,4 +1728,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.85 Invisible Scrolling Sidebar & Mummy Noob Loaded Successfully!")
+print("[Dominate Hub] V11.87 Isolated Sidebar Scrolling & Mummy Noob Loaded Successfully!")
