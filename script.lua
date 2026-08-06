@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.88 - SOULS UPGRADES, RITUAL LOOP & MUMMY NOOB)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.90 - SYNTAX FIX & GLIDE NOCLIP)
 --======================================================================================
 local Env = getgenv()
 
@@ -681,7 +681,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (STATIC NON-SCROLLABLE CONTAINER RESTORED TO PREVENT BUGS)
+-- SIDEBAR CONTAINER (STATIC NON-SCROLLABLE SIDEBAR RESTORED TO PREVENT TABS BREAKING)
 local sidebarFrame = Instance.new("Frame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -1186,6 +1186,21 @@ local Dest = {
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
+-- CONDITIONAL GLIDE NOCLIP ENGINE (ACTIVE ONLY DURING AUTOMATED GLIDING/TELEPORTS)
+RunService.Stepped:Connect(function()
+    if not Running then return end
+    local char = player.Character
+    if char then
+        local isGliding = (MasterTargetVector ~= nil or TrialTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = not isGliding
+            end
+        end
+    end
+end)
+
 -- Ultra-smooth continuous frame-by-frame Lerp glide movement loop
 task.spawn(function()
     while Running do
@@ -1230,7 +1245,6 @@ task.spawn(function()
                 NetRemote:FireServer("StartRitual")
             end)
             showToast("Ritual Chamber: Started ritual! Farming souls for 2 minutes...")
-            -- Wait 2 minutes (120 seconds) before looping to start ritual again
             local timer = 120
             while timer > 0 and Running and Env.AutoStartRitual do
                 task.wait(1.0)
@@ -1251,11 +1265,9 @@ task.spawn(function()
             elseif Env.AutoHardTrial then targetGate = Dest.HardTrial end
 
             if targetGate then
-                -- Glide to trial gate to enter arena
                 TrialTargetVector = targetGate
                 task.wait(1.0)
                 
-                -- Arena combat loop while inside trial session
                 local inArena = true
                 showToast("Trials: Entered arena! Auto-clearing waves...")
                 while inArena and Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) do
@@ -1284,9 +1296,7 @@ task.spawn(function()
                     if closestMobPart then
                         TrialTargetVector = closestMobPart.Position
                     else
-                        -- If no mobs are present, check if trial is complete or waiting for next wave
                         TrialTargetVector = targetGate + Vector3.new(0, 5, 0)
-                        -- If player is back outside or trial finished, break out of arena loop
                         if hrp and (hrp.Position - targetGate).Magnitude > 100 then
                             inArena = false
                         end
@@ -1335,15 +1345,14 @@ task.spawn(function()
                 currentTargetMob = nil
                 MasterTargetVector = Vector3.new(919.1552, 4.8658, 7905.8755)
                 showToast("Safe Spot Break: Gliding to safe zone...")
-                task.wait(0.5) -- wait for glide arrival
+                task.wait(0.5)
                 MasterTargetVector = nil
                 
-                -- Trigger DepositMeat during combat safe break
                 if NetRemote then
                     pcall(function() NetRemote:FireServer("DepositMeat") end)
                 end
                 
-                task.wait(1.5) -- hold at safe spot for remaining duration (2s total break)
+                task.wait(1.5)
                 
                 for flag, state in pairs(activeMobStates) do
                     Env[flag] = state
@@ -1386,7 +1395,6 @@ task.spawn(function()
                     local mobsFolder = gc and gc:FindFirstChild("Mobs")
                     
                     if mobsFolder then
-                        -- Loop BACKWARDS (from best/highest down to worst/lowest) so best is targeted first
                         for i = #MobPriorityList, 1, -1 do
                             local targetMobName = MobPriorityList[i].N
                             if enabledMobNames[targetMobName] then
@@ -1760,10 +1768,9 @@ end)
 
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
-task.spawn(function() while远程 do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
+task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
 task.spawn(function()
-    callRoutine = nil
     while Running do
         task.wait(60.0)
         if NetRemote and Running and Env.AutoBlazeConvert then
@@ -1774,4 +1781,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.88 Souls Upgrades & 2-Minute Ritual Loop Added Successfully!")
+print("[Dominate Hub] V11.90 Syntax Bug Fixed & Ready!")
