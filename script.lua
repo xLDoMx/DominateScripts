@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V12.1 - INSTANT TRIAL TELEPORT & STRICT CHECK)
+-- DOMINATE HUB | PRO EDITION (STABLE V12.2 - BYPASS CASTLE & CHUNK-LOAD DROP BUFFER)
 --======================================================================================
 local Env = getgenv()
 
@@ -1366,7 +1366,7 @@ local function isTrialOpen(trialRoomName)
     return false
 end
 
--- ADVANCED TRIAL STATE-MACHINE AUTOMATION (WITH INSTANT TELEPORT TO PREVENT UNDER-MAP CLIPPING)
+-- ADVANCED TRIAL STATE-MACHINE AUTOMATION (BYPASSING CASTLE & ADDING CHUNK-LOAD DROP BUFFER)
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -1400,21 +1400,23 @@ task.spawn(function()
                 local wasRitualActive = Env.AutoStartRitual
                 Env.AutoStartRitual = false
                 
-                -- Stage 1: Instant Teleport to Castle Entrance (Bypasses long-distance map clipping)
+                -- Stage 1 & 2: Direct Teleport straight onto the Trial Pad (with high-altitude chunk-load buffer)
                 local hrp = GetWorldRoot()
                 if hrp then
-                    hrp.CFrame = CFrame.new(Dest.CastleEntrance + Vector3.new(0, 3, 0))
+                    -- Teleport high up first (15 studs above pad) so game chunks have time to load without falling through
+                    hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 15, 0))
+                    hrp.AssemblyLinearVelocity = Vector3.zero
                 end
-                showToast("Trials: Teleported to castle entrance...")
-                task.wait(1.0)
+                showToast("Trials: Teleported to trial room! Loading chunks...")
+                task.wait(1.5) -- Wait 1.5s for terrain/arena to stream in fully
                 
-                -- Stage 2: Instant Teleport directly onto the Trial Pad
+                -- Drop smoothly down onto the pad
                 hrp = GetWorldRoot()
                 if hrp then
                     hrp.CFrame = CFrame.new(targetPad + Vector3.new(0, 3, 0))
+                    hrp.AssemblyLinearVelocity = Vector3.zero
                 end
-                showToast("Trials: Teleported directly to trial pad!")
-                task.wait(2.0)
+                task.wait(1.0)
                 
                 -- Stage 3: Wave Clearing Loop
                 local inArena = true
@@ -1923,4 +1925,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V12.1 Instant Trial Teleport & Strict Check Loaded Successfully!")
+print("[Dominate Hub] V12.2 Bypass Castle & Chunk-Load Drop Buffer Loaded Successfully!")
