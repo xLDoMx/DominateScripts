@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V14.9 - TARGET SAND LAYER SELECTOR & REGEN)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.0 - TEXT INPUT LAYER 1-100 & PIT-FIRST REGEN)
 --======================================================================================
 local Env = getgenv()
 
@@ -58,7 +58,7 @@ Env.AutoSandUpgrades = false
 Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
-Env.TargetSandLayerLevel = 2 -- Default target layer (cycles 0 to 5)
+Env.TargetSandLayer = 10 -- User configurable layer 1-100
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -395,8 +395,8 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- TARGET SAND LAYER SELECTOR BUTTON
-local function createSandLayerSelector(parent)
+-- TEXT INPUT ROW FOR TARGET LAYER (1-100)
+local function createTextBoxRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
     row.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
@@ -415,29 +415,40 @@ local function createSandLayerSelector(parent)
     lbl.TextColor3 = Color3.fromRGB(240, 235, 250)
     lbl.TextSize = 12
     lbl.Font = Enum.Font.GothamBold
-    lbl.Text = "Target Sand Layer"
+    lbl.Text = txt
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = row
 
-    local valBtn = Instance.new("TextButton")
-    valBtn.Size = UDim2.new(0, 100, 0, 26)
-    valBtn.Position = UDim2.new(1, -110, 0.5, -13)
-    valBtn.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
-    valBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    valBtn.TextSize = 11
-    valBtn.Font = Enum.Font.GothamBold
-    valBtn.Text = "Layer " .. tostring(Env.TargetSandLayerLevel)
-    valBtn.AutoButtonColor = false
-    valBtn.Parent = row
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(0, 90, 0, 26)
+    textBox.Position = UDim2.new(1, -100, 0.5, -13)
+    textBox.BackgroundColor3 = Color3.fromRGB(42, 28, 65)
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.TextSize = 12
+    textBox.Font = Enum.Font.GothamBold
+    textBox.Text = tostring(Env[vKey] or 10)
+    textBox.ClearTextOnFocus = false
+    textBox.Parent = row
 
-    local vbCorner = Instance.new("UICorner")
-    vbCorner.CornerRadius = UDim.new(0, 6)
-    vbCorner.Parent = valBtn
+    local tbCorner = Instance.new("UICorner")
+    tbCorner.CornerRadius = UDim.new(0, 6)
+    tbCorner.Parent = textBox
 
-    valBtn.MouseButton1Click:Connect(function()
-        Env.TargetSandLayerLevel = (Env.TargetSandLayerLevel + 1) % 6 -- Cycles 0 to 5
-        valBtn.Text = "Layer " .. tostring(Env.TargetSandLayerLevel)
-        showToast("Sand Regen: Target set to Layer " .. tostring(Env.TargetSandLayerLevel))
+    local tbStroke = Instance.new("UIStroke")
+    tbStroke.Color = Color3.fromRGB(168, 85, 247)
+    tbStroke.Transparency = 0.4
+    tbStroke.Parent = textBox
+
+    textBox.FocusLost:Connect(function(enterPressed)
+        local num = tonumber(textBox.Text)
+        if num then
+            num = math.clamp(math.round(num), 1, 100)
+            Env[vKey] = num
+            textBox.Text = tostring(num)
+            showToast(txt .. " set to Layer " .. tostring(num))
+        else
+            textBox.Text = tostring(Env[vKey])
+        end
     end)
 
     return row
@@ -1051,7 +1062,7 @@ createToggleRow(upScroll, "Auto Sand Upgrades", "AutoSandUpgrades")
 createToggleRow(upScroll, "Auto Shovel Level Up", "AutoShovelLevelUp")
 createToggleRow(upScroll, "Auto Excavation Rank Up", "AutoExcavationRankUp")
 createToggleRow(upScroll, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
-createSandLayerSelector(upScroll)
+createTextBoxRow(upScroll, "Target Sand Layer (1-100)", "TargetSandLayer")
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1466,7 +1477,7 @@ task.spawn(function()
             elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
-            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
+            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Env.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
@@ -1795,7 +1806,7 @@ task.spawn(function()
     end
 end)
 
--- SAND LAYER REGENERATION AUTOMATION LOOP (USES SELECTED TARGET LAYER LEVEL)
+-- SAND LAYER REGENERATION AUTOMATION LOOP (PIT FIRST -> REGEN PAD -> PIT)
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -1805,22 +1816,30 @@ task.spawn(function()
                 local gc = workspace:FindFirstChild("__GAME_CONTENT")
                 local dunesFolder = gc and gc:FindFirstChild("Dunes")
                 if dunesFolder then
-                    -- Detect current player sand layer level from workspace/character position
                     local hrp = GetWorldRoot()
                     if hrp then
                         local depth = math.abs(hrp.Position.Y - Dest.Dunes.Y)
-                        currentLayer = math.clamp(math.floor(depth / 5), 0, 5)
+                        currentLayer = math.clamp(math.floor(depth / 5), 0, 100)
                     end
                 end
             end)
 
-            if currentLayer >= Env.TargetSandLayerLevel then
+            if currentLayer >= (Env.TargetSandLayer or 10) then
                 pcall(function()
-                    showToast("Sand Regen: Target layer " .. tostring(Env.TargetSandLayerLevel) .. " reached! Regenerating...")
+                    showToast("Sand Regen: Target layer reached! Teleporting to pit first...")
+                    -- 1. Teleport onto the pit first
+                    SandTargetVector = Dest.Dunes
+                    task.wait(1.5)
+                    
+                    -- 2. Teleport to the regeneration pad
+                    showToast("Sand Regen: Moving to regen pad...")
                     SandTargetVector = Dest.SandRegenPad
                     task.wait(2.0)
                     SandTargetVector = nil
                     task.wait(1.0)
+                    
+                    -- 3. Return to the sand pit
+                    showToast("Sand Regen: Returning to sand pit...")
                     SandTargetVector = Dest.Dunes
                     task.wait(2.0)
                     SandTargetVector = nil
@@ -2214,4 +2233,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V14.9 Target Sand Layer & Excavation Rank Up Loaded Successfully!")
+print("[Dominate Hub] V15.0 Text Input Layer (1-100) & Pit-First Regen Loaded Successfully!")
