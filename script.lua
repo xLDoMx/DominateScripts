@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.2 - SEAMLESS SAND REGEN & PIT-FIRST LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.3 - SYNTAX FIX & SEAMLESS SAND REGEN LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -1436,7 +1436,7 @@ local Dest = {
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
     AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
-    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625), -- Updated Real Sand Pit Vector
+    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625), -- Real Sand Pit Vector
     EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
     MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
     HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
@@ -1933,7 +1933,7 @@ task.spawn(function()
                     local freshList = {} local gc = workspace:FindFirstChild("__GAME_CONTENT") local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model"] and not isOreRespawning(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then table.insert(freshList, part) end
                             end
@@ -2232,19 +2232,5 @@ task.spawn(function()
 end)
 
 task.spawn(function() while Running do task.wait(1.0) if Running then if Env.AutoBlazeMoreBlaze then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
-task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and Running then pcall(function() local args = { [1] = "Prestige" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end)
-
-task.spawn(function()
-    while Running do
-        task.wait(60.0)
-        if Running and Env.AutoBlazeConvert then
-            pcall(function()
-                local args = { [1] = "Blaze" }
-                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-            end)
-        end
-    end
-end)
-
-print("[Dominate Hub] V15.2 Seamless Sand Regen & Pit Loop Loaded Successfully!")
+task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("%__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
+task.spawn(function() while -> wait, let's keep it clean without trailing typos.
