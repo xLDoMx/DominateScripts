@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.9 - INSTANT-SNAP PIT ENTRY & NATURAL DIGGING)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.0 - ADJUSTED TRIAL LOGIC & INSTANT-SNAP PIT)
 --======================================================================================
 local Env = getgenv()
 
@@ -1577,7 +1577,7 @@ task.spawn(function()
     end
 end)
 
--- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour)
+-- TIME-BASED SCHEDULED TRIAL AUTOMATION (:29 and :59 past every hour) - EXIT CONDITION REMOVED & 0.3s DELAY
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1633,7 +1633,7 @@ task.spawn(function()
                     local inArena = true
                     showToast("Trials: Entered arena! Auto-clearing waves...")
                     while inArena and Running do
-                        task.wait(0.1)
+                        task.wait(0.3) -- Updated to 0.3 seconds per user request
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
                         local mobsFolder = gc and gc:FindFirstChild("Mobs")
                         local closestMobPart = nil
@@ -1659,13 +1659,6 @@ task.spawn(function()
                             TrialTargetVector = closestMobPart.Position
                         else
                             TrialTargetVector = targetPad
-                            if hrp and (hrp.Position - targetPad).Magnitude > 80 then
-                                inArena = false
-                            end
-                        end
-                        
-                        if hrp and (hrp.Position - targetPad).Magnitude > 150 then
-                            inArena = false
                         end
                     end
                     
@@ -2265,4 +2258,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V15.9 Instant-Snap Pit Entry Loaded Successfully!")
+print("[Dominate Hub] V16.0 Trial Logic Adjusted Successfully!")
