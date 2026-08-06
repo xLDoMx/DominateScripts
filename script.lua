@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.3 - SYNTAX FIX & SEAMLESS SAND REGEN LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.4 - CLEAN SYNTAX & SAND REGEN LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -2232,5 +2232,19 @@ task.spawn(function()
 end)
 
 task.spawn(function() while Running do task.wait(1.0) if Running then if Env.AutoBlazeMoreBlaze then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("%__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
-task.spawn(function() while -> wait, let's keep it clean without trailing typos.
+task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
+task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and Running then pcall(function() local args = { [1] = "Prestige" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end)
+
+task.spawn(function()
+    while Running do
+        task.wait(60.0)
+        if Running and Env.AutoBlazeConvert then
+            pcall(function()
+                local args = { [1] = "Blaze" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+            end)
+        end
+    end
+end)
+
+print("[Dominate Hub] V15.4 Clean Syntax & Seamless Sand Regen Loop Loaded Successfully!")
