@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.0 - TEXT INPUT LAYER 1-100 & PIT-FIRST REGEN)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.1 - UPDATED PIT VECTOR & REGEN SEQUENCE)
 --======================================================================================
 local Env = getgenv()
 
@@ -1436,13 +1436,13 @@ local Dest = {
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
     AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
-    Dunes = Vector3.new(547.2037963867188, 4.579018592834473, 7826.806640625), -- Real Sand Pit Vector from Image 2
+    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625), -- Updated Real Sand Pit Vector
     EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
     MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
     HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
-    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875) -- Real Regen Pad Vector from Image 1
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875) -- Real Regen Pad Vector
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
@@ -1477,7 +1477,7 @@ task.spawn(function()
             elseif MiningTargetVector then act = MiningTargetVector
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
-            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Env.Advanced
+            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
@@ -2233,4 +2233,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V15.0 Text Input Layer (1-100) & Pit-First Regen Loaded Successfully!")
+print("[Dominate Hub] V15.1 Updated Pit Vector & Regen Sequence Loaded Successfully!")
