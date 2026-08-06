@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.87 - ISOLATED SIDEBAR SCROLL & MUMMY NOOB)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.88 - SOULS UPGRADES, RITUAL LOOP & MUMMY NOOB)
 --======================================================================================
 local Env = getgenv()
 
@@ -139,6 +139,14 @@ Env.AutoBlazeMoreBulk = false
 Env.AutoBlazeConvert = false
 
 Env.AutoUpgradePharaoh = false
+
+-- SOULS & RITUAL FLAGS
+Env.AutoSoulsMoreSouls = false
+Env.AutoSoulsLuckierSwords = false
+Env.AutoSoulsMoreOof = false
+Env.AutoSoulsMoreBones = false
+Env.AutoSoulsRuneBulk = false
+Env.AutoStartRitual = false
 
 -- MEAT / BONES UPGRADE FLAGS
 Env.AutoMeatMoreMeat = false
@@ -673,29 +681,17 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR CONTAINER (ISOLATED SCROLLABLE SIDEBAR WITH INVISIBLE SCROLLBAR)
-local sidebarScroll = Instance.new("ScrollingFrame")
-sidebarScroll.Size = UDim2.new(0, 135, 1, -55)
-sidebarScroll.Position = UDim2.new(0, 12, 0, 50)
-sidebarScroll.BackgroundTransparency = 1
-sidebarScroll.BorderSizePixel = 0
-sidebarScroll.ScrollBarThickness = 0
-sidebarScroll.ScrollingEnabled = true
-sidebarScroll.Parent = mainFrame
-
+-- SIDEBAR CONTAINER (STATIC NON-SCROLLABLE CONTAINER RESTORED TO PREVENT BUGS)
 local sidebarFrame = Instance.new("Frame")
-sidebarFrame.Size = UDim2.new(1, 0, 0, 0)
+sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
+sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
 sidebarFrame.BackgroundTransparency = 1
 sidebarFrame.BorderSizePixel = 0
-sidebarFrame.Parent = sidebarScroll
+sidebarFrame.Parent = mainFrame
 
 local sidebarLayout = Instance.new("UIListLayout")
 sidebarLayout.Padding = UDim.new(0, 8)
 sidebarLayout.Parent = sidebarFrame
-
-sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    sidebarScroll.CanvasSize = UDim2.new(0, 0, 0, sidebarLayout.AbsoluteContentSize.Y + 10)
-end)
 
 local function makeMainTab(emoji, txt)
     local t = Instance.new("TextButton")
@@ -815,6 +811,7 @@ createSectionHeader(upScroll, "Realm 3 Upgrades")
 masterToggleGroup("Pharaoh Upgrades", {"AutoUpgradePharaoh"}, upScroll)
 masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
 masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
+masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, upScroll)
 
 -- ======================================================================================
 -- NOOBS PAGE SETUP
@@ -1032,6 +1029,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
+createToggleRow(mobsScroll, "Auto Start Ritual (2m Loop)", "AutoStartRitual")
 
 -- ======================================================================================
 -- FOOTBALL PAGE SETUP
@@ -1222,6 +1220,25 @@ local function isMobRespawning(mobModel)
     end
     return false
 end
+
+-- RITUAL LOOP AUTOMATION (2-MINUTE COUNTDOWN & RE-TRIGGER)
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if NetRemote and Running and Env.AutoStartRitual then
+            pcall(function()
+                NetRemote:FireServer("StartRitual")
+            end)
+            showToast("Ritual Chamber: Started ritual! Farming souls for 2 minutes...")
+            -- Wait 2 minutes (120 seconds) before looping to start ritual again
+            local timer = 120
+            while timer > 0 and Running and Env.AutoStartRitual do
+                task.wait(1.0)
+                timer = timer - 1
+            end
+        end
+    end
+end)
 
 -- TRIALS AUTOMATION & ARENA ATTACK ENGINE
 task.spawn(function()
@@ -1644,6 +1661,34 @@ task.spawn(function()
     end
 end)
 
+-- DEDICATED INDEPENDENT SOULS UPGRADE LOOP
+local SoulsUpgradeList = {
+    {F = "AutoSoulsMoreSouls", T = "UpgradeUpgradeMax", A = {"Souls", "MoreSouls"}},
+    {F = "AutoSoulsLuckierSwords", T = "UpgradeUpgradeMax", A = {"Souls", "LuckierSwords"}},
+    {F = "AutoSoulsMoreOof", T = "UpgradeUpgradeMax", A = {"Souls", "MoreOof"}},
+    {F = "AutoSoulsMoreBones", T = "UpgradeUpgradeMax", A = {"Souls", "MoreBones"}},
+    {F = "AutoSoulsRuneBulk", T = "UpgradeUpgradeMax", A = {"Souls", "RuneBulk"}}
+}
+
+task.spawn(function()
+    local sIdx = 1
+    while Running do
+        task.wait(0.4)
+        if NetRemote and Running then
+            local att = 0
+            repeat
+                local cur = SoulsUpgradeList[sIdx]
+                sIdx = (sIdx % #SoulsUpgradeList) + 1
+                att = att + 1
+                if Env[cur.F] then
+                    pcall(function() NetRemote:FireServer(cur.T, unpack(cur.A)) end)
+                    break
+                end
+            until att >= #SoulsUpgradeList
+        end
+    end
+end)
+
 local GemUpgradeList = {
     {F="AutoGemMoreOof", T="UpgradeUpgradeMax", A={"Gem","MoreOof"}},
     {F="AutoGemMoreGems", T="UpgradeUpgradeMax", A={"Gem","MoreGems"}},
@@ -1715,9 +1760,10 @@ end)
 
 task.spawn(function() while Running do task.wait(1.0) if NetRemote and Running then if Env.AutoBlazeMoreBlaze then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBlaze") end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreFire") end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOof") end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreOofs") end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() NetRemote:FireServer("UpgradeUpgradeMax", "Blaze", "MoreBulk") end) task.wait(0.25) end end end end)
 task.spawn(function() while Running do task.wait(1.2) if NetRemote and Running then if Env.AutoOpenT1Chest then pcall(function() NetRemote:FireServer("OpenChest", "T1TrialChest", 10) end) end if Env.AutoOpenT2Chest then pcall(function() NetRemote:FireServer("OpenChest", "T2TrialChest", 10) end) end end end end)
-task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
+task.spawn(function() while远程 do task.wait(5.0) if Env.AutoPrestige and NetRemote and Running then pcall(function() NetRemote:FireServer("Prestige") end) end end end)
 
 task.spawn(function()
+    callRoutine = nil
     while Running do
         task.wait(60.0)
         if NetRemote and Running and Env.AutoBlazeConvert then
@@ -1728,4 +1774,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.87 Isolated Sidebar Scrolling & Mummy Noob Loaded Successfully!")
+print("[Dominate Hub] V11.88 Souls Upgrades & 2-Minute Ritual Loop Added Successfully!")
