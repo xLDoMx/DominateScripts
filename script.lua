@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V11.93 - SOULS UPGRADE LOOP FIXED)
+-- DOMINATE HUB | PRO EDITION (STABLE V11.94 - STAGGERED LOOPS & DYNAMIC HUD)
 --======================================================================================
 local Env = getgenv()
 
@@ -499,9 +499,33 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)
+-- FORWARD DECLARATIONS FOR HUD CHECKS
+local OrePriorityList = {
+    {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
+    {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
+    {F = "AutoMineCobalt", N = "Cobalt"}, {F = "AutoMineTitanium", N = "Titanium"}, {F = "AutoMinePlatinum", N = "Platinum"},
+    {F = "AutoMineGold", N = "Gold"}, {F = "AutoMineCopper", N = "Copper"}, {F = "AutoMineIron", N = "Iron"},
+    {F = "AutoMineSilver", N = "Silver"}, {F = "AutoMineCoal", N = "Coal"}, {F = "AutoMineStone", N = "Stone"}
+}
+
+local MobPriorityList = {
+    {F = "AutoMobGoblin", N = "Goblin"},
+    {F = "AutoMobSkeleton", N = "Skeleton"},
+    {F = "AutoMobOrc", N = "Orc"},
+    {F = "AutoMobPirate", N = "Pirate"},
+    {F = "AutoMobNinja", N = "Ninja"},
+    {F = "AutoMobWarrior", N = "Warrior"},
+    {F = "AutoMobPirateCaptain", N = "Pirate Captain"},
+    {F = "AutoMobSamurai", N = "Samurai"},
+    {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"},
+    {F = "AutoMobSamuraiMaster", N = "Samurai Master"},
+    {F = "AutoMobDarkKnight", N = "Dark Knight"},
+    {F = "AutoMobDarkCommander", N = "Dark Commander"}
+}
+
+-- PERFORMANCE HUD OVERLAY (TOP LEFT) - DYNAMICALLY SIZED
 local statsHud = Instance.new("Frame")
-statsHud.Size = UDim2.new(0, 210, 0, 96)
+statsHud.Size = UDim2.new(0, 210, 0, 60)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
 statsHud.BackgroundColor3 = Color3.fromRGB(18, 12, 28)
 statsHud.BackgroundTransparency = 0.35
@@ -537,7 +561,7 @@ hudText.Font = Enum.Font.GothamBold
 hudText.TextXAlignment = Enum.TextXAlignment.Left
 hudText.TextYAlignment = Enum.TextYAlignment.Top
 hudText.TextWrapped = true
-hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Glide: 0.8 S/s\nGem Exchange: 60s | Mined: 0"
+hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Glide: 0.8 S/s"
 hudText.Parent = statsHud
 
 local sessionStartTime = tick()
@@ -558,10 +582,41 @@ task.spawn(function()
                 targetName = currentTargetPanel.Parent.Name
             end
             
-            hudText.Text = string.format(
-                "Uptime: %02d:%02d:%02d | FPS: %d\nTarget: %s | Glide: %.1f S/s\nGem Exchange: %ds | Mined: %d",
-                hours, mins, secs, fps, targetName, Env.MiningJumpSpeed or 0.8, gemExchangeCountdown, oresMined
-            )
+            local uptimeStr = string.format("Uptime: %02d:%02d:%02d | FPS: %d", hours, mins, secs, fps)
+            local targetStr = string.format("Target: %s | Glide: %.1f S/s", targetName, Env.MiningJumpSpeed or 0.8)
+            
+            local extraLines = {}
+            
+            -- Mining Active Check
+            local miningActive = false
+            for _, oreInfo in ipairs(OrePriorityList) do
+                if Env[oreInfo.F] then miningActive = true break end
+            end
+            if miningActive then
+                table.insert(extraLines, string.format("Gem Exch: %ds | Mined: %d", gemExchangeCountdown, oresMined))
+            end
+            
+            -- Mobs Active Check
+            local mobActive = false
+            for _, mobInfo in ipairs(MobPriorityList) do
+                if Env[mobInfo.F] then mobActive = true break end
+            end
+            if mobActive then
+                table.insert(extraLines, string.format("Mobs Killed: %d", mobsKilled))
+            end
+            
+            -- Ritual Active Check
+            if Env.AutoStartRitual then
+                table.insert(extraLines, "Ritual: Active")
+            end
+            
+            local finalHudText = uptimeStr .. "\n" .. targetStr
+            if #extraLines > 0 then
+                finalHudText = finalHudText .. "\n" .. table.concat(extraLines, " | ")
+            end
+            
+            hudText.Text = finalHudText
+            statsHud.Size = UDim2.new(0, 210, 0, 52 + (#extraLines * 18))
         else
             statsHud.Visible = false
         end
@@ -1327,22 +1382,6 @@ task.spawn(function()
     end
 end)
 
--- MOB PRIORITY LIST (INDEX 1 = WORST/LOWEST, INDEX 12 = BEST/HIGHEST)
-local MobPriorityList = {
-    {F = "AutoMobGoblin", N = "Goblin"},
-    {F = "AutoMobSkeleton", N = "Skeleton"},
-    {F = "AutoMobOrc", N = "Orc"},
-    {F = "AutoMobPirate", N = "Pirate"},
-    {F = "AutoMobNinja", N = "Ninja"},
-    {F = "AutoMobWarrior", N = "Warrior"},
-    {F = "AutoMobPirateCaptain", N = "Pirate Captain"},
-    {F = "AutoMobSamurai", N = "Samurai"},
-    {F = "AutoMobPirateAdmiral", N = "Pirate Admiral"},
-    {F = "AutoMobSamuraiMaster", N = "Samurai Master"},
-    {F = "AutoMobDarkKnight", N = "Dark Knight"},
-    {F = "AutoMobDarkCommander", N = "Dark Commander"}
-}
-
 -- SAFE ZONE COMBAT BREAK ROUTINE
 task.spawn(function()
     while Running do
@@ -1494,14 +1533,6 @@ task.spawn(function()
     end
 end)
 
-local OrePriorityList = {
-    {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
-    {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
-    {F = "AutoMineCobalt", N = "Cobalt"}, {F = "AutoMineTitanium", N = "Titanium"}, {F = "AutoMinePlatinum", N = "Platinum"},
-    {F = "AutoMineGold", N = "Gold"}, {F = "AutoMineCopper", N = "Copper"}, {F = "AutoMineIron", N = "Iron"},
-    {F = "AutoMineSilver", N = "Silver"}, {F = "AutoMineCoal", N = "Coal"}, {F = "AutoMineStone", N = "Stone"}
-}
-
 local currentOreIndex = 1
 local lastOreJumpTick = 0
 
@@ -1632,7 +1663,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT MEAT UPGRADE LOOP
+-- DEDICATED STAGGERED MEAT UPGRADE LOOP (0.35s)
 local MeatUpgradeList = {
     {F = "AutoMeatMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
     {F = "AutoMeatStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
@@ -1643,7 +1674,7 @@ local MeatUpgradeList = {
 task.spawn(function()
     local mIdx = 1
     while Running do
-        task.wait(0.4)
+        task.wait(0.35)
         if NetRemote and Running then
             local att = 0
             repeat
@@ -1659,7 +1690,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT BONES UPGRADE LOOP
+-- DEDICATED STAGGERED BONES UPGRADE LOOP (0.45s)
 local BonesUpgradeList = {
     {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
     {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
@@ -1671,7 +1702,7 @@ local BonesUpgradeList = {
 task.spawn(function()
     local bIdx = 1
     while Running do
-        task.wait(0.4)
+        task.wait(0.45)
         if NetRemote and Running then
             local att = 0
             repeat
@@ -1687,7 +1718,7 @@ task.spawn(function()
     end
 end)
 
--- DEDICATED INDEPENDENT SOULS UPGRADE LOOP (COPIED EXACT MEAT LOGIC WITH FIXED BOUNDARY)
+-- DEDICATED STAGGERED SOULS UPGRADE LOOP (0.55s)
 local SoulsUpgradeList = {
     {F = "AutoSoulsMoreSouls", T = "UpgradeUpgradeMax", A = {"Souls", "MoreSouls"}},
     {F = "AutoSoulsLuckierSwords", T = "UpgradeUpgradeMax", A = {"Souls", "LuckierSwords"}},
@@ -1699,7 +1730,7 @@ local SoulsUpgradeList = {
 task.spawn(function()
     local sIdx = 1
     while Running do
-        task.wait(0.4)
+        task.wait(0.55)
         if NetRemote and Running then
             local att = 0
             repeat
@@ -1715,6 +1746,7 @@ task.spawn(function()
     end
 end)
 
+-- DEDICATED STAGGERED GEM UPGRADE LOOP (0.65s)
 local GemUpgradeList = {
     {F="AutoGemMoreOof", T="UpgradeUpgradeMax", A={"Gem","MoreOof"}},
     {F="AutoGemMoreGems", T="UpgradeUpgradeMax", A={"Gem","MoreGems"}},
@@ -1724,7 +1756,7 @@ local GemUpgradeList = {
 task.spawn(function()
     local gIdx = 1
     while Running do
-        task.wait(0.4)
+        task.wait(0.65)
         if NetRemote and Running then
             local att = 0
             repeat
@@ -1799,4 +1831,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V11.93 Souls Upgrade Loop Fixed with Meat Logic!")
+print("[Dominate Hub] V11.94 Staggered Loops & Dynamic HUD Loaded Successfully!")
