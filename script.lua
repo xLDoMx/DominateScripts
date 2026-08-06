@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V15.6 - GRAVITY-FRIENDLY SAND PIT & REGEN LOOP)
+-- DOMINATE HUB | PRO EDITION (STABLE V15.7 - PHYSICS-RELEASED SAND PIT & REGEN LOOP)
 --======================================================================================
 local Env = getgenv()
 
@@ -1462,7 +1462,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- GRAVITY-FRIENDLY GROUND MOVEMENT LOOP (NO Y-LOCK IN PIT TO PREVENT FALLING OVER)
+-- GRAVITY-FRIENDLY MOVEMENT LOOP (NO CFrame OVERRIDE IN PIT FOR NATURAL DIGGING)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1481,32 +1481,17 @@ task.spawn(function()
             elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
             
             if act then
-                local targetCF
-                if act == Dest.Dunes then
-                    -- Lock X and Z to stay centered in the pit, but leave Y free so gravity lets you drop naturally through layers!
-                    targetCF = CFrame.new(act.X, hrp.Position.Y, act.Z)
-                else
-                    targetCF = CFrame.new(act)
-                end
-                
-                local flatCurrent = Vector3.new(hrp.Position.X, 0, hrp.Position.Z)
-                local flatTarget = Vector3.new(act.X, 0, act.Z)
-                
-                if (flatCurrent - flatTarget).Magnitude > 0.5 then
+                local targetCF = CFrame.new(act)
+                if (hrp.Position - act).Magnitude > 0.5 then
                     hrp.Anchored = false
                     local speed = math.clamp(Env.MiningJumpSpeed or 0.8, 0.1, 3.0)
                     local alpha = math.clamp(0.2 / speed, 0.01, 1.0)
                     hrp.CFrame = hrp.CFrame:Lerp(targetCF, alpha)
                 else
-                    if act == Dest.Dunes then
-                        -- Do NOT anchor or freeze Y in the sand pit so you never fall over or float
-                        hrp.Anchored = false
-                    else
-                        hrp.CFrame = targetCF
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                        hrp.AssemblyAngularVelocity = Vector3.zero
-                        hrp.Anchored = true
-                    end
+                    hrp.CFrame = targetCF
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                    hrp.AssemblyAngularVelocity = Vector3.zero
+                    hrp.Anchored = true
                 end
             else
                 hrp.Anchored = false
@@ -1829,18 +1814,18 @@ task.spawn(function()
     end
 end)
 
--- SEAMLESS SAND REGENERATION LOOP (PIT FIRST -> REACH TARGET LAYER -> REGEN PAD -> PIT)
+-- SEAMLESS SAND REGENERATION LOOP (PHYSICS RELEASED IN PIT FOR NATURAL DIGGING)
 task.spawn(function()
     while Running do
         task.wait(1.0)
         if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
-            -- 1. Teleport to the sand pit first upon activation
+            -- 1. Teleport to the sand pit once upon activation
             showToast("Sand Regen: Teleporting to sand pit...")
             SandTargetVector = Dest.Dunes
-            task.wait(2.5)
-            SandTargetVector = nil -- Release to let character dig in pit naturally
+            task.wait(2.0)
+            SandTargetVector = nil -- Completely release position lock so character falls and digs naturally with physics!
             
-            -- 2. Monitor depth/layers until target layer is reached
+            -- 2. Monitor layers until target layer is reached
             local reachedTarget = false
             local targetLayer = tonumber(Env.TargetSandLayer) or 3
             
@@ -2269,4 +2254,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V15.6 Gravity-Friendly Sand Pit & Regen Loop Loaded Successfully!")
+print("[Dominate Hub] V15.7 Physics-Released Sand Pit & Regen Loop Loaded Successfully!")
