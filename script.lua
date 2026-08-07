@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.63 - 3-SECOND TRIAL GRACE PERIOD FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.66 - STRICT STEP-BY-STEP TRIAL SEQUENCE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -66,9 +66,7 @@ local Dest = {
     Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
     SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
     Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
-    EasyTrial = Vector3.new(852.7059, 11.1623, 13444.3925),     
-    MediumTrial = Vector3.new(879.4453, 11.1781, 13418.6263), 
-    HardTrial = Vector3.new(909.3944702148438, 11.162318229675293, 13441.96875), 
+    TrialLobbyPad = Vector3.new(879.4453, 11.1781, 12950.0), -- Staging area right outside trial doors (Z < 13000)
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
@@ -93,7 +91,6 @@ local trialIsRunning = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
 local cachedStates = nil
-local trialEntryTick = 0 -- Grace period timestamp tracker
 
 -- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING[cite: 1]
 local deadMobs = {}
@@ -1051,8 +1048,7 @@ local function makeMainTab(emoji, txt)
 end
 
 local tabUpgrades = makeMainTab("⚡", "Upgrades") 
-tabUpgrades.BackgroundColor3 = Color3.fromRGB(168, 85, 247) 
-tabUpgrades.TextColor3 = Color3.fromRGB(255, 255, 255)
+upgradesPage.Visible = true
 local activeTabStroke = tabUpgrades:FindFirstChild("TabStroke")
 if activeTabStroke then activeTabStroke.Transparency = 0.1 end
 
@@ -1177,33 +1173,23 @@ createTextBoxRow(trialsScroll, "Trial Time Limit (min)", "TrialTimeLimit")
 createToggleRow(trialsScroll, "Trial Diagnostics Mode", "TrialDiagnostics")
 
 createSectionHeader(trialsScroll, "Manual Testing")
-createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
-    local targetPad = nil
-    if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
-    elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
-    elseif Env.AutoHardTrial then targetPad = Dest.HardTrial
-    else targetPad = Dest.HardTrial end
+createButtonRow(trialsScroll, "Test Trial Staging Teleport", function()
+    showToast("Trials: Teleporting to trial lobby staging pad...")
+    print("[DominateHub Diag] Manual Staging Teleport Triggered.")
     
-    showToast("Trials: Manual teleport test triggered!")
-    print("[DominateHub Diag] Manual Teleport Test Triggered. Target Pad:", tostring(targetPad))
-    
-    -- PURGE ALL MOVEMENT VECTORS TO PREVENT CONFLICT[cite: 1]
     MasterTargetVector = nil
     MiningTargetVector = nil
     MobTargetVector = nil
     RitualTargetVector = nil
     SandTargetVector = nil
     
-    trialIsRunning = true
-    trialEntryTick = tick() -- Set grace period tick on manual test
-    
     local hrp = GetWorldRoot()
     if hrp then
         hrp.Anchored = false
-        hrp.CFrame = CFrame.new(targetPad)
+        hrp.CFrame = CFrame.new(Dest.TrialLobbyPad)
         hrp.AssemblyLinearVelocity = Vector3.zero
         hrp.AssemblyAngularVelocity = Vector3.zero
-        print("[DominateHub Diag] Teleport executed successfully. HRP Position:", tostring(hrp.Position))
+        print("[DominateHub Diag] Teleported to trial lobby staging pad successfully.")
     else
         print("[DominateHub Diag] ERROR: HumanoidRootPart is nil during manual test!")
     end
@@ -1723,149 +1709,121 @@ local function restoreToggles()
     trialIsRunning = false
 end
 
--- TRIAL WATCHER & MANUAL EXIT DETECTOR (WITH 3S GRACE PERIOD PROTECTION)[cite: 1]
-task.spawn(function()
-    while Running do
-        task.wait(0.5)
-        local hrp = GetWorldRoot()
-        if hrp then
-            if hrp.Position.Z > 13000 and not trialIsRunning then
-                trialIsRunning = true
-                trialEntryTick = tick() -- Mark entry time for grace period
-                cacheAndPauseToggles()
-                if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Entered arena (Z > 13000). Grace period started.") end
-                showToast("Trials: Entered trial arena. Background toggles paused.")
-            elseif trialIsRunning and hrp.Position.Z < 13000 then
-                -- Check if 3-second grace period has passed since entering the trial
-                if (tick() - trialEntryTick) > 3 then
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Returned to lobby (Z < 13000). Restoring...") end
-                    showToast("Trials: Exited trial arena. Restoring toggles...")
-                    trialIsRunning = false
-                    MobTargetVector = nil
-                    currentTargetMob = nil
-                    lastTrackedMobPart = nil
-                    hrp.Anchored = false
-                    hrp.AssemblyLinearVelocity = Vector3.zero
-                    task.wait(0.5)
-                    restoreToggles()
-                else
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Ignored Z < 13000 due to 3s grace period.") end
-                end
-            end
-        end
-    end
-end)
-
--- SCHEDULED TRIAL AUTOMATION (TIME-LIMIT BASED EXTRACTION WITH DIAGNOSTICS)[cite: 1]
+-- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE (PRE-PAUSE AT :58:55 / :28:55)
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
 task.spawn(function()
     while Running do
-        task.wait(1.0)
+        task.wait(0.2)
         local hrp = GetWorldRoot()
         local inLobby = hrp and hrp.Position.Z < 13000 or true
         
         local trialEnabled = (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial)
-        if Env.TrialDiagnostics and trialEnabled and not trialIsRunning and not ritualIsActive then
-            local timeTable = os.date("*t")
-            print(string.format("[DominateHub Diag] Polling clock. Time: %02d:%02d:%02d | InLobby: %s | Cooldown OK: %s", timeTable.hour, timeTable.min, timeTable.sec, tostring(inLobby), tostring(tick() - trialExitCooldown > 5)))
-        end
         
         if Running and trialEnabled and not ritualIsActive and not trialIsRunning and inLobby and (tick() - trialExitCooldown > 5) then
             local timeTable = os.date("*t")
             local min = timeTable.min
+            local sec = timeTable.sec
             local hour = timeTable.hour
             
-            if (min == 29 or min == 59) then
+            -- Trigger 5 seconds early at 28:55 or 58:55
+            local isTriggerTime = ((min == 28 or min == 58) and sec >= 55) or (min == 29 or min == 59)
+            
+            if isTriggerTime then
                 local currentSlot = hour .. "_" .. min
                 if currentSlot ~= lastTrialTriggeredSlot then
                     lastTrialTriggeredSlot = currentSlot
                     
-                    local targetPad = nil
-                    if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
-                    elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
-                    elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 1: Pre-pause & Staging hit at " .. min .. ":" .. sec) end
+                    showToast("Trials: Preparing for trial... Pausing background tasks.")
+                    cacheAndPauseToggles()
                     
-                    if targetPad then
-                        if Env.TrialDiagnostics then print("[DominateHub Diag] Scheduled slot match hit (:29 or :59)! Target pad:", tostring(targetPad)) end
-                        showToast("Trials: Scheduled trial time reached! Teleporting...")
-                        cacheAndPauseToggles()
-                        
-                        -- PURGE ALL MOVEMENT VECTORS TO PREVENT CONFLICT[cite: 1]
-                        MasterTargetVector = nil
-                        MiningTargetVector = nil
-                        MobTargetVector = nil
-                        RitualTargetVector = nil
-                        SandTargetVector = nil
-                        
-                        trialIsRunning = true
-                        trialEntryTick = tick() -- Set grace period tick on scheduled run
-                        
-                        local hrpToTeleport = GetWorldRoot()
-                        if hrpToTeleport then
-                            hrpToTeleport.Anchored = false
-                            hrpToTeleport.CFrame = CFrame.new(targetPad)
-                            hrpToTeleport.AssemblyLinearVelocity = Vector3.zero
-                            hrpToTeleport.AssemblyAngularVelocity = Vector3.zero
+                    -- PURGE ALL MOVEMENT VECTORS TO PREVENT CONFLICT[cite: 1]
+                    MasterTargetVector = nil
+                    MiningTargetVector = nil
+                    MobTargetVector = nil
+                    RitualTargetVector = nil
+                    SandTargetVector = nil
+                    
+                    trialIsRunning = true
+                    
+                    -- Step 2: Teleport to staging lobby pad
+                    local hrpStaging = GetWorldRoot()
+                    if hrpStaging then
+                        hrpStaging.Anchored = false
+                        hrpStaging.CFrame = CFrame.new(Dest.TrialLobbyPad)
+                        hrpStaging.AssemblyLinearVelocity = Vector3.zero
+                        hrpStaging.AssemblyAngularVelocity = Vector3.zero
+                    end
+                    
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 2: Teleported to staging pad. Waiting for arena entry (Z > 13000)...") end
+                    
+                    -- Step 3: Wait for natural entry into the arena (Z > 13000)
+                    local entryWaitStart = tick()
+                    local enteredArena = false
+                    while Running and trialIsRunning and (tick() - entryWaitStart < 45) do
+                        task.wait(0.5)
+                        local checkHrp = GetWorldRoot()
+                        if checkHrp and checkHrp.Position.Z > 13000 then
+                            enteredArena = true
+                            break
                         end
-                        
-                        showToast("Trials: Waiting 60s for trial countdown...")
-                        local waitElapsed = 0
-                        while waitElapsed < 60 and Running and trialIsRunning do
-                            task.wait(1.0)
-                            waitElapsed = waitElapsed + 1
-                        end
-                        
-                        if Env.TrialDiagnostics then print("[DominateHub Diag] Trial countdown complete. Starting time-limit watcher.") end
-                        showToast("Trials: Time-limit trial extraction guard active...")
+                    end
+                    
+                    if enteredArena then
+                        if Env.TrialDiagnostics then print("[DominateHub Diag] Step 3: Entered arena successfully! Starting time limit timer.") end
+                        showToast("Trials: Entered arena! Timer started.")
                         
                         local trialStartTick = tick()
+                        local limitMins = tonumber(Env.TrialTimeLimit) or 15
+                        local limitSecs = limitMins * 60
                         
+                        -- Step 4: Run time-limit countdown inside arena
                         while Running and trialIsRunning do
                             task.wait(1.0)
+                            local checkHrp = GetWorldRoot()
                             
-                            local hrpCheck = GetWorldRoot()
-                            -- Only check lobby return if grace period has passed to avoid instant cancel
-                            if hrpCheck and hrpCheck.Position.Z < 13000 and (tick() - trialEntryTick > 3) then
-                                if Env.TrialDiagnostics then print("[DominateHub Diag] Detected return to lobby inside loop.") end
-                                trialIsRunning = false
-                                MobTargetVector = nil
-                                currentTargetMob = nil
+                            if (tick() - trialStartTick) >= limitSecs then
+                                if Env.TrialDiagnostics then print("[DominateHub Diag] Step 4: Time limit reached (" .. limitMins .. "m). Firing LeaveTrial...") end
+                                showToast("Trials: Time limit reached (" .. limitMins .. "m). Leaving trial...")
+                                
                                 trialExitCooldown = tick()
+                                
+                                pcall(function()
+                                    local args = { [1] = "LeaveTrial" }
+                                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                                end)
+                                
                                 break
                             end
                             
-                            if Env.AutoLeaveByTime then
-                                local limitMins = tonumber(Env.TrialTimeLimit) or 15
-                                local limitSecs = limitMins * 60
-                                
-                                if (tick() - trialStartTick) >= limitSecs then
-                                    if Env.TrialDiagnostics then print("[DominateHub Diag] Time limit reached (" .. limitMins .. "m). Purging vectors & leaving trial...") end
-                                    showToast("Trials: Time limit reached (" .. limitMins .. "m). Purging vectors & leaving trial...")
-                                    
-                                    trialIsRunning = false
-                                    MobTargetVector = nil
-                                    currentTargetMob = nil
-                                    lastTrackedMobPart = nil
-                                    trialExitCooldown = tick()
-                                    
-                                    if hrpCheck then
-                                        hrpCheck.Anchored = false
-                                        hrpCheck.AssemblyLinearVelocity = Vector3.zero
-                                    end
-                                    
-                                    pcall(function()
-                                        local args = { [1] = "LeaveTrial" }
-                                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                                    end)
-                                    
-                                    task.wait(0.5)
-                                    break
-                                end
+                            -- If player leaves arena early manually
+                            if checkHrp and checkHrp.Position.Z < 13000 then
+                                break
                             end
                         end
+                    else
+                        if Env.TrialDiagnostics then print("[DominateHub Diag] Warning: Arena entry timeout (did not step through gate in time).") end
+                        showToast("Trials: Entry timeout. Resetting state.")
                     end
+                    
+                    -- Step 5: Clean up and restore toggles upon returning to castle
+                    trialIsRunning = false
+                    MobTargetVector = nil
+                    currentTargetMob = nil
+                    lastTrackedMobPart = nil
+                    trialExitCooldown = tick()
+                    
+                    local hrpFinal = GetWorldRoot()
+                    if hrpFinal then
+                        hrpFinal.Anchored = false
+                        hrpFinal.AssemblyLinearVelocity = Vector3.zero
+                    end
+                    
+                    task.wait(1.0)
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 5: Returning to castle. Restoring background toggles.") end
+                    restoreToggles()
                 end
             end
         end
@@ -2711,4 +2669,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.63 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.66 Stable Loaded Successfully!")
