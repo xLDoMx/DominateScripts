@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.60 - TRIAL DIAGNOSTICS & TELEPORT FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.61 - SCOPE & TELEPORT CRASH FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -29,6 +29,27 @@ local player = Players.LocalPlayer
 local vu = VirtualUser
 
 local UI = {}
+
+-- FORWARD HELPER FUNCTIONS DECLARED AT THE TOP TO PREVENT NIL SCOPING ERRORS
+local function GetWorldRoot() 
+    return player.Character and player.Character:FindFirstChild("HumanoidRootPart") 
+end
+
+local function isMobRespawning(mobModel)
+    if not mobModel then return true end
+    for _, desc in ipairs(mobModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
+            return true
+        end
+    end
+    return false
+end
+
+local function isOreRespawning(oreModel)
+    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
+    if desc and desc.Text:lower():find("respawning") then return true end
+    return false
+end
 
 -- DESTINATION VECTORS DECLARED EARLY TO PREVENT NIL-INDEX ERRORS[cite: 1]
 local Dest = {
@@ -91,7 +112,7 @@ Env.TargetSandLayer = 3
 -- TRIAL CONFIG
 Env.AutoLeaveByTime = true
 Env.TrialTimeLimit = 15
-Env.TrialDiagnostics = false -- Diagnostic debug mode toggle
+Env.TrialDiagnostics = false
 
 -- ANCIENT BOSS FARM CONFIG[cite: 1]
 Env.AutoAncientBossFarm = false
@@ -1517,8 +1538,6 @@ local TrialTargetVector = nil
 local RitualTargetVector = nil
 local SandTargetVector = nil
 
-local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
-
 local lastGlidingState = false
 RunService.Stepped:Connect(function()
     if not Running then return end
@@ -1583,16 +1602,6 @@ task.spawn(function()
         end
     end
 end)
-
-local function isMobRespawning(mobModel)
-    if not mobModel then return true end
-    for _, desc in ipairs(mobModel:GetDescendants()) do
-        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
-            return true
-        end
-    end
-    return false
-end
 
 -- ANCIENT BOSS SPAWN & AUTO-NAVIGATE LOOP[cite: 1]
 task.spawn(function()
@@ -2144,12 +2153,6 @@ end)
 local currentOreIndex = 1
 local lastOreJumpTick = 0
 
-local function isOreRespawning(oreModel)
-    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
-    if desc and desc.Text:lower():find("respawning") then return true end
-    return false
-end
-
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -2698,4 +2701,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.60 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.61 Stable Loaded Successfully!")
