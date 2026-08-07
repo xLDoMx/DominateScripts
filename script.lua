@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.58 - TIME-BASED TRIAL EXTRACTION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.59 - CLEAN VECTOR-PURGE TRIAL EXIT)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1729,7 +1729,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (TIME-LIMIT BASED EXTRACTION)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (TIME-LIMIT BASED EXTRACTION WITH VECTOR PURGE BEFORE LEAVE)[cite: 1]
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
@@ -1803,23 +1803,25 @@ task.spawn(function()
                                 local limitSecs = limitMins * 60
                                 
                                 if (tick() - trialStartTick) >= limitSecs then
-                                    showToast("Trials: Time limit reached (" .. limitMins .. "m). Leaving trial...")
+                                    showToast("Trials: Time limit reached (" .. limitMins .. "m). Purging vectors & leaving trial...")
                                     
+                                    -- 1. PURGE VECTORS AND TURN OFF TRIAL RUNNING STATE FIRST
                                     trialIsRunning = false
                                     MobTargetVector = nil
                                     currentTargetMob = nil
                                     lastTrackedMobPart = nil
                                     trialExitCooldown = tick()
                                     
-                                    pcall(function()
-                                        local args = { [1] = "LeaveTrial" }
-                                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                                    end)
-                                    
                                     if hrpCheck then
                                         hrpCheck.Anchored = false
                                         hrpCheck.AssemblyLinearVelocity = Vector3.zero
                                     end
+                                    
+                                    -- 2. FIRE THE LEAVE TRIAL REMOTE
+                                    pcall(function()
+                                        local args = { [1] = "LeaveTrial" }
+                                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                                    end)
                                     
                                     task.wait(0.5)
                                     break
@@ -2678,4 +2680,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.58 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.59 Stable Loaded Successfully!")
