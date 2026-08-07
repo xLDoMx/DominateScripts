@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.18 - HIGH-SPEED BLAZING TRIAL ARENA ENGINE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.19 - BLAZING INSTANT-SNAP TRIAL & TOGGLE LOCK)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1442,7 +1442,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- UNIFIED HIGH-SPEED SMOOTH MOVEMENT LOOP (0.85 SNAP ALPHA, UNANCHORED FOR COMBAT/TRIALS)
+-- UNIFIED BLAZING FAST MOVEMENT LOOP (INSTANT CFrame SNAP FOR COMBAT, ZERO DELAY)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1461,19 +1461,22 @@ task.spawn(function()
             
             if act then
                 local targetCF = CFrame.new(act)
-                if (hrp.Position - act).Magnitude > 0.3 then
+                if trialIsRunning or MobTargetVector then
+                    -- Blazing fast instant snap for trial and combat mobs (zero lag, zero bounce)
                     hrp.Anchored = false
-                    -- High-speed smooth tracking (0.85 alpha) for blazing fast snapping with zero delay
-                    hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.85)
-                    hrp.AssemblyLinearVelocity = Vector3.zero
-                else
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
-                    if not MobTargetVector and not trialIsRunning then
-                        hrp.Anchored = true
-                    else
+                else
+                    if (hrp.Position - act).Magnitude > 0.3 then
                         hrp.Anchored = false
+                        hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.85)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                    else
+                        hrp.CFrame = targetCF
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                        hrp.AssemblyAngularVelocity = Vector3.zero
+                        hrp.Anchored = true
                     end
                 end
             else
@@ -1546,7 +1549,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (FEEDS HIGH-SPEED ARENA SCAN INTO UNIFIED MOB ENGINE)
+-- SCHEDULED TRIAL AUTOMATION (LOCKS OUT ALL BACKGROUND TOGGLES UNTIL FULL TRIAL COMPLETION)
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1565,11 +1568,20 @@ task.spawn(function()
                 
                 if targetPad then
                     trialIsRunning = true
-                    showToast("Trials: Scheduled trial time reached! Teleporting...")
+                    showToast("Trials: Scheduled trial time reached! Locking toggles & teleporting...")
                     
-                    local wasRitualActive = Env.AutoStartRitual
-                    Env.AutoStartRitual = false
-                    RitualTargetVector = nil
+                    -- Cache and turn OFF all background automation toggles during trials
+                    local cachedStates = {}
+                    local flagsToPause = {
+                        "AutoRegenSandLayers", "AutoFarmCash", "AutoStartRitual", "AutoGemExchange", "AutoGemShopTeleport"
+                    }
+                    for _, mInfo in ipairs(MobPriorityList) do table.insert(flagsToPause, mInfo.F) end
+                    for _, oInfo in ipairs(OrePriorityList) do table.insert(flagsToPause, oInfo.F) end
+                    
+                    for _, flagName in ipairs(flagsToPause) do
+                        cachedStates[flagName] = Env[flagName]
+                        Env[flagName] = false
+                    end
                     
                     local hrp = GetWorldRoot()
                     if hrp then
@@ -1586,43 +1598,43 @@ task.spawn(function()
                         waitElapsed = waitElapsed + 1
                     end
                     
-                    showToast("Trials: Blazing high-speed mob clearing active...")
+                    showToast("Trials: Blazing high-speed mob clearing active across all waves...")
                     
-                    local clearingActive = true
-                    local noMobCounter = 0
-                    while clearingActive and Running do
-                        task.wait(0.2)
-                        local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                        local trialsFolder = gc and gc:FindFirstChild("Trials")
-                        local totalMobsLeft = 0
-                        
-                        if trialsFolder then
-                            for _, roomObj in ipairs(trialsFolder:GetChildren()) do
-                                local mobsFolder = roomObj:FindFirstChild("Mobs")
-                                if mobsFolder then
-                                    for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                                        if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                            totalMobsLeft = totalMobsLeft + 1
-                                        end
+                    -- Keep trial running until the game removes the active trial room or player is teleported out
+                    while Running and trialIsRunning do
+                        task.wait(1.0)
+                        pcall(function()
+                            local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                            local trialsFolder = gc and gc:FindFirstChild("Trials")
+                            local hasActiveRoom = false
+                            if trialsFolder and #trialsFolder:GetChildren() > 0 then
+                                for _, room in ipairs(trialsFolder:GetChildren()) do
+                                    local mFolder = room:FindFirstChild("Mobs")
+                                    if mFolder and #mFolder:GetChildren() > 0 then
+                                        hasActiveRoom = true
+                                        break
                                     end
                                 end
                             end
-                        end
-                        
-                        if totalMobsLeft == 0 then
-                            noMobCounter = noMobCounter + 1
-                            if noMobCounter >= 6 then
-                                clearingActive = false
+                            -- If player leaves trial area or no trial rooms/mobs exist, trial session is complete
+                            local hrp = GetWorldRoot()
+                            if hrp and hrp.Position.Z > 13000 then -- Inside trial arena region
+                                -- Still in trial
+                            else
+                                if not hasActiveRoom then
+                                    trialIsRunning = false
+                                end
                             end
-                        else
-                            noMobCounter = 0
-                        end
+                        end)
                     end
                     
-                    showToast("Trials: Completed! Returning to map...")
+                    showToast("Trials: Completed! Restoring background automation toggles...")
                     task.wait(2.0)
                     
-                    Env.AutoStartRitual = wasRitualActive
+                    -- Restore all previously cached automation toggles
+                    for flagName, state in pairs(cachedStates) do
+                        Env[flagName] = state
+                    end
                     trialIsRunning = false
                 end
             end
@@ -1674,7 +1686,7 @@ local lastTargetedPart = nil
 -- UNIFIED BLAZING AUTO MOB & TRIAL ARENA FARMING ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.05) -- Ultra-fast poll rate for zero delay snapping
+        task.wait(0.05) -- Ultra-fast polling for zero delay snapping
         if Running and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
@@ -1720,7 +1732,7 @@ task.spawn(function()
                             for _, roomObj in ipairs(trialsFolder:GetChildren()) do
                                 local mFolder = roomObj:FindFirstChild("Mobs")
                                 if mFolder then
-                                    for _, mobObj in ipairs(molds or mFolder:GetChildren()) do
+                                    for _, mobObj in ipairs(mFolder:GetChildren()) do
                                         if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
                                             local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
                                             if part and hrp then
@@ -2218,4 +2230,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.18 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.19 Stable Loaded Successfully!")
