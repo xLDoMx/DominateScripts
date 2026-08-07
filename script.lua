@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.53 - POSITION-GATED TOGGLE RESTORATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.54 - EXIT COOLDOWN & BOUNCE FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1729,21 +1729,23 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH TARGET-LOCK STAGNATION & POSITION-GATED EXIT)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (WITH EXIT COOLDOWN LOCK & INSTANT STATE RELEASE)[cite: 1]
 local lastTrialTriggeredSlot = ""
+local trialExitCooldown = 0
+
 task.spawn(function()
     while Running do
         task.wait(1.0)
         local hrp = GetWorldRoot()
         local inLobby = hrp and hrp.Position.Z < 13000 or true
         
-        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive and not trialIsRunning and inLobby then
+        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive and not trialIsRunning and inLobby and (tick() - trialExitCooldown > 5) then
             local timeTable = os.date("*t")
             local min = timeTable.min
             local hour = timeTable.hour
             
             if (min == 29 or min == 59) then
-                local currentSlot = hour .. "_" .. min
+                local currentSlot = hour "_" .. min
                 if currentSlot ~= lastTrialTriggeredSlot then
                     lastTrialTriggeredSlot = currentSlot
                     
@@ -1790,8 +1792,10 @@ task.spawn(function()
                             
                             local hrpCheck = GetWorldRoot()
                             if hrpCheck and hrpCheck.Position.Z < 13000 then
+                                trialIsRunning = false
                                 MobTargetVector = nil
                                 currentTargetMob = nil
+                                trialExitCooldown = tick()
                                 break
                             end
                             
@@ -1807,15 +1811,18 @@ task.spawn(function()
                                         elseif tick() - stagnationTimer > stagnationLimit then
                                             showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s target stagnation). Leaving trial...")
                                             
-                                            pcall(function()
-                                                local args = { [1] = "LeaveTrial" }
-                                                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                                            end)
-                                            
+                                            -- INSTANTLY KILL TRIAL STATE & SET COOLDOWN BEFORE FIRING REMOTE
+                                            trialIsRunning = false
                                             MobTargetVector = nil
                                             currentTargetMob = nil
                                             lastTrackedMobPart = nil
                                             currentStagnationTarget = nil
+                                            trialExitCooldown = tick()
+                                            
+                                            pcall(function()
+                                                local args = { [1] = "LeaveTrial" }
+                                                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                                            end)
                                             
                                             if hrpCheck then
                                                 hrpCheck.Anchored = false
@@ -2687,4 +2694,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.53 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.54 Stable Loaded Successfully!")
