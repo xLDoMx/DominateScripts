@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.48 - INTEGRATED TRIAL SCANNER FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.49 - TRIAL EXTRACTION & TIMER CONFIG)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1721,7 +1721,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH VECTOR PURGE & SAFE TELEPORT)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (WITH WAVE TIMEOUT & LEAVE REMOTE INTEGRATION)[cite: 1]
 local lastTrialTriggeredSlot = ""
 task.spawn(function()
     while Running do
@@ -1812,11 +1812,16 @@ task.spawn(function()
                                         lastMobCount = currentMobCount
                                         stagnationTimer = tick()
                                     elseif currentMobCount > 0 and (tick() - stagnationTimer > stagnationLimit) then
-                                        showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s stagnation). Leaving via remote...")
+                                        showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s stagnation). Leaving trial...")
+                                        
+                                        -- CONFIRMED LEAVE TRIAL REMOTE EXECUTION
                                         pcall(function()
-                                            local args = { [1] = "LeaveTrial" }
+                                            local args = {
+                                                [1] = "LeaveTrial"
+                                            }
                                             game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                                         end)
+                                        
                                         task.wait(1.0)
                                         trialIsRunning = false
                                     end
@@ -1921,7 +1926,7 @@ task.spawn(function()
 
                 if not currentValid then
                     if trialIsRunning then
-                        -- Integrated trial folder scanner & CFrame teleport logic
+                        -- Trial folder scanner & CFrame teleport logic
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
                         local trialsFolder = gc and gc:FindFirstChild("Trials")
                         if trialsFolder then
@@ -2677,4 +2682,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.48 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.49 Stable Loaded Successfully!")
