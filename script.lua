@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.45 - MANUAL TRIAL TEST BUTTON ADDED)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.46 - VECTOR PURGE & TRIAL TELEPORT FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1127,6 +1127,7 @@ createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
 createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 createToggleRow(trialsScroll, "Auto Leave If Stuck (Mob Stagnation)", "AutoLeaveIfStuck")
 createTextBoxRow(trialsScroll, "Stagnation Time (s)", "TrialStagnationTime")
+
 createSectionHeader(trialsScroll, "Manual Testing")
 createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
     local targetPad = nil
@@ -1136,7 +1137,14 @@ createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
     else targetPad = Dest.HardTrial end
     
     showToast("Trials: Manual teleport test triggered!")
-    cacheAndPauseToggles()
+    
+    -- PURGE ALL MOVEMENT VECTORS TO PREVENT CONFLICT
+    MasterTargetVector = nil
+    MiningTargetVector = nil
+    MobTargetVector = nil
+    RitualTargetVector = nil
+    SandTargetVector = nil
+    
     trialIsRunning = true
     
     local hrp = GetWorldRoot()
@@ -1706,7 +1714,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH EXPLICIT trialIsRunning & Z-COORDINATE SAFETY LOCK)
+-- SCHEDULED TRIAL AUTOMATION (WITH VECTOR PURGE & SAFE TELEPORT)
 local lastTrialTriggeredSlot = ""
 task.spawn(function()
     while Running do
@@ -1732,6 +1740,14 @@ task.spawn(function()
                     if targetPad then
                         showToast("Trials: Scheduled trial time reached! Teleporting...")
                         cacheAndPauseToggles()
+                        
+                        -- PURGE ALL MOVEMENT VECTORS TO PREVENT CONFLICT
+                        MasterTargetVector = nil
+                        MiningTargetVector = nil
+                        MobTargetVector = nil
+                        RitualTargetVector = nil
+                        SandTargetVector = nil
+                        
                         trialIsRunning = true
                         
                         local hrpToTeleport = GetWorldRoot()
@@ -2658,4 +2674,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.45 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.46 Stable Loaded Successfully!")
