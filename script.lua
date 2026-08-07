@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.47 - CLEANED / NO TRIALS)
+-- DOMINATE HUB | PRO EDITION (CLEAN BASE + TRIALS STAGE 1 TELEPORT)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -58,6 +58,11 @@ Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
 Env.TargetSandLayer = 3
+
+-- TRIAL FLAGS
+Env.AutoEasyTrial = false
+Env.AutoMediumTrial = false
+Env.AutoHardTrial = false
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -968,6 +973,7 @@ if activeTabStroke then activeTabStroke.Transparency = 0.1 end
 local tabNoobs = makeMainTab("🤖", "Noobs")
 local tabMines = makeMainTab("⛏️", "Mines")
 local tabMobs = makeMainTab("⚔️", "Mobs")
+local tabTrials = makeMainTab("🛡️", "Trials")
 local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
@@ -988,7 +994,7 @@ local function makePage()
     p.Parent = pageArea 
     return p
 end
-local upgradesPage, noobsPage, minesPage, mobsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
+local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
 local function makeVerticalScroll(parent)
@@ -1073,6 +1079,13 @@ createSectionHeader(noobsScroll, "Realm 3 Noobs")
 createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
+
+-- TRIALS PAGE BUILD
+local trialsScroll = makeVerticalScroll(trialsPage)
+createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
+createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
+createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
+createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 
 -- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
@@ -1369,12 +1382,13 @@ local function mainRoute(pOpen, bActive)
     noobsPage.Visible = false
     minesPage.Visible = false
     mobsPage.Visible = false
+    trialsPage.Visible = false
     footballPage.Visible = false
     miscPage.Visible = false
     settingsPage.Visible = false
     pOpen.Visible = true
     
-    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabFootball, tabMisc, tabSettings}
+    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabTrials, tabFootball, tabMisc, tabSettings}
     for _, t in ipairs(tabs) do 
         t.BackgroundColor3 = Color3.fromRGB(18, 12, 28)
         t.TextColor3 = Color3.fromRGB(210, 190, 235)
@@ -1391,6 +1405,7 @@ tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgr
 tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
 tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
 tabMobs.MouseButton1Click:Connect(function() mainRoute(mobsPage, tabMobs) end)
+tabTrials.MouseButton1Click:Connect(function() mainRoute(trialsPage, tabTrials) end)
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
@@ -1410,6 +1425,9 @@ local Dest = {
     Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
     SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
     Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
+    EasyTrial = Vector3.new(856.3858032226562, 11.162318229675293, 13441.853515625),
+    MediumTrial = Vector3.new(874.0194091796875, 11.17810344696045, 13418.912109375),
+    HardTrial = Vector3.new(908.3367309570312, 11.162318229675293, 13442.033203125),
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
@@ -1417,6 +1435,45 @@ local Dest = {
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
+
+-- STAGE ONE: SCHEDULED TRIAL AUTOMATION (29TH & 59TH MINUTE TELEPORT)
+local lastTrialTriggeredMinute = -1
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) then
+            local timeTable = os.date("*t")
+            local min = timeTable.min
+            
+            if (min == 29 or min == 59) and min ~= lastTrialTriggeredMinute then
+                lastTrialTriggeredMinute = min
+                
+                local targetPad = nil
+                if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
+                elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
+                elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
+                
+                if targetPad then
+                    showToast("Trials: Scheduled trial time reached! Teleporting...")
+                    
+                    MasterTargetVector = nil
+                    MiningTargetVector = nil
+                    MobTargetVector = nil
+                    RitualTargetVector = nil
+                    SandTargetVector = nil
+                    
+                    local hrp = GetWorldRoot()
+                    if hrp then
+                        hrp.Anchored = false
+                        hrp.CFrame = CFrame.new(targetPad)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                        hrp.AssemblyAngularVelocity = Vector3.zero
+                    end
+                end
+            end
+        end
+    end
+end)
 
 local lastGlidingState = false
 RunService.Stepped:Connect(function()
@@ -1895,19 +1952,19 @@ task.spawn(function()
                     if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end 
                     pcall(function() 
                         local args = { [1] = "ToggleMinionAutoOpen", [2] = "Football" } 
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                        game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end)
                 elseif Env.AutoOpenSuperCapsule then 
                     if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end 
                     pcall(function() 
                         local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } 
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                        game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end)
                 elseif Env.AutoOpenAncientCapsule then 
                     if (hrp.Position - Dest.AncientCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.AncientCap) end 
                     pcall(function() 
                         local args = { [1] = "ToggleMinionAutoOpen", [2] = "Ancient" } 
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                        game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end) 
                 end
             end
@@ -2360,4 +2417,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.47 Cleaned Stable Loaded Successfully!")
+print("[Dominate Hub] V17.5 Trials Stage 1 Loaded Successfully!")
