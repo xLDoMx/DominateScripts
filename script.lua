@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.34 - ADJUSTABLE STAGNATION TIMER & BUILD)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.35 - Z-COORDINATE LOBBY TOGGLE RESTORATION)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1551,7 +1551,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH ADJUSTABLE MOB STAGNATION TIMER & STRICT CASTLE LOCK)
+-- SCHEDULED TRIAL AUTOMATION (WITH Z-COORDINATE LOBBY DETECTION & STAGNATION TIMER)
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1664,40 +1664,30 @@ task.spawn(function()
                         end
                     end
                     
-                    -- Safe surface relocation: Teleport back to Castle Entrance
-                    showToast("Trials: Completed / Exited! Relocating to surface...")
-                    pcall(function()
-                        local hrp = GetWorldRoot()
-                        if hrp then
-                            hrp.Anchored = false
-                            hrp.CFrame = CFrame.new(Dest.CastleEntrance)
-                            hrp.AssemblyLinearVelocity = Vector3.zero
-                            hrp.AssemblyAngularVelocity = Vector3.zero
-                        end
-                    end)
+                    showToast("Trials: Completed / Exited trial arena...")
                     
-                    -- STRICT CASTLE ARRIVAL LOCK: Wait until player is physically at the castle before restoring toggles
-                    local castleWait = 0
+                    -- Z-COORDINATE LOBBY DETECTION: Wait until Z position drops below 13000 (meaning player is back in trial lobby/hallway)
+                    local lobbyWait = 0
                     while Running do
                         task.wait(0.2)
-                        castleWait = castleWait + 0.2
+                        lobbyWait = lobbyWait + 0.2
                         local hrpCheck = GetWorldRoot()
-                        if hrpCheck and (hrpCheck.Position - Dest.CastleEntrance).Magnitude < 50 then
+                        if hrpCheck and hrpCheck.Position.Z < 13000 then
                             break
                         end
-                        if castleWait > 6.0 then
+                        if lobbyWait > 10.0 then
                             break
                         end
                     end
                     
-                    task.wait(1.0) -- Stability buffer
+                    task.wait(0.5) -- Stability buffer
                     
-                    -- Restore all previously cached automation toggles ONLY AFTER ARRIVING AT CASTLE
+                    -- Restore all previously cached automation toggles ONLY AFTER RETURNING TO LOBBY
                     for flagName, state in pairs(cachedStates) do
                         Env[flagName] = state
                     end
                     trialIsRunning = false
-                    showToast("Trials: Successfully returned to castle! Toggles restored.")
+                    showToast("Trials: Successfully returned to lobby! Toggles restored.")
                 end
             end
         end
@@ -2297,4 +2287,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.34 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.35 Stable Loaded Successfully!")
