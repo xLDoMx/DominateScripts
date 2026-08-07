@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.42 - SEPARATED SAND PIT & DUNES VECTOR)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.47 - CLEANED / NO TRIALS)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -44,13 +44,8 @@ local ritualTimer = 0
 local ritualInCooldown = false
 
 -- RUNTIME STATE LOCKS
-local trialIsRunning = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
-local cachedStates = nil
-
--- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING
-local deadMobs = {}
 
 -- RITUAL PRE-SELECTED MOBS & SAND CONFIG
 Env.RitualSelectedMobs = {
@@ -63,10 +58,6 @@ Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
 Env.TargetSandLayer = 3
-
--- TRIAL ANTI-STUCK CONFIG
-Env.AutoLeaveIfStuck = true
-Env.TrialStagnationTime = 30
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -189,11 +180,6 @@ Env.AutoBonesFasterSwords = false
 Env.AutoBonesBiggerMeatDeposit = false
 Env.AutoBonesFasterMeatConversion = false
 Env.AutoBonesEvenMoreBones = false
-
--- TRIALS FLAGS
-Env.AutoEasyTrial = false
-Env.AutoMediumTrial = false
-Env.AutoHardTrial = false
 
 Env.AutoUpgradeFishermanNoob = false
 Env.AutoUpgradeKnightNoob = false
@@ -763,16 +749,6 @@ task.spawn(function()
             local mins = math.floor((elapsed % 3600) / 60)
             local secs = elapsed % 60
             
-            local timeTable = os.date("*t")
-            local curM = timeTable.min
-            local curS = timeTable.sec
-            local targetMin = (curM < 29) and 29 or (curM < 59 and 59 or 89)
-            local diffSec = (targetMin * 60) - (curM * 60 + curS)
-            if diffSec < 0 then diffSec = diffSec + 3600 end
-            local tM = math.floor(diffSec / 60)
-            local tS = diffSec % 60
-            local trialCountdownStr = string.format("Next Trial: %02d:%02d", tM, tS)
-            
             local targetName = "None"
             if currentTargetMob and currentTargetMob.Parent then
                 targetName = currentTargetMob.Parent.Name
@@ -783,7 +759,7 @@ task.spawn(function()
             local uptimeStr = string.format("Uptime: %02d:%02d:%02d | FPS: %d", hours, mins, secs, fps)
             local targetStr = string.format("Target: %s | Ground-Lock", targetName)
             
-            local extraLines = {trialCountdownStr}
+            local extraLines = {}
             
             local miningActive = false
             for _, oreInfo in ipairs(OrePriorityList) do
@@ -992,7 +968,6 @@ if activeTabStroke then activeTabStroke.Transparency = 0.1 end
 local tabNoobs = makeMainTab("🤖", "Noobs")
 local tabMines = makeMainTab("⛏️", "Mines")
 local tabMobs = makeMainTab("⚔️", "Mobs")
-local tabTrials = makeMainTab("🛡️", "Trials")
 local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
@@ -1013,7 +988,7 @@ local function makePage()
     p.Parent = pageArea 
     return p
 end
-local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
+local upgradesPage, noobsPage, minesPage, mobsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
 local function makeVerticalScroll(parent)
@@ -1098,15 +1073,6 @@ createSectionHeader(noobsScroll, "Realm 3 Noobs")
 createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
-
--- TRIALS PAGE BUILD
-local trialsScroll = makeVerticalScroll(trialsPage)
-createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
-createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
-createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
-createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
-createToggleRow(trialsScroll, "Auto Leave If Stuck (Mob Stagnation)", "AutoLeaveIfStuck")
-createTextBoxRow(trialsScroll, "Stagnation Time (s)", "TrialStagnationTime")
 
 -- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
@@ -1403,13 +1369,12 @@ local function mainRoute(pOpen, bActive)
     noobsPage.Visible = false
     minesPage.Visible = false
     mobsPage.Visible = false
-    trialsPage.Visible = false
     footballPage.Visible = false
     miscPage.Visible = false
     settingsPage.Visible = false
     pOpen.Visible = true
     
-    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabTrials, tabFootball, tabMisc, tabSettings}
+    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabFootball, tabMisc, tabSettings}
     for _, t in ipairs(tabs) do 
         t.BackgroundColor3 = Color3.fromRGB(18, 12, 28)
         t.TextColor3 = Color3.fromRGB(210, 190, 235)
@@ -1426,7 +1391,6 @@ tabUpgrades.MouseButton1Click:Connect(function() mainRoute(upgradesPage, tabUpgr
 tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end) 
 tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
 tabMobs.MouseButton1Click:Connect(function() mainRoute(mobsPage, tabMobs) end)
-tabTrials.MouseButton1Click:Connect(function() mainRoute(trialsPage, tabTrials) end)
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
@@ -1435,7 +1399,6 @@ tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSett
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
 local MobTargetVector = nil
-local TrialTargetVector = nil
 local RitualTargetVector = nil
 local SandTargetVector = nil
 
@@ -1444,12 +1407,9 @@ local Dest = {
     Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
     AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
-    Dunes = Vector3.new(981.1582, 4.5862, 7767.3315), -- Dune Rune Circle Vector
-    SandPit = Vector3.new(552.6134, 3.9798, 7827.5971), -- Separate Sand Regeneration Pit Vector
+    Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
+    SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
     Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
-    EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
-    MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
-    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
@@ -1499,7 +1459,7 @@ task.spawn(function()
             
             if act then
                 local targetCF = CFrame.new(act)
-                if trialIsRunning or MobTargetVector then
+                if MobTargetVector then
                     hrp.Anchored = false
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
@@ -1537,7 +1497,7 @@ end
 task.spawn(function()
     while Running do
         task.wait(2.0)
-        if Running and Env.AutoAncientBossFarm and not trialIsRunning and not ritualIsActive then
+        if Running and Env.AutoAncientBossFarm and not ritualIsActive then
             pcall(function()
                 local bossExists = false
                 for _, obj in ipairs(workspace:GetDescendants()) do
@@ -1572,7 +1532,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if Running and Env.AutoStartRitual and not trialIsRunning then
+        if Running and Env.AutoStartRitual then
             local hrp = GetWorldRoot()
             if hrp then
                 hrp.Anchored = false
@@ -1590,7 +1550,7 @@ task.spawn(function()
             RitualTargetVector = Dest.RitualChamber
             
             for _ = 1, 5 do
-                if not Running or not Env.AutoStartRitual or trialIsRunning then break end
+                if not Running or not Env.AutoStartRitual then break end
                 pcall(function()
                     local args = { [1] = "StartRitual" }
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
@@ -1605,7 +1565,7 @@ task.spawn(function()
             currentTargetMob = nil
             MobTargetVector = nil
             
-            while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
+            while ritualTimer > 0 and Running and Env.AutoStartRitual do
                 task.wait(1.0)
                 ritualTimer = ritualTimer - 1
                 ritualInCooldown = ritualTimer <= 60
@@ -1622,151 +1582,11 @@ task.spawn(function()
     end
 end)
 
-local function cacheAndPauseToggles()
-    if cachedStates then return end
-    cachedStates = {}
-    local flagsToPause = {
-        "AutoRegenSandLayers", "AutoFarmCash", "AutoStartRitual", "AutoGemExchange", "AutoGemShopTeleport", "AutoAncientBossFarm"
-    }
-    for _, mInfo in ipairs(MobPriorityList) do table.insert(flagsToPause, mInfo.F) end
-    for _, oInfo in ipairs(OrePriorityList) do table.insert(flagsToPause, oInfo.F) end
-    
-    for _, flagName in ipairs(flagsToPause) do
-        cachedStates[flagName] = Env[flagName]
-        Env[flagName] = false
-    end
-end
-
-local function restoreToggles()
-    if not cachedStates then return end
-    showToast("Trials: Restoring background automation toggles...")
-    for flagName, state in pairs(cachedStates) do
-        Env[flagName] = state
-    end
-    cachedStates = nil
-    trialIsRunning = false
-end
-
--- TRIAL WATCHER & MANUAL EXIT DETECTOR
-task.spawn(function()
-    while Running do
-        task.wait(0.5)
-        local hrp = GetWorldRoot()
-        if hrp then
-            if hrp.Position.Z > 13000 and not trialIsRunning then
-                trialIsRunning = true
-                cacheAndPauseToggles()
-                showToast("Trials: Entered trial arena. Background toggles paused.")
-            elseif trialIsRunning and hrp.Position.Z < 13000 then
-                showToast("Trials: Exited trial arena. Restoring toggles...")
-                task.wait(0.5)
-                restoreToggles()
-            end
-        end
-    end
-end)
-
--- SCHEDULED TRIAL AUTOMATION (WITH 30s STAGNATION & DIRECT LEAVETRIAL REMOTE)
-local lastTrialTriggeredMinute = -1
-task.spawn(function()
-    while Running do
-        task.wait(1.0)
-        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive then
-            local timeTable = os.date("*t")
-            local min = timeTable.min
-            
-            if (min == 29 or min == 59) and min ~= lastTrialTriggeredMinute then
-                lastTrialTriggeredMinute = min
-                
-                local targetPad = nil
-                if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
-                elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
-                elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
-                
-                if targetPad then
-                    showToast("Trials: Scheduled trial time reached! Teleporting...")
-                    cacheAndPauseToggles()
-                    trialIsRunning = true
-                    
-                    local hrp = GetWorldRoot()
-                    if hrp then
-                        hrp.Anchored = false
-                        hrp.CFrame = CFrame.new(targetPad)
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                        hrp.AssemblyAngularVelocity = Vector3.zero
-                    end
-                    
-                    showToast("Trials: Waiting 60s for trial countdown...")
-                    local waitElapsed = 0
-                    while waitElapsed < 60 and Running and trialIsRunning do
-                        task.wait(1.0)
-                        waitElapsed = waitElapsed + 1
-                    end
-                    
-                    showToast("Trials: Zero-delay instant mob clearing active across all waves...")
-                    
-                    local lastMobCount = -1
-                    local stagnationTimer = tick()
-                    
-                    while Running and trialIsRunning do
-                        task.wait(1.0)
-                        
-                        local hrpCheck = GetWorldRoot()
-                        if hrpCheck and hrpCheck.Position.Z < 13000 then
-                            trialIsRunning = false
-                            break
-                        end
-                        
-                        if Env.AutoLeaveIfStuck then
-                            pcall(function()
-                                local stagnationLimit = tonumber(Env.TrialStagnationTime) or 30
-                                local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                                local trialsFolder = gc and gc:FindFirstChild("Trials")
-                                local currentMobCount = 0
-                                if trialsFolder then
-                                    for _, room in ipairs(trialsFolder:GetChildren()) do
-                                        local mFolder = room:FindFirstChild("Mobs")
-                                        if mFolder then
-                                            for _, mob in ipairs(mFolder:GetChildren()) do
-                                                if mob:IsA("Model") and not isMobRespawning(mob) then
-                                                    local hum = mob:FindFirstChildOfClass("Humanoid")
-                                                    if not hum or hum.Health > 0 then
-                                                        currentMobCount = currentMobCount + 1
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end
-                                end
-                                
-                                if currentMobCount ~= lastMobCount then
-                                    lastMobCount = currentMobCount
-                                    stagnationTimer = tick()
-                                elseif currentMobCount > 0 and (tick() - stagnationTimer > stagnationLimit) then
-                                    showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s stagnation). Leaving via remote...")
-                                    pcall(function()
-                                        local args = { [1] = "LeaveTrial" }
-                                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                                    end)
-                                    task.wait(1.0)
-                                    trialIsRunning = false
-                                end
-                            end)
-                        end
-                    end
-                    
-                    restoreToggles()
-                end
-            end
-        end
-    end
-end)
-
 -- COMBAT SAFE SPOT BREAK
 task.spawn(function()
     while Running do
         task.wait(40.0)
-        if Running and Env.AutoCombatBreak and not trialIsRunning and not ritualIsActive then
+        if Running and Env.AutoCombatBreak and not ritualIsActive then
             local activeMobStates = {}
             local anyActive = false
             for i = 1, #MobPriorityList do
@@ -1807,9 +1627,7 @@ task.spawn(function()
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
 
-            if trialIsRunning then
-                hasAnyMobEnabled = true
-            elseif Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
+            if Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
                 for mobName, selected in pairs(Env.RitualSelectedMobs) do
                     if selected then
                         enabledMobNames[mobName] = true
@@ -1828,104 +1646,35 @@ task.spawn(function()
             if hasAnyMobEnabled then
                 local foundMobPart = nil
                 
-                local currentValid = false
-                if currentTargetMob and currentTargetMob.Parent then
-                    local mobModel = currentTargetMob.Parent
-                    if mobModel:IsA("Model") and not isMobRespawning(mobModel) then
-                        local isDead = false
-                        for _, desc in ipairs(mobModel:GetDescendants()) do
-                            if desc:IsA("TextLabel") and desc.Text then
-                                local txt = desc.Text:gsub(",", "")
-                                if txt:find("^0%s*/") or txt == "0" then
-                                    isDead = true
-                                    break
-                                end
-                            end
-                        end
-                        if not isDead then
-                            currentValid = true
-                            foundMobPart = currentTargetMob
-                        end
-                    end
-                end
-
-                if not currentValid then
-                    if trialIsRunning then
-                        for mobModel, _ in pairs(deadMobs) do
-                            if not mobModel:IsDescendantOf(workspace) then
-                                deadMobs[mobModel] = nil
-                            end
-                        end
-
-                        local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                        local trialsFolder = gc and gc:FindFirstChild("Trials")
-                        if trialsFolder then
-                            local shortestDist = math.huge
-                            local hrp = GetWorldRoot()
-                            for _, roomObj in ipairs(trialsFolder:GetChildren()) do
-                                local mFolder = roomObj:FindFirstChild("Mobs")
-                                if mFolder then
-                                    for _, mobObj in ipairs(mFolder:GetChildren()) do
-                                        if mobObj:IsA("Model") and not isMobRespawning(mobObj) and not deadMobs[mobObj] then
-                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                            if part then
-                                                local isActuallyDead = false
-                                                for _, desc in ipairs(mobObj:GetDescendants()) do
-                                                    if desc:IsA("TextLabel") and desc.Text then
-                                                        local txt = desc.Text:gsub(",", "")
-                                                        if txt:find("^0%s*/") or txt == "0" then
-                                                            isActuallyDead = true
-                                                            deadMobs[mobObj] = true
-                                                            break
-                                                        end
-                                                    end
-                                                end
-                                                
-                                                if not isActuallyDead and hrp then
-                                                    local dist = (part.Position - hrp.Position).Magnitude
-                                                    if dist < shortestDist then
-                                                        shortestDist = dist
-                                                        foundMobPart = part
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    else
-                        local gc = workspace:FindFirstChild("__GAME_CONTENT") 
-                        local mobsFolder = gc and gc:FindFirstChild("Mobs")
-                        if mobsFolder then
-                            for i = #MobPriorityList, 1, -1 do
-                                local targetMobName = MobPriorityList[i].N
-                                if enabledMobNames[targetMobName] then
-                                    for _, mobObj in ipairs(mobsFolder:GetChildren()) do
-                                        if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
-                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                            if part then
-                                                local isDead = false
-                                                for _, desc in ipairs(mobObj:GetDescendants()) do
-                                                    if desc:IsA("TextLabel") and desc.Text then
-                                                        local txt = desc.Text:gsub(",", "")
-                                                        if txt:find("^0%s*/") or txt == "0" then
-                                                            isDead = true
-                                                            break
-                                                        end
-                                                    end
-                                                end
-                                                if not isDead then
-                                                    foundMobPart = part
+                local gc = workspace:FindFirstChild("__GAME_CONTENT") 
+                local mobsFolder = gc and gc:FindFirstChild("Mobs")
+                if mobsFolder then
+                    for i = #MobPriorityList, 1, -1 do
+                        local targetMobName = MobPriorityList[i].N
+                        if enabledMobNames[targetMobName] then
+                            for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                                if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
+                                    local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                    if part then
+                                        local isDead = false
+                                        for _, desc in ipairs(mobObj:GetDescendants()) do
+                                            if desc:IsA("TextLabel") and desc.Text then
+                                                local txt = desc.Text:gsub(",", "")
+                                                if txt:find("^0%s*/") or txt == "0" then
+                                                    isDead = true
                                                     break
                                                 end
                                             end
                                         end
+                                        if not isDead then
+                                            foundMobPart = part
+                                            break
+                                        end
                                     end
                                 end
-                                if foundMobPart then break end
                             end
                         end
+                        if foundMobPart then break end
                     end
                 end
                 
@@ -1956,13 +1705,13 @@ end)
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
+        if Running and Env.AutoRegenSandLayers and not ritualIsActive then
             showToast("Sand Regen: Teleporting to pit...")
             pcall(function()
                 local hrp = GetWorldRoot()
                 if hrp then
                     hrp.Anchored = false
-                    hrp.CFrame = CFrame.new(Dest.SandPit) -- Uses dedicated SandPit coordinates
+                    hrp.CFrame = CFrame.new(Dest.SandPit)
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 end
@@ -1972,7 +1721,7 @@ task.spawn(function()
             local reachedTarget = false
             local targetLayer = tonumber(Env.TargetSandLayer) or 3
             
-            while Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive and not reachedTarget do
+            while Running and Env.AutoRegenSandLayers and not ritualIsActive and not reachedTarget do
                 task.wait(1.0)
                 pcall(function()
                     local layersFolder = workspace:FindFirstChild("GeneratedSandLayers", true)
@@ -2066,7 +1815,7 @@ end
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning and not ritualIsActive then
+        if Running and not ritualIsActive then
             local enabledOreNames = {} 
             local hasAnyEnabled = false
             for i = 1, #OrePriorityList do 
@@ -2169,14 +1918,14 @@ end)
 task.spawn(function()
     while Running do
         task.wait(0.5)
-        if Env.AutoFarmCash and Running and not trialIsRunning and not ritualIsActive then
+        if Env.AutoFarmCash and Running and not ritualIsActive then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") 
             local ty = gc and gc:FindFirstChild("Tycoon") 
             local btnF = ty and ty:FindFirstChild("Buttons")
             if btnF and Running then
                 local locked = {} 
                 repeat
-                    if not Running or not Env.AutoFarmCash or trialIsRunning or ritualIsActive then break end
+                    if not Running or not Env.AutoFarmCash or ritualIsActive then break end
                     local vis = btnF:GetChildren() 
                     local att = false
                     for i = 1, #vis do
@@ -2611,4 +2360,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.42 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.47 Cleaned Stable Loaded Successfully!")
