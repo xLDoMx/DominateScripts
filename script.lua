@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.44 - EXPLICIT TRIAL SAFETY LOCK)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.45 - MANUAL TRIAL TEST BUTTON ADDED)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -461,6 +461,26 @@ local function createTextBoxRow(parent, txt, vKey)
         end
     end)
 
+    return row
+end
+
+local function createButtonRow(parent, txt, callback)
+    local row = Instance.new("TextButton")
+    row.Size = UDim2.new(1, -10, 0, 42)
+    row.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
+    row.BackgroundTransparency = 0.2
+    row.TextColor3 = Color3.fromRGB(255, 255, 255)
+    row.TextSize = 12
+    row.Font = Enum.Font.GothamBold
+    row.Text = txt
+    row.AutoButtonColor = true
+    row.Parent = parent
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = row
+
+    row.MouseButton1Click:Connect(callback)
     return row
 end
 
@@ -1107,6 +1127,26 @@ createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
 createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 createToggleRow(trialsScroll, "Auto Leave If Stuck (Mob Stagnation)", "AutoLeaveIfStuck")
 createTextBoxRow(trialsScroll, "Stagnation Time (s)", "TrialStagnationTime")
+createSectionHeader(trialsScroll, "Manual Testing")
+createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
+    local targetPad = nil
+    if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
+    elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
+    elseif Env.AutoHardTrial then targetPad = Dest.HardTrial
+    else targetPad = Dest.HardTrial end
+    
+    showToast("Trials: Manual teleport test triggered!")
+    cacheAndPauseToggles()
+    trialIsRunning = true
+    
+    local hrp = GetWorldRoot()
+    if hrp then
+        hrp.Anchored = false
+        hrp.CFrame = CFrame.new(targetPad)
+        hrp.AssemblyLinearVelocity = Vector3.zero
+        hrp.AssemblyAngularVelocity = Vector3.zero
+    end
+end)
 
 -- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
@@ -2618,4 +2658,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.44 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.45 Stable Loaded Successfully!")
