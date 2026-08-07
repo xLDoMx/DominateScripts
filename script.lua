@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.59 - CLEAN VECTOR-PURGE TRIAL EXIT)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.60 - TRIAL DIAGNOSTICS & TELEPORT FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -88,9 +88,10 @@ Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
 Env.TargetSandLayer = 3
 
--- TRIAL TIME LIMIT CONFIG (MINUTES)
+-- TRIAL CONFIG
 Env.AutoLeaveByTime = true
 Env.TrialTimeLimit = 15
+Env.TrialDiagnostics = false -- Diagnostic debug mode toggle
 
 -- ANCIENT BOSS FARM CONFIG[cite: 1]
 Env.AutoAncientBossFarm = false
@@ -1151,6 +1152,7 @@ createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
 createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 createToggleRow(trialsScroll, "Auto Leave By Time Limit", "AutoLeaveByTime")
 createTextBoxRow(trialsScroll, "Trial Time Limit (min)", "TrialTimeLimit")
+createToggleRow(trialsScroll, "Trial Diagnostics Mode", "TrialDiagnostics")
 
 createSectionHeader(trialsScroll, "Manual Testing")
 createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
@@ -1161,6 +1163,7 @@ createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
     else targetPad = Dest.HardTrial end
     
     showToast("Trials: Manual teleport test triggered!")
+    print("[DominateHub Diag] Manual Teleport Test Triggered. Target Pad:", tostring(targetPad))
     
     -- PURGE ALL MOVEMENT VECTORS TO PREVENT CONFLICT[cite: 1]
     MasterTargetVector = nil
@@ -1177,6 +1180,9 @@ createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
         hrp.CFrame = CFrame.new(targetPad)
         hrp.AssemblyLinearVelocity = Vector3.zero
         hrp.AssemblyAngularVelocity = Vector3.zero
+        print("[DominateHub Diag] Teleport executed successfully. HRP Position:", tostring(hrp.Position))
+    else
+        print("[DominateHub Diag] ERROR: HumanoidRootPart is nil during manual test!")
     end
 end)
 
@@ -1683,7 +1689,7 @@ local function cacheAndPauseToggles()
     cachedStates = {}
     for k, v in pairs(Env) do
         if type(k) == "string" and k:sub(1, 4) == "Auto" then
-            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" then
+            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" and k ~= "TrialDiagnostics" then
                 if v == true then
                     cachedStates[k] = true
                     Env[k] = false
@@ -1691,11 +1697,13 @@ local function cacheAndPauseToggles()
             end
         end
     end
+    if Env.TrialDiagnostics then print("[DominateHub Diag] Snapshot saved. Background toggles paused.") end
     showToast("Trials: Dynamic snapshot saved. Background automation paused.")
 end
 
 local function restoreToggles()
     if not cachedStates then return end
+    if Env.TrialDiagnostics then print("[DominateHub Diag] Restoring background toggles...") end
     showToast("Trials: Restoring background automation toggles...")
     for flagName, state in pairs(cachedStates) do
         Env[flagName] = state
@@ -1713,8 +1721,10 @@ task.spawn(function()
             if hrp.Position.Z > 13000 and not trialIsRunning then
                 trialIsRunning = true
                 cacheAndPauseToggles()
+                if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Entered arena (Z > 13000).") end
                 showToast("Trials: Entered trial arena. Background toggles paused.")
             elseif trialIsRunning and hrp.Position.Z < 13000 then
+                if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Returned to lobby (Z < 13000). Restoring...") end
                 showToast("Trials: Exited trial arena. Restoring toggles...")
                 trialIsRunning = false
                 MobTargetVector = nil
@@ -1729,7 +1739,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (TIME-LIMIT BASED EXTRACTION WITH VECTOR PURGE BEFORE LEAVE)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (TIME-LIMIT BASED EXTRACTION WITH DIAGNOSTICS)[cite: 1]
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
@@ -1739,7 +1749,13 @@ task.spawn(function()
         local hrp = GetWorldRoot()
         local inLobby = hrp and hrp.Position.Z < 13000 or true
         
-        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive and not trialIsRunning and inLobby and (tick() - trialExitCooldown > 5) then
+        local trialEnabled = (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial)
+        if Env.TrialDiagnostics and trialEnabled and not trialIsRunning and not ritualIsActive then
+            local timeTable = os.date("*t")
+            print(string.format("[DominateHub Diag] Polling clock. Time: %02d:%02d:%02d | InLobby: %s | Cooldown OK: %s", timeTable.hour, timeTable.min, timeTable.sec, tostring(inLobby), tostring(tick() - trialExitCooldown > 5)))
+        end
+        
+        if Running and trialEnabled and not ritualIsActive and not trialIsRunning and inLobby and (tick() - trialExitCooldown > 5) then
             local timeTable = os.date("*t")
             local min = timeTable.min
             local hour = timeTable.hour
@@ -1755,6 +1771,7 @@ task.spawn(function()
                     elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
                     
                     if targetPad then
+                        if Env.TrialDiagnostics then print("[DominateHub Diag] Scheduled slot match hit (:29 or :59)! Target pad:", tostring(targetPad)) end
                         showToast("Trials: Scheduled trial time reached! Teleporting...")
                         cacheAndPauseToggles()
                         
@@ -1782,6 +1799,7 @@ task.spawn(function()
                             waitElapsed = waitElapsed + 1
                         end
                         
+                        if Env.TrialDiagnostics then print("[DominateHub Diag] Trial countdown complete. Starting time-limit watcher.") end
                         showToast("Trials: Time-limit trial extraction guard active...")
                         
                         local trialStartTick = tick()
@@ -1791,6 +1809,7 @@ task.spawn(function()
                             
                             local hrpCheck = GetWorldRoot()
                             if hrpCheck and hrpCheck.Position.Z < 13000 then
+                                if Env.TrialDiagnostics then print("[DominateHub Diag] Detected return to lobby inside loop.") end
                                 trialIsRunning = false
                                 MobTargetVector = nil
                                 currentTargetMob = nil
@@ -1803,9 +1822,9 @@ task.spawn(function()
                                 local limitSecs = limitMins * 60
                                 
                                 if (tick() - trialStartTick) >= limitSecs then
+                                    if Env.TrialDiagnostics then print("[DominateHub Diag] Time limit reached (" .. limitMins .. "m). Purging vectors & leaving trial...") end
                                     showToast("Trials: Time limit reached (" .. limitMins .. "m). Purging vectors & leaving trial...")
                                     
-                                    -- 1. PURGE VECTORS AND TURN OFF TRIAL RUNNING STATE FIRST
                                     trialIsRunning = false
                                     MobTargetVector = nil
                                     currentTargetMob = nil
@@ -1817,7 +1836,6 @@ task.spawn(function()
                                         hrpCheck.AssemblyLinearVelocity = Vector3.zero
                                     end
                                     
-                                    -- 2. FIRE THE LEAVE TRIAL REMOTE
                                     pcall(function()
                                         local args = { [1] = "LeaveTrial" }
                                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
@@ -2680,4 +2698,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.59 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.60 Stable Loaded Successfully!")
