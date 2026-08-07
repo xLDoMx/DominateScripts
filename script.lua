@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.52 - SYNTAX FIX & SAFE TRIAL EXIT)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.53 - POSITION-GATED TOGGLE RESTORATION)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1704,7 +1704,7 @@ local function restoreToggles()
     trialIsRunning = false
 end
 
--- TRIAL WATCHER & MANUAL EXIT DETECTOR (WITH INSTANT SAFETY RELEASE)[cite: 1]
+-- TRIAL WATCHER & MANUAL EXIT DETECTOR (POSITION-GATED RESTORATION)[cite: 1]
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1729,7 +1729,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH TARGET-LOCK STAGNATION & FLAG-BASED LOOP BREAK)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (WITH TARGET-LOCK STAGNATION & POSITION-GATED EXIT)[cite: 1]
 local lastTrialTriggeredSlot = ""
 task.spawn(function()
     while Running do
@@ -1790,7 +1790,6 @@ task.spawn(function()
                             
                             local hrpCheck = GetWorldRoot()
                             if hrpCheck and hrpCheck.Position.Z < 13000 then
-                                trialIsRunning = false
                                 MobTargetVector = nil
                                 currentTargetMob = nil
                                 break
@@ -1813,7 +1812,6 @@ task.spawn(function()
                                                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                                             end)
                                             
-                                            trialIsRunning = false
                                             MobTargetVector = nil
                                             currentTargetMob = nil
                                             lastTrackedMobPart = nil
@@ -1837,8 +1835,6 @@ task.spawn(function()
                                 break
                             end
                         end
-                        
-                        restoreToggles()
                     end
                 end
             end
@@ -2691,4 +2687,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.52 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.53 Stable Loaded Successfully!")
