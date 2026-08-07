@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.56 - STRING CONCATENATION SYNTAX FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.57 - TRIAL STATE LOCK & SCHEDULE FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1729,7 +1729,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH EXIT COOLDOWN LOCK & INSTANT STATE RELEASE)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (WITH PROPER STATE RESET & RESTORE TOGGLES CALL)[cite: 1]
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
@@ -1745,7 +1745,7 @@ task.spawn(function()
             local hour = timeTable.hour
             
             if (min == 29 or min == 59) then
-                local currentSlot = tostring(hour) .. "_" .. tostring(min)
+                local currentSlot = hour .. "_" .. min
                 if currentSlot ~= lastTrialTriggeredSlot then
                     lastTrialTriggeredSlot = currentSlot
                     
@@ -1811,7 +1811,6 @@ task.spawn(function()
                                         elseif tick() - stagnationTimer > stagnationLimit then
                                             showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s target stagnation). Leaving trial...")
                                             
-                                            -- INSTANTLY KILL TRIAL STATE & SET COOLDOWN BEFORE FIRING REMOTE
                                             trialIsRunning = false
                                             MobTargetVector = nil
                                             currentTargetMob = nil
@@ -1842,6 +1841,8 @@ task.spawn(function()
                                 break
                             end
                         end
+                        
+                        restoreToggles()
                     end
                 end
             end
@@ -2694,4 +2695,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.56 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.57 Stable Loaded Successfully!")
