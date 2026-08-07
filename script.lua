@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.46 - VECTOR PURGE & TRIAL TELEPORT FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.47 - NIL INDEX & TRIAL VECTOR FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -29,6 +29,30 @@ local player = Players.LocalPlayer
 local vu = VirtualUser
 
 local UI = {}
+
+-- DESTINATION VECTORS DECLARED EARLY TO PREVENT NIL-INDEX ERRORS
+local Dest = {
+    Basic = Vector3.new(1114.753, 10.310, -644.151), 
+    Super = Vector3.new(1082.093, 16.661, -782.021), 
+    Advanced = Vector3.new(1293.495, 16.515, -883.312),
+    Cosmic = Vector3.new(783.450, 16.655, -855.972), 
+    Football = Vector3.new(-2713.261, 36.861, -15.832), 
+    Snowy = Vector3.new(1017.366, 5.866, 3262.671),
+    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), 
+    FootballCap = Vector3.new(-2603.007, 36.295, -31.061), 
+    SuperCap = Vector3.new(618.032, 9.653, 3172.149),
+    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
+    Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
+    SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
+    Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
+    EasyTrial = Vector3.new(852.7059, 11.1623, 13444.3925),     -- Updated from screenshot
+    MediumTrial = Vector3.new(879.4453, 11.1781, 13418.6263), -- Updated from screenshot
+    HardTrial = Vector3.new(910.4735, 11.1623, 13418.2636),   -- Updated from screenshot
+    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
+    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
+    AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388)
+}
 
 -- STATS TRACKING VARIABLES FOR HUD
 local oresMined = 0
@@ -1487,23 +1511,6 @@ local TrialTargetVector = nil
 local RitualTargetVector = nil
 local SandTargetVector = nil
 
-local Dest = {
-    Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
-    Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
-    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
-    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
-    Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
-    SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
-    Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
-    EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
-    MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
-    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
-    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
-    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
-    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
-    AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388)
-}
-
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
 
 local lastGlidingState = false
@@ -2674,4 +2681,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.46 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.47 Stable Loaded Successfully!")
