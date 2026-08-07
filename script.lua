@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.29 - SYNTAX-SAFE & BULLETPROOF STABLE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.30 - RESTORED INSTANT CORPSE-SKIPPING & LOCK)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -47,6 +47,9 @@ local ritualInCooldown = false
 local trialIsRunning = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
+
+-- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING
+local deadMobs = {}
 
 -- RITUAL PRE-SELECTED MOBS & SAND CONFIG
 Env.RitualSelectedMobs = {
@@ -1768,7 +1771,7 @@ end)
 local currentMobIndex = 1
 local lastTargetedPart = nil
 
--- INSTANT-SWITCH TRIAL & OVERWORLD MOB FARMING ENGINE (ZERO DELAY, NO 4-SEC LOCK)
+-- ZERO-DELAY INSTANT CORPSE-SKIPPING TRIAL & OVERWORLD MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.01) -- 10ms super-tight poll rate
@@ -1798,6 +1801,13 @@ task.spawn(function()
                 local foundMobPart = nil
                 
                 if trialIsRunning then
+                    -- Clean up deadMobs cache
+                    for mobModel, _ in pairs(deadMobs) do
+                        if not mobModel:IsDescendantOf(workspace) then
+                            deadMobs[mobModel] = nil
+                        end
+                    end
+
                     local gc = workspace:FindFirstChild("__GAME_CONTENT")
                     local trialsFolder = gc and gc:FindFirstChild("Trials")
                     if trialsFolder then
@@ -1807,11 +1817,22 @@ task.spawn(function()
                             local mFolder = roomObj:FindFirstChild("Mobs")
                             if mFolder then
                                 for _, mobObj in ipairs(mFolder:GetChildren()) do
-                                    if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
-                                        local hum = mobObj:FindFirstChildOfClass("Humanoid")
-                                        if not hum or hum.Health > 0 then
-                                            local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                            if part and hrp then
+                                    if mobObj:IsA("Model") and not isMobRespawning(mobObj) and not deadMobs[mobObj] then
+                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            local isActuallyDead = false
+                                            for _, desc in ipairs(mobObj:GetDescendants()) do
+                                                if desc:IsA("TextLabel") and desc.Text then
+                                                    local txt = desc.Text:gsub(",", "")
+                                                    if txt:find("^0%s*/") or txt == "0" then
+                                                        isActuallyDead = true
+                                                        deadMobs[mobObj] = true
+                                                        break
+                                                    end
+                                                end
+                                            end
+                                            
+                                            if not isActuallyDead and hrp then
                                                 local dist = (part.Position - hrp.Position).Magnitude
                                                 if dist < shortestDist then
                                                     shortestDist = dist
@@ -2305,4 +2326,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.29 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.30 Stable Loaded Successfully!")
