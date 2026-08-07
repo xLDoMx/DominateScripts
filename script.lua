@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.41 - SYNTAX & STABILITY FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.44 - EXPLICIT TRIAL SAFETY LOCK)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1445,6 +1445,7 @@ local Dest = {
     ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
     AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
     Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
+    SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
     Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
     EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
     MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
@@ -1646,7 +1647,7 @@ local function restoreToggles()
     trialIsRunning = false
 end
 
--- TRIAL WATCHER & MANUAL EXIT DETECTOR (USING Z POSITION & LEAVETRIAL REMOTE)
+-- TRIAL WATCHER & MANUAL EXIT DETECTOR
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1665,96 +1666,103 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH 30s STAGNATION & DIRECT LEAVETRIAL REMOTE)
-local lastTrialTriggeredMinute = -1
+-- SCHEDULED TRIAL AUTOMATION (WITH EXPLICIT trialIsRunning & Z-COORDINATE SAFETY LOCK)
+local lastTrialTriggeredSlot = ""
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive then
+        local hrp = GetWorldRoot()
+        local inLobby = hrp and hrp.Position.Z < 13000 or true
+        
+        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive and not trialIsRunning and inLobby then
             local timeTable = os.date("*t")
             local min = timeTable.min
+            local hour = timeTable.hour
             
-            if (min == 29 or min == 59) and min ~= lastTrialTriggeredMinute then
-                lastTrialTriggeredMinute = min
-                
-                local targetPad = nil
-                if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
-                elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
-                elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
-                
-                if targetPad then
-                    showToast("Trials: Scheduled trial time reached! Teleporting...")
-                    cacheAndPauseToggles()
-                    trialIsRunning = true
+            if (min == 29 or min == 59) then
+                local currentSlot = hour .. "_" .. min
+                if currentSlot ~= lastTrialTriggeredSlot then
+                    lastTrialTriggeredSlot = currentSlot
                     
-                    local hrp = GetWorldRoot()
-                    if hrp then
-                        hrp.Anchored = false
-                        hrp.CFrame = CFrame.new(targetPad)
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                        hrp.AssemblyAngularVelocity = Vector3.zero
-                    end
+                    local targetPad = nil
+                    if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
+                    elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
+                    elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
                     
-                    showToast("Trials: Waiting 60s for trial countdown...")
-                    local waitElapsed = 0
-                    while waitElapsed < 60 and Running and trialIsRunning do
-                        task.wait(1.0)
-                        waitElapsed = waitElapsed + 1
-                    end
-                    
-                    showToast("Trials: Zero-delay instant mob clearing active across all waves...")
-                    
-                    local lastMobCount = -1
-                    local stagnationTimer = tick()
-                    
-                    while Running and trialIsRunning do
-                        task.wait(1.0)
+                    if targetPad then
+                        showToast("Trials: Scheduled trial time reached! Teleporting...")
+                        cacheAndPauseToggles()
+                        trialIsRunning = true
                         
-                        local hrpCheck = GetWorldRoot()
-                        if hrpCheck and hrpCheck.Position.Z < 13000 then
-                            trialIsRunning = false
-                            break
+                        local hrpToTeleport = GetWorldRoot()
+                        if hrpToTeleport then
+                            hrpToTeleport.Anchored = false
+                            hrpToTeleport.CFrame = CFrame.new(targetPad)
+                            hrpToTeleport.AssemblyLinearVelocity = Vector3.zero
+                            hrpToTeleport.AssemblyAngularVelocity = Vector3.zero
                         end
                         
-                        if Env.AutoLeaveIfStuck then
-                            pcall(function()
-                                local stagnationLimit = tonumber(Env.TrialStagnationTime) or 30
-                                local gc = workspace:FindFirstChild("__GAME_CONTENT")
-                                local trialsFolder = gc and gc:FindFirstChild("Trials")
-                                local currentMobCount = 0
-                                if trialsFolder then
-                                    for _, room in ipairs(trialsFolder:GetChildren()) do
-                                        local mFolder = room:FindFirstChild("Mobs")
-                                        if mFolder then
-                                            for _, mob in ipairs(mFolder:GetChildren()) do
-                                                if mob:IsA("Model") and not isMobRespawning(mob) then
-                                                    local hum = mob:FindFirstChildOfClass("Humanoid")
-                                                    if not hum or hum.Health > 0 then
-                                                        currentMobCount = currentMobCount + 1
+                        showToast("Trials: Waiting 60s for trial countdown...")
+                        local waitElapsed = 0
+                        while waitElapsed < 60 and Running and trialIsRunning do
+                            task.wait(1.0)
+                            waitElapsed = waitElapsed + 1
+                        end
+                        
+                        showToast("Trials: Zero-delay instant mob clearing active across all waves...")
+                        
+                        local lastMobCount = -1
+                        local stagnationTimer = tick()
+                        
+                        while Running and trialIsRunning do
+                            task.wait(1.0)
+                            
+                            local hrpCheck = GetWorldRoot()
+                            if hrpCheck and hrpCheck.Position.Z < 13000 then
+                                trialIsRunning = false
+                                break
+                            end
+                            
+                            if Env.AutoLeaveIfStuck then
+                                pcall(function()
+                                    local stagnationLimit = tonumber(Env.TrialStagnationTime) or 30
+                                    local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                                    local trialsFolder = gc and gc:FindFirstChild("Trials")
+                                    local currentMobCount = 0
+                                    if trialsFolder then
+                                        for _, room in ipairs(trialsFolder:GetChildren()) do
+                                            local mFolder = room:FindFirstChild("Mobs")
+                                            if mFolder then
+                                                for _, mob in ipairs(mFolder:GetChildren()) do
+                                                    if mob:IsA("Model") and not isMobRespawning(mob) then
+                                                        local hum = mob:FindFirstChildOfClass("Humanoid")
+                                                        if not hum or hum.Health > 0 then
+                                                            currentMobCount = currentMobCount + 1
+                                                        end
                                                     end
                                                 end
                                             end
                                         end
                                     end
-                                end
-                                
-                                if currentMobCount ~= lastMobCount then
-                                    lastMobCount = currentMobCount
-                                    stagnationTimer = tick()
-                                elseif currentMobCount > 0 and (tick() - stagnationTimer > stagnationLimit) then
-                                    showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s stagnation). Leaving via remote...")
-                                    pcall(function()
-                                        local args = { [1] = "LeaveTrial" }
-                                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                                    end)
-                                    task.wait(1.0)
-                                    trialIsRunning = false
-                                end
-                            end)
+                                    
+                                    if currentMobCount ~= lastMobCount then
+                                        lastMobCount = currentMobCount
+                                        stagnationTimer = tick()
+                                    elseif currentMobCount > 0 and (tick() - stagnationTimer > stagnationLimit) then
+                                        showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s stagnation). Leaving via remote...")
+                                        pcall(function()
+                                            local args = { [1] = "LeaveTrial" }
+                                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                                        end)
+                                        task.wait(1.0)
+                                        trialIsRunning = false
+                                    end
+                                end)
+                            end
                         end
+                        
+                        restoreToggles()
                     end
-                    
-                    restoreToggles()
                 end
             end
         end
@@ -1951,7 +1959,7 @@ task.spawn(function()
     end
 end)
 
--- SAND REGENERATION LOOP
+-- SAND REGENERATION LOOP (USING SEPARATED SANDPIT VECTOR)
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1961,7 +1969,7 @@ task.spawn(function()
                 local hrp = GetWorldRoot()
                 if hrp then
                     hrp.Anchored = false
-                    hrp.CFrame = CFrame.new(Dest.Dunes)
+                    hrp.CFrame = CFrame.new(Dest.SandPit)
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 end
@@ -1991,7 +1999,7 @@ task.spawn(function()
                     else
                         local hrp = GetWorldRoot()
                         if hrp then
-                            local depth = math.abs(hrp.Position.Y - Dest.Dunes.Y)
+                            local depth = math.abs(hrp.Position.Y - Dest.SandPit.Y)
                             if (depth / 5) >= targetLayer then
                                 reachedTarget = true
                             end
@@ -2610,4 +2618,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.41 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.44 Stable Loaded Successfully!")
