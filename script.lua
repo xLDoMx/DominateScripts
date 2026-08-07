@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.37 - STANDARD SCROLLING & ROCK-SOLID STABILITY)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.38 - CAPSULES & ANCIENT BOSS FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1436,7 +1436,8 @@ local Dest = {
     HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
-    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875)
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
+    AncientBossSpawn = Vector3.new(714.6417, 4.8705, 7814.7265)
 }
 
 local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
@@ -1512,6 +1513,42 @@ local function isMobRespawning(mobModel)
     end
     return false
 end
+
+-- ANCIENT BOSS SPAWN & AUTO-NAVIGATE LOOP
+task.spawn(function()
+    while Running do
+        task.wait(2.0)
+        if Running and Env.AutoAncientBossFarm and not trialIsRunning and not ritualIsActive then
+            pcall(function()
+                local bossExists = false
+                for _, obj in ipairs(workspace:GetDescendants()) do
+                    if obj:IsA("Model") and obj.Name == "Supreme Shadow Lord" then
+                        local hum = obj:FindFirstChildOfClass("Humanoid")
+                        if hum and hum.Health > 0 then
+                            bossExists = true
+                            break
+                        end
+                    end
+                end
+                
+                if not bossExists then
+                    -- Navigate to Ancient Boss spawn pad so server accepts the remote summon
+                    MasterTargetVector = Dest.AncientBossSpawn
+                    task.wait(1.5)
+                    
+                    local args = {
+                        [1] = "SpawnAncientMob",
+                        [2] = "Supreme Shadow Lord"
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                    task.wait(1.5)
+                    MasterTargetVector = nil
+                    task.wait(3.0)
+                end
+            end)
+        end
+    end
+end)
 
 -- RITUAL LOOP
 task.spawn(function()
@@ -2029,16 +2066,38 @@ task.spawn(function()
     end
 end)
 
+-- FIXED CAPSULE LOOP (REMOVED REDUNDANT REPLICATEDSTORAGE PATH)
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.12)
         if Running then
             local hrp = GetWorldRoot()
             if hrp then
-                if Env.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Classic" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
-                elseif Env.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Football" } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
-                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
-                elseif Env.AutoOpenAncientCapsule then if (hrp.Position - Dest.AncientCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.AncientCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Ancient" } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end
+                if Env.AutoOpenClassicCapsule then 
+                    if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end 
+                    pcall(function() 
+                        local args = { [1] = "ToggleMinionAutoOpen", [2] = "Classic" } 
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
+                elseif Env.AutoOpenFootballCapsule then 
+                    if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end 
+                    pcall(function() 
+                        local args = { [1] = "ToggleMinionAutoOpen", [2] = "Football" } 
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
+                elseif Env.AutoOpenSuperCapsule then 
+                    if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end 
+                    pcall(function() 
+                        local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } 
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
+                elseif Env.AutoOpenAncientCapsule then 
+                    if (hrp.Position - Dest.AncientCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.AncientCap) end 
+                    pcall(function() 
+                        local args = { [1] = "ToggleMinionAutoOpen", [2] = "Ancient" } 
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end) 
+                end
             end
         end
     end
@@ -2288,7 +2347,7 @@ task.spawn(function()
 end)
 
 task.spawn(function() while Running do task.wait(1.0) if Running then if Env.AutoBlazeMoreBlaze then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end end end end)
-task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
+task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
 task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and Running then pcall(function() local args = { [1] = "Prestige" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end)
 
 task.spawn(function()
@@ -2303,4 +2362,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.37 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.38 Stable Loaded Successfully!")
