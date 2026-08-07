@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.31 - COLLAPSIBLE UI SECTIONS & MASTER BUILD)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.32 - MOB-COUNT STAGNATION TIMER & BUILD)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1074,7 +1074,184 @@ local function makeVerticalScroll(parent)
     return s 
 end
 
--- UPGRADES PAGE
+-- LOCOMOTION & AUTOMATION ENGINES
+local MasterTargetVector = nil  
+local MiningTargetVector = nil
+local MobTargetVector = nil
+local TrialTargetVector = nil
+local RitualTargetVector = nil
+local SandTargetVector = nil
+
+local Dest = {
+    Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
+    Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
+    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
+    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
+    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625),
+    Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
+    EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
+    MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
+    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
+    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
+    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875)
+}
+
+local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
+
+-- SCHEDULED TRIAL AUTOMATION (WITH MOB-COUNT STAGNATION TIMER & STRICT CASTLE LOCK)
+local lastTrialTriggeredMinute = -1
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive then
+            local timeTable = os.date("*t")
+            local min = timeTable.min
+            
+            if (min == 29 or min == 59) and min ~= lastTrialTriggeredMinute then
+                lastTrialTriggeredMinute = min
+                
+                local targetPad = nil
+                if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
+                elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
+                elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
+                
+                if targetPad then
+                    trialIsRunning = true
+                    showToast("Trials: Scheduled trial time reached! Locking toggles & teleporting...")
+                    
+                    local cachedStates = {}
+                    local flagsToPause = {
+                        "AutoRegenSandLayers", "AutoFarmCash", "AutoStartRitual", "AutoGemExchange", "AutoGemShopTeleport", "AutoAncientBossFarm"
+                    }
+                    for _, mInfo in ipairs(MobPriorityList) do table.insert(flagsToPause, mInfo.F) end
+                    for _, oInfo in ipairs(OrePriorityList) do table.insert(flagsToPause, oInfo.F) end
+                    
+                    for _, flagName in ipairs(flagsToPause) do
+                        cachedStates[flagName] = Env[flagName]
+                        Env[flagName] = false
+                    end
+                    
+                    local hrp = GetWorldRoot()
+                    if hrp then
+                        hrp.Anchored = false
+                        hrp.CFrame = CFrame.new(targetPad)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                        hrp.AssemblyAngularVelocity = Vector3.zero
+                    end
+                    
+                    showToast("Trials: Waiting 60s for trial countdown...")
+                    local waitElapsed = 0
+                    while waitElapsed < 60 and Running and trialIsRunning do
+                        task.wait(1.0)
+                        waitElapsed = waitElapsed + 1
+                    end
+                    
+                    showToast("Trials: Zero-delay instant mob clearing active across all waves...")
+                    
+                    local lastMobCount = -1
+                    local stagnationTimer = tick()
+                    
+                    while Running and trialIsRunning do
+                        task.wait(1.0)
+                        
+                        pcall(function()
+                            local hrpCheck = GetWorldRoot()
+                            if hrpCheck and hrpCheck.Position.Z < 13000 then
+                                trialIsRunning = false
+                            end
+                        end)
+                        
+                        if not trialIsRunning then break end
+                        
+                        -- Mob-count stagnation anti-stuck check (triggers if enemy count unchanged for 60s)
+                        if Env.AutoLeaveIfStuck then
+                            pcall(function()
+                                local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                                local trialsFolder = gc and gc:FindFirstChild("Trials")
+                                local currentMobCount = 0
+                                if trialsFolder then
+                                    for _, room in ipairs(trialsFolder:GetChildren()) do
+                                        local mFolder = room:FindFirstChild("Mobs")
+                                        if mFolder then
+                                            for _, mob in ipairs(mFolder:GetChildren()) do
+                                                if mob:IsA("Model") and not isMobRespawning(mob) then
+                                                    local hum = mob:FindFirstChildOfClass("Humanoid")
+                                                    if not hum or hum.Health > 0 then
+                                                        currentMobCount = currentMobCount + 1
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                                
+                                if currentMobCount ~= lastMobCount then
+                                    lastMobCount = currentMobCount
+                                    stagnationTimer = tick()
+                                elseif currentMobCount > 0 and (tick() - stagnationTimer > 60) then
+                                    showToast("Trials: Anti-stuck triggered (Mob count unchanged for 60s). Exiting trial...")
+                                    pcall(function()
+                                        for _, btn in ipairs(player.PlayerGui:GetDescendants()) do
+                                            if btn:IsA("TextButton") and btn.Text and btn.Text:lower():find("leave trial") then
+                                                if getconnections then
+                                                    for _, conn in ipairs(getconnections(btn.MouseButton1Click)) do
+                                                        conn:Fire()
+                                                    end
+                                                else
+                                                    firesignal(btn.MouseButton1Click)
+                                                end
+                                            end
+                                        end
+                                    end)
+                                    task.wait(1.0)
+                                    trialIsRunning = false
+                                end
+                            end)
+                        end
+                    end
+                    
+                    -- Safe surface relocation: Teleport back to Castle Entrance
+                    showToast("Trials: Completed / Exited! Relocating to surface...")
+                    pcall(function()
+                        local hrp = GetWorldRoot()
+                        if hrp then
+                            hrp.Anchored = false
+                            hrp.CFrame = CFrame.new(Dest.CastleEntrance)
+                            hrp.AssemblyLinearVelocity = Vector3.zero
+                            hrp.AssemblyAngularVelocity = Vector3.zero
+                        end
+                    end)
+                    
+                    -- STRICT CASTLE ARRIVAL LOCK: Wait until player is physically at the castle before restoring toggles
+                    local castleWait = 0
+                    while Running do
+                        task.wait(0.2)
+                        castleWait = castleWait + 0.2
+                        local hrpCheck = GetWorldRoot()
+                        if hrpCheck and (hrpCheck.Position - Dest.CastleEntrance).Magnitude < 50 then
+                            break
+                        end
+                        if castleWait > 6.0 then
+                            break
+                        end
+                    end
+                    
+                    task.wait(1.0) -- Stability buffer
+                    
+                    -- Restore all previously cached automation toggles ONLY AFTER ARRIVING AT CASTLE
+                    for flagName, state in pairs(cachedStates) do
+                        Env[flagName] = state
+                    end
+                    trialIsRunning = false
+                    showToast("Trials: Successfully returned to castle! Toggles restored.")
+                end
+            end
+        end
+    end
+end)
+
+-- UPGRADES PAGE BUILD
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
 
 local secU1 = createCollapsibleSection(upScroll, "Realm 1 Upgrades")
@@ -1114,7 +1291,7 @@ createToggleRow(secU5, "Auto Excavation Rank Up", "AutoExcavationRankUp")
 createToggleRow(secU5, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
 createTextBoxRow(secU5, "Target Sand Layer (1-250)", "TargetSandLayer")
 
--- NOOBS PAGE
+-- NOOBS PAGE BUILD
 local noobsScroll = makeVerticalScroll(noobsPage)
 local secN1 = createCollapsibleSection(noobsScroll, "Realm 1 Noobs")
 createToggleRow(secN1, "Starter Auto Upgrade", "AutoUpgradeStarter")
@@ -1135,15 +1312,15 @@ createToggleRow(secN3, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
 createToggleRow(secN3, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 createToggleRow(secN3, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
 
--- TRIALS PAGE
+-- TRIALS PAGE BUILD
 local trialsScroll = makeVerticalScroll(trialsPage)
 local secT1 = createCollapsibleSection(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
 createToggleRow(secT1, "Auto Easy Trial", "AutoEasyTrial")
 createToggleRow(secT1, "Auto Medium Trial", "AutoMediumTrial")
 createToggleRow(secT1, "Auto Hard Trial", "AutoHardTrial")
-createToggleRow(secT1, "Auto Leave If Stuck (60s Per Wave)", "AutoLeaveIfStuck")
+createToggleRow(secT1, "Auto Leave If Stuck (60s Stagnation)", "AutoLeaveIfStuck")
 
--- MINES PAGE
+-- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
 local secM1 = createCollapsibleSection(minesScroll, "Mining Configuration")
 local bestTierActive = false
@@ -1270,7 +1447,7 @@ createToggleRow(secM4, "Aetherite", "AutoMineAetherite")
 createToggleRow(secM4, "Celestium", "AutoMineCelestium")
 createToggleRow(secM4, "Voidsteel", "AutoMineVoidsteel")
 
--- MOBS PAGE
+-- MOBS PAGE BUILD
 local mobsScroll = makeVerticalScroll(mobsPage)
 local secMob1 = createCollapsibleSection(mobsScroll, "Realm 3 Mobs (Worst to Best)")
 local bestMobTierActive = false
@@ -1324,7 +1501,7 @@ createToggleRow(secMob2, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 createToggleRow(secMob2, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
 createRitualMobDropdown(secMob2, "Ritual Target Mobs", MobPriorityList)
 
--- FOOTBALL PAGE
+-- FOOTBALL PAGE BUILD
 local footballScroll = makeVerticalScroll(footballPage)
 local secF1 = createCollapsibleSection(footballScroll, "Football Noobs")
 createToggleRow(secF1, "Goalkeeper", "AutoUpgradeGoalkeeper")
@@ -1347,7 +1524,7 @@ createToggleRow(secF2, "Goals Rune Luck", "AutoGoalsRuneLuck")
 createToggleRow(secF2, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(secF2, "Auto Buy Trophies", "AutoClaimTrophies")
 
--- MISC PAGE
+-- MISC PAGE BUILD
 local miscScroll = makeVerticalScroll(miscPage)
 local secMis1 = createCollapsibleSection(miscScroll, "Runes")
 createToggleRow(secMis1, "Auto Basic Rune Circle", "AutoRollBasicRune")
@@ -1365,7 +1542,7 @@ createToggleRow(secMis2, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(secMis2, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 createToggleRow(secMis2, "Hatch Ancient Capsule", "AutoOpenAncientCapsule")
 
--- SETTINGS PAGE
+-- SETTINGS PAGE BUILD
 local settingsScroll = makeVerticalScroll(settingsPage)
 local secSet1 = createCollapsibleSection(settingsScroll, "General Settings")
 createToggleRow(secSet1, "Anti AFK Protection", "AntiAFK")
@@ -1451,49 +1628,6 @@ tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFoot
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
--- LOCOMOTION & AUTOMATION ENGINES
-local MasterTargetVector = nil  
-local MiningTargetVector = nil
-local MobTargetVector = nil
-local TrialTargetVector = nil
-local RitualTargetVector = nil
-local SandTargetVector = nil
-
-local Dest = {
-    Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
-    Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
-    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
-    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
-    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625),
-    Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
-    EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
-    MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
-    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
-    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
-    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
-    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875)
-}
-
-local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
-
-local lastGlidingState = false
-RunService.Stepped:Connect(function()
-    if not Running then return end
-    local char = player.Character
-    if char then
-        local isGliding = (MasterTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or Env.AutoRollSunfireRune or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
-        
-        if isGliding ~= lastGlidingState then
-            lastGlidingState = isGliding
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.CanCollide = not isGliding
-                end
-            end
-        end
-    end
-end)
-
 -- UNIFIED ZERO-DELAY INSTANT-SNAP MOVEMENT LOOP
 task.spawn(function()
     while Running do
@@ -1538,46 +1672,7 @@ task.spawn(function()
     end
 end)
 
-local function isMobRespawning(mobModel)
-    if not mobModel then return true end
-    for _, desc in ipairs(mobModel:GetDescendants()) do
-        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
-            return true
-        end
-    end
-    return false
-end
-
--- ANCIENT BOSS SPAWN LOOP (ANTI-SPAM DEBOUNCE)
-task.spawn(function()
-    while Running do
-        task.wait(2.0)
-        if Running and Env.AutoAncientBossFarm and not trialIsRunning and not ritualIsActive then
-            pcall(function()
-                local bossExists = false
-                for _, obj in ipairs(workspace:GetDescendants()) do
-                    if obj:IsA("Model") and obj.Name == "Supreme Shadow Lord" then
-                        local hum = obj:FindFirstChildOfClass("Humanoid")
-                        if hum and hum.Health > 0 then
-                            bossExists = true
-                            break
-                        end
-                    end
-                end
-                
-                if not bossExists then
-                    local args = {
-                        [1] = "SpawnAncientMob",
-                        [2] = "Supreme Shadow Lord"
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                    task.wait(3.0)
-                end
-            end)
-        end
-    end
-end)
-
+-- RITUAL LOOP
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1631,145 +1726,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (STRICT CASTLE-ARRIVAL TOGGLE RESTORATION)
-local lastTrialTriggeredMinute = -1
-task.spawn(function()
-    while Running do
-        task.wait(1.0)
-        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive then
-            local timeTable = os.date("*t")
-            local min = timeTable.min
-            
-            if (min == 29 or min == 59) and min ~= lastTrialTriggeredMinute then
-                lastTrialTriggeredMinute = min
-                
-                local targetPad = nil
-                if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
-                elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
-                elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
-                
-                if targetPad then
-                    trialIsRunning = true
-                    showToast("Trials: Scheduled trial time reached! Locking toggles & teleporting...")
-                    
-                    local cachedStates = {}
-                    local flagsToPause = {
-                        "AutoRegenSandLayers", "AutoFarmCash", "AutoStartRitual", "AutoGemExchange", "AutoGemShopTeleport", "AutoAncientBossFarm"
-                    }
-                    for _, mInfo in ipairs(MobPriorityList) do table.insert(flagsToPause, mInfo.F) end
-                    for _, oInfo in ipairs(OrePriorityList) do table.insert(flagsToPause, oInfo.F) end
-                    
-                    for _, flagName in ipairs(flagsToPause) do
-                        cachedStates[flagName] = Env[flagName]
-                        Env[flagName] = false
-                    end
-                    
-                    local hrp = GetWorldRoot()
-                    if hrp then
-                        hrp.Anchored = false
-                        hrp.CFrame = CFrame.new(targetPad)
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                        hrp.AssemblyAngularVelocity = Vector3.zero
-                    end
-                    
-                    showToast("Trials: Waiting 60s for trial countdown...")
-                    local waitElapsed = 0
-                    while waitElapsed < 60 and Running and trialIsRunning do
-                        task.wait(1.0)
-                        waitElapsed = waitElapsed + 1
-                    end
-                    
-                    showToast("Trials: Zero-delay instant mob clearing active across all waves...")
-                    
-                    local currentWaveText = ""
-                    local waveTimer = tick()
-                    
-                    while Running and trialIsRunning do
-                        task.wait(1.0)
-                        
-                        pcall(function()
-                            local hrpCheck = GetWorldRoot()
-                            if hrpCheck and hrpCheck.Position.Z < 13000 then
-                                trialIsRunning = false
-                            end
-                        end)
-                        
-                        if not trialIsRunning then break end
-                        
-                        pcall(function()
-                            for _, lbl in ipairs(player.PlayerGui:GetDescendants()) do
-                                if lbl:IsA("TextLabel") and lbl.Text and lbl.Text:lower():find("wave") then
-                                    if lbl.Text ~= currentWaveText then
-                                        currentWaveText = lbl.Text
-                                        waveTimer = tick()
-                                    end
-                                    break
-                                end
-                            end
-                        end)
-                        
-                        if Env.AutoLeaveIfStuck and (tick() - waveTimer > 60) then
-                            showToast("Trials: Anti-stuck triggered (Stuck on wave >60s). Exiting trial...")
-                            pcall(function()
-                                for _, btn in ipairs(player.PlayerGui:GetDescendants()) do
-                                    if btn:IsA("TextButton") and btn.Text and btn.Text:lower():find("leave trial") then
-                                        if getconnections then
-                                            for _, conn in ipairs(getconnections(btn.MouseButton1Click)) do
-                                                conn:Fire()
-                                            end
-                                        else
-                                            firesignal(btn.MouseButton1Click)
-                                        end
-                                    end
-                                end
-                            end)
-                            task.wait(1.0)
-                            trialIsRunning = false
-                            break
-                        end
-                    end
-                    
-                    -- Safe surface relocation: Teleport back to Castle Entrance
-                    showToast("Trials: Completed / Exited! Relocating to surface...")
-                    pcall(function()
-                        local hrp = GetWorldRoot()
-                        if hrp then
-                            hrp.Anchored = false
-                            hrp.CFrame = CFrame.new(Dest.CastleEntrance)
-                            hrp.AssemblyLinearVelocity = Vector3.zero
-                            hrp.AssemblyAngularVelocity = Vector3.zero
-                        end
-                    end)
-                    
-                    -- STRICT CASTLE ARRIVAL LOCK: Wait until player is physically at the castle before restoring toggles
-                    local castleWait = 0
-                    while Running do
-                        task.wait(0.2)
-                        castleWait = castleWait + 0.2
-                        local hrpCheck = GetWorldRoot()
-                        if hrpCheck and (hrpCheck.Position - Dest.CastleEntrance).Magnitude < 50 then
-                            break
-                        end
-                        if castleWait > 6.0 then
-                            break
-                        end
-                    end
-                    
-                    task.wait(1.0) -- Stability buffer
-                    
-                    -- Restore all previously cached automation toggles ONLY AFTER ARRIVING AT CASTLE
-                    for flagName, state in pairs(cachedStates) do
-                        Env[flagName] = state
-                    end
-                    trialIsRunning = false
-                    showToast("Trials: Successfully returned to castle! Toggles restored.")
-                end
-            end
-        end
-    end
-end)
-
--- SAFE ZONE COMBAT BREAK
+-- COMBAT SAFE SPOT BREAK
 task.spawn(function()
     while Running do
         task.wait(40.0)
@@ -1806,13 +1763,12 @@ task.spawn(function()
     end
 end)
 
-local currentMobIndex = 1
 local lastTargetedPart = nil
 
 -- ZERO-DELAY INSTANT CORPSE-SKIPPING TRIAL & OVERWORLD MOB FARMING ENGINE
 task.spawn(function()
     while Running do
-        task.wait(0.01) -- 10ms super-tight poll rate
+        task.wait(0.01)
         if Running and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
@@ -1839,7 +1795,6 @@ task.spawn(function()
                 local foundMobPart = nil
                 
                 if trialIsRunning then
-                    -- Clean up deadMobs cache
                     for mobModel, _ in pairs(deadMobs) do
                         if not mobModel:IsDescendantOf(workspace) then
                             deadMobs[mobModel] = nil
@@ -1930,7 +1885,7 @@ task.spawn(function()
     end
 end)
 
--- SAND REGENERATION LOOP (250 LAYERS)
+-- SAND REGENERATION LOOP
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -2364,4 +2319,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.31 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.32 Stable Loaded Successfully!")
