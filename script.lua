@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.35 - Z-COORDINATE LOBBY TOGGLE RESTORATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.36 - RECURSION-FREE COLLAPSIBLE UI FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -61,11 +61,11 @@ Env.AutoSandUpgrades = false
 Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
-Env.TargetSandLayer = 3 -- User configurable layer 1-250
+Env.TargetSandLayer = 3
 
 -- TRIAL ANTI-STUCK CONFIG
 Env.AutoLeaveIfStuck = true
-Env.TrialStagnationTime = 30 -- User configurable stagnation seconds (default 30s)
+Env.TrialStagnationTime = 30
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -405,7 +405,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- TEXT INPUT ROW FOR CONFIG VALUES (e.g., Target Layer, Stagnation Time)
+-- TEXT INPUT ROW FOR CONFIG VALUES
 local function createTextBoxRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -464,7 +464,7 @@ local function createTextBoxRow(parent, txt, vKey)
     return row
 end
 
--- COLLAPSIBLE SECTION BUILDER
+-- RECURSION-FREE COLLAPSIBLE SECTION BUILDER
 local function createCollapsibleSection(parent, txt)
     local secFrame = Instance.new("Frame")
     secFrame.Size = UDim2.new(1, -10, 0, 36)
@@ -492,23 +492,11 @@ local function createCollapsibleSection(parent, txt)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.Parent = cont
 
-    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        if cont.Visible then
-            cont.Size = UDim2.new(1, 0, 0, layout.AbsoluteContentSize.Y)
-            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
-        end
-    end)
-
     local isOpen = true
     headerBtn.MouseButton1Click:Connect(function()
         isOpen = not isOpen
         cont.Visible = isOpen
         headerBtn.Text = (isOpen and "▼  " or "▶  ") .. txt
-        if isOpen then
-            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
-        else
-            secFrame.Size = UDim2.new(1, -10, 0, 36)
-        end
     end)
 
     return cont
@@ -1666,7 +1654,7 @@ task.spawn(function()
                     
                     showToast("Trials: Completed / Exited trial arena...")
                     
-                    -- Z-COORDINATE LOBBY DETECTION: Wait until Z position drops below 13000 (meaning player is back in trial lobby/hallway)
+                    -- Z-COORDINATE LOBBY DETECTION: Wait until Z position drops below 13000
                     local lobbyWait = 0
                     while Running do
                         task.wait(0.2)
@@ -2287,4 +2275,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.35 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.36 Stable Loaded Successfully!")
