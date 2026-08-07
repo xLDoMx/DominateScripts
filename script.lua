@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.49 - TRIAL EXTRACTION & TIMER CONFIG)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.50 - DYNAMIC ENV SNAPSHOT INTEGRATION)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1677,19 +1677,22 @@ task.spawn(function()
     end
 end)
 
+-- DYNAMIC ENV SNAPSHOT FUNCTIONS (OPTION 1)
 local function cacheAndPauseToggles()
     if cachedStates then return end
     cachedStates = {}
-    local flagsToPause = {
-        "AutoRegenSandLayers", "AutoFarmCash", "AutoStartRitual", "AutoGemExchange", "AutoGemShopTeleport", "AutoAncientBossFarm"
-    }
-    for _, mInfo in ipairs(MobPriorityList) do table.insert(flagsToPause, mInfo.F) end
-    for _, oInfo in ipairs(OrePriorityList) do table.insert(flagsToPause, oInfo.F) end
-    
-    for _, flagName in ipairs(flagsToPause) do
-        cachedStates[flagName] = Env[flagName]
-        Env[flagName] = false
+    for k, v in pairs(Env) do
+        if type(k) == "string" and k:sub(1, 4) == "Auto" then
+            -- Exclude trial configuration flags so they remain unaffected
+            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveIfStuck" then
+                if v == true then
+                    cachedStates[k] = true
+                    Env[k] = false
+                end
+            end
+        end
     end
+    showToast("Trials: Dynamic snapshot saved. Background automation paused.")
 end
 
 local function restoreToggles()
@@ -2682,4 +2685,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.49 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.50 Stable Loaded Successfully!")
