@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.33 - TRIAL TARGETING RESTORED & BUILD)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.37 - STANDARD SCROLLING & ROCK-SOLID STABILITY)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -61,10 +61,11 @@ Env.AutoSandUpgrades = false
 Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
-Env.TargetSandLayer = 3 -- User configurable layer 1-250
+Env.TargetSandLayer = 3
 
 -- TRIAL ANTI-STUCK CONFIG
 Env.AutoLeaveIfStuck = true
+Env.TrialStagnationTime = 30
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -404,7 +405,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- TEXT INPUT ROW FOR TARGET LAYER (1-250)
+-- TEXT INPUT ROW FOR CONFIG VALUES
 local function createTextBoxRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -451,10 +452,10 @@ local function createTextBoxRow(parent, txt, vKey)
     textBox.FocusLost:Connect(function(enterPressed)
         local num = tonumber(textBox.Text)
         if num then
-            num = math.clamp(math.round(num), 1, 250)
+            num = math.max(1, math.round(num))
             Env[vKey] = num
             textBox.Text = tostring(num)
-            showToast(txt .. " set to Layer " .. tostring(num))
+            showToast(txt .. " set to " .. tostring(num))
         else
             textBox.Text = tostring(Env[vKey])
         end
@@ -463,54 +464,18 @@ local function createTextBoxRow(parent, txt, vKey)
     return row
 end
 
--- COLLAPSIBLE SECTION BUILDER
-local function createCollapsibleSection(parent, txt)
-    local secFrame = Instance.new("Frame")
-    secFrame.Size = UDim2.new(1, -10, 0, 36)
-    secFrame.BackgroundTransparency = 1
-    secFrame.Parent = parent
-
-    local headerBtn = Instance.new("TextButton")
-    headerBtn.Size = UDim2.new(1, 0, 0, 32)
-    headerBtn.BackgroundTransparency = 1
-    headerBtn.TextColor3 = Color3.fromRGB(230, 110, 255)
-    headerBtn.TextSize = 12
-    headerBtn.Font = Enum.Font.GothamBold
-    headerBtn.Text = "▼  " .. txt
-    headerBtn.TextXAlignment = Enum.TextXAlignment.Left
-    headerBtn.Parent = secFrame
-
-    local cont = Instance.new("Frame")
-    cont.Size = UDim2.new(1, 0, 0, 0)
-    cont.Position = UDim2.new(0, 0, 0, 36)
-    cont.BackgroundTransparency = 1
-    cont.Parent = secFrame
-
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 8)
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Parent = cont
-
-    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        if cont.Visible then
-            cont.Size = UDim2.new(1, 0, 0, layout.AbsoluteContentSize.Y)
-            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
-        end
-    end)
-
-    local isOpen = true
-    headerBtn.MouseButton1Click:Connect(function()
-        isOpen = not isOpen
-        cont.Visible = isOpen
-        headerBtn.Text = (isOpen and "▼  " or "▶  ") .. txt
-        if isOpen then
-            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
-        else
-            secFrame.Size = UDim2.new(1, -10, 0, 36)
-        end
-    end)
-
-    return cont
+-- SECTION HEADER HELPER
+local function createSectionHeader(parent, txt)
+    local header = Instance.new("TextLabel")
+    header.Size = UDim2.new(1, -10, 0, 32)
+    header.BackgroundTransparency = 1
+    header.TextColor3 = Color3.fromRGB(230, 110, 255)
+    header.TextSize = 12
+    header.Font = Enum.Font.GothamBold
+    header.Text = txt
+    header.TextXAlignment = Enum.TextXAlignment.Left
+    header.Parent = parent
+    return header
 end
 
 -- EXPANDABLE MULTI-SELECT DROPDOWN FOR RITUAL TARGET MOBS
@@ -1074,6 +1039,359 @@ local function makeVerticalScroll(parent)
     return s 
 end
 
+-- UPGRADES PAGE BUILD
+local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
+createSectionHeader(upScroll, "Realm 1 Upgrades")
+createToggleRow(upScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
+createToggleRow(upScroll, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
+masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScroll)
+masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScroll)
+masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScroll)
+masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScroll)
+masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScroll)
+masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScroll)
+
+createSectionHeader(upScroll, "Realm 2 Upgrades")
+masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScroll)
+masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, upScroll)
+masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScroll)
+masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScroll)
+masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScroll)
+
+createSectionHeader(upScroll, "Gem Upgrades & Features")
+createToggleRow(upScroll, "More Oof (Gem)", "AutoGemMoreOof")
+createToggleRow(upScroll, "More Gems", "AutoGemMoreGems")
+createToggleRow(upScroll, "Stronger Pickaxes", "AutoGemStrongerPickaxes")
+createToggleRow(upScroll, "More Ore Stats", "AutoGemMoreOreStats")
+createToggleRow(upScroll, "Gem Converter", "AutoGemExchange")
+createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
+
+createSectionHeader(upScroll, "Realm 3 Upgrades")
+masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
+masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, upScroll)
+
+createSectionHeader(upScroll, "Sand Upgrades")
+createToggleRow(upScroll, "Auto Sand Upgrades", "AutoSandUpgrades")
+createToggleRow(upScroll, "Auto Shovel Level Up", "AutoShovelLevelUp")
+createToggleRow(upScroll, "Auto Excavation Rank Up", "AutoExcavationRankUp")
+createToggleRow(upScroll, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
+createTextBoxRow(upScroll, "Target Sand Layer (1-250)", "TargetSandLayer")
+
+-- NOOBS PAGE BUILD
+local noobsScroll = makeVerticalScroll(noobsPage)
+createSectionHeader(noobsScroll, "Realm 1 Noobs")
+createToggleRow(noobsScroll, "Starter Auto Upgrade", "AutoUpgradeStarter")
+createToggleRow(noobsScroll, "Cooker Auto Upgrade", "AutoUpgradeCooker")
+createToggleRow(noobsScroll, "Farmer Auto Upgrade", "AutoUpgradeFarmer")
+createToggleRow(noobsScroll, "Magician Auto Upgrade", "AutoUpgradeMagician")
+createToggleRow(noobsScroll, "Archer Auto Upgrade", "AutoUpgradeArcher")
+createToggleRow(noobsScroll, "Soldier Auto Upgrade", "AutoUpgradeSoldier")
+
+createSectionHeader(noobsScroll, "Realm 2 Noobs")
+createToggleRow(noobsScroll, "Auto Upgrade Fisherman", "AutoUpgradeFishermanNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Knight", "AutoUpgradeKnightNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
+
+createSectionHeader(noobsScroll, "Realm 3 Noobs")
+createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
+createToggleRow(noobsScroll, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
+
+-- TRIALS PAGE BUILD
+local trialsScroll = makeVerticalScroll(trialsPage)
+createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
+createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
+createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
+createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
+createToggleRow(trialsScroll, "Auto Leave If Stuck (Mob Stagnation)", "AutoLeaveIfStuck")
+createTextBoxRow(trialsScroll, "Stagnation Time (s)", "TrialStagnationTime")
+
+-- MINES PAGE BUILD
+local minesScroll = makeVerticalScroll(minesPage)
+createSectionHeader(minesScroll, "Mining Configuration")
+local bestTierActive = false
+local bestTierBtn = Instance.new("TextButton")
+bestTierBtn.Size = UDim2.new(1, -10, 0, 48)
+bestTierBtn.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
+bestTierBtn.BackgroundTransparency = 0.5
+bestTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
+bestTierBtn.TextSize = 13
+bestTierBtn.Font = Enum.Font.GothamBold
+bestTierBtn.Text = "Best Tier Only: DISABLED"
+bestTierBtn.Parent = minesScroll
+
+local btCorner = Instance.new("UICorner")
+btCorner.CornerRadius = UDim.new(0, 8)
+btCorner.Parent = bestTierBtn
+
+bestTierBtn.MouseButton1Click:Connect(function()
+    bestTierActive = not bestTierActive
+    bestTierBtn.Text = bestTierActive and "Best Tier Only: ACTIVE" or "Best Tier Only: DISABLED"
+    bestTierBtn.BackgroundColor3 = bestTierActive and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(35, 20, 55)
+    bestTierBtn.BackgroundTransparency = bestTierActive and 0 or 0.5
+
+    local topOres = {"AutoMineVoidsteel", "AutoMineCelestium", "AutoMineRuby"}
+    local allOres = {
+        "AutoMineStone", "AutoMineCoal", "AutoMineSilver", "AutoMineIron", "AutoMineCopper",
+        "AutoMineGold", "AutoMinePlatinum", "AutoMineTitanium", "AutoMineCobalt", "AutoMineUranium",
+        "AutoMinePalladium", "AutoMineAetherite", "AutoMineRuby", "AutoMineVoidsteel", "AutoMineCelestium"
+    }
+    for _, ore in ipairs(allOres) do Env[ore] = false end
+    if bestTierActive then for _, ore in ipairs(topOres) do Env[ore] = true end end
+    showToast(bestTierActive and "Best Tier Only ores activated!" or "Best Tier Only deactivated.")
+end)
+
+local speedContainer = Instance.new("Frame")
+speedContainer.Size = UDim2.new(1, -10, 0, 60)
+speedContainer.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
+speedContainer.BackgroundTransparency = 0.5
+speedContainer.BorderSizePixel = 0
+speedContainer.Parent = minesScroll
+
+local scCorner = Instance.new("UICorner")
+scCorner.CornerRadius = UDim.new(0, 8)
+scCorner.Parent = speedContainer
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, -20, 0, 22)
+speedLabel.Position = UDim2.new(0, 16, 0, 8)
+speedLabel.BackgroundTransparency = 1
+speedLabel.TextColor3 = Color3.fromRGB(240, 235, 250)
+speedLabel.TextSize = 13
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.Text = string.format("Glide Speed: %.1fs", Env.MiningJumpSpeed or 0.8)
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = speedContainer
+
+local sliderTrack = Instance.new("TextButton")
+sliderTrack.Size = UDim2.new(1, -32, 0, 14)
+sliderTrack.Position = UDim2.new(0, 16, 0, 34)
+sliderTrack.BackgroundColor3 = Color3.fromRGB(42, 28, 65)
+sliderTrack.Text = ""
+sliderTrack.AutoButtonColor = false
+sliderTrack.Parent = speedContainer
+
+local stCorner = Instance.new("UICorner")
+stCorner.CornerRadius = UDim.new(1, 0)
+stCorner.Parent = sliderTrack
+
+local sliderFill = Instance.new("Frame")
+local initialPercent = math.clamp(((Env.MiningJumpSpeed or 0.8) - 0.1) / 2.9, 0, 1)
+sliderFill.Size = UDim2.new(initialPercent, 0, 1, 0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
+sliderFill.BorderSizePixel = 0
+sliderFill.Parent = sliderTrack
+
+local sfCorner = Instance.new("UICorner")
+sfCorner.CornerRadius = UDim.new(1, 0)
+sfCorner.Parent = sliderFill
+
+local function updateSlider(inputX)
+    local relX = math.clamp((inputX - sliderTrack.AbsolutePosition.X) / sliderTrack.AbsoluteSize.X, 0, 1)
+    local speedVal = math.round((0.1 + (relX * 2.9)) * 10) / 10
+    Env.MiningJumpSpeed = speedVal
+    speedLabel.Text = string.format("Glide Speed: %.1fs", speedVal)
+    sliderFill.Size = UDim2.new(relX, 0, 1, 0)
+end
+
+local sliding = false
+sliderTrack.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        sliding = true
+        updateSlider(input.Position.X)
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updateSlider(input.Position.X)
+    end
+end)
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        sliding = false
+    end
+end)
+
+createSectionHeader(minesScroll, "Basic Ores")
+createToggleRow(minesScroll, "Stone", "AutoMineStone")
+createToggleRow(minesScroll, "Coal", "AutoMineCoal")
+createToggleRow(minesScroll, "Copper", "AutoMineCopper")
+createToggleRow(minesScroll, "Iron", "AutoMineIron")
+createToggleRow(minesScroll, "Silver", "AutoMineSilver")
+
+createSectionHeader(minesScroll, "Advanced Ores")
+createToggleRow(minesScroll, "Gold", "AutoMineGold")
+createToggleRow(minesScroll, "Platinum", "AutoMinePlatinum")
+createToggleRow(minesScroll, "Titanium", "AutoMineTitanium")
+createToggleRow(minesScroll, "Uranium", "AutoMineUranium")
+createToggleRow(minesScroll, "Cobalt", "AutoMineCobalt")
+
+createSectionHeader(minesScroll, "End-Game Ores")
+createToggleRow(minesScroll, "Palladium", "AutoMinePalladium")
+createToggleRow(minesScroll, "Ruby", "AutoMineRuby")
+createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
+createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
+createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
+
+-- MOBS PAGE BUILD
+local mobsScroll = makeVerticalScroll(mobsPage)
+createSectionHeader(mobsScroll, "Realm 3 Mobs (Worst to Best)")
+local bestMobTierActive = false
+local bestMobTierBtn = Instance.new("TextButton")
+bestMobTierBtn.Size = UDim2.new(1, -10, 0, 48)
+bestMobTierBtn.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
+bestMobTierBtn.BackgroundTransparency = 0.5
+bestMobTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
+bestMobTierBtn.TextSize = 13
+bestMobTierBtn.Font = Enum.Font.GothamBold
+bestMobTierBtn.Text = "Best Mob Tier Only: DISABLED"
+bestMobTierBtn.Parent = mobsScroll
+
+local bmtCorner = Instance.new("UICorner")
+bmtCorner.CornerRadius = UDim.new(0, 8)
+bmtCorner.Parent = bestMobTierBtn
+
+bestMobTierBtn.MouseButton1Click:Connect(function()
+    bestMobTierActive = not bestMobTierActive
+    bestMobTierBtn.Text = bestMobTierActive and "Best Mob Tier Only: ACTIVE" or "Best Mob Tier Only: DISABLED"
+    bestMobTierBtn.BackgroundColor3 = bestMobTierActive and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(35, 20, 55)
+    bestMobTierBtn.BackgroundTransparency = bestMobTierActive and 0 or 0.5
+
+    local topOres = {"AutoMobDarkCommander", "AutoMobDarkKnight", "AutoMobSamuraiMaster"}
+    local allMobs = {
+        "AutoMobGoblin", "AutoMobSkeleton", "AutoMobOrc", "AutoMobPirate", "AutoMobNinja",
+        "AutoMobWarrior", "AutoMobPirateCaptain", "AutoMobSamurai", "AutoMobPirateAdmiral",
+        "AutoMobSamuraiMaster", "AutoMobDarkKnight", "AutoMobDarkCommander"
+    }
+    for _, mob in ipairs(allMobs) do Env[mob] = false end
+    if bestMobTierActive then for _, mob in ipairs(topOres) do Env[mob] = true end end
+    showToast(bestMobTierActive and "Best Mob Tier Only activated!" or "Best Mob Tier Only deactivated.")
+end)
+
+createToggleRow(mobsScroll, "Goblin", "AutoMobGoblin")
+createToggleRow(mobsScroll, "Skeleton", "AutoMobSkeleton")
+createToggleRow(mobsScroll, "Orc", "AutoMobOrc")
+createToggleRow(mobsScroll, "Pirate", "AutoMobPirate")
+createToggleRow(mobsScroll, "Ninja", "AutoMobNinja")
+createToggleRow(mobsScroll, "Warrior", "AutoMobWarrior")
+createToggleRow(mobsScroll, "Pirate Captain", "AutoMobPirateCaptain")
+createToggleRow(mobsScroll, "Samurai", "AutoMobSamurai")
+createToggleRow(mobsScroll, "Pirate Admiral", "AutoMobPirateAdmiral")
+createToggleRow(mobsScroll, "Samurai Master", "AutoMobSamuraiMaster")
+createToggleRow(mobsScroll, "Dark Knight", "AutoMobDarkKnight")
+createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
+
+createSectionHeader(mobsScroll, "Combat Utilities")
+createToggleRow(mobsScroll, "Ancient Boss Farm (Supreme Shadow Lord)", "AutoAncientBossFarm")
+createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
+createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
+createRitualMobDropdown(mobsScroll, "Ritual Target Mobs", MobPriorityList)
+
+-- FOOTBALL PAGE BUILD
+local footballScroll = makeVerticalScroll(footballPage)
+createSectionHeader(footballScroll, "Football Noobs")
+createToggleRow(footballScroll, "Goalkeeper", "AutoUpgradeGoalkeeper")
+createToggleRow(footballScroll, "Left Back", "AutoUpgradeLeftBack")
+createToggleRow(footballScroll, "Left Centerback", "AutoUpgradeLeftCenterBack")
+createToggleRow(footballScroll, "Right Centerback", "AutoUpgradeRightCenterBack")
+createToggleRow(footballScroll, "Right Back", "AutoUpgradeRightBack")
+createToggleRow(footballScroll, "Left Defensive Midfield", "AutoUpgradeLeftDefensiveMid")
+createToggleRow(footballScroll, "Right Defensive Midfield", "AutoUpgradeRightDefensiveMid")
+createToggleRow(footballScroll, "Attacking Mid", "AutoUpgradeAttackingMid")
+createToggleRow(footballScroll, "Left Wing", "AutoUpgradeLeftWing")
+createToggleRow(footballScroll, "Right Wing", "AutoUpgradeRightWing")
+createToggleRow(footballScroll, "Striker", "AutoUpgradeStriker")
+
+createSectionHeader(footballScroll, "Football Upgrades & Features")
+createToggleRow(footballScroll, "Auto Score Goal", "AutoScoreGoal")
+createToggleRow(footballScroll, "More Goals Upgrade", "AutoGoalsMoreGoals")
+createToggleRow(footballScroll, "Goals Rune Bulk", "AutoGoalsRuneBulk")
+createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
+createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
+createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
+
+-- MISC PAGE BUILD
+local miscScroll = makeVerticalScroll(miscPage)
+createSectionHeader(miscScroll, "Runes")
+createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
+createToggleRow(miscScroll, "Auto Super Rune Circle", "AutoRollSuperRune")
+createToggleRow(miscScroll, "Auto Advanced Rune", "AutoRollAdvancedRune")
+createToggleRow(miscScroll, "Auto Cosmic Prism", "AutoRollCosmicRune")
+createToggleRow(miscScroll, "Auto Snowy Rune Circle", "AutoRollSnowyRune")
+createToggleRow(miscScroll, "Auto Football Rune", "AutoRollFootballRune")
+createToggleRow(miscScroll, "Auto Dunes Rune Circle", "AutoRollDunesRune")
+createToggleRow(miscScroll, "Auto Sunfire Rune Circle", "AutoRollSunfireRune")
+
+createSectionHeader(miscScroll, "Capsules")
+createToggleRow(miscScroll, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
+createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
+createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
+createToggleRow(miscScroll, "Hatch Ancient Capsule", "AutoOpenAncientCapsule")
+
+-- SETTINGS PAGE BUILD
+local settingsScroll = makeVerticalScroll(settingsPage)
+createSectionHeader(settingsScroll, "General Settings")
+createToggleRow(settingsScroll, "Anti AFK Protection", "AntiAFK")
+createToggleRow(settingsScroll, "FPS Booster Mode", "FPSBoostMode")
+createToggleRow(settingsScroll, "Stats HUD Overlay", "ShowStatsHUD")
+createToggleRow(settingsScroll, "CPU Saver Mode", "CPUSaverMode")
+
+createSectionHeader(settingsScroll, "Automation Settings")
+createToggleRow(settingsScroll, "Auto Rebirth", "AutoRebirthTimer")
+createToggleRow(settingsScroll, "Auto Prestige", "AutoPrestige")
+createToggleRow(settingsScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
+createToggleRow(settingsScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
+
+createSectionHeader(settingsScroll, "Emergency Controls")
+local killRow = Instance.new("Frame") 
+killRow.Size = UDim2.new(1, -10, 0, 48) 
+killRow.BackgroundColor3 = Color3.fromRGB(35, 20, 55) 
+killRow.BackgroundTransparency = 0.5
+killRow.BorderSizePixel = 0 
+killRow.Parent = settingsScroll
+
+local krCorner = Instance.new("UICorner")
+krCorner.CornerRadius = UDim.new(0, 8)
+krCorner.Parent = killRow
+
+local killLbl = Instance.new("TextLabel") 
+killLbl.Size = UDim2.new(0.6, 0, 1, 0) 
+killLbl.Position = UDim2.new(0, 16, 0, 0) 
+killLbl.BackgroundTransparency = 1 
+killLbl.TextColor3 = Color3.fromRGB(254, 202, 202) 
+killLbl.TextSize = 13 
+killLbl.Font = Enum.Font.GothamBold 
+killLbl.Text = "Emergency Kill Switch" 
+killLbl.TextXAlignment = Enum.TextXAlignment.Left 
+killLbl.Parent = killRow
+
+local killBtn = Instance.new("TextButton") 
+killBtn.Size = UDim2.new(0, 110, 0, 30) 
+killBtn.Position = UDim2.new(1, -118, 0.5, -15) 
+killBtn.BackgroundColor3 = Color3.fromRGB(153, 27, 27) 
+killBtn.TextColor3 = Color3.fromRGB(254, 226, 226) 
+killBtn.TextSize = 11 
+killBtn.Font = Enum.Font.GothamBold 
+killBtn.Text = "TERMINATE" 
+killBtn.Parent = killRow
+
+local kbCorner = Instance.new("UICorner")
+kbCorner.CornerRadius = UDim.new(0, 8)
+kbCorner.Parent = killBtn
+
+killBtn.MouseButton1Click:Connect(function()
+    Running = false Env.DominateHubLoaded = nil 
+    for k, _ in pairs(Env) do if type(k) == "string" and (k:sub(1,4) == "Auto" or k == "AntiAFK") then Env[k] = false end end
+    pcall(function() 
+        local cam = workspace.CurrentCamera if cam then cam.CameraType = Enum.CameraType.Custom end 
+        local blur = Lighting:FindFirstChild("DominateHubBlur")
+        if blur then blur:Destroy() end
+    end) 
+    sg:Destroy()
+end)
+
 local function mainRoute(pOpen, bActive) 
     upgradesPage.Visible, noobsPage.Visible, minesPage.Visible, mobsPage.Visible, trialsPage.Visible, footballPage.Visible, miscPage.Visible, settingsPage.Visible = false, false, false, false, false, false, false, false; pOpen.Visible = true; 
     local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabTrials, tabFootball, tabMisc, tabSettings}
@@ -1098,4 +1416,891 @@ tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFoot
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
-print("[Dominate Hub] V16.9.33 Stable Loaded Successfully!")
+-- LOCOMOTION & AUTOMATION ENGINES
+local MasterTargetVector = nil  
+local MiningTargetVector = nil
+local MobTargetVector = nil
+local TrialTargetVector = nil
+local RitualTargetVector = nil
+local SandTargetVector = nil
+
+local Dest = {
+    Basic = Vector3.new(1114.753, 10.310, -644.151), Super = Vector3.new(1082.093, 16.661, -782.021), Advanced = Vector3.new(1293.495, 16.515, -883.312),
+    Cosmic = Vector3.new(783.450, 16.655, -855.972), Football = Vector3.new(-2713.261, 36.861, -15.832), Snowy = Vector3.new(1017.366, 5.866, 3262.671),
+    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), FootballCap = Vector3.new(-2603.007, 36.295, -31.061), SuperCap = Vector3.new(618.032, 9.653, 3172.149),
+    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
+    Dunes = Vector3.new(547.1116333007812, 2.187267780303955, 7826.4072265625),
+    Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
+    EasyTrial = Vector3.new(852.6607, 11.1623, 13442.8906),
+    MediumTrial = Vector3.new(878.7848, 11.1781, 13417.0488),
+    HardTrial = Vector3.new(910.2881, 11.1623, 13442.5009),
+    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
+    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875)
+}
+
+local function GetWorldRoot() return player.Character and player.Character:FindFirstChild("HumanoidRootPart") end
+
+local lastGlidingState = false
+RunService.Stepped:Connect(function()
+    if not Running then return end
+    local char = player.Character
+    if char then
+        local isGliding = (MasterTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or Env.AutoRollSunfireRune or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        
+        if isGliding ~= lastGlidingState then
+            lastGlidingState = isGliding
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = not isGliding
+                end
+            end
+        end
+    end
+end)
+
+-- UNIFIED ZERO-DELAY INSTANT-SNAP MOVEMENT LOOP
+task.spawn(function()
+    while Running do
+        RunService.RenderStepped:Wait()
+        local hrp = GetWorldRoot()
+        if hrp and Running then
+            local act = nil
+            if RitualTargetVector then act = RitualTargetVector
+            elseif MasterTargetVector then act = MasterTargetVector 
+            elseif MobTargetVector then act = MobTargetVector
+            elseif MiningTargetVector then act = MiningTargetVector
+            elseif SandTargetVector then act = SandTargetVector
+            elseif Env.AutoRollSunfireRune then act = Dest.Sunfire
+            elseif Env.AutoRollDunesRune then act = Dest.Dunes
+            elseif Env.AutoRollFootballRune then act = Dest.Football elseif Env.AutoRollSnowyRune then act = Dest.Snowy
+            elseif Env.AutoRollCosmicRune then act = Dest.Cosmic elseif Env.AutoRollAdvancedRune then act = Dest.Advanced
+            elseif Env.AutoRollSuperRune then act = Dest.Super elseif Env.AutoRollBasicRune then act = Dest.Basic end
+            
+            if act then
+                local targetCF = CFrame.new(act)
+                if trialIsRunning or MobTargetVector then
+                    hrp.Anchored = false
+                    hrp.CFrame = targetCF
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                    hrp.AssemblyAngularVelocity = Vector3.zero
+                else
+                    if (hrp.Position - act).Magnitude > 0.3 then
+                        hrp.Anchored = false
+                        hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.85)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                    else
+                        hrp.CFrame = targetCF
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                        hrp.AssemblyAngularVelocity = Vector3.zero
+                        hrp.Anchored = true
+                    end
+                end
+            else
+                hrp.Anchored = false
+            end
+        end
+    end
+end)
+
+local function isMobRespawning(mobModel)
+    if not mobModel then return true end
+    for _, desc in ipairs(mobModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
+            return true
+        end
+    end
+    return false
+end
+
+-- RITUAL LOOP
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if Running and Env.AutoStartRitual and not trialIsRunning then
+            local hrp = GetWorldRoot()
+            if hrp then
+                hrp.Anchored = false
+                hrp.CFrame = CFrame.new(Dest.RitualChamber)
+                hrp.AssemblyLinearVelocity = Vector3.zero
+                hrp.AssemblyAngularVelocity = Vector3.zero
+            end
+            showToast("Ritual Chamber: Teleported to chamber!")
+            task.wait(2.0)
+            
+            ritualTimer = 180
+            ritualInCooldown = false
+            ritualSuppressMobs = true
+            ritualIsActive = true
+            RitualTargetVector = Dest.RitualChamber
+            
+            for _ = 1, 5 do
+                if not Running or not Env.AutoStartRitual or trialIsRunning then break end
+                pcall(function()
+                    local args = { [1] = "StartRitual" }
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                end)
+                task.wait(1.0)
+                ritualTimer = math.max(0, ritualTimer - 1)
+            end
+            
+            RitualTargetVector = nil
+            ritualIsActive = false
+            ritualSuppressMobs = false
+            currentTargetMob = nil
+            MobTargetVector = nil
+            
+            while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
+                task.wait(1.0)
+                ritualTimer = ritualTimer - 1
+                ritualInCooldown = ritualTimer <= 60
+            end
+            
+            ritualTimer = 0
+            ritualInCooldown = false
+            ritualSuppressMobs = false
+        else
+            ritualTimer = 0
+            ritualInCooldown = false
+            ritualSuppressMobs = false
+        end
+    end
+end)
+
+-- SCHEDULED TRIAL AUTOMATION (WITH Z-COORDINATE LOBBY DETECTION & STAGNATION TIMER)
+local lastTrialTriggeredMinute = -1
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if Running and (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial) and not ritualIsActive then
+            local timeTable = os.date("*t")
+            local min = timeTable.min
+            
+            if (min == 29 or min == 59) and min ~= lastTrialTriggeredMinute then
+                lastTrialTriggeredMinute = min
+                
+                local targetPad = nil
+                if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
+                elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
+                elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
+                
+                if targetPad then
+                    trialIsRunning = true
+                    showToast("Trials: Scheduled trial time reached! Locking toggles & teleporting...")
+                    
+                    local cachedStates = {}
+                    local flagsToPause = {
+                        "AutoRegenSandLayers", "AutoFarmCash", "AutoStartRitual", "AutoGemExchange", "AutoGemShopTeleport", "AutoAncientBossFarm"
+                    }
+                    for _, mInfo in ipairs(MobPriorityList) do table.insert(flagsToPause, mInfo.F) end
+                    for _, oInfo in ipairs(OrePriorityList) do table.insert(flagsToPause, oInfo.F) end
+                    
+                    for _, flagName in ipairs(flagsToPause) do
+                        cachedStates[flagName] = Env[flagName]
+                        Env[flagName] = false
+                    end
+                    
+                    local hrp = GetWorldRoot()
+                    if hrp then
+                        hrp.Anchored = false
+                        hrp.CFrame = CFrame.new(targetPad)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                        hrp.AssemblyAngularVelocity = Vector3.zero
+                    end
+                    
+                    showToast("Trials: Waiting 60s for trial countdown...")
+                    local waitElapsed = 0
+                    while waitElapsed < 60 and Running and trialIsRunning do
+                        task.wait(1.0)
+                        waitElapsed = waitElapsed + 1
+                    end
+                    
+                    showToast("Trials: Zero-delay instant mob clearing active across all waves...")
+                    
+                    local lastMobCount = -1
+                    local stagnationTimer = tick()
+                    
+                    while Running and trialIsRunning do
+                        task.wait(1.0)
+                        
+                        pcall(function()
+                            local hrpCheck = GetWorldRoot()
+                            if hrpCheck and hrpCheck.Position.Z < 13000 then
+                                trialIsRunning = false
+                            end
+                        end)
+                        
+                        if not trialIsRunning then break end
+                        
+                        -- Adjustable mob-count stagnation anti-stuck check
+                        if Env.AutoLeaveIfStuck then
+                            pcall(function()
+                                local stagnationLimit = tonumber(Env.TrialStagnationTime) or 30
+                                local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                                local trialsFolder = gc and gc:FindFirstChild("Trials")
+                                local currentMobCount = 0
+                                if trialsFolder then
+                                    for _, room in ipairs(trialsFolder:GetChildren()) do
+                                        local mFolder = room:FindFirstChild("Mobs")
+                                        if mFolder then
+                                            for _, mob in ipairs(mFolder:GetChildren()) do
+                                                if mob:IsA("Model") and not isMobRespawning(mob) then
+                                                    local hum = mob:FindFirstChildOfClass("Humanoid")
+                                                    if not hum or hum.Health > 0 then
+                                                        currentMobCount = currentMobCount + 1
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                                
+                                if currentMobCount ~= lastMobCount then
+                                    lastMobCount = currentMobCount
+                                    stagnationTimer = tick()
+                                elseif currentMobCount > 0 and (tick() - stagnationTimer > stagnationLimit) then
+                                    showToast("Trials: Anti-stuck triggered (Mob count unchanged for " .. stagnationLimit .. "s). Exiting trial...")
+                                    pcall(function()
+                                        for _, btn in ipairs(player.PlayerGui:GetDescendants()) do
+                                            if btn:IsA("TextButton") and btn.Text and btn.Text:lower():find("leave trial") then
+                                                if getconnections then
+                                                    for _, conn in ipairs(getconnections(btn.MouseButton1Click)) do
+                                                        conn:Fire()
+                                                    end
+                                                else
+                                                    firesignal(btn.MouseButton1Click)
+                                                end
+                                            end
+                                        end
+                                    end)
+                                    task.wait(1.0)
+                                    trialIsRunning = false
+                                end
+                            end)
+                        end
+                    end
+                    
+                    showToast("Trials: Completed / Exited trial arena...")
+                    
+                    -- Z-COORDINATE LOBBY DETECTION: Wait until Z position drops below 13000
+                    local lobbyWait = 0
+                    while Running do
+                        task.wait(0.2)
+                        lobbyWait = lobbyWait + 0.2
+                        local hrpCheck = GetWorldRoot()
+                        if hrpCheck and hrpCheck.Position.Z < 13000 then
+                            break
+                        end
+                        if lobbyWait > 10.0 then
+                            break
+                        end
+                    end
+                    
+                    task.wait(0.5) -- Stability buffer
+                    
+                    -- Restore all previously cached automation toggles ONLY AFTER RETURNING TO LOBBY
+                    for flagName, state in pairs(cachedStates) do
+                        Env[flagName] = state
+                    end
+                    trialIsRunning = false
+                    showToast("Trials: Successfully returned to lobby! Toggles restored.")
+                end
+            end
+        end
+    end
+end)
+
+-- COMBAT SAFE SPOT BREAK
+task.spawn(function()
+    while Running do
+        task.wait(40.0)
+        if Running and Env.AutoCombatBreak and not trialIsRunning and not ritualIsActive then
+            local activeMobStates = {}
+            local anyActive = false
+            for i = 1, #MobPriorityList do
+                if Env[MobPriorityList[i].F] then
+                    activeMobStates[MobPriorityList[i].F] = true
+                    Env[MobPriorityList[i].F] = false
+                    anyActive = true
+                end
+            end
+            
+            if anyActive then
+                MobTargetVector = nil
+                currentTargetMob = nil
+                MasterTargetVector = Vector3.new(919.1552, 4.8658, 7905.8755)
+                showToast("Safe Spot Break...")
+                task.wait(0.5)
+                MasterTargetVector = nil
+                
+                pcall(function()
+                    local args = { [1] = "DepositMeat" }
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                end)
+                
+                task.wait(1.5)
+                for flag, state in pairs(activeMobStates) do
+                    Env[flag] = state
+                end
+            end
+        end
+    end
+end)
+
+local lastTargetedPart = nil
+
+-- ZERO-DELAY INSTANT CORPSE-SKIPPING TRIAL & OVERWORLD MOB FARMING ENGINE
+task.spawn(function()
+    while Running do
+        task.wait(0.01)
+        if Running and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
+            local enabledMobNames = {} 
+            local hasAnyMobEnabled = false
+
+            if trialIsRunning then
+                hasAnyMobEnabled = true
+            elseif Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
+                for mobName, selected in pairs(Env.RitualSelectedMobs) do
+                    if selected then
+                        enabledMobNames[mobName] = true
+                        hasAnyMobEnabled = true
+                    end
+                end
+            else
+                for i = 1, #MobPriorityList do 
+                    if Env[MobPriorityList[i].F] then 
+                        enabledMobNames[MobPriorityList[i].N] = true 
+                        hasAnyMobEnabled = true 
+                    end 
+                end
+            end
+
+            if hasAnyMobEnabled then
+                local foundMobPart = nil
+                
+                if trialIsRunning then
+                    for mobModel, _ in pairs(deadMobs) do
+                        if not mobModel:IsDescendantOf(workspace) then
+                            deadMobs[mobModel] = nil
+                        end
+                    end
+
+                    local gc = workspace:FindFirstChild("__GAME_CONTENT")
+                    local trialsFolder = gc and gc:FindFirstChild("Trials")
+                    if trialsFolder then
+                        local shortestDist = math.huge
+                        local hrp = GetWorldRoot()
+                        for _, roomObj in ipairs(trialsFolder:GetChildren()) do
+                            local mFolder = roomObj:FindFirstChild("Mobs")
+                            if mFolder then
+                                for _, mobObj in ipairs(mFolder:GetChildren()) do
+                                    if mobObj:IsA("Model") and not isMobRespawning(mobObj) and not deadMobs[mobObj] then
+                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            local isActuallyDead = false
+                                            for _, desc in ipairs(mobObj:GetDescendants()) do
+                                                if desc:IsA("TextLabel") and desc.Text then
+                                                    local txt = desc.Text:gsub(",", "")
+                                                    if txt:find("^0%s*/") or txt == "0" then
+                                                        isActuallyDead = true
+                                                        deadMobs[mobObj] = true
+                                                        break
+                                                    end
+                                                end
+                                            end
+                                            
+                                            if not isActuallyDead and hrp then
+                                                local dist = (part.Position - hrp.Position).Magnitude
+                                                if dist < shortestDist then
+                                                    shortestDist = dist
+                                                    foundMobPart = part
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                else
+                    local gc = workspace:FindFirstChild("__GAME_CONTENT") 
+                    local mobsFolder = gc and gc:FindFirstChild("Mobs")
+                    if mobsFolder then
+                        for i = #MobPriorityList, 1, -1 do
+                            local targetMobName = MobPriorityList[i].N
+                            if enabledMobNames[targetMobName] then
+                                for _, mobObj in ipairs(mobsFolder:GetChildren()) do
+                                    if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
+                                        local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
+                                        if part and part ~= lastTargetedPart then
+                                            foundMobPart = part
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                            if foundMobPart then break end
+                        end
+                    end
+                end
+                
+                currentTargetMob = foundMobPart
+                if currentTargetMob then
+                    lastTargetedPart = currentTargetMob
+                    if currentTargetMob ~= lastTrackedMobPart then
+                        lastTrackedMobPart = currentTargetMob
+                        mobsKilled = mobsKilled + 1
+                    end
+                end
+                
+                if currentTargetMob and currentTargetMob.Parent then 
+                    MobTargetVector = currentTargetMob.Position + Vector3.new(0, 1, 0)
+                else 
+                    MobTargetVector = nil 
+                end
+            else 
+                currentTargetMob = nil 
+                MobTargetVector = nil 
+                mobsKilled = 0
+                lastTrackedMobPart = nil
+                lastTargetedPart = nil
+            end
+        end
+    end
+end)
+
+-- SAND REGENERATION LOOP
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
+            showToast("Sand Regen: Teleporting to pit...")
+            pcall(function()
+                local hrp = GetWorldRoot()
+                if hrp then
+                    hrp.Anchored = false
+                    hrp.CFrame = CFrame.new(Dest.Dunes)
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                    hrp.AssemblyAngularVelocity = Vector3.zero
+                end
+            end)
+            task.wait(1.0)
+            
+            local reachedTarget = false
+            local targetLayer = tonumber(Env.TargetSandLayer) or 3
+            
+            while Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive and not reachedTarget do
+                task.wait(1.0)
+                pcall(function()
+                    local layersFolder = workspace:FindFirstChild("GeneratedSandLayers", true)
+                    if layersFolder then
+                        local targetFound = false
+                        local totalRemaining = 0
+                        for _, child in ipairs(layersFolder:GetChildren()) do
+                            totalRemaining = totalRemaining + 1
+                            local idx = child:GetAttribute("LayerIndex")
+                            if idx and tonumber(idx) <= targetLayer then
+                                targetFound = true
+                            end
+                        end
+                        if not targetFound or totalRemaining <= math.max(0, 20 - targetLayer) then
+                            reachedTarget = true
+                        end
+                    else
+                        local hrp = GetWorldRoot()
+                        if hrp then
+                            local depth = math.abs(hrp.Position.Y - Dest.Dunes.Y)
+                            if (depth / 5) >= targetLayer then
+                                reachedTarget = true
+                            end
+                        end
+                    end
+                end)
+            end
+            
+            if reachedTarget and Running and Env.AutoRegenSandLayers then
+                showToast("Sand Regen: Target layer reached! Regen pad...")
+                SandTargetVector = Dest.SandRegenPad
+                task.wait(2.5)
+                SandTargetVector = nil
+                task.wait(1.5)
+            end
+        end
+    end
+end)
+
+-- GEM LOOPS
+task.spawn(function()
+    while Running do
+        task.wait(60.0)
+        if Running and Env.AutoGemExchange and not Env.AutoGemShopTeleport then
+            pcall(function()
+                local args = { [1] = "ExchangeAllMinerals" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+            end)
+            showToast("Gem Converter: Exchanged minerals!")
+        end
+    end
+end)
+
+task.spawn(function()
+    while Running do
+        task.wait(0.5)
+        if Running and Env.AutoGemShopTeleport and not Env.AutoGemExchange then
+            MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
+        elseif MasterTargetVector == Vector3.new(623.851, 8.781, 3210.993) and not Env.AutoGemShopTeleport then
+            MasterTargetVector = nil
+        end
+    end
+end)
+
+task.spawn(function()
+    while Running do
+        task.wait(60.0)
+        if Running and Env.AutoGemExchange and Env.AutoGemShopTeleport then
+            pcall(function()
+                MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
+                task.wait(6.0)
+                local args = { [1] = "ExchangeAllMinerals" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                task.wait(1.0)
+                MasterTargetVector = nil
+            end)
+            showToast("Gem Shop Pitstop Completed!")
+        end
+    end
+end)
+
+local currentOreIndex = 1
+local lastOreJumpTick = 0
+
+local function isOreRespawning(oreModel)
+    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
+    if desc and desc.Text:lower():find("respawning") then return true end
+    return false
+end
+
+task.spawn(function()
+    while Running do
+        task.wait(Env.CPUSaverMode and 0.25 or 0.1)
+        if Running and not trialIsRunning and not ritualIsActive then
+            local enabledOreNames = {} local hasAnyEnabled = false
+            for i = 1, #OrePriorityList do if Env[OrePriorityList[i].F] then enabledOreNames[OrePriorityList[i].N] = true hasAnyEnabled = true end end
+
+            if hasAnyEnabled then
+                local needsNewTarget = false
+                if not currentTargetPanel or not currentTargetPanel.Parent or not currentTargetPanel:IsDescendantOf(workspace) then needsNewTarget = true
+                elseif currentTargetPanel.Parent and isOreRespawning(currentTargetPanel.Parent) then needsNewTarget = true
+                elseif tick() - lastOreJumpTick >= (Env.MiningJumpSpeed or 0.8) then needsNewTarget = true end
+
+                if needsNewTarget then
+                    local freshList = {} local gc = workspace:FindFirstChild("__GAME_CONTENT") local oresFolder = gc and gc:FindFirstChild("Ores")
+                    if oresFolder then
+                        for _, obj in ipairs(oresFolder:GetChildren()) do
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
+                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                                if part then table.insert(freshList, part) end
+                            end
+                        end
+                    end
+                    if #freshList > 0 then
+                        table.sort(freshList, function(a, b) return a.Position.X < b.Position.X end)
+                        currentOreIndex = currentOreIndex + 1 if currentOreIndex > #freshList then currentOreIndex = 1 end
+                        currentTargetPanel = freshList[currentOreIndex] 
+                        lastOreJumpTick = tick()
+                        
+                        if currentTargetPanel and currentTargetPanel ~= lastTrackedPart then
+                            lastTrackedPart = currentTargetPanel
+                            oresMined = oresMined + 1
+                        end
+                    else 
+                        currentTargetPanel = nil 
+                    end
+                end
+                
+                if currentTargetPanel and currentTargetPanel.Parent then MiningTargetVector = currentTargetPanel.Position else MiningTargetVector = nil end
+            else 
+                currentTargetPanel = nil 
+                MiningTargetVector = nil 
+                oresMined = 0
+                lastTrackedPart = nil
+            end
+        end
+    end
+end)
+
+task.spawn(function()
+    while Running do
+        task.wait(Env.CPUSaverMode and 0.25 or 0.12)
+        if Running then
+            local hrp = GetWorldRoot()
+            if hrp then
+                if Env.AutoOpenClassicCapsule then if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Classic" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
+                elseif Env.AutoOpenFootballCapsule then if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Football" } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
+                elseif Env.AutoOpenSuperCapsule then if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end)
+                elseif Env.AutoOpenAncientCapsule then if (hrp.Position - Dest.AncientCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.AncientCap) end pcall(function() local args = { [1] = "ToggleMinionAutoOpen", [2] = "Ancient" } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end
+            end
+        end
+    end
+end)
+
+task.spawn(function()
+    while Running do
+        task.wait(0.5)
+        if Env.AutoFarmCash and Running and not trialIsRunning and not ritualIsActive then
+            local gc = workspace:FindFirstChild("__GAME_CONTENT") local ty = gc and gc:FindFirstChild("Tycoon") local btnF = ty and ty:FindFirstChild("Buttons")
+            if btnF and Running then
+                local locked = {} 
+                repeat
+                    if not Running or not Env.AutoFarmCash or trialIsRunning or ritualIsActive then break end
+                    local vis = btnF:GetChildren() local att = false
+                    for i = 1, #vis do
+                        if not Running or not Env.AutoFarmCash then break end
+                        local bM = vis[i]
+                        if bM and bM:IsA("Model") and not locked[bM.Name] then
+                            local tb = bM:FindFirstChild("BuyingButtonPart", true)
+                            if tb and tb:IsA("BasePart") and Running then
+                                att = true MasterTargetVector = tb.Position task.wait(0.4)
+                                if not Running then break end
+                                if bM:IsDescendantOf(btnF) then locked[bM.Name] = true MasterTargetVector = nil task.wait(0.05) else MasterTargetVector = nil task.wait(0.1) break end
+                            end
+                        end
+                    end
+                    if not att or not Env.AutoFarmCash or not Running then break end task.wait(0.1)
+                until false
+                if Running then MasterTargetVector = nil local sE = tick() + math.random(120, 180) repeat task.wait(1) until tick() >= sE or not Env.AutoFarmCash or not Running end
+            else MasterTargetVector = nil task.wait(2) end
+        else MasterTargetVector = nil task.wait(1) end
+    end
+end)
+
+local PrimaryUpgradeQueue = {
+    {F="AutoUpgradeStarter",T="UpgradeNoob",A={"Starter"}}, {F="AutoUpgradeCooker",T="UpgradeNoobMax",A={"Cooker"}}, {F="AutoUpgradeFarmer",T="UpgradeNoobMax",A={"Farmer"}}, {F="AutoUpgradeMagician",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeArcher",T="UpgradeNoobMax",A={"Archer"}}, {F="AutoUpgradeSoldier",T="UpgradeNoobMax",A={"Soldier"}}, {F="AutoUpgradePharaoh",T="UpgradeNoobMax",A={"Pharaoh"}},
+    {F="AutoUpgradeHacker1",T="UpgradeNoobMax",A={"Hacker 1"}}, {F="AutoUpgradeHacker2",T="UpgradeNoobMax",A={"Hacker 2"}}, {F="AutoUpgradeHacker3",T="UpgradeNoobMax",A={"Hacker 3"}}, {F="AutoUpgradeHacker4",T="UpgradeNoobMax",A={"Hacker 4"}},
+    {F="AutoUpgradeFishermanNoob",T="UpgradeNoobMax",A={"Fisherman"}}, {F="AutoUpgradeKnightNoob",T="UpgradeNoobMax",A={"Knight"}}, {F="AutoUpgradeExplorerNoob",T="UpgradeNoobMax",A={"Explorer"}}, {F="AutoUpgradeMagicianNoob",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeMerchantNoob",T="UpgradeNoobMax",A={"Merchant"}}, {F="AutoUpgradeMummyNoob",T="UpgradeNoobMax",A={"Mummy"}},
+    {F="AutoUpgradeGoalkeeper",T="UpgradeNoobMax",A={"Goalkeeper"}}, {F="AutoUpgradeLeftBack",T="UpgradeNoobMax",A={"LeftBack"}}, {F="AutoUpgradeLeftCenterBack",T="UpgradeNoobMax",A={"LeftCenterBack"}}, {F="AutoUpgradeRightCenterBack",T="UpgradeNoobMax",A={"RightCenterBack"}}, {F="AutoUpgradeRightBack",T="UpgradeNoobMax",A={"RightBack"}}, {F="AutoUpgradeLeftDefensiveMid",T="UpgradeNoobMax",A={"LeftDefensiveMid"}}, {F="AutoUpgradeRightDefensiveMid",T="UpgradeNoobMax",A={"RightDefensiveMid"}}, {F="AutoUpgradeAttackingMid",T="UpgradeNoobMax",A={"AttackingMid"}}, {F="AutoUpgradeLeftWing",T="UpgradeNoobMax",A={"LeftWing"}}, {F="AutoUpgradeRightWing",T="UpgradeNoobMax",A={"RightWing"}}, {F="AutoUpgradeStriker",T="UpgradeNoobMax",A={"Striker"}},
+    {F="AutoUpgradeMoreOof",T="UpgradeUpgradeMax",A={"Oof","MoreOof"}}, {F="AutoUpgradeFasterNoobs",T="UpgradeUpgradeMax",A={"Oof","FasterNoobs"}},
+    {F="AutoRealm2MoreOof",T="UpgradeUpgradeMax",A={"Oof","MoreOofRealm2"}}, {F="AutoRealm2MoreWalkSpeed",T="UpgradeUpgradeMax",A={"Oof","MoreWalkSpeedRealm2"}}, {F="AutoRealm2MoreWater",T="UpgradeUpgradeMax",A={"Water","MoreWater"}}, {F="AutoRealm2MoreOofWater",T="UpgradeUpgradeMax",A={"Water","MoreOof"}}, {F="AutoRealm2MorePlanks",T="UpgradeUpgradeMax",A={"Water","MorePlanks"}}, {F="AutoRealm2MoreIce",T="UpgradeUpgradeMax",A={"Ice","MoreIce"}}, {F="AutoRealm2WaterPump1",T="UpgradeUpgradeMax",A={"Ice","WaterPumpNoobHire"}}, {F="AutoRealm2WaterPump2",T="UpgradeUpgradeMax",A={"Ice","WaterFromIce"}}, {F="AutoRealm2MoreOofIce",T="UpgradeUpgradeMax",A={"Ice","MoreOof"}},
+    {F="AutoWoodRankUp",T="WoodRankUp",A={}}, {F="AutoWoodMoreWood",T="UpgradeUpgradeMax",A={"Wood","MoreWood"}}, {F="AutoWoodSharperAxes",T="UpgradeUpgradeMax",A={"Wood","SharperAxes"}}, {F="AutoWoodBiggerDeposit",T="UpgradeUpgradeMax",A={"Wood","BiggerWoodDeposit"}}, {F="AutoWoodFasterConversion",T="UpgradeUpgradeMax",A={"Wood","FasterWoodConversion"}}, {F="AutoWoodMorePlanks",T="UpgradeUpgradeMax",A={"Wood","MorePlanksFromWood"}},
+    {F="AutoPlanksMorePlanks",T="UpgradeUpgradeMax",A={"Planks","MorePlanks"}}, {F="AutoPlanksMoreWood",T="UpgradeUpgradeMax",A={"Planks","MoreWood"}}, {F="AutoPlanksWaterFromPlanks",T="UpgradeUpgradeMax",A={"Planks","WaterFromPlanks"}},
+    {F="AutoRebirthMoreOof",T="UpgradeUpgradeMax",A={"Rebirth","MoreOof"}}, {F="AutoRebirthMoreRebirth",T="UpgradeUpgradeMax",A={"Rebirth","MoreRebirth"}}, {F="AutoRebirthMoreFire",T="UpgradeUpgradeMax",A={"Rebirth","MoreFire"}},
+    {F="AutoFireMoreFire",T="UpgradeUpgradeMax",A={"Fire","MoreFire"}}, {F="AutoFireMoreBulk",T="UpgradeUpgradeMax",A={"Fire","MoreBulk"}}, {F="AutoFireMoreOof",T="UpgradeUpgradeMax",A={"Fire","MoreOof"}}, {F="AutoFireMoreRebirth",T="UpgradeUpgradeMax",A={"Fire","MoreRebirth"}}, {F="AutoFireMoreTierLuck",T="UpgradeUpgradeMax",A={"Fire","MoreTierLuck"}}, {F="AutoFireMoreCashBonus",T="UpgradeUpgradeMax",A={"Fire","MoreCashBonus"}},
+    {F="AutoUpgradeMoreCash",T="UpgradeUpgradeMax",A={"Cash","MoreCash"}}, {F="AutoUpgradeFasterDropper",T="UpgradeUpgradeMax",A={"Cash","FasterDropper"}}, {F="AutoUpgradeMoreRuneLuck",T="UpgradeUpgradeMax",A={"Cash","MoreRuneLuck"}},
+    {F="AutoGoalsMoreGoals",T="UpgradeUpgradeMax",A={"Goals","MoreGoals"}}, {F="AutoGoalsRuneBulk",T="UpgradeUpgradeMax",A={"Goals","RuneBulk"}}, {F="AutoGoalsRuneLuck",T="UpgradeUpgradeMax",A={"Goals","RuneLuck"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreSand"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MultiSand"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","StrongerShovels"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","FasterShovels"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","AlotSand"}},
+    {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreOof"}},
+    {F="AutoShovelLevelUp",T="ShovelLevelUp",A={}},
+    {F="AutoExcavationRankUp",T="ExcavationRankUp",A={}}
+}
+
+task.spawn(function()
+    while Running do
+        task.wait(Env.CPUSaverMode and 2.0 or 1.0)
+        if Running then
+            for i = 1, #PrimaryUpgradeQueue do
+                if not Running then break end 
+                local item = PrimaryUpgradeQueue[i]
+                if Env[item.F] then 
+                    pcall(function() 
+                        local args = {}
+                        args[1] = item.T
+                        for _, aVal in ipairs(item.A) do table.insert(args, aVal) end
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end) 
+                    task.wait(0.25) 
+                end
+            end
+        end
+    end
+end)
+
+local MeatUpgradeList = {
+    {F = "AutoMeatMoreMeat", T = "UpgradeUpgradeMax", A = {"Meat", "MoreMeat"}},
+    {F = "AutoMeatStrongerSwords", T = "UpgradeUpgradeMax", A = {"Meat", "StrongerSwords"}},
+    {F = "AutoMeatMoreOof", T = "UpgradeUpgradeMax", A = {"Meat", "MoreOof"}},
+    {F = "AutoMeatMoreBones", T = "UpgradeUpgradeMax", A = {"Meat", "MoreBones"}}
+}
+
+task.spawn(function()
+    local mIdx = 1
+    while Running do
+        task.wait(0.35)
+        if Running then
+            local att = 0
+            repeat
+                local cur = MeatUpgradeList[mIdx]
+                mIdx = (mIdx % #MeatUpgradeList) + 1
+                att = att + 1
+                if Env[cur.F] then
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
+                    break
+                end
+            until att >= #MeatUpgradeList
+        end
+    end
+end)
+
+local BonesUpgradeList = {
+    {F = "AutoBonesMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "MoreBones"}},
+    {F = "AutoBonesFasterSwords", T = "UpgradeUpgradeMax", A = {"Bones", "FasterSwords"}},
+    {F = "AutoBonesBiggerMeatDeposit", T = "UpgradeUpgradeMax", A = {"Bones", "BiggerMeatDeposit"}},
+    {F = "AutoBonesFasterMeatConversion", T = "UpgradeUpgradeMax", A = {"Bones", "FasterMeatConversion"}},
+    {F = "AutoBonesEvenMoreBones", T = "UpgradeUpgradeMax", A = {"Bones", "EvenMoreBones"}}
+}
+
+task.spawn(function()
+    local bIdx = 1
+    while Running do
+        task.wait(0.45)
+        if Running then
+            local att = 0
+            repeat
+                local cur = BonesUpgradeList[bIdx]
+                bIdx = (bIdx % #BonesUpgradeList) + 1
+                att = att + 1
+                if Env[cur.F] then
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
+                    break
+                end
+            until att >= #BonesUpgradeList
+        end
+    end
+end)
+
+local SoulsUpgradeList = {
+    {F = "AutoSoulsMoreSouls", T = "UpgradeUpgradeMax", A = {"Souls", "MoreSouls"}},
+    {F = "AutoSoulsLuckierSwords", T = "UpgradeUpgradeMax", A = {"Souls", "LuckierSwords"}},
+    {F = "AutoSoulsMoreOof", T = "UpgradeUpgradeMax", A = {"Souls", "MoreOof"}},
+    {F = "AutoSoulsMoreBones", T = "UpgradeUpgradeMax", A = {"Souls", "MoreBones"}},
+    {F = "AutoSoulsRuneBulk", T = "UpgradeUpgradeMax", A = {"Souls", "RuneBulk"}}
+}
+
+task.spawn(function()
+    local sIdx = 1
+    while Running do
+        task.wait(0.55)
+        if Running then
+            local att = 0
+            repeat
+                local cur = SoulsUpgradeList[sIdx]
+                sIdx = (sIdx % #SoulsUpgradeList) + 1
+                att = att + 1
+                if Env[cur.F] then
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
+                    break
+                end
+            until att >= #SoulsUpgradeList
+        end
+    end
+end)
+
+local GemUpgradeList = {
+    {F="AutoGemMoreOof", T="UpgradeUpgradeMax", A={"Gem","MoreOof"}},
+    {F="AutoGemMoreGems", T="UpgradeUpgradeMax", A={"Gem","MoreGems"}},
+    {F="AutoGemStrongerPickaxes", T="UpgradeUpgradeMax", A={"Gem","StrongerPickaxes"}},
+    {F="AutoGemMoreOreStats", T="UpgradeUpgradeMax", A={"Gem","MoreOreStats"}}
+}
+task.spawn(function()
+    local gIdx = 1
+    while Running do
+        task.wait(0.65)
+        if Running then
+            local att = 0
+            repeat
+                local cur = GemUpgradeList[gIdx]
+                gIdx = (gIdx % #GemUpgradeList) + 1
+                att = att + 1
+                if Env[cur.F] then
+                    pcall(function() 
+                        local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    end)
+                    break
+                end
+            until att >= #GemUpgradeList
+        end
+    end
+end)
+
+task.spawn(function() while Running do task.wait(0.5) if Running then for i = 1, 11 do if Env["AutoFillBucket" .. i] then pcall(function() local args = { [1] = "FillWaterBucket", [2] = i } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.2) end end end end end)
+
+task.spawn(function() while Running do task.wait(0.2) if Running and Env.AutoScoreGoal then pcall(function() local args = { [1] = "RegisterFootballKick" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(1.5) if not Running or not Env.AutoScoreGoal then break end pcall(function() local args = { [1] = "ScoreGoal" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(1.5) end end end)
+
+task.spawn(function()
+    while Running do
+        if Running and Env.AutoFootballTree then
+            local pGui = player:FindFirstChild("PlayerGui") local treeGui = pGui and pGui:FindFirstChild("FootballUITree")
+            if treeGui then
+                for _, obj in pairs(treeGui:GetDescendants()) do
+                    if not Running or not Env.AutoFootballTree then break end
+                    if (obj:IsA("GuiButton") or obj:IsA("Frame")) and obj.Name ~= "Main" and obj.Name ~= "Container" then 
+                        pcall(function() 
+                            local args = { [1] = "BuyFootballUITreeNode", [2] = obj.Name }
+                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                        end) 
+                        task.wait(0.5) 
+                    end
+                end
+            end
+        end
+        task.wait(5.0)
+    end
+end)
+
+task.spawn(function() while Running do task.wait(3.0) if Running and Env.AutoClaimTrophies then for i = 1, 10 do if not Running or not Env.AutoClaimTrophies then break end pcall(function() local args = { [1] = "BuyTrophy", [2] = i } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.2) end end end end)
+
+local BreadUpgradeList = { {F="AutoBreadMoreWheat",T="UpgradeUpgradeMax",A={"Bread","MoreWheat"}}, {F="AutoBreadMoreBread",T="UpgradeUpgradeMax",A={"Bread","MoreBread"}}, {F="AutoBreadMoreBread2",T="UpgradeUpgradeMax",A={"Bread","MoreBread2"}}, {F="AutoBreadBiggerWheatDeposit",T="UpgradeUpgradeMax",A={"Bread","BiggerWheatDeposit"}}, {F="AutoBreadFasterWheatConversion",T="UpgradeUpgradeMax",A={"Bread","FasterWheatConversion"}}, {F="AutoBreadMoreConsumption",T="UpgradeUpgradeMax",A={"Bread","MoreConsumption"}}, {F="AutoBreadMoreRuneLuck",T="UpgradeUpgradeMax",A={"Bread","MoreRuneLuck"}}, {F="AutoBreadMoreTierLuck",T="UpgradeUpgradeMax",A={"Bread","MoreTierLuck"}}, {F="AutoUpgradeCow",T="UpgradeAnimal",A={"Cow"}}, {F="AutoUpgradeChicken",T="UpgradeAnimal",A={"Chicken"}}, {F="AutoBuyCow",T="BuyAnimal",A={"Cow",true}}, {F="AutoBuyChicken",T="BuyAnimal",A={"Chicken",true}} }
+task.spawn(function() local bIdx = 1 while Running do task.wait(1.2) if Running then local att = 0 repeat local cur = BreadUpgradeList[bIdx] bIdx = (bIdx % #BreadUpgradeList) + 1 att = att + 1 if Env[cur.F] then pcall(function() local args = { [1] = cur.T, [2] = cur.A[1], [3] = cur.A[2] } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) break end until att >= #BreadUpgradeList end end end)
+
+task.spawn(function() 
+    while Running do 
+        task.wait(60.0) 
+        if Running then 
+            pcall(function() 
+                local args = { [1] = "DepositMeat" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+            end) 
+        end 
+    end 
+end)
+
+task.spawn(function() 
+    while Running do 
+        task.wait(30.0) 
+        if Running then 
+            if Env.AutoDepositWheat then pcall(function() local args = { [1] = "DepositWheat" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end 
+            if Env.AutoDepositWood then pcall(function() local args = { [1] = "DepositWood" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end 
+        end 
+    end 
+end)
+
+task.spawn(function() while Running do task.wait(1.0) if Running then if Env.AutoBlazeMoreBlaze then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreFire then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOof then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreOofs then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end if Env.AutoBlazeMoreBulk then pcall(function() local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) task.wait(0.25) end end end end)
+task.spawn(function() while Running do task.wait(1.2) if Running then if Env.AutoOpenT1Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end if Env.AutoOpenT2Chest then pcall(function() local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 10 } game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end end)
+task.spawn(function() while Running do task.wait(5.0) if Env.AutoPrestige and Running then pcall(function() local args = { [1] = "Prestige" } game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) end) end end end)
+
+task.spawn(function()
+    while Running do
+        task.wait(60.0)
+        if Running and Env.AutoBlazeConvert then
+            pcall(function()
+                local args = { [1] = "Blaze" }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+            end)
+        end
+    end
+end)
+
+print("[Dominate Hub] V16.9.37 Stable Loaded Successfully!")
