@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.57 - TRIAL STATE LOCK & SCHEDULE FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.58 - TIME-BASED TRIAL EXTRACTION)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -88,9 +88,9 @@ Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
 Env.TargetSandLayer = 3
 
--- TRIAL ANTI-STUCK CONFIG[cite: 1]
-Env.AutoLeaveIfStuck = true
-Env.TrialStagnationTime = 30
+-- TRIAL TIME LIMIT CONFIG (MINUTES)
+Env.AutoLeaveByTime = true
+Env.TrialTimeLimit = 15
 
 -- ANCIENT BOSS FARM CONFIG[cite: 1]
 Env.AutoAncientBossFarm = false
@@ -1149,8 +1149,8 @@ createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :5
 createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
 createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
 createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
-createToggleRow(trialsScroll, "Auto Leave If Stuck (Target Stagnation)", "AutoLeaveIfStuck")
-createTextBoxRow(trialsScroll, "Stagnation Time (s)", "TrialStagnationTime")
+createToggleRow(trialsScroll, "Auto Leave By Time Limit", "AutoLeaveByTime")
+createTextBoxRow(trialsScroll, "Trial Time Limit (min)", "TrialTimeLimit")
 
 createSectionHeader(trialsScroll, "Manual Testing")
 createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
@@ -1683,7 +1683,7 @@ local function cacheAndPauseToggles()
     cachedStates = {}
     for k, v in pairs(Env) do
         if type(k) == "string" and k:sub(1, 4) == "Auto" then
-            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveIfStuck" then
+            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" then
                 if v == true then
                     cachedStates[k] = true
                     Env[k] = false
@@ -1729,7 +1729,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH PROPER STATE RESET & RESTORE TOGGLES CALL)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (TIME-LIMIT BASED EXTRACTION)[cite: 1]
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
@@ -1782,13 +1782,12 @@ task.spawn(function()
                             waitElapsed = waitElapsed + 1
                         end
                         
-                        showToast("Trials: Target-lock stagnation guard active across all waves...")
+                        showToast("Trials: Time-limit trial extraction guard active...")
                         
-                        local currentStagnationTarget = nil
-                        local stagnationTimer = tick()
+                        local trialStartTick = tick()
                         
                         while Running and trialIsRunning do
-                            task.wait(0.5)
+                            task.wait(1.0)
                             
                             local hrpCheck = GetWorldRoot()
                             if hrpCheck and hrpCheck.Position.Z < 13000 then
@@ -1799,50 +1798,34 @@ task.spawn(function()
                                 break
                             end
                             
-                            local shouldLeaveTrial = false
-                            if Env.AutoLeaveIfStuck then
-                                pcall(function()
-                                    local stagnationLimit = tonumber(Env.TrialStagnationTime) or 30
+                            if Env.AutoLeaveByTime then
+                                local limitMins = tonumber(Env.TrialTimeLimit) or 15
+                                local limitSecs = limitMins * 60
+                                
+                                if (tick() - trialStartTick) >= limitSecs then
+                                    showToast("Trials: Time limit reached (" .. limitMins .. "m). Leaving trial...")
                                     
-                                    if currentTargetMob then
-                                        if currentTargetMob ~= currentStagnationTarget then
-                                            currentStagnationTarget = currentTargetMob
-                                            stagnationTimer = tick()
-                                        elseif tick() - stagnationTimer > stagnationLimit then
-                                            showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s target stagnation). Leaving trial...")
-                                            
-                                            trialIsRunning = false
-                                            MobTargetVector = nil
-                                            currentTargetMob = nil
-                                            lastTrackedMobPart = nil
-                                            currentStagnationTarget = nil
-                                            trialExitCooldown = tick()
-                                            
-                                            pcall(function()
-                                                local args = { [1] = "LeaveTrial" }
-                                                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                                            end)
-                                            
-                                            if hrpCheck then
-                                                hrpCheck.Anchored = false
-                                                hrpCheck.AssemblyLinearVelocity = Vector3.zero
-                                            end
-                                            
-                                            shouldLeaveTrial = true
-                                        end
-                                    else
-                                        stagnationTimer = tick()
+                                    trialIsRunning = false
+                                    MobTargetVector = nil
+                                    currentTargetMob = nil
+                                    lastTrackedMobPart = nil
+                                    trialExitCooldown = tick()
+                                    
+                                    pcall(function()
+                                        local args = { [1] = "LeaveTrial" }
+                                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                                    end)
+                                    
+                                    if hrpCheck then
+                                        hrpCheck.Anchored = false
+                                        hrpCheck.AssemblyLinearVelocity = Vector3.zero
                                     end
-                                end)
-                            end
-                            
-                            if shouldLeaveTrial then
-                                task.wait(0.5)
-                                break
+                                    
+                                    task.wait(0.5)
+                                    break
+                                end
                             end
                         end
-                        
-                        restoreToggles()
                     end
                 end
             end
@@ -2695,4 +2678,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.57 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.58 Stable Loaded Successfully!")
