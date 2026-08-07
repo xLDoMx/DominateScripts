@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.30 - RESTORED INSTANT CORPSE-SKIPPING & LOCK)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.31 - COLLAPSIBLE UI SECTIONS & MASTER BUILD)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -463,6 +463,56 @@ local function createTextBoxRow(parent, txt, vKey)
     return row
 end
 
+-- COLLAPSIBLE SECTION BUILDER
+local function createCollapsibleSection(parent, txt)
+    local secFrame = Instance.new("Frame")
+    secFrame.Size = UDim2.new(1, -10, 0, 36)
+    secFrame.BackgroundTransparency = 1
+    secFrame.Parent = parent
+
+    local headerBtn = Instance.new("TextButton")
+    headerBtn.Size = UDim2.new(1, 0, 0, 32)
+    headerBtn.BackgroundTransparency = 1
+    headerBtn.TextColor3 = Color3.fromRGB(230, 110, 255)
+    headerBtn.TextSize = 12
+    headerBtn.Font = Enum.Font.GothamBold
+    headerBtn.Text = "▼  " .. txt
+    headerBtn.TextXAlignment = Enum.TextXAlignment.Left
+    headerBtn.Parent = secFrame
+
+    local cont = Instance.new("Frame")
+    cont.Size = UDim2.new(1, 0, 0, 0)
+    cont.Position = UDim2.new(0, 0, 0, 36)
+    cont.BackgroundTransparency = 1
+    cont.Parent = secFrame
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 8)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Parent = cont
+
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        if cont.Visible then
+            cont.Size = UDim2.new(1, 0, 0, layout.AbsoluteContentSize.Y)
+            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
+        end
+    end)
+
+    local isOpen = true
+    headerBtn.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        cont.Visible = isOpen
+        headerBtn.Text = (isOpen and "▼  " or "▶  ") .. txt
+        if isOpen then
+            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
+        else
+            secFrame.Size = UDim2.new(1, -10, 0, 36)
+        end
+    end)
+
+    return cont
+end
+
 -- EXPANDABLE MULTI-SELECT DROPDOWN FOR RITUAL TARGET MOBS
 local function createRitualMobDropdown(parent, title, mobList)
     local dropFrame = Instance.new("Frame")
@@ -645,20 +695,6 @@ local function masterToggleGroup(txt, flagsTable, scr)
         TweenService:Create(switchThumb, TweenInfo.new(0.2), {Position = activeState and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}):Play()
     end)
     return switchTrack
-end
-
--- SECTION HEADER HELPER
-local function createSectionHeader(parent, txt)
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, -10, 0, 32)
-    header.BackgroundTransparency = 1
-    header.TextColor3 = Color3.fromRGB(230, 110, 255)
-    header.TextSize = 12
-    header.Font = Enum.Font.GothamBold
-    header.Text = txt
-    header.TextXAlignment = Enum.TextXAlignment.Left
-    header.Parent = parent
-    return header
 end
 
 player.Idled:Connect(function()
@@ -1040,74 +1076,76 @@ end
 
 -- UPGRADES PAGE
 local upScroll = makeVerticalScroll(upgradesPage) upScroll.Visible = true
-createSectionHeader(upScroll, "Realm 1 Upgrades")
-createToggleRow(upScroll, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
-createToggleRow(upScroll, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
-masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, upScroll)
-masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, upScroll)
-masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, upScroll)
-masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, upScroll)
-masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, upScroll)
-masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, upScroll)
 
-createSectionHeader(upScroll, "Realm 2 Upgrades")
-masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, upScroll)
-masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, upScroll)
-masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, upScroll)
-masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, upScroll)
-masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, upScroll)
+local secU1 = createCollapsibleSection(upScroll, "Realm 1 Upgrades")
+createToggleRow(secU1, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
+createToggleRow(secU1, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
+masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, secU1)
+masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, secU1)
+masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, secU1)
+masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, secU1)
+masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, secU1)
+masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, secU1)
 
-createSectionHeader(upScroll, "Gem Upgrades & Features")
-createToggleRow(upScroll, "More Oof (Gem)", "AutoGemMoreOof")
-createToggleRow(upScroll, "More Gems", "AutoGemMoreGems")
-createToggleRow(upScroll, "Stronger Pickaxes", "AutoGemStrongerPickaxes")
-createToggleRow(upScroll, "More Ore Stats", "AutoGemMoreOreStats")
-createToggleRow(upScroll, "Gem Converter", "AutoGemExchange")
-createToggleRow(upScroll, "Shop Teleport Loop", "AutoGemShopTeleport")
+local secU2 = createCollapsibleSection(upScroll, "Realm 2 Upgrades")
+masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, secU2)
+masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, secU2)
+masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, secU2)
+masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, secU2)
+masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, secU2)
 
-createSectionHeader(upScroll, "Realm 3 Upgrades")
-masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, upScroll)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, upScroll)
-masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, upScroll)
+local secU3 = createCollapsibleSection(upScroll, "Gem Upgrades & Features")
+createToggleRow(secU3, "More Oof (Gem)", "AutoGemMoreOof")
+createToggleRow(secU3, "More Gems", "AutoGemMoreGems")
+createToggleRow(secU3, "Stronger Pickaxes", "AutoGemStrongerPickaxes")
+createToggleRow(secU3, "More Ore Stats", "AutoGemMoreOreStats")
+createToggleRow(secU3, "Gem Converter", "AutoGemExchange")
+createToggleRow(secU3, "Shop Teleport Loop", "AutoGemShopTeleport")
 
-createSectionHeader(upScroll, "Sand Upgrades")
-createToggleRow(upScroll, "Auto Sand Upgrades", "AutoSandUpgrades")
-createToggleRow(upScroll, "Auto Shovel Level Up", "AutoShovelLevelUp")
-createToggleRow(upScroll, "Auto Excavation Rank Up", "AutoExcavationRankUp")
-createToggleRow(upScroll, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
-createTextBoxRow(upScroll, "Target Sand Layer (1-250)", "TargetSandLayer")
+local secU4 = createCollapsibleSection(upScroll, "Realm 3 Upgrades")
+masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, secU4)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, secU4)
+masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, secU4)
+
+local secU5 = createCollapsibleSection(upScroll, "Sand Upgrades")
+createToggleRow(secU5, "Auto Sand Upgrades", "AutoSandUpgrades")
+createToggleRow(secU5, "Auto Shovel Level Up", "AutoShovelLevelUp")
+createToggleRow(secU5, "Auto Excavation Rank Up", "AutoExcavationRankUp")
+createToggleRow(secU5, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
+createTextBoxRow(secU5, "Target Sand Layer (1-250)", "TargetSandLayer")
 
 -- NOOBS PAGE
 local noobsScroll = makeVerticalScroll(noobsPage)
-createSectionHeader(noobsScroll, "Realm 1 Noobs")
-createToggleRow(noobsScroll, "Starter Auto Upgrade", "AutoUpgradeStarter")
-createToggleRow(noobsScroll, "Cooker Auto Upgrade", "AutoUpgradeCooker")
-createToggleRow(noobsScroll, "Farmer Auto Upgrade", "AutoUpgradeFarmer")
-createToggleRow(noobsScroll, "Magician Auto Upgrade", "AutoUpgradeMagician")
-createToggleRow(noobsScroll, "Archer Auto Upgrade", "AutoUpgradeArcher")
-createToggleRow(noobsScroll, "Soldier Auto Upgrade", "AutoUpgradeSoldier")
+local secN1 = createCollapsibleSection(noobsScroll, "Realm 1 Noobs")
+createToggleRow(secN1, "Starter Auto Upgrade", "AutoUpgradeStarter")
+createToggleRow(secN1, "Cooker Auto Upgrade", "AutoUpgradeCooker")
+createToggleRow(secN1, "Farmer Auto Upgrade", "AutoUpgradeFarmer")
+createToggleRow(secN1, "Magician Auto Upgrade", "AutoUpgradeMagician")
+createToggleRow(secN1, "Archer Auto Upgrade", "AutoUpgradeArcher")
+createToggleRow(secN1, "Soldier Auto Upgrade", "AutoUpgradeSoldier")
 
-createSectionHeader(noobsScroll, "Realm 2 Noobs")
-createToggleRow(noobsScroll, "Auto Upgrade Fisherman", "AutoUpgradeFishermanNoob")
-createToggleRow(noobsScroll, "Auto Upgrade Knight", "AutoUpgradeKnightNoob")
-createToggleRow(noobsScroll, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
-createToggleRow(noobsScroll, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
+local secN2 = createCollapsibleSection(noobsScroll, "Realm 2 Noobs")
+createToggleRow(secN2, "Auto Upgrade Fisherman", "AutoUpgradeFishermanNoob")
+createToggleRow(secN2, "Auto Upgrade Knight", "AutoUpgradeKnightNoob")
+createToggleRow(secN2, "Auto Upgrade Explorer", "AutoUpgradeExplorerNoob")
+createToggleRow(secN2, "Auto Upgrade Magician", "AutoUpgradeMagicianNoob")
 
-createSectionHeader(noobsScroll, "Realm 3 Noobs")
-createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
-createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
-createToggleRow(noobsScroll, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
+local secN3 = createCollapsibleSection(noobsScroll, "Realm 3 Noobs")
+createToggleRow(secN3, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
+createToggleRow(secN3, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
+createToggleRow(secN3, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
 
 -- TRIALS PAGE
 local trialsScroll = makeVerticalScroll(trialsPage)
-createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
-createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
-createToggleRow(trialsScroll, "Auto Medium Trial", "AutoMediumTrial")
-createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
-createToggleRow(trialsScroll, "Auto Leave If Stuck (60s Per Wave)", "AutoLeaveIfStuck")
+local secT1 = createCollapsibleSection(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
+createToggleRow(secT1, "Auto Easy Trial", "AutoEasyTrial")
+createToggleRow(secT1, "Auto Medium Trial", "AutoMediumTrial")
+createToggleRow(secT1, "Auto Hard Trial", "AutoHardTrial")
+createToggleRow(secT1, "Auto Leave If Stuck (60s Per Wave)", "AutoLeaveIfStuck")
 
 -- MINES PAGE
 local minesScroll = makeVerticalScroll(minesPage)
+local secM1 = createCollapsibleSection(minesScroll, "Mining Configuration")
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
 bestTierBtn.Size = UDim2.new(1, -10, 0, 48)
@@ -1117,7 +1155,7 @@ bestTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
 bestTierBtn.TextSize = 13
 bestTierBtn.Font = Enum.Font.GothamBold
 bestTierBtn.Text = "Best Tier Only: DISABLED"
-bestTierBtn.Parent = minesScroll
+bestTierBtn.Parent = secM1
 
 local btCorner = Instance.new("UICorner")
 btCorner.CornerRadius = UDim.new(0, 8)
@@ -1145,7 +1183,7 @@ speedContainer.Size = UDim2.new(1, -10, 0, 60)
 speedContainer.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
 speedContainer.BackgroundTransparency = 0.5
 speedContainer.BorderSizePixel = 0
-speedContainer.Parent = minesScroll
+speedContainer.Parent = secM1
 
 local scCorner = Instance.new("UICorner")
 scCorner.CornerRadius = UDim.new(0, 8)
@@ -1211,29 +1249,30 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
-createSectionHeader(minesScroll, "Basic Ores")
-createToggleRow(minesScroll, "Stone", "AutoMineStone")
-createToggleRow(minesScroll, "Coal", "AutoMineCoal")
-createToggleRow(minesScroll, "Copper", "AutoMineCopper")
-createToggleRow(minesScroll, "Iron", "AutoMineIron")
-createToggleRow(minesScroll, "Silver", "AutoMineSilver")
+local secM2 = createCollapsibleSection(minesScroll, "Basic Ores")
+createToggleRow(secM2, "Stone", "AutoMineStone")
+createToggleRow(secM2, "Coal", "AutoMineCoal")
+createToggleRow(secM2, "Copper", "AutoMineCopper")
+createToggleRow(secM2, "Iron", "AutoMineIron")
+createToggleRow(secM2, "Silver", "AutoMineSilver")
 
-createSectionHeader(minesScroll, "Advanced Ores")
-createToggleRow(minesScroll, "Gold", "AutoMineGold")
-createToggleRow(minesScroll, "Platinum", "AutoMinePlatinum")
-createToggleRow(minesScroll, "Titanium", "AutoMineTitanium")
-createToggleRow(minesScroll, "Uranium", "AutoMineUranium")
-createToggleRow(minesScroll, "Cobalt", "AutoMineCobalt")
+local secM3 = createCollapsibleSection(minesScroll, "Advanced Ores")
+createToggleRow(secM3, "Gold", "AutoMineGold")
+createToggleRow(secM3, "Platinum", "AutoMinePlatinum")
+createToggleRow(secM3, "Titanium", "AutoMineTitanium")
+createToggleRow(secM3, "Uranium", "AutoMineUranium")
+createToggleRow(secM3, "Cobalt", "AutoMineCobalt")
 
-createSectionHeader(minesScroll, "End-Game Ores")
-createToggleRow(minesScroll, "Palladium", "AutoMinePalladium")
-createToggleRow(minesScroll, "Ruby", "AutoMineRuby")
-createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
-createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
-createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
+local secM4 = createCollapsibleSection(minesScroll, "End-Game Ores")
+createToggleRow(secM4, "Palladium", "AutoMinePalladium")
+createToggleRow(secM4, "Ruby", "AutoMineRuby")
+createToggleRow(secM4, "Aetherite", "AutoMineAetherite")
+createToggleRow(secM4, "Celestium", "AutoMineCelestium")
+createToggleRow(secM4, "Voidsteel", "AutoMineVoidsteel")
 
 -- MOBS PAGE
 local mobsScroll = makeVerticalScroll(mobsPage)
+local secMob1 = createCollapsibleSection(mobsScroll, "Realm 3 Mobs (Worst to Best)")
 local bestMobTierActive = false
 local bestMobTierBtn = Instance.new("TextButton")
 bestMobTierBtn.Size = UDim2.new(1, -10, 0, 48)
@@ -1243,7 +1282,7 @@ bestMobTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
 bestMobTierBtn.TextSize = 13
 bestMobTierBtn.Font = Enum.Font.GothamBold
 bestMobTierBtn.Text = "Best Mob Tier Only: DISABLED"
-bestMobTierBtn.Parent = mobsScroll
+bestMobTierBtn.Parent = secMob1
 
 local bmtCorner = Instance.new("UICorner")
 bmtCorner.CornerRadius = UDim.new(0, 8)
@@ -1266,88 +1305,87 @@ bestMobTierBtn.MouseButton1Click:Connect(function()
     showToast(bestMobTierActive and "Best Mob Tier Only activated!" or "Best Mob Tier Only deactivated.")
 end)
 
-createSectionHeader(mobsScroll, "Realm 3 Mobs (Worst to Best)")
-createToggleRow(mobsScroll, "Goblin", "AutoMobGoblin")
-createToggleRow(mobsScroll, "Skeleton", "AutoMobSkeleton")
-createToggleRow(mobsScroll, "Orc", "AutoMobOrc")
-createToggleRow(mobsScroll, "Pirate", "AutoMobPirate")
-createToggleRow(mobsScroll, "Ninja", "AutoMobNinja")
-createToggleRow(mobsScroll, "Warrior", "AutoMobWarrior")
-createToggleRow(mobsScroll, "Pirate Captain", "AutoMobPirateCaptain")
-createToggleRow(mobsScroll, "Samurai", "AutoMobSamurai")
-createToggleRow(mobsScroll, "Pirate Admiral", "AutoMobPirateAdmiral")
-createToggleRow(mobsScroll, "Samurai Master", "AutoMobSamuraiMaster")
-createToggleRow(mobsScroll, "Dark Knight", "AutoMobDarkKnight")
-createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
+createToggleRow(secMob1, "Goblin", "AutoMobGoblin")
+createToggleRow(secMob1, "Skeleton", "AutoMobSkeleton")
+createToggleRow(secMob1, "Orc", "AutoMobOrc")
+createToggleRow(secMob1, "Pirate", "AutoMobPirate")
+createToggleRow(secMob1, "Ninja", "AutoMobNinja")
+createToggleRow(secMob1, "Warrior", "AutoMobWarrior")
+createToggleRow(secMob1, "Pirate Captain", "AutoMobPirateCaptain")
+createToggleRow(secMob1, "Samurai", "AutoMobSamurai")
+createToggleRow(secMob1, "Pirate Admiral", "AutoMobPirateAdmiral")
+createToggleRow(secMob1, "Samurai Master", "AutoMobSamuraiMaster")
+createToggleRow(secMob1, "Dark Knight", "AutoMobDarkKnight")
+createToggleRow(secMob1, "Dark Commander", "AutoMobDarkCommander")
 
-createSectionHeader(mobsScroll, "Combat Utilities")
-createToggleRow(mobsScroll, "Ancient Boss Farm (Supreme Shadow Lord)", "AutoAncientBossFarm")
-createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
-createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
-createRitualMobDropdown(mobsScroll, "Ritual Target Mobs", MobPriorityList)
+local secMob2 = createCollapsibleSection(mobsScroll, "Combat Utilities")
+createToggleRow(secMob2, "Ancient Boss Farm (Supreme Shadow Lord)", "AutoAncientBossFarm")
+createToggleRow(secMob2, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
+createToggleRow(secMob2, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
+createRitualMobDropdown(secMob2, "Ritual Target Mobs", MobPriorityList)
 
 -- FOOTBALL PAGE
 local footballScroll = makeVerticalScroll(footballPage)
-createSectionHeader(footballScroll, "Football Noobs")
-createToggleRow(footballScroll, "Goalkeeper", "AutoUpgradeGoalkeeper")
-createToggleRow(footballScroll, "Left Back", "AutoUpgradeLeftBack")
-createToggleRow(footballScroll, "Left Centerback", "AutoUpgradeLeftCenterBack")
-createToggleRow(footballScroll, "Right Centerback", "AutoUpgradeRightCenterBack")
-createToggleRow(footballScroll, "Right Back", "AutoUpgradeRightBack")
-createToggleRow(footballScroll, "Left Defensive Midfield", "AutoUpgradeLeftDefensiveMid")
-createToggleRow(footballScroll, "Right Defensive Midfield", "AutoUpgradeRightDefensiveMid")
-createToggleRow(footballScroll, "Attacking Mid", "AutoUpgradeAttackingMid")
-createToggleRow(footballScroll, "Left Wing", "AutoUpgradeLeftWing")
-createToggleRow(footballScroll, "Right Wing", "AutoUpgradeRightWing")
-createToggleRow(footballScroll, "Striker", "AutoUpgradeStriker")
+local secF1 = createCollapsibleSection(footballScroll, "Football Noobs")
+createToggleRow(secF1, "Goalkeeper", "AutoUpgradeGoalkeeper")
+createToggleRow(secF1, "Left Back", "AutoUpgradeLeftBack")
+createToggleRow(secF1, "Left Centerback", "AutoUpgradeLeftCenterBack")
+createToggleRow(secF1, "Right Centerback", "AutoUpgradeRightCenterBack")
+createToggleRow(secF1, "Right Back", "AutoUpgradeRightBack")
+createToggleRow(secF1, "Left Defensive Midfield", "AutoUpgradeLeftDefensiveMid")
+createToggleRow(secF1, "Right Defensive Midfield", "AutoUpgradeRightDefensiveMid")
+createToggleRow(secF1, "Attacking Mid", "AutoUpgradeAttackingMid")
+createToggleRow(secF1, "Left Wing", "AutoUpgradeLeftWing")
+createToggleRow(secF1, "Right Wing", "AutoUpgradeRightWing")
+createToggleRow(secF1, "Striker", "AutoUpgradeStriker")
 
-createSectionHeader(footballScroll, "Football Upgrades & Features")
-createToggleRow(footballScroll, "Auto Score Goal", "AutoScoreGoal")
-createToggleRow(footballScroll, "More Goals Upgrade", "AutoGoalsMoreGoals")
-createToggleRow(footballScroll, "Goals Rune Bulk", "AutoGoalsRuneBulk")
-createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
-createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
-createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
+local secF2 = createCollapsibleSection(footballScroll, "Football Upgrades & Features")
+createToggleRow(secF2, "Auto Score Goal", "AutoScoreGoal")
+createToggleRow(secF2, "More Goals Upgrade", "AutoGoalsMoreGoals")
+createToggleRow(secF2, "Goals Rune Bulk", "AutoGoalsRuneBulk")
+createToggleRow(secF2, "Goals Rune Luck", "AutoGoalsRuneLuck")
+createToggleRow(secF2, "Auto Football Tree", "AutoFootballTree")
+createToggleRow(secF2, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- MISC PAGE
 local miscScroll = makeVerticalScroll(miscPage)
-createSectionHeader(miscScroll, "Runes")
-createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
-createToggleRow(miscScroll, "Auto Super Rune Circle", "AutoRollSuperRune")
-createToggleRow(miscScroll, "Auto Advanced Rune", "AutoRollAdvancedRune")
-createToggleRow(miscScroll, "Auto Cosmic Prism", "AutoRollCosmicRune")
-createToggleRow(miscScroll, "Auto Snowy Rune Circle", "AutoRollSnowyRune")
-createToggleRow(miscScroll, "Auto Football Rune", "AutoRollFootballRune")
-createToggleRow(miscScroll, "Auto Dunes Rune Circle", "AutoRollDunesRune")
-createToggleRow(miscScroll, "Auto Sunfire Rune Circle", "AutoRollSunfireRune")
+local secMis1 = createCollapsibleSection(miscScroll, "Runes")
+createToggleRow(secMis1, "Auto Basic Rune Circle", "AutoRollBasicRune")
+createToggleRow(secMis1, "Auto Super Rune Circle", "AutoRollSuperRune")
+createToggleRow(secMis1, "Auto Advanced Rune", "AutoRollAdvancedRune")
+createToggleRow(secMis1, "Auto Cosmic Prism", "AutoRollCosmicRune")
+createToggleRow(secMis1, "Auto Snowy Rune Circle", "AutoRollSnowyRune")
+createToggleRow(secMis1, "Auto Football Rune", "AutoRollFootballRune")
+createToggleRow(secMis1, "Auto Dunes Rune Circle", "AutoRollDunesRune")
+createToggleRow(secMis1, "Auto Sunfire Rune Circle", "AutoRollSunfireRune")
 
-createSectionHeader(miscScroll, "Capsules")
-createToggleRow(miscScroll, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
-createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
-createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
-createToggleRow(miscScroll, "Hatch Ancient Capsule", "AutoOpenAncientCapsule")
+local secMis2 = createCollapsibleSection(miscScroll, "Capsules")
+createToggleRow(secMis2, "Hatch Classic Capsule", "AutoOpenClassicCapsule")
+createToggleRow(secMis2, "Hatch Football Capsule", "AutoOpenFootballCapsule")
+createToggleRow(secMis2, "Hatch Super Capsule", "AutoOpenSuperCapsule")
+createToggleRow(secMis2, "Hatch Ancient Capsule", "AutoOpenAncientCapsule")
 
 -- SETTINGS PAGE
 local settingsScroll = makeVerticalScroll(settingsPage)
-createSectionHeader(settingsScroll, "General Settings")
-createToggleRow(settingsScroll, "Anti AFK Protection", "AntiAFK")
-createToggleRow(settingsScroll, "FPS Booster Mode", "FPSBoostMode")
-createToggleRow(settingsScroll, "Stats HUD Overlay", "ShowStatsHUD")
-createToggleRow(settingsScroll, "CPU Saver Mode", "CPUSaverMode")
+local secSet1 = createCollapsibleSection(settingsScroll, "General Settings")
+createToggleRow(secSet1, "Anti AFK Protection", "AntiAFK")
+createToggleRow(secSet1, "FPS Booster Mode", "FPSBoostMode")
+createToggleRow(secSet1, "Stats HUD Overlay", "ShowStatsHUD")
+createToggleRow(secSet1, "CPU Saver Mode", "CPUSaverMode")
 
-createSectionHeader(settingsScroll, "Automation Settings")
-createToggleRow(settingsScroll, "Auto Rebirth", "AutoRebirthTimer")
-createToggleRow(settingsScroll, "Auto Prestige", "AutoPrestige")
-createToggleRow(settingsScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
-createToggleRow(settingsScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
+local secSet2 = createCollapsibleSection(settingsScroll, "Automation Settings")
+createToggleRow(secSet2, "Auto Rebirth", "AutoRebirthTimer")
+createToggleRow(secSet2, "Auto Prestige", "AutoPrestige")
+createToggleRow(secSet2, "Mass Open T1 Chest", "AutoOpenT1Chest")
+createToggleRow(secSet2, "Mass Open T2 Chest", "AutoOpenT2Chest")
 
-createSectionHeader(settingsScroll, "Emergency Controls")
+local secSet3 = createCollapsibleSection(settingsScroll, "Emergency Controls")
 local killRow = Instance.new("Frame") 
 killRow.Size = UDim2.new(1, -10, 0, 48) 
 killRow.BackgroundColor3 = Color3.fromRGB(35, 20, 55) 
 killRow.BackgroundTransparency = 0.5
 killRow.BorderSizePixel = 0 
-killRow.Parent = settingsScroll
+killRow.Parent = secSet3
 
 local krCorner = Instance.new("UICorner")
 krCorner.CornerRadius = UDim.new(0, 8)
@@ -2326,4 +2364,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.30 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.31 Stable Loaded Successfully!")
