@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.61 - SCOPE & TELEPORT CRASH FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.62 - HARD TRIAL VECTOR & TRIAL DIAGNOSTICS)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -68,7 +68,7 @@ local Dest = {
     Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
     EasyTrial = Vector3.new(852.7059, 11.1623, 13444.3925),     
     MediumTrial = Vector3.new(879.4453, 11.1781, 13418.6263), 
-    HardTrial = Vector3.new(910.4735, 11.1623, 13418.2636),   
+    HardTrial = Vector3.new(909.3944702148438, 11.162318229675293, 13441.96875), -- Updated from screenshot
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
@@ -2701,4 +2701,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.61 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.62 Stable Loaded Successfully!")
