@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.51 - TARGET-LOCK STAGNATION & SAFETY RELEASE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.52 - SYNTAX FIX & SAFE TRIAL EXIT)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1716,7 +1716,6 @@ task.spawn(function()
                 showToast("Trials: Entered trial arena. Background toggles paused.")
             elseif trialIsRunning and hrp.Position.Z < 13000 then
                 showToast("Trials: Exited trial arena. Restoring toggles...")
-                -- INSTANT SAFETY RELEASE CLEANUP
                 trialIsRunning = false
                 MobTargetVector = nil
                 currentTargetMob = nil
@@ -1730,7 +1729,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH TARGET-LOCK STAGNATION & LEAVE REMOTE INTEGRATION)[cite: 1]
+-- SCHEDULED TRIAL AUTOMATION (WITH TARGET-LOCK STAGNATION & FLAG-BASED LOOP BREAK)[cite: 1]
 local lastTrialTriggeredSlot = ""
 task.spawn(function()
     while Running do
@@ -1797,6 +1796,7 @@ task.spawn(function()
                                 break
                             end
                             
+                            local shouldLeaveTrial = false
                             if Env.AutoLeaveIfStuck then
                                 pcall(function()
                                     local stagnationLimit = tonumber(Env.TrialStagnationTime) or 30
@@ -1808,13 +1808,11 @@ task.spawn(function()
                                         elseif tick() - stagnationTimer > stagnationLimit then
                                             showToast("Trials: Anti-stuck triggered (" .. stagnationLimit .. "s target stagnation). Leaving trial...")
                                             
-                                            -- LEAVE TRIAL REMOTE EXECUTION
                                             pcall(function()
                                                 local args = { [1] = "LeaveTrial" }
                                                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                                             end)
                                             
-                                            -- INSTANT SAFETY RELEASE CLEANUP
                                             trialIsRunning = false
                                             MobTargetVector = nil
                                             currentTargetMob = nil
@@ -1826,13 +1824,17 @@ task.spawn(function()
                                                 hrpCheck.AssemblyLinearVelocity = Vector3.zero
                                             end
                                             
-                                            task.wait(0.5)
-                                            break
+                                            shouldLeaveTrial = true
                                         end
                                     else
                                         stagnationTimer = tick()
                                     end
                                 end)
+                            end
+                            
+                            if shouldLeaveTrial then
+                                task.wait(0.5)
+                                break
                             end
                         end
                         
@@ -2689,4 +2691,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.51 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.52 Stable Loaded Successfully!")
