@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.62 - HARD TRIAL VECTOR & TRIAL DIAGNOSTICS)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.63 - 3-SECOND TRIAL GRACE PERIOD FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -68,7 +68,7 @@ local Dest = {
     Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
     EasyTrial = Vector3.new(852.7059, 11.1623, 13444.3925),     
     MediumTrial = Vector3.new(879.4453, 11.1781, 13418.6263), 
-    HardTrial = Vector3.new(909.3944702148438, 11.162318229675293, 13441.96875), -- Updated from screenshot
+    HardTrial = Vector3.new(909.3944702148438, 11.162318229675293, 13441.96875), 
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
@@ -93,6 +93,7 @@ local trialIsRunning = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
 local cachedStates = nil
+local trialEntryTick = 0 -- Grace period timestamp tracker
 
 -- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING[cite: 1]
 local deadMobs = {}
@@ -1194,6 +1195,7 @@ createButtonRow(trialsScroll, "Test Trial Teleport Now", function()
     SandTargetVector = nil
     
     trialIsRunning = true
+    trialEntryTick = tick() -- Set grace period tick on manual test
     
     local hrp = GetWorldRoot()
     if hrp then
@@ -1721,7 +1723,7 @@ local function restoreToggles()
     trialIsRunning = false
 end
 
--- TRIAL WATCHER & MANUAL EXIT DETECTOR (POSITION-GATED RESTORATION)[cite: 1]
+-- TRIAL WATCHER & MANUAL EXIT DETECTOR (WITH 3S GRACE PERIOD PROTECTION)[cite: 1]
 task.spawn(function()
     while Running do
         task.wait(0.5)
@@ -1729,20 +1731,26 @@ task.spawn(function()
         if hrp then
             if hrp.Position.Z > 13000 and not trialIsRunning then
                 trialIsRunning = true
+                trialEntryTick = tick() -- Mark entry time for grace period
                 cacheAndPauseToggles()
-                if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Entered arena (Z > 13000).") end
+                if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Entered arena (Z > 13000). Grace period started.") end
                 showToast("Trials: Entered trial arena. Background toggles paused.")
             elseif trialIsRunning and hrp.Position.Z < 13000 then
-                if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Returned to lobby (Z < 13000). Restoring...") end
-                showToast("Trials: Exited trial arena. Restoring toggles...")
-                trialIsRunning = false
-                MobTargetVector = nil
-                currentTargetMob = nil
-                lastTrackedMobPart = nil
-                hrp.Anchored = false
-                hrp.AssemblyLinearVelocity = Vector3.zero
-                task.wait(0.5)
-                restoreToggles()
+                -- Check if 3-second grace period has passed since entering the trial
+                if (tick() - trialEntryTick) > 3 then
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Returned to lobby (Z < 13000). Restoring...") end
+                    showToast("Trials: Exited trial arena. Restoring toggles...")
+                    trialIsRunning = false
+                    MobTargetVector = nil
+                    currentTargetMob = nil
+                    lastTrackedMobPart = nil
+                    hrp.Anchored = false
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                    task.wait(0.5)
+                    restoreToggles()
+                else
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Trial Watcher: Ignored Z < 13000 due to 3s grace period.") end
+                end
             end
         end
     end
@@ -1792,6 +1800,7 @@ task.spawn(function()
                         SandTargetVector = nil
                         
                         trialIsRunning = true
+                        trialEntryTick = tick() -- Set grace period tick on scheduled run
                         
                         local hrpToTeleport = GetWorldRoot()
                         if hrpToTeleport then
@@ -1817,7 +1826,8 @@ task.spawn(function()
                             task.wait(1.0)
                             
                             local hrpCheck = GetWorldRoot()
-                            if hrpCheck and hrpCheck.Position.Z < 13000 then
+                            -- Only check lobby return if grace period has passed to avoid instant cancel
+                            if hrpCheck and hrpCheck.Position.Z < 13000 and (tick() - trialEntryTick > 3) then
                                 if Env.TrialDiagnostics then print("[DominateHub Diag] Detected return to lobby inside loop.") end
                                 trialIsRunning = false
                                 MobTargetVector = nil
@@ -2701,4 +2711,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.62 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.63 Stable Loaded Successfully!")
