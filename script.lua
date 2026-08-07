@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.36 - RECURSION-FREE COLLAPSIBLE UI FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.34 - ADJUSTABLE STAGNATION TIMER & BUILD)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -61,11 +61,11 @@ Env.AutoSandUpgrades = false
 Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
-Env.TargetSandLayer = 3
+Env.TargetSandLayer = 3 -- User configurable layer 1-250
 
 -- TRIAL ANTI-STUCK CONFIG
 Env.AutoLeaveIfStuck = true
-Env.TrialStagnationTime = 30
+Env.TrialStagnationTime = 30 -- User configurable stagnation seconds (default 30s)
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -405,7 +405,7 @@ local function createToggleRow(parent, txt, vKey)
     return row
 end
 
--- TEXT INPUT ROW FOR CONFIG VALUES
+-- TEXT INPUT ROW FOR CONFIG VALUES (e.g., Target Layer, Stagnation Time)
 local function createTextBoxRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -464,7 +464,7 @@ local function createTextBoxRow(parent, txt, vKey)
     return row
 end
 
--- RECURSION-FREE COLLAPSIBLE SECTION BUILDER
+-- COLLAPSIBLE SECTION BUILDER
 local function createCollapsibleSection(parent, txt)
     local secFrame = Instance.new("Frame")
     secFrame.Size = UDim2.new(1, -10, 0, 36)
@@ -492,11 +492,23 @@ local function createCollapsibleSection(parent, txt)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.Parent = cont
 
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        if cont.Visible then
+            cont.Size = UDim2.new(1, 0, 0, layout.AbsoluteContentSize.Y)
+            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
+        end
+    end)
+
     local isOpen = true
     headerBtn.MouseButton1Click:Connect(function()
         isOpen = not isOpen
         cont.Visible = isOpen
         headerBtn.Text = (isOpen and "▼  " or "▶  ") .. txt
+        if isOpen then
+            secFrame.Size = UDim2.new(1, -10, 0, layout.AbsoluteContentSize.Y + 44)
+        else
+            secFrame.Size = UDim2.new(1, -10, 0, 36)
+        end
     end)
 
     return cont
@@ -1539,7 +1551,7 @@ task.spawn(function()
     end
 end)
 
--- SCHEDULED TRIAL AUTOMATION (WITH Z-COORDINATE LOBBY DETECTION & STAGNATION TIMER)
+-- SCHEDULED TRIAL AUTOMATION (WITH ADJUSTABLE MOB STAGNATION TIMER & STRICT CASTLE LOCK)
 local lastTrialTriggeredMinute = -1
 task.spawn(function()
     while Running do
@@ -1652,30 +1664,40 @@ task.spawn(function()
                         end
                     end
                     
-                    showToast("Trials: Completed / Exited trial arena...")
+                    -- Safe surface relocation: Teleport back to Castle Entrance
+                    showToast("Trials: Completed / Exited! Relocating to surface...")
+                    pcall(function()
+                        local hrp = GetWorldRoot()
+                        if hrp then
+                            hrp.Anchored = false
+                            hrp.CFrame = CFrame.new(Dest.CastleEntrance)
+                            hrp.AssemblyLinearVelocity = Vector3.zero
+                            hrp.AssemblyAngularVelocity = Vector3.zero
+                        end
+                    end)
                     
-                    -- Z-COORDINATE LOBBY DETECTION: Wait until Z position drops below 13000
-                    local lobbyWait = 0
+                    -- STRICT CASTLE ARRIVAL LOCK: Wait until player is physically at the castle before restoring toggles
+                    local castleWait = 0
                     while Running do
                         task.wait(0.2)
-                        lobbyWait = lobbyWait + 0.2
+                        castleWait = castleWait + 0.2
                         local hrpCheck = GetWorldRoot()
-                        if hrpCheck and hrpCheck.Position.Z < 13000 then
+                        if hrpCheck and (hrpCheck.Position - Dest.CastleEntrance).Magnitude < 50 then
                             break
                         end
-                        if lobbyWait > 10.0 then
+                        if castleWait > 6.0 then
                             break
                         end
                     end
                     
-                    task.wait(0.5) -- Stability buffer
+                    task.wait(1.0) -- Stability buffer
                     
-                    -- Restore all previously cached automation toggles ONLY AFTER RETURNING TO LOBBY
+                    -- Restore all previously cached automation toggles ONLY AFTER ARRIVING AT CASTLE
                     for flagName, state in pairs(cachedStates) do
                         Env[flagName] = state
                     end
                     trialIsRunning = false
-                    showToast("Trials: Successfully returned to lobby! Toggles restored.")
+                    showToast("Trials: Successfully returned to castle! Toggles restored.")
                 end
             end
         end
@@ -2275,4 +2297,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.36 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.34 Stable Loaded Successfully!")
