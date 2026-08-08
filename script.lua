@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.68 - SYNTAX & COMPILE FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.69 - EXACT TRIAL PAD COORDINATES)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -51,7 +51,7 @@ local function isOreRespawning(oreModel)
     return false
 end
 
--- DESTINATION VECTORS DECLARED EARLY TO PREVENT NIL-INDEX ERRORS[cite: 1]
+-- DESTINATION VECTORS DECLARED EARLY TO PREVENT NIL-INDEX ERRORS
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), 
     Super = Vector3.new(1082.093, 16.661, -782.021), 
@@ -66,14 +66,16 @@ local Dest = {
     Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
     SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
     Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
-    TrialLobbyPad = Vector3.new(879.4453, 11.1781, 12950.0), 
+    EasyTrial = Vector3.new(850.21044921875, 11.162318229675293, 13444.673828125),     
+    MediumTrial = Vector3.new(879.9605712890625, 11.17810344696045, 13418.396484375), 
+    HardTrial = Vector3.new(909.3944702148438, 11.162318229675293, 13441.96875),   
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
     AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388)
 }
 
--- STATS TRACKING VARIABLES FOR HUD[cite: 1]
+-- STATS TRACKING VARIABLES FOR HUD
 local oresMined = 0
 local mobsKilled = 0
 local lastTrackedPart = nil
@@ -82,20 +84,20 @@ local currentTargetPanel = nil
 local currentTargetMob = nil
 local gemExchangeCountdown = 60
 
--- RITUAL HUD TIMER VARIABLES[cite: 1]
+-- RITUAL HUD TIMER VARIABLES
 local ritualTimer = 0
 local ritualInCooldown = false
 
--- RUNTIME STATE LOCKS[cite: 1]
+-- RUNTIME STATE LOCKS
 local trialIsRunning = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
 local cachedStates = nil
 
--- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING[cite: 1]
+-- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING
 local deadMobs = {}
 
--- RITUAL PRE-SELECTED MOBS & SAND CONFIG[cite: 1]
+-- RITUAL PRE-SELECTED MOBS & SAND CONFIG
 Env.RitualSelectedMobs = {
     ["Dark Knight"] = true,
     ["Dark Commander"] = true
@@ -112,10 +114,10 @@ Env.AutoLeaveByTime = true
 Env.TrialTimeLimit = 15
 Env.TrialDiagnostics = false
 
--- ANCIENT BOSS FARM CONFIG[cite: 1]
+-- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
 
--- LIVE GEM EXCHANGE COUNTDOWN TICKER[cite: 1]
+-- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -130,7 +132,7 @@ task.spawn(function()
     end
 end)
 
--- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING[cite: 1]
+-- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
     local blur = Instance.new("BlurEffect")
     blur.Name = "DominateHubBlur"
@@ -138,7 +140,7 @@ pcall(function()
     blur.Parent = Lighting
 end)
 
--- TOAST NOTIFICATION HELPER[cite: 1]
+-- TOAST NOTIFICATION HELPER
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
@@ -180,10 +182,10 @@ Env.AntiAFK = true
 Env.AutoPrestige = false
 Env.CPUSaverMode = false
 
--- SAFE ZONE VECTOR FOR COMBAT BREAK[cite: 1]
+-- SAFE ZONE VECTOR FOR COMBAT BREAK
 Env.SafeZoneVector = Vector3.new(919.1552, 4.8658, 7905.8755)
 
--- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV[cite: 1]
+-- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
 Env.AutoUpgradeStarter = false
 Env.AutoUpgradeCooker = false
 Env.AutoUpgradeFarmer = false
@@ -213,7 +215,7 @@ Env.AutoBlazeMoreOofs = false
 Env.AutoBlazeMoreBulk = false
 Env.AutoBlazeConvert = false
 
--- SOULS & RITUAL FLAGS[cite: 1]
+-- SOULS & RITUAL FLAGS
 Env.AutoSoulsMoreSouls = false
 Env.AutoSoulsLuckierSwords = false
 Env.AutoSoulsMoreOof = false
@@ -221,7 +223,7 @@ Env.AutoSoulsMoreBones = false
 Env.AutoSoulsRuneBulk = false
 Env.AutoStartRitual = false
 
--- MEAT / BONES UPGRADE FLAGS[cite: 1]
+-- MEAT / BONES UPGRADE FLAGS
 Env.AutoMeatMoreMeat = false
 Env.AutoMeatStrongerSwords = false
 Env.AutoMeatMoreOof = false
@@ -234,7 +236,7 @@ Env.AutoBonesBiggerMeatDeposit = false
 Env.AutoBonesFasterMeatConversion = false
 Env.AutoBonesEvenMoreBones = false
 
--- TRIALS FLAGS[cite: 1]
+-- TRIALS FLAGS
 Env.AutoEasyTrial = false
 Env.AutoMediumTrial = false
 Env.AutoHardTrial = false
@@ -296,7 +298,7 @@ Env.AutoMineVoidsteel = false
 Env.AutoMineCelestium = false
 Env.MiningJumpSpeed = 0.8 
 
--- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST)[cite: 1]
+-- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST)
 Env.AutoMobGoblin = false
 Env.AutoMobSkeleton = false
 Env.AutoMobOrc = false
@@ -310,7 +312,7 @@ Env.AutoMobSamuraiMaster = false
 Env.AutoMobDarkKnight = false
 Env.AutoMobDarkCommander = false
 
--- COMBAT UPGRADE BREAK FLAG[cite: 1]
+-- COMBAT UPGRADE BREAK FLAG
 Env.AutoCombatBreak = false
 
 Env.AutoUpgradeHacker1 = false
@@ -376,7 +378,7 @@ Env.AutoOpenAncientCapsule = false
 Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 
--- TOGGLE & UI HELPERS[cite: 1]
+-- TOGGLE & UI HELPERS
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -731,14 +733,14 @@ player.Idled:Connect(function()
     end
 end)
 
--- UI MASTER ALLOCATION[cite: 1]
+-- UI MASTER ALLOCATION
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui")
 sg.Name = "DominateHubMirror"
 sg.ResetOnSpawn = false
 sg.Parent = parentTarget
 
--- FPS & PING TRACKING UTILS[cite: 1]
+-- FPS & PING TRACKING UTILS
 local fps = 60
 local frameCount = 0
 local lastFpsUpdate = tick()
@@ -751,7 +753,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- FORWARD DECLARATIONS FOR HUD CHECKS[cite: 1]
+-- FORWARD DECLARATIONS FOR HUD CHECKS
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
     {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
@@ -775,7 +777,7 @@ local MobPriorityList = {
     {F = "AutoMobDarkCommander", N = "Dark Commander"}
 }
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)[cite: 1]
+-- PERFORMANCE HUD OVERLAY (TOP LEFT)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 60)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -889,7 +891,7 @@ task.spawn(function()
     end
 end)
 
--- MAIN WINDOW CONTAINER[cite: 1]
+-- MAIN WINDOW CONTAINER
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 620, 0, 410)
 mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205)
@@ -1000,7 +1002,26 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDEBAR[cite: 1]
+-- PAGES CREATED FIRST TO FIX SCOPING/VISIBILITY REFERENCE
+local pageArea = Instance.new("Frame")
+pageArea.Size = UDim2.new(1, -165, 1, -55)
+pageArea.Position = UDim2.new(0, 155, 0, 50)
+pageArea.BackgroundTransparency = 1
+pageArea.ClipsDescendants = true
+pageArea.Parent = mainFrame
+
+local function makePage()
+    local p = Instance.new("Frame") 
+    p.Size = UDim2.new(1, 0, 1, 0) 
+    p.BackgroundTransparency = 1 
+    p.Visible = false 
+    p.Parent = pageArea 
+    return p
+end
+local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
+upgradesPage.Visible = true
+
+-- SIDEBAR
 local sidebarFrame = Instance.new("ScrollingFrame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -1061,25 +1082,6 @@ local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
 
--- PAGES[cite: 1]
-local pageArea = Instance.new("Frame")
-pageArea.Size = UDim2.new(1, -165, 1, -55)
-pageArea.Position = UDim2.new(0, 155, 0, 50)
-pageArea.BackgroundTransparency = 1
-pageArea.ClipsDescendants = true
-pageArea.Parent = mainFrame
-
-local function makePage()
-    local p = Instance.new("Frame") 
-    p.Size = UDim2.new(1, 0, 1, 0) 
-    p.BackgroundTransparency = 1 
-    p.Visible = false 
-    p.Parent = pageArea 
-    return p
-end
-local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
-upgradesPage.Visible = true
-
 local function makeVerticalScroll(parent)
     local s = Instance.new("ScrollingFrame")
     s.Size = UDim2.new(1, 0, 1, 0) 
@@ -1102,7 +1104,7 @@ local function makeVerticalScroll(parent)
     return s 
 end
 
--- UPGRADES PAGE BUILD[cite: 1]
+-- UPGRADES PAGE BUILD
 local upScroll = makeVerticalScroll(upgradesPage)
 upScroll.Visible = true
 createSectionHeader(upScroll, "Realm 1 Upgrades")
@@ -1142,7 +1144,7 @@ createToggleRow(upScroll, "Auto Excavation Rank Up", "AutoExcavationRankUp")
 createToggleRow(upScroll, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
 createTextBoxRow(upScroll, "Target Sand Layer (1-250)", "TargetSandLayer")
 
--- NOOBS PAGE BUILD[cite: 1]
+-- NOOBS PAGE BUILD
 local noobsScroll = makeVerticalScroll(noobsPage)
 createSectionHeader(noobsScroll, "Realm 1 Noobs")
 createToggleRow(noobsScroll, "Starter Auto Upgrade", "AutoUpgradeStarter")
@@ -1163,7 +1165,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
 
--- TRIALS PAGE BUILD[cite: 1]
+-- TRIALS PAGE BUILD
 local trialsScroll = makeVerticalScroll(trialsPage)
 createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
 createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
@@ -1175,8 +1177,13 @@ createToggleRow(trialsScroll, "Trial Diagnostics Mode", "TrialDiagnostics")
 
 createSectionHeader(trialsScroll, "Manual Testing")
 createButtonRow(trialsScroll, "Test Trial Staging Teleport", function()
-    showToast("Trials: Teleporting to trial lobby staging pad...")
-    print("[DominateHub Diag] Manual Staging Teleport Triggered.")
+    local testPad = Dest.HardTrial
+    if Env.AutoEasyTrial then testPad = Dest.EasyTrial
+    elseif Env.AutoMediumTrial then testPad = Dest.MediumTrial
+    elseif Env.AutoHardTrial then testPad = Dest.HardTrial end
+
+    showToast("Trials: Teleporting to trial pad...")
+    print("[DominateHub Diag] Manual Staging Teleport Triggered. Pad:", tostring(testPad))
     
     MasterTargetVector = nil
     MiningTargetVector = nil
@@ -1187,16 +1194,16 @@ createButtonRow(trialsScroll, "Test Trial Staging Teleport", function()
     local hrp = GetWorldRoot()
     if hrp then
         hrp.Anchored = false
-        hrp.CFrame = CFrame.new(Dest.TrialLobbyPad)
+        hrp.CFrame = CFrame.new(testPad)
         hrp.AssemblyLinearVelocity = Vector3.zero
         hrp.AssemblyAngularVelocity = Vector3.zero
-        print("[DominateHub Diag] Teleported to trial lobby staging pad successfully.")
+        print("[DominateHub Diag] Teleported to trial pad successfully.")
     else
         print("[DominateHub Diag] ERROR: HumanoidRootPart is nil during manual test!")
     end
 end)
 
--- MINES PAGE BUILD[cite: 1]
+-- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
 createSectionHeader(minesScroll, "Mining Configuration")
 local bestTierActive = false
@@ -1323,7 +1330,7 @@ createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
 createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
--- MOBS PAGE BUILD[cite: 1]
+-- MOBS PAGE BUILD
 local mobsScroll = makeVerticalScroll(mobsPage)
 createSectionHeader(mobsScroll, "Realm 3 Mobs (Worst to Best)")
 local bestMobTierActive = false
@@ -1377,7 +1384,7 @@ createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
 createRitualMobDropdown(mobsScroll, "Ritual Target Mobs", MobPriorityList)
 
--- FOOTBALL PAGE BUILD[cite: 1]
+-- FOOTBALL PAGE BUILD
 local footballScroll = makeVerticalScroll(footballPage)
 createSectionHeader(footballScroll, "Football Noobs")
 createToggleRow(footballScroll, "Goalkeeper", "AutoUpgradeGoalkeeper")
@@ -1400,7 +1407,7 @@ createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
 createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
--- MISC PAGE BUILD[cite: 1]
+-- MISC PAGE BUILD
 local miscScroll = makeVerticalScroll(miscPage)
 createSectionHeader(miscScroll, "Runes")
 createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
@@ -1418,7 +1425,7 @@ createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 createToggleRow(miscScroll, "Hatch Ancient Capsule", "AutoOpenAncientCapsule")
 
--- SETTINGS PAGE BUILD[cite: 1]
+-- SETTINGS PAGE BUILD
 local settingsScroll = makeVerticalScroll(settingsPage)
 createSectionHeader(settingsScroll, "General Settings")
 createToggleRow(settingsScroll, "Anti AFK Protection", "AntiAFK")
@@ -1519,7 +1526,7 @@ tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFoot
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
--- LOCOMOTION & AUTOMATION ENGINES[cite: 1]
+-- LOCOMOTION & AUTOMATION ENGINES
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
 local MobTargetVector = nil
@@ -1545,7 +1552,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- UNIFIED ZERO-DELAY INSTANT-SNAP MOVEMENT LOOP[cite: 1]
+-- UNIFIED ZERO-DELAY INSTANT-SNAP MOVEMENT LOOP
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1592,7 +1599,7 @@ task.spawn(function()
     end
 end)
 
--- ANCIENT BOSS SPAWN & AUTO-NAVIGATE LOOP[cite: 1]
+-- ANCIENT BOSS SPAWN & AUTO-NAVIGATE LOOP
 task.spawn(function()
     while Running do
         task.wait(2.0)
@@ -1627,7 +1634,7 @@ task.spawn(function()
     end
 end)
 
--- RITUAL LOOP[cite: 1]
+-- RITUAL LOOP
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -1747,15 +1754,21 @@ task.spawn(function()
                     
                     trialIsRunning = true
                     
+                    -- Determine correct trial pad based on active toggle
+                    local targetPad = Dest.HardTrial
+                    if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
+                    elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
+                    elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
+                    
                     local hrpStaging = GetWorldRoot()
                     if hrpStaging then
                         hrpStaging.Anchored = false
-                        hrpStaging.CFrame = CFrame.new(Dest.TrialLobbyPad)
+                        hrpStaging.CFrame = CFrame.new(targetPad)
                         hrpStaging.AssemblyLinearVelocity = Vector3.zero
                         hrpStaging.AssemblyAngularVelocity = Vector3.zero
                     end
                     
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 2: Teleported to staging pad. Waiting for arena entry (Z > 13000)...") end
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 2: Teleported to exact trial pad. Waiting for arena entry (Z > 13000)...") end
                     
                     local entryWaitStart = tick()
                     local enteredArena = false
@@ -1824,7 +1837,7 @@ task.spawn(function()
     end
 end)
 
--- COMBAT SAFE SPOT BREAK[cite: 1]
+-- COMBAT SAFE SPOT BREAK
 task.spawn(function()
     while Running do
         task.wait(40.0)
@@ -1861,7 +1874,7 @@ task.spawn(function()
     end
 end)
 
--- STABILIZED MOB FARMING ENGINE[cite: 1]
+-- STABILIZED MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.01)
@@ -2009,7 +2022,7 @@ task.spawn(function()
     end
 end)
 
--- SAND REGENERATION LOOP[cite: 1]
+-- SAND REGENERATION LOOP
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -2069,7 +2082,7 @@ task.spawn(function()
     end
 end)
 
--- GEM LOOPS[cite: 1]
+-- GEM LOOPS
 task.spawn(function()
     while Running do
         task.wait(60.0)
@@ -2180,7 +2193,7 @@ task.spawn(function()
     end
 end)
 
--- CAPSULE LOOP[cite: 1]
+-- CAPSULE LOOP
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.12)
@@ -2662,4 +2675,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.68 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.69 Stable Loaded Successfully!")
