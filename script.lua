@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.75 - REVERTED BASE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.77 - 10S BUFFER & RITUAL CLEANUP)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -113,16 +113,6 @@ Env.TargetSandLayer = 3
 Env.AutoLeaveByTime = true
 Env.TrialTimeLimit = 15
 Env.TrialDiagnostics = false
-
--- ENCHANTS AUTOMATION CONFIG
-Env.AutoRerollEnchants = false
-Env.EnchantStopAtAlmighty = false
-Env.EnchantStopAtTranscendent = false
-Env.SelectedEnchantNoob = "Farmer"
-
-Env.EnchantNoobsList = {
-    "Starter", "Cooker", "Farmer", "Archer", "Soldier", "Fisherman", "Knight", "Explorer", "Magician"
-}
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -551,114 +541,6 @@ local function createSectionHeader(parent, txt)
     header.TextXAlignment = Enum.TextXAlignment.Left
     header.Parent = parent
     return header
-end
-
-local function createEnchantNoobDropdown(parent, title, noobList)
-    local dropFrame = Instance.new("Frame")
-    dropFrame.Size = UDim2.new(1, -10, 0, 42)
-    dropFrame.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
-    dropFrame.BackgroundTransparency = 0.5
-    dropFrame.BorderSizePixel = 0
-    dropFrame.ClipsDescendants = true
-    dropFrame.Parent = parent
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = dropFrame
-
-    local headerBtn = Instance.new("TextButton")
-    headerBtn.Size = UDim2.new(1, 0, 0, 42)
-    headerBtn.BackgroundTransparency = 1
-    headerBtn.Text = ""
-    headerBtn.Parent = dropFrame
-
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0.75, 0, 1, 0)
-    lbl.Position = UDim2.new(0, 16, 0, 0)
-    lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(240, 235, 250)
-    lbl.TextSize = 12
-    lbl.Font = Enum.Font.GothamBold
-    lbl.Text = title .. ": " .. tostring(Env.SelectedEnchantNoob)
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = headerBtn
-
-    local arrow = Instance.new("TextLabel")
-    arrow.Size = UDim2.new(0, 30, 0, 42)
-    arrow.Position = UDim2.new(1, -38, 0, 0)
-    arrow.BackgroundTransparency = 1
-    arrow.TextColor3 = Color3.fromRGB(216, 180, 254)
-    arrow.TextSize = 12
-    arrow.Font = Enum.Font.GothamBold
-    arrow.Text = "▼"
-    arrow.Parent = headerBtn
-
-    local container = Instance.new("ScrollingFrame")
-    container.Size = UDim2.new(1, -16, 0, 150)
-    container.Position = UDim2.new(0, 8, 0, 46)
-    container.BackgroundTransparency = 1
-    container.BorderSizePixel = 0
-    container.ScrollBarThickness = 3
-    container.ScrollingEnabled = true
-    container.Parent = dropFrame
-
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0, 4)
-    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.Parent = container
-
-    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        container.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
-    end)
-
-    for _, noobName in ipairs(noobList) do
-        local noobRow = Instance.new("TextButton")
-        noobRow.Size = UDim2.new(1, -4, 0, 30)
-        noobRow.BackgroundColor3 = (Env.SelectedEnchantNoob == noobName) and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)
-        noobRow.BackgroundTransparency = (Env.SelectedEnchantNoob == noobName) and 0.2 or 0.6
-        noobRow.Text = ""
-        noobRow.AutoButtonColor = false
-        noobRow.Parent = container
-
-        local rc = Instance.new("UICorner")
-        rc.CornerRadius = UDim.new(0, 6)
-        rc.Parent = noobRow
-
-        local rLbl = Instance.new("TextLabel")
-        rLbl.Size = UDim2.new(1, -12, 1, 0)
-        rLbl.Position = UDim2.new(0, 10, 0, 0)
-        rLbl.BackgroundTransparency = 1
-        rLbl.TextColor3 = Color3.fromRGB(240, 235, 250)
-        rLbl.TextSize = 11
-        rLbl.Font = Enum.Font.GothamBold
-        rLbl.Text = ((Env.SelectedEnchantNoob == noobName) and "[✔] " or "[   ] ") .. noobName
-        rLbl.TextXAlignment = Enum.TextXAlignment.Left
-        rLbl.Parent = noobRow
-
-        noobRow.MouseButton1Click:Connect(function()
-            Env.SelectedEnchantNoob = noobName
-            lbl.Text = title .. ": " .. noobName
-            showToast("Enchants: Target Noob set to " .. noobName)
-            
-            for _, child in ipairs(container:GetChildren()) do
-                if child:IsA("TextButton") then
-                    child.BackgroundColor3 = Color3.fromRGB(42, 28, 65)
-                    child.BackgroundTransparency = 0.6
-                end
-            end
-            noobRow.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
-            noobRow.BackgroundTransparency = 0.2
-        end)
-    end
-
-    local isOpen = false
-    headerBtn.MouseButton1Click:Connect(function()
-        isOpen = not isOpen
-        arrow.Text = isOpen and "▲" or "▼"
-        TweenService:Create(dropFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = isOpen and UDim2.new(1, -10, 0, 204) or UDim2.new(1, -10, 0, 42)}):Play()
-    end)
-
-    return dropFrame
 end
 
 local function createRitualMobDropdown(parent, title, mobList)
@@ -1835,7 +1717,7 @@ local function restoreToggles()
     trialIsRunning = false
 end
 
--- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE (PRE-PAUSE AT :58:55 / :28:55)
+-- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE (PRE-PAUSE & RITUAL CLEANUP AT :58:50 / :28:50)
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
@@ -1853,15 +1735,23 @@ task.spawn(function()
             local sec = timeTable.sec
             local hour = timeTable.hour
             
-            local isTriggerTime = ((min == 28 or min == 58) and sec >= 55) or (min == 29 or min == 59)
+            -- Trigger 10 seconds early at 28:50 or 58:50
+            local isTriggerTime = ((min == 28 or min == 58) and sec >= 50) or (min == 29 or min == 59)
             
             if isTriggerTime then
                 local currentSlot = hour .. "_" .. min
                 if currentSlot ~= lastTrialTriggeredSlot then
                     lastTrialTriggeredSlot = currentSlot
                     
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 1: Pre-pause & Staging hit at " .. min .. ":" .. sec) end
-                    showToast("Trials: Preparing for trial... Pausing background tasks.")
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 1: Pre-pause, Ritual Kill & Staging hit at " .. min .. ":" .. sec) end
+                    showToast("Trials: Stopping rituals & preparing for trial...")
+                    
+                    -- FORCE STOP RITUALS TO PREVENT CONFLICTS
+                    Env.AutoStartRitual = false
+                    ritualIsActive = false
+                    ritualSuppressMobs = false
+                    RitualTargetVector = nil
+                    
                     cacheAndPauseToggles()
                     
                     MasterTargetVector = nil
@@ -1869,6 +1759,8 @@ task.spawn(function()
                     MobTargetVector = nil
                     RitualTargetVector = nil
                     SandTargetVector = nil
+                    
+                    task.wait(1.0) -- Buffer delay to ensure ritual state fully clears
                     
                     trialIsRunning = true
                     
@@ -2775,7 +2667,7 @@ task.spawn(function()
             pcall(function() 
                 local args = { [1] = "Prestige" } 
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
-                    end) 
+            end) 
         end 
     end 
 end)
@@ -2792,4 +2684,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.69 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.77 Stable Loaded Successfully!")
