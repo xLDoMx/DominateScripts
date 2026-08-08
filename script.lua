@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.71 - FULL SYNTAX & UI TAB FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.73 - EXACT ENCHANT REMOTE FIX)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1136,7 +1136,7 @@ local function makePage()
     p.Parent = pageArea 
     return p
 end
-local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, enchantsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
+local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
 -- SIDEBAR
@@ -1196,7 +1196,6 @@ local tabNoobs = makeMainTab("🤖", "Noobs")
 local tabMines = makeMainTab("⛏️", "Mines")
 local tabMobs = makeMainTab("⚔️", "Mobs")
 local tabTrials = makeMainTab("🛡️", "Trials")
-local tabEnchants = makeMainTab("✨", "Enchants")
 local tabFootball = makeMainTab("⚽", "Football")
 local tabMisc = makeMainTab("📦", "Misc")
 local tabSettings = makeMainTab("⚙️", "Settings")
@@ -1321,14 +1320,6 @@ createButtonRow(trialsScroll, "Test Trial Staging Teleport", function()
         print("[DominateHub Diag] ERROR: HumanoidRootPart is nil during manual test!")
     end
 end)
-
--- ENCHANTS PAGE BUILD
-local enchantsScroll = makeVerticalScroll(enchantsPage)
-createSectionHeader(enchantsScroll, "Enchants Automation Settings")
-createToggleRow(enchantsScroll, "Auto Reroll Enchants", "AutoRerollEnchants")
-createToggleRow(enchantsScroll, "Stop at Almighty", "EnchantStopAtAlmighty")
-createToggleRow(enchantsScroll, "Stop at Transcendent", "EnchantStopAtTranscendent")
-createEnchantNoobDropdown(enchantsScroll, "Target Noob", Env.EnchantNoobsList)
 
 -- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
@@ -1534,8 +1525,14 @@ createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
 createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
--- MISC PAGE BUILD
+-- MISC PAGE BUILD (INCLUDES ENCHANTS & RUNES/CAPSULES)
 local miscScroll = makeVerticalScroll(miscPage)
+createSectionHeader(miscScroll, "Enchants Automation Settings")
+createToggleRow(miscScroll, "Auto Reroll Enchants", "AutoRerollEnchants")
+createToggleRow(miscScroll, "Stop at Almighty", "EnchantStopAtAlmighty")
+createToggleRow(miscScroll, "Stop at Transcendent", "EnchantStopAtTranscendent")
+createEnchantNoobDropdown(miscScroll, "Target Noob", Env.EnchantNoobsList)
+
 createSectionHeader(miscScroll, "Runes")
 createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
 createToggleRow(miscScroll, "Auto Super Rune Circle", "AutoRollSuperRune")
@@ -1626,13 +1623,12 @@ local function mainRoute(pOpen, bActive)
     minesPage.Visible = false
     mobsPage.Visible = false
     trialsPage.Visible = false
-    enchantsPage.Visible = false
     footballPage.Visible = false
     miscPage.Visible = false
     settingsPage.Visible = false
     pOpen.Visible = true
     
-    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabTrials, tabEnchants, tabFootball, tabMisc, tabSettings}
+    local tabs = {tabUpgrades, tabNoobs, tabMines, tabMobs, tabTrials, tabFootball, tabMisc, tabSettings}
     for _, t in ipairs(tabs) do 
         t.BackgroundColor3 = Color3.fromRGB(18, 12, 28)
         t.TextColor3 = Color3.fromRGB(210, 190, 235)
@@ -1650,7 +1646,6 @@ tabNoobs.MouseButton1Click:Connect(function() mainRoute(noobsPage, tabNoobs) end
 tabMines.MouseButton1Click:Connect(function() mainRoute(minesPage, tabMines) end)
 tabMobs.MouseButton1Click:Connect(function() mainRoute(mobsPage, tabMobs) end)
 tabTrials.MouseButton1Click:Connect(function() mainRoute(trialsPage, tabTrials) end)
-tabEnchants.MouseButton1Click:Connect(function() mainRoute(enchantsPage, tabEnchants) end)
 tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFootball) end) 
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
@@ -1817,7 +1812,7 @@ task.spawn(function()
     end
 end)
 
--- SAFE, THROTTLED ENCHANTS AUTOMATION LOOP (NO CONNECTIONS)
+-- SAFE, THROTTLED ENCHANTS AUTOMATION LOOP (USING RollNoobEnchant)
 task.spawn(function()
     while Running do
         task.wait(0.35)
@@ -1843,7 +1838,7 @@ task.spawn(function()
                             showToast("Enchants: Target tier reached (" .. currentTier .. ")! Stopped.")
                         else
                             local args = {
-                                [1] = "RerollEnchant",
+                                [1] = "RollNoobEnchant",
                                 [2] = Env.SelectedEnchantNoob
                             }
                             game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
@@ -2841,4 +2836,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.71 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.73 Stable Loaded Successfully!")
