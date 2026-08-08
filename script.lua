@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.81 - SYNTAX TYPO FIXED)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.81 - SYNTAX TYPO FIXED)1
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
