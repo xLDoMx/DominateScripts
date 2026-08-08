@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.73 - EXACT ENCHANT REMOTE FIX)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.75 - DIRECT ENCHANT REMOTE LOOP)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1529,8 +1529,6 @@ createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 local miscScroll = makeVerticalScroll(miscPage)
 createSectionHeader(miscScroll, "Enchants Automation Settings")
 createToggleRow(miscScroll, "Auto Reroll Enchants", "AutoRerollEnchants")
-createToggleRow(miscScroll, "Stop at Almighty", "EnchantStopAtAlmighty")
-createToggleRow(miscScroll, "Stop at Transcendent", "EnchantStopAtTranscendent")
 createEnchantNoobDropdown(miscScroll, "Target Noob", Env.EnchantNoobsList)
 
 createSectionHeader(miscScroll, "Runes")
@@ -1812,39 +1810,17 @@ task.spawn(function()
     end
 end)
 
--- SAFE, THROTTLED ENCHANTS AUTOMATION LOOP (USING RollNoobEnchant)
+-- SAFE, THROTTLED ENCHANTS AUTOMATION LOOP (DIRECT REMOTE)
 task.spawn(function()
     while Running do
         task.wait(0.35)
         if Running and Env.AutoRerollEnchants then
             pcall(function()
-                local pGui = player:FindFirstChild("PlayerGui")
-                local enchantsUI = pGui and pGui:FindFirstChild("EnchantsUI")
-                
-                if enchantsUI and enchantsUI.Enabled then
-                    local enchantLabel = enchantsUI:FindFirstChild("EnchantText", true)
-                    if enchantLabel and enchantLabel:IsA("TextLabel") then
-                        local currentTier = enchantLabel.Text
-                        local stopRolling = false
-                        
-                        if Env.EnchantStopAtTranscendent and currentTier:find("Transcendent") then
-                            stopRolling = true
-                        elseif Env.EnchantStopAtAlmighty and (currentTier:find("Almighty") or currentTier:find("Transcendent")) then
-                            stopRolling = true
-                        end
-                        
-                        if stopRolling then
-                            Env.AutoRerollEnchants = false
-                            showToast("Enchants: Target tier reached (" .. currentTier .. ")! Stopped.")
-                        else
-                            local args = {
-                                [1] = "RollNoobEnchant",
-                                [2] = Env.SelectedEnchantNoob
-                            }
-                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        end
-                    end
-                end
+                local args = {
+                    [1] = "RollNoobEnchant",
+                    [2] = Env.SelectedEnchantNoob
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
             end)
         end
     end
@@ -2836,4 +2812,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.73 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.75 Stable Loaded Successfully!")
