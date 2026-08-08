@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.81 - SYNTAX TYPO FIXED)1
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.84 - T2 CHEST PATH BUGFIXED)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -72,7 +72,8 @@ local Dest = {
     CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
-    AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388)
+    AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388),
+    PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512)
 }
 
 -- STATS TRACKING VARIABLES FOR HUD
@@ -1813,16 +1814,6 @@ task.spawn(function()
                                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                                 end)
                                 
-                                -- WAIT UNTIL SAFELY BACK IN CASTLE (Z < 13000) BEFORE EXITING TRIAL LOOP
-                                local lobbyWait = tick()
-                                while Running and (tick() - lobbyWait < 15) do
-                                    task.wait(0.5)
-                                    local curHrp = GetWorldRoot()
-                                    if curHrp and curHrp.Position.Z < 13000 then
-                                        break
-                                    end
-                                end
-                                
                                 break
                             end
                             
@@ -1833,6 +1824,22 @@ task.spawn(function()
                     else
                         if Env.TrialDiagnostics then print("[DominateHub Diag] Warning: Arena entry timeout (did not step through gate in time).") end
                         showToast("Trials: Entry timeout. Resetting state.")
+                    end
+                    
+                    -- WAIT UNTIL SAFELY BACK IN CASTLE, THEN TELEPORT TO POST-TRIAL LANDING
+                    showToast("Trials: Exited trial. Relocating to farm spot...")
+                    local lobbyWait = tick()
+                    while Running and (tick() - lobbyWait < 15) do
+                        task.wait(0.5)
+                        local curHrp = GetWorldRoot()
+                        if curHrp and curHrp.Position.Z < 13000 then
+                            curHrp.Anchored = false
+                            curHrp.CFrame = CFrame.new(Dest.PostTrialLanding)
+                            curHrp.AssemblyLinearVelocity = Vector3.zero
+                            curHrp.AssemblyAngularVelocity = Vector3.zero
+                            task.wait(1.0)
+                            break
+                        end
                     end
                     
                     trialIsRunning = false
@@ -1847,8 +1854,8 @@ task.spawn(function()
                         hrpFinal.AssemblyLinearVelocity = Vector3.zero
                     end
                     
-                    task.wait(1.0)
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 5: Safely back in castle. Restoring background toggles.") end
+                    task.wait(0.5)
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 5: Relocated and stable. Restoring background toggles.") end
                     restoreToggles()
                 end
             end
@@ -1999,7 +2006,7 @@ task.spawn(function()
                                                     if desc:IsA("TextLabel") and desc.Text then
                                                         local txt = desc.Text:gsub(",", "")
                                                         if txt:find("^0%s*/") or txt == "0" then
-                                                            isActuallyDead = true
+                                                            isDead = true
                                                             break
                                                         end
                                                     end
@@ -2650,7 +2657,7 @@ task.spawn(function()
     end 
 end)
 
--- CHEST OPENING LOOP (100 CHESTS)
+-- CHEST OPENING LOOP (FIXED T2 CHEST PATH & 100 CHEST BATCH)
 task.spawn(function() 
     while Running do 
         task.wait(1.2) 
@@ -2664,7 +2671,7 @@ task.spawn(function()
             if Env.AutoOpenT2Chest then 
                 pcall(function() 
                     local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
@@ -2695,4 +2702,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.81 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.84 Stable Loaded Successfully!")
