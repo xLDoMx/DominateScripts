@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.80 - SYNTAX-VERIFIED & PURGED)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.81 - SYNTAX TYPO FIXED)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1739,7 +1739,7 @@ task.spawn(function()
             local isTriggerTime = ((min == 28 or min == 58) and sec >= 50) or (min == 29 or min == 59)
             
             if isTriggerTime then
-                local currentSlot = hour "_" min
+                local currentSlot = hour .. "_" .. min
                 if currentSlot ~= lastTrialTriggeredSlot then
                     lastTrialTriggeredSlot = currentSlot
                     
@@ -1813,6 +1813,16 @@ task.spawn(function()
                                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                                 end)
                                 
+                                -- WAIT UNTIL SAFELY BACK IN CASTLE (Z < 13000) BEFORE EXITING TRIAL LOOP
+                                local lobbyWait = tick()
+                                while Running and (tick() - lobbyWait < 15) do
+                                    task.wait(0.5)
+                                    local curHrp = GetWorldRoot()
+                                    if curHrp and curHrp.Position.Z < 13000 then
+                                        break
+                                    end
+                                end
+                                
                                 break
                             end
                             
@@ -1838,7 +1848,7 @@ task.spawn(function()
                     end
                     
                     task.wait(1.0)
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 5: Returning to castle. Restoring background toggles.") end
+                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 5: Safely back in castle. Restoring background toggles.") end
                     restoreToggles()
                 end
             end
@@ -2685,4 +2695,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.80 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.81 Stable Loaded Successfully!")
