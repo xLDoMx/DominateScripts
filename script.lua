@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.76 - STAGING SUPPRESSION & ARENA ISOLATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.75 - REVERTED BASE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -90,7 +90,6 @@ local ritualInCooldown = false
 
 -- RUNTIME STATE LOCKS
 local trialIsRunning = false
-local inTrialArena = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
 local cachedStates = nil
@@ -117,6 +116,8 @@ Env.TrialDiagnostics = false
 
 -- ENCHANTS AUTOMATION CONFIG
 Env.AutoRerollEnchants = false
+Env.EnchantStopAtAlmighty = false
+Env.EnchantStopAtTranscendent = false
 Env.SelectedEnchantNoob = "Farmer"
 
 Env.EnchantNoobsList = {
@@ -1524,12 +1525,8 @@ createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
 createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
--- MISC PAGE BUILD (INCLUDES ENCHANTS & RUNES/CAPSULES)
+-- MISC PAGE BUILD
 local miscScroll = makeVerticalScroll(miscPage)
-createSectionHeader(miscScroll, "Enchants Automation Settings")
-createToggleRow(miscScroll, "Auto Reroll Enchants", "AutoRerollEnchants")
-createEnchantNoobDropdown(miscScroll, "Target Noob", Env.EnchantNoobsList)
-
 createSectionHeader(miscScroll, "Runes")
 createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
 createToggleRow(miscScroll, "Auto Super Rune Circle", "AutoRollSuperRune")
@@ -1696,7 +1693,7 @@ task.spawn(function()
             
             if act then
                 local targetCF = CFrame.new(act)
-                if inTrialArena or MobTargetVector then
+                if trialIsRunning or MobTargetVector then
                     hrp.Anchored = false
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
@@ -1809,29 +1806,13 @@ task.spawn(function()
     end
 end)
 
--- SAFE, THROTTLED ENCHANTS AUTOMATION LOOP (DIRECT REMOTE)
-task.spawn(function()
-    while Running do
-        task.wait(0.35)
-        if Running and Env.AutoRerollEnchants then
-            pcall(function()
-                local args = {
-                    [1] = "RollNoobEnchant",
-                    [2] = Env.SelectedEnchantNoob
-                }
-                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-            end)
-        end
-    end
-end)
-
 -- DYNAMIC ENV SNAPSHOT & SAFETY RELEASE FUNCTIONS
 local function cacheAndPauseToggles()
     if cachedStates then return end
     cachedStates = {}
     for k, v in pairs(Env) do
         if type(k) == "string" and k:sub(1, 4) == "Auto" then
-            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" and k ~= "TrialDiagnostics" and k ~= "AutoRerollEnchants" then
+            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" and k ~= "TrialDiagnostics" then
                 if v == true then
                     cachedStates[k] = true
                     Env[k] = false
@@ -1852,7 +1833,6 @@ local function restoreToggles()
     end
     cachedStates = nil
     trialIsRunning = false
-    inTrialArena = false
 end
 
 -- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE (PRE-PAUSE AT :58:55 / :28:55)
@@ -1891,7 +1871,6 @@ task.spawn(function()
                     SandTargetVector = nil
                     
                     trialIsRunning = true
-                    inTrialArena = false -- Keep mob loop fully suppressed on staging pad
                     
                     local targetPad = Dest.HardTrial
                     if Env.AutoEasyTrial then targetPad = Dest.EasyTrial
@@ -1915,7 +1894,6 @@ task.spawn(function()
                         local checkHrp = GetWorldRoot()
                         if checkHrp and checkHrp.Position.Z > 13000 then
                             enteredArena = true
-                            inTrialArena = true -- Now safe to activate trial mob automation!
                             break
                         end
                     end
@@ -1937,7 +1915,6 @@ task.spawn(function()
                                 showToast("Trials: Time limit reached (" .. limitMins .. "m). Leaving trial...")
                                 
                                 trialExitCooldown = tick()
-                                inTrialArena = false
                                 
                                 pcall(function()
                                     local args = { [1] = "LeaveTrial" }
@@ -1948,7 +1925,6 @@ task.spawn(function()
                             end
                             
                             if checkHrp and checkHrp.Position.Z < 13000 then
-                                inTrialArena = false
                                 break
                             end
                         end
@@ -1958,7 +1934,6 @@ task.spawn(function()
                     end
                     
                     trialIsRunning = false
-                    inTrialArena = false
                     MobTargetVector = nil
                     currentTargetMob = nil
                     lastTrackedMobPart = nil
@@ -2016,7 +1991,7 @@ task.spawn(function()
     end
 end)
 
--- STABILIZED MOB FARMING ENGINE (BOUND TO inTrialArena)
+-- STABILIZED MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.01)
@@ -2024,7 +1999,7 @@ task.spawn(function()
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
 
-            if inTrialArena then
+            if trialIsRunning then
                 hasAnyMobEnabled = true
             elseif Env.AutoStartRitual and ritualTimer > 0 and ritualTimer <= 175 then
                 for mobName, selected in pairs(Env.RitualSelectedMobs) do
@@ -2067,7 +2042,7 @@ task.spawn(function()
                 end
 
                 if not currentValid then
-                    if inTrialArena then
+                    if trialIsRunning then
                         local gc = workspace:FindFirstChild("__GAME_CONTENT")
                         local trialsFolder = gc and gc:FindFirstChild("Trials")
                         if trialsFolder then
@@ -2800,7 +2775,7 @@ task.spawn(function()
             pcall(function() 
                 local args = { [1] = "Prestige" } 
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
-            end) 
+                    end) 
         end 
     end 
 end)
@@ -2817,4 +2792,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.76 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.69 Stable Loaded Successfully!")
