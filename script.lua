@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.98 - SAFE ACCORDIONS & ALL FEATURES)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.99 - MAIN HEADER ACCORDIONS)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -546,33 +546,20 @@ local function createButtonRow(parent, txt, callback)
     return row
 end
 
-local function createSectionHeader(parent, txt)
-    local header = Instance.new("TextLabel")
-    header.Size = UDim2.new(1, -10, 0, 32)
-    header.BackgroundTransparency = 1
-    header.TextColor3 = Color3.fromRGB(230, 110, 255)
-    header.TextSize = 12
-    header.Font = Enum.Font.GothamBold
-    header.Text = txt
-    header.TextXAlignment = Enum.TextXAlignment.Left
-    header.Parent = parent
-    return header
-end
-
--- ACCORDION SECTION BUILDER (SAFE COLLAPSIBLE DROPDOWNS)
-local function createAccordionSection(parent, titleText, startOpen)
+-- MAIN HEADER ACCORDION SECTION BUILDER
+local function createMainAccordionSection(parent, titleText, startOpen)
     local isOpen = startOpen or false
     
     local wrapper = Instance.new("Frame")
-    wrapper.Size = UDim2.new(1, -10, 0, 36)
+    wrapper.Size = UDim2.new(1, -10, 0, 40)
     wrapper.BackgroundTransparency = 1
     wrapper.ClipsDescendants = true
     wrapper.Parent = parent
 
     local headerBtn = Instance.new("TextButton")
-    headerBtn.Size = UDim2.new(1, 0, 0, 32)
+    headerBtn.Size = UDim2.new(1, 0, 0, 36)
     headerBtn.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
-    headerBtn.BackgroundTransparency = 0.3
+    headerBtn.BackgroundTransparency = 0.2
     headerBtn.Text = ""
     headerBtn.AutoButtonColor = true
     headerBtn.Parent = wrapper
@@ -581,20 +568,25 @@ local function createAccordionSection(parent, titleText, startOpen)
     hCorner.CornerRadius = UDim.new(0, 8)
     hCorner.Parent = headerBtn
 
+    local hStroke = Instance.new("UIStroke")
+    hStroke.Color = Color3.fromRGB(230, 110, 255)
+    hStroke.Transparency = 0.4
+    hStroke.Parent = headerBtn
+
     local hLbl = Instance.new("TextLabel")
-    hLbl.Size = UDim2.new(1, -30, 1, 0)
-    hLbl.Position = UDim2.new(0, 12, 0, 0)
+    hLbl.Size = UDim2.new(1, -35, 1, 0)
+    hLbl.Position = UDim2.new(0, 14, 0, 0)
     hLbl.BackgroundTransparency = 1
     hLbl.TextColor3 = Color3.fromRGB(230, 110, 255)
-    hLbl.TextSize = 12
+    hLbl.TextSize = 13
     hLbl.Font = Enum.Font.GothamBold
     hLbl.Text = titleText
     hLbl.TextXAlignment = Enum.TextXAlignment.Left
     hLbl.Parent = headerBtn
 
     local arrow = Instance.new("TextLabel")
-    arrow.Size = UDim2.new(0, 20, 1, 0)
-    arrow.Position = UDim2.new(1, -25, 0, 0)
+    arrow.Size = UDim2.new(0, 25, 1, 0)
+    arrow.Position = UDim2.new(1, -30, 0, 0)
     arrow.BackgroundTransparency = 1
     arrow.TextColor3 = Color3.fromRGB(216, 180, 254)
     arrow.TextSize = 12
@@ -604,38 +596,37 @@ local function createAccordionSection(parent, titleText, startOpen)
 
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1, 0, 0, 0)
-    container.Position = UDim2.new(0, 0, 0, 36)
+    container.Position = UDim2.new(0, 0, 0, 42)
     container.BackgroundTransparency = 1
     container.Parent = wrapper
 
     local cLayout = Instance.new("UIListLayout")
-    cLayout.Padding = UDim.new(0, 8)
+    cLayout.Padding = UDim.new(0, 10)
     cLayout.SortOrder = Enum.SortOrder.LayoutOrder
     cLayout.Parent = container
 
     cLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         if isOpen then
-            local contentH = cLayout.AbsoluteContentSize.Y + 6
+            local contentH = cLayout.AbsoluteContentSize.Y + 10
             container.Size = UDim2.new(1, 0, 0, contentH)
-            wrapper.Size = UDim2.new(1, -10, 0, 36 + contentH)
+            wrapper.Size = UDim2.new(1, -10, 0, 42 + contentH)
         end
     end)
 
     headerBtn.MouseButton1Click:Connect(function()
         isOpen = not isOpen
         arrow.Text = isOpen and "▲" or "▼"
-        local contentH = cLayout.AbsoluteContentSize.Y + 6
+        local contentH = cLayout.AbsoluteContentSize.Y + 10
         local targetH = isOpen and contentH or 0
         TweenService:Create(container, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = UDim2.new(1, 0, 0, targetH)}):Play()
-        TweenService:Create(wrapper, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = UDim2.new(1, -10, 0, 36 + targetH)}):Play()
+        TweenService:Create(wrapper, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = UDim2.new(1, -10, 0, 42 + targetH)}):Play()
     end)
 
-    -- If default open, set initial size
     task.defer(function()
         if isOpen then
-            local contentH = cLayout.AbsoluteContentSize.Y + 6
+            local contentH = cLayout.AbsoluteContentSize.Y + 10
             container.Size = UDim2.new(1, 0, 0, contentH)
-            wrapper.Size = UDim2.new(1, -10, 0, 36 + contentH)
+            wrapper.Size = UDim2.new(1, -10, 0, 42 + contentH)
         end
     end)
 
@@ -1323,63 +1314,51 @@ local function makeVerticalScroll(parent)
     return s 
 end
 
--- UPGRADES PAGE BUILD WITH ACCORDION SECTIONS
+-- UPGRADES PAGE BUILD WITH MAIN HEADER ACCORDIONS
 local upScroll = makeVerticalScroll(upgradesPage)
 upScroll.Visible = true
 
-createSectionHeader(upScroll, "Realm 1 Upgrades")
-local r1Container = createAccordionSection(upScroll, "Realm 1 Core & Noobs", true)
+-- 1. Realm 1 Upgrades Accordion
+local r1Container = createMainAccordionSection(upScroll, "Realm 1 Upgrades", true)
 createToggleRow(r1Container, "More Oof Auto Upgrade", "AutoUpgradeMoreOof")
 createToggleRow(r1Container, "Faster Noobs Upgrade", "AutoUpgradeFasterNoobs")
+masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, r1Container)
+masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, r1Container)
+masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, r1Container)
+masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, r1Container)
+masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, r1Container)
+masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, r1Container)
 
-local fireAcc = createAccordionSection(upScroll, "Fire Upgrades", false)
-masterToggleGroup("Fire Upgrades", {"AutoFireMoreFire", "AutoFireMoreBulk", "AutoFireMoreOof", "AutoFireMoreRebirth", "AutoFireMoreTierLuck", "AutoFireMoreCashBonus"}, fireAcc)
+-- 2. Realm 2 Upgrades Accordion
+local r2Container = createMainAccordionSection(upScroll, "Realm 2 Upgrades", false)
+masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, r2Container)
+masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, r2Container)
+masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, r2Container)
+masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, r2Container)
+masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, r2Container)
 
-local rebAcc = createAccordionSection(upScroll, "Rebirth Upgrades", false)
-masterToggleGroup("Rebirth Upgrades", {"AutoRebirthMoreOof", "AutoRebirthMoreRebirth", "AutoRebirthMoreFire"}, rebAcc)
+-- 3. Gem Upgrades & Features Accordion
+local gemContainer = createMainAccordionSection(upScroll, "Gem Upgrades & Features", false)
+createToggleRow(gemContainer, "More Oof (Gem)", "AutoGemMoreOof")
+createToggleRow(gemContainer, "More Gems", "AutoGemMoreGems")
+createToggleRow(gemContainer, "Stronger Pickaxes", "AutoGemStrongerPickaxes")
+createToggleRow(gemContainer, "More Ore Stats", "AutoGemMoreOreStats")
+createToggleRow(gemContainer, "Gem Converter", "AutoGemExchange")
+createToggleRow(gemContainer, "Shop Teleport Loop", "AutoGemShopTeleport")
 
-local blazeAcc = createAccordionSection(upScroll, "Blaze Upgrades", false)
-masterToggleGroup("Blaze Upgrades", {"AutoBlazeConvert", "AutoBlazeMoreBlaze", "AutoBlazeMoreFire", "AutoBlazeMoreOof", "AutoBlazeMoreOofs", "AutoBlazeMoreBulk"}, blazeAcc)
+-- 4. Realm 3 Upgrades Accordion
+local r3Container = createMainAccordionSection(upScroll, "Realm 3 Upgrades", false)
+masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, r3Container)
+masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, r3Container)
+masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, r3Container)
 
-local breadAcc = createAccordionSection(upScroll, "Bread Upgrades", false)
-masterToggleGroup("Bread Upgrades", {"AutoDepositWheat", "AutoBreadMoreBread", "AutoBreadMoreBread2", "AutoBreadMoreWheat", "AutoBreadBiggerWheatDeposit", "AutoBreadFasterWheatConversion", "AutoBreadMoreConsumption", "AutoBreadMoreRuneLuck", "AutoBreadMoreTierLuck", "AutoUpgradeCow", "AutoUpgradeChicken", "AutoBuyCow", "AutoBuyChicken"}, breadAcc)
-
-local cashAcc = createAccordionSection(upScroll, "Cash & Hacker Upgrades", false)
-masterToggleGroup("Cash Upgrades", {"AutoFarmCash", "AutoUpgradeMoreCash", "AutoUpgradeFasterDropper", "AutoUpgradeMoreRuneLuck"}, cashAcc)
-masterToggleGroup("Hacker Upgrades", {"AutoUpgradeHacker1", "AutoUpgradeHacker2", "AutoUpgradeHacker3", "AutoUpgradeHacker4"}, cashAcc)
-
-createSectionHeader(upScroll, "Realm 2 Upgrades")
-local iceAcc = createAccordionSection(upScroll, "Ice & Water Upgrades", false)
-masterToggleGroup("Ice Upgrades", {"AutoRealm2MoreIce", "AutoRealm2WaterPump1", "AutoRealm2WaterPump2", "AutoRealm2MoreOofIce"}, iceAcc)
-masterToggleGroup("Bucket Upgrades", {"AutoFillBucket1", "AutoFillBucket2", "AutoFillBucket3", "AutoFillBucket4", "AutoFillBucket5", "AutoFillBucket6", "AutoFillBucket7", "AutoFillBucket8", "AutoFillBucket9", "AutoFillBucket10", "AutoFillBucket11"}, iceAcc)
-masterToggleGroup("Water Upgrades", {"AutoRealm2MoreWater", "AutoRealm2MoreOofWater", "AutoRealm2MorePlanks"}, iceAcc)
-
-local woodAcc = createAccordionSection(upScroll, "Wood & Planks Upgrades", false)
-masterToggleGroup("Wood Upgrades", {"AutoWoodRankUp", "AutoWoodMoreWood", "AutoWoodSharperAxes", "AutoWoodBiggerDeposit", "AutoWoodFasterConversion", "AutoWoodMorePlanks", "AutoDepositWood"}, woodAcc)
-masterToggleGroup("Planks Upgrades", {"AutoPlanksMorePlanks", "AutoPlanksMoreWood", "AutoPlanksWaterFromPlanks"}, woodAcc)
-
-createSectionHeader(upScroll, "Gem Upgrades & Features")
-local gemAcc = createAccordionSection(upScroll, "Gem Upgrades", false)
-createToggleRow(gemAcc, "More Oof (Gem)", "AutoGemMoreOof")
-createToggleRow(gemAcc, "More Gems", "AutoGemMoreGems")
-createToggleRow(gemAcc, "Stronger Pickaxes", "AutoGemStrongerPickaxes")
-createToggleRow(gemAcc, "More Ore Stats", "AutoGemMoreOreStats")
-createToggleRow(gemAcc, "Gem Converter", "AutoGemExchange")
-createToggleRow(gemAcc, "Shop Teleport Loop", "AutoGemShopTeleport")
-
-createSectionHeader(upScroll, "Realm 3 Upgrades")
-local r3Acc = createAccordionSection(upScroll, "Meat, Bones & Souls", false)
-masterToggleGroup("Meat Upgrades", {"AutoDepositMeat", "AutoMeatMoreMeat", "AutoMeatStrongerSwords", "AutoMeatMoreOof", "AutoMeatMoreBones"}, r3Acc)
-masterToggleGroup("Bones Upgrades", {"AutoBonesMoreBones", "AutoBonesFasterSwords", "AutoBonesBiggerMeatDeposit"}, r3Acc)
-masterToggleGroup("Souls Upgrades", {"AutoSoulsMoreSouls", "AutoSoulsLuckierSwords", "AutoSoulsMoreOof", "AutoSoulsMoreBones", "AutoSoulsRuneBulk"}, r3Acc)
-
-createSectionHeader(upScroll, "Sand Upgrades")
-local sandAcc = createAccordionSection(upScroll, "Sand Configuration", false)
-createToggleRow(sandAcc, "Auto Sand Upgrades", "AutoSandUpgrades")
-createToggleRow(sandAcc, "Auto Shovel Level Up", "AutoShovelLevelUp")
-createToggleRow(sandAcc, "Auto Excavation Rank Up", "AutoExcavationRankUp")
-createToggleRow(sandAcc, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
-createTextBoxRow(sandAcc, "Target Sand Layer (1-250)", "TargetSandLayer")
+-- 5. Sand Upgrades Accordion
+local sandContainer = createMainAccordionSection(upScroll, "Sand Upgrades", false)
+createToggleRow(sandContainer, "Auto Sand Upgrades", "AutoSandUpgrades")
+createToggleRow(sandContainer, "Auto Shovel Level Up", "AutoShovelLevelUp")
+createToggleRow(sandContainer, "Auto Excavation Rank Up", "AutoExcavationRankUp")
+createToggleRow(sandContainer, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
+createTextBoxRow(sandContainer, "Target Sand Layer (1-250)", "TargetSandLayer")
 
 -- NOOBS PAGE BUILD
 local noobsScroll = makeVerticalScroll(noobsPage)
@@ -3000,7 +2979,7 @@ task.spawn(function()
             if Env.AutoOpenT2Chest then 
                 pcall(function() 
                     local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
@@ -3031,4 +3010,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.98 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.99 Stable Loaded Successfully!")
