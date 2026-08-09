@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.94 - RITUAL STATE PRESERVATION & ALL FIXES)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.96 - INSERT HOTKEY, EFFICIENCY & ABOUT)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -78,9 +78,10 @@ local Dest = {
     TrialDropOut = Vector3.new(879.040, 11.531, 13443.085)
 }
 
--- STATS TRACKING VARIABLES FOR HUD
+-- STATS TRACKING VARIABLES FOR HUD & EFFICIENCY TRACKER
 local oresMined = 0
 local mobsKilled = 0
+local sessionStartTime = tick()
 local lastTrackedPart = nil
 local lastTrackedMobPart = nil
 local currentTargetPanel = nil
@@ -876,6 +877,15 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- INSERT KEY HOTKEY TO TOGGLE UI VISIBILITY
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.Insert then
+        local isVisible = mainFrame.Visible
+        mainFrame.Visible = not isVisible
+        minBtn.TextColor3 = mainFrame.Visible and Color3.fromRGB(216, 180, 254) or Color3.fromRGB(74, 222, 128)
+    end
+end)
+
 -- FORWARD DECLARATIONS FOR HUD CHECKS
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
@@ -900,7 +910,7 @@ local MobPriorityList = {
     {F = "AutoMobDarkCommander", N = "Dark Commander"}
 }
 
--- PERFORMANCE HUD OVERLAY (TOP LEFT)
+-- PERFORMANCE HUD OVERLAY (TOP LEFT WITH EFFICIENCY TRACKER)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 60)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -941,7 +951,6 @@ hudText.TextWrapped = true
 hudText.Text = "Uptime: 00:00:00 | FPS: 60\nTarget: None | Smooth Ground-Lock Active"
 hudText.Parent = statsHud
 
-local sessionStartTime = tick()
 task.spawn(function()
     while Running do
         task.wait(1.0)
@@ -974,12 +983,15 @@ task.spawn(function()
             
             local extraLines = {trialCountdownStr}
             
+            local elapsedHours = math.max((tick() - sessionStartTime) / 3600, 0.0001)
+            
             local miningActive = false
             for _, oreInfo in ipairs(OrePriorityList) do
                 if Env[oreInfo.F] then miningActive = true break end
             end
             if miningActive then
-                table.insert(extraLines, string.format("Gem Exch: %ds | Mined: %d", gemExchangeCountdown, oresMined))
+                local oresPerHour = math.floor(oresMined / elapsedHours)
+                table.insert(extraLines, string.format("Gem Exch: %ds | Mined: %d (%d/hr)", gemExchangeCountdown, oresMined, oresPerHour))
             end
             
             local mobActive = false
@@ -987,7 +999,8 @@ task.spawn(function()
                 if Env[mobInfo.F] then mobActive = true break end
             end
             if mobActive then
-                table.insert(extraLines, string.format("Mobs Killed: %d", mobsKilled))
+                local mobsPerHour = math.floor(mobsKilled / elapsedHours)
+                table.insert(extraLines, string.format("Kills: %d (%d/hr)", mobsKilled, mobsPerHour))
             end
             
             if Env.AutoStartRitual then
@@ -1058,7 +1071,7 @@ headerTitle.BackgroundTransparency = 1
 headerTitle.TextColor3 = Color3.fromRGB(216, 180, 254)
 headerTitle.TextSize = 15 
 headerTitle.Font = Enum.Font.GothamBold 
-headerTitle.Text = "Dominate Hub v1.4 (Pro Edition)" 
+headerTitle.Text = "Dominate Hub v1.6 (Pro Edition)" 
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left 
 headerTitle.Parent = mainFrame
 
@@ -1069,7 +1082,7 @@ headerSubtitle.BackgroundTransparency = 1
 headerSubtitle.TextColor3 = Color3.fromRGB(180, 150, 210)
 headerSubtitle.TextSize = 11
 headerSubtitle.Font = Enum.Font.GothamBold
-headerSubtitle.Text = "discord.gg/dominatehub | Lovely <3"
+headerSubtitle.Text = "discord.gg/dominatehub | Press [Insert] to Hide"
 headerSubtitle.TextXAlignment = Enum.TextXAlignment.Left
 headerSubtitle.Parent = mainFrame
 
@@ -1566,6 +1579,31 @@ createToggleRow(settingsScroll, "Auto Rebirth", "AutoRebirthTimer")
 createToggleRow(settingsScroll, "Auto Prestige", "AutoPrestige")
 createToggleRow(settingsScroll, "Mass Open T1 Chest", "AutoOpenT1Chest")
 createToggleRow(settingsScroll, "Mass Open T2 Chest", "AutoOpenT2Chest")
+
+createSectionHeader(settingsScroll, "About & License")
+local aboutFrame = Instance.new("Frame")
+aboutFrame.Size = UDim2.new(1, -10, 0, 95)
+aboutFrame.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
+aboutFrame.BackgroundTransparency = 0.5
+aboutFrame.BorderSizePixel = 0
+aboutFrame.Parent = settingsScroll
+
+local afCorner = Instance.new("UICorner")
+afCorner.CornerRadius = UDim.new(0, 8)
+afCorner.Parent = aboutFrame
+
+local aboutLbl = Instance.new("TextLabel")
+aboutLbl.Size = UDim2.new(1, -20, 1, 0)
+aboutLbl.Position = UDim2.new(0, 10, 0, 0)
+aboutLbl.BackgroundTransparency = 1
+aboutLbl.TextColor3 = Color3.fromRGB(220, 210, 240)
+aboutLbl.TextSize = 11
+aboutLbl.Font = Enum.Font.GothamBold
+aboutLbl.TextXAlignment = Enum.TextXAlignment.Left
+aboutLbl.TextYAlignment = Enum.TextYAlignment.Center
+aboutLbl.TextWrapped = true
+aboutLbl.Text = "Dominate Hub v1.6 (Pro Edition)\nDiscord: discord.gg/dominatehub\nKey Status: Active / Unlimited\nHotkey: Press [Insert] to Toggle UI"
+aboutLbl.Parent = aboutFrame
 
 createSectionHeader(settingsScroll, "Emergency Controls")
 local killRow = Instance.new("Frame") 
@@ -2194,7 +2232,7 @@ task.spawn(function()
                                                     if desc:IsA("TextLabel") and desc.Text then
                                                         local txt = desc.Text:gsub(",", "")
                                                         if txt:find("^0%s*/") or txt == "0" then
-                                                            isDead = true
+                                                            isActuallyDead = true
                                                             break
                                                         end
                                                     end
@@ -2859,7 +2897,7 @@ task.spawn(function()
             if Env.AutoOpenT2Chest then 
                 pcall(function() 
                     local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
@@ -2890,4 +2928,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.94 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.96 Stable Loaded Successfully!")
