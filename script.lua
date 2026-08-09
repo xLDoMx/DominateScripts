@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.93 - UI SYNC & POST-TRIAL KICKSTART)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.94 - RITUAL STATE PRESERVATION & ALL FIXES)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1934,13 +1934,14 @@ task.spawn(function()
                     if Env.TrialDiagnostics then print("[DominateHub Diag] Step 1: Pre-pause, Ritual Kill & Staging hit at " .. min .. ":" .. sec) end
                     showToast("Trials: Stopping rituals & preparing for trial...")
                     
-                    -- FORCE STOP RITUALS TO PREVENT CONFLICTS
+                    -- 1. TAKE SNAPSHOT *BEFORE* MUTING RITUAL/AUTO FLAGS
+                    cacheAndPauseToggles()
+                    
+                    -- 2. FORCE STOP RITUALS TO PREVENT CONFLICTS
                     Env.AutoStartRitual = false
                     ritualIsActive = false
                     ritualSuppressMobs = false
                     RitualTargetVector = nil
-                    
-                    cacheAndPauseToggles()
                     
                     MasterTargetVector = nil
                     MiningTargetVector = nil
@@ -2889,4 +2890,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.93 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.94 Stable Loaded Successfully!")
