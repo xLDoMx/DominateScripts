@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.88 - CONCATENATION FIX & ALL FEATURES)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.90 - PRE-EXIT LOCKOUT & 2S DELAY)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -91,6 +91,7 @@ local ritualInCooldown = false
 
 -- RUNTIME STATE LOCKS
 local trialIsRunning = false
+local trialExiting = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
 local cachedStates = nil
@@ -1679,7 +1680,7 @@ task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
         local hrp = GetWorldRoot()
-        if hrp and Running then
+        if hrp and Running and not trialExiting then
             local act = nil
             if RitualTargetVector then act = RitualTargetVector
             elseif MasterTargetVector then act = MasterTargetVector 
@@ -1725,7 +1726,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(2.0)
-        if Running and Env.AutoAncientBossFarm and not trialIsRunning and not ritualIsActive then
+        if Running and Env.AutoAncientBossFarm and not trialIsRunning and not trialExiting and not ritualIsActive then
             pcall(function()
                 local bossExists = false
                 for _, obj in ipairs(workspace:GetDescendants()) do
@@ -1760,7 +1761,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if Running and Env.AutoStartRitual and not trialIsRunning then
+        if Running and Env.AutoStartRitual and not trialIsRunning and not trialExiting then
             local hrp = GetWorldRoot()
             if hrp then
                 hrp.Anchored = false
@@ -1778,7 +1779,7 @@ task.spawn(function()
             RitualTargetVector = Dest.RitualChamber
             
             for _ = 1, 5 do
-                if not Running or not Env.AutoStartRitual or trialIsRunning then break end
+                if not Running or not Env.AutoStartRitual or trialIsRunning or trialExiting then break end
                 pcall(function()
                     local args = { [1] = "StartRitual" }
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
@@ -1793,7 +1794,7 @@ task.spawn(function()
             currentTargetMob = nil
             MobTargetVector = nil
             
-            while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning do
+            while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning and not trialExiting do
                 task.wait(1.0)
                 ritualTimer = ritualTimer - 1
                 ritualInCooldown = ritualTimer <= 60
@@ -1878,6 +1879,7 @@ local function restoreToggles()
     end
     cachedStates = nil
     trialIsRunning = false
+    trialExiting = false
 end
 
 -- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE (PRE-PAUSE & RITUAL CLEANUP AT :58:50 / :28:50)
@@ -1892,7 +1894,7 @@ task.spawn(function()
         
         local trialEnabled = (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial)
         
-        if Running and trialEnabled and not ritualIsActive and not trialIsRunning and inLobby and (tick() - trialExitCooldown > 5) then
+        if Running and trialEnabled and not ritualIsActive and not trialIsRunning and not trialExiting and inLobby and (tick() - trialExitCooldown > 5) then
             local timeTable = os.date("*t")
             local min = timeTable.min
             local sec = timeTable.sec
@@ -1944,7 +1946,7 @@ task.spawn(function()
                     
                     local entryWaitStart = tick()
                     local enteredArena = false
-                    while Running and trialIsRunning and (tick() - entryWaitStart < 45) do
+                    while Running and trialIsRunning and not trialExiting and (tick() - entryWaitStart < 45) do
                         task.wait(0.5)
                         local checkHrp = GetWorldRoot()
                         if checkHrp and checkHrp.Position.Z > 13000 then
@@ -1961,7 +1963,7 @@ task.spawn(function()
                         local limitMins = tonumber(Env.TrialTimeLimit) or 15
                         local limitSecs = limitMins * 60
                         
-                        while Running and trialIsRunning do
+                        while Running and trialIsRunning and not trialExiting do
                             task.wait(1.0)
                             local checkHrp = GetWorldRoot()
                             
@@ -1971,11 +1973,15 @@ task.spawn(function()
                                 
                                 trialExitCooldown = tick()
                                 
-                                -- IMMEDIATELY CUT TRIAL & MOB LOOPS BEFORE FIRING REMOTE TO STOP TUG-OF-WAR
+                                -- 1. ENGAGE PRE-EXIT LOCKOUT TO SILENCE LOOPS BEFORE LEAVING
+                                trialExiting = true
                                 trialIsRunning = false
                                 MobTargetVector = nil
                                 currentTargetMob = nil
                                 lastTrackedMobPart = nil
+                                
+                                -- 2. 2-SECOND STABILIZATION DELAY BEFORE FIRING REMOTE
+                                task.wait(2.0)
                                 
                                 pcall(function()
                                     local args = { [1] = "LeaveTrial" }
@@ -2035,7 +2041,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(40.0)
-        if Running and Env.AutoCombatBreak and not trialIsRunning and not ritualIsActive then
+        if Running and Env.AutoCombatBreak and not trialIsRunning and not trialExiting and not ritualIsActive then
             local activeMobStates = {}
             local anyActive = false
             for i = 1, #MobPriorityList do
@@ -2072,7 +2078,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(0.01)
-        if Running and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
+        if Running and not trialExiting and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
 
@@ -2174,7 +2180,7 @@ task.spawn(function()
                                                     if desc:IsA("TextLabel") and desc.Text then
                                                         local txt = desc.Text:gsub(",", "")
                                                         if txt:find("^0%s*/") or txt == "0" then
-                                                            isDead = true
+                                                            isActuallyDead = true
                                                             break
                                                         end
                                                     end
@@ -2220,7 +2226,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(1.0)
-        if Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive then
+        if Running and Env.AutoRegenSandLayers and not trialIsRunning and not trialExiting and not ritualIsActive then
             showToast("Sand Regen: Teleporting to pit...")
             pcall(function()
                 local hrp = GetWorldRoot()
@@ -2236,7 +2242,7 @@ task.spawn(function()
             local reachedTarget = false
             local targetLayer = tonumber(Env.TargetSandLayer) or 3
             
-            while Running and Env.AutoRegenSandLayers and not trialIsRunning and not ritualIsActive and not reachedTarget do
+            while Running and Env.AutoRegenSandLayers and not trialIsRunning and not trialExiting and not ritualIsActive and not reachedTarget do
                 task.wait(1.0)
                 pcall(function()
                     local layersFolder = workspace:FindFirstChild("GeneratedSandLayers", true)
@@ -2324,7 +2330,7 @@ local lastOreJumpTick = 0
 task.spawn(function()
     while Running do
         task.wait(Env.CPUSaverMode and 0.25 or 0.1)
-        if Running and not trialIsRunning and not ritualIsActive then
+        if Running and not trialIsRunning and not trialExiting and not ritualIsActive then
             local enabledOreNames = {} 
             local hasAnyEnabled = false
             for i = 1, #OrePriorityList do 
@@ -2427,14 +2433,14 @@ end)
 task.spawn(function()
     while Running do
         task.wait(0.5)
-        if Env.AutoFarmCash and Running and not trialIsRunning and not ritualIsActive then
+        if Env.AutoFarmCash and Running and not trialIsRunning and not trialExiting and not ritualIsActive then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") 
             local ty = gc and gc:FindFirstChild("Tycoon") 
             local btnF = ty and ty:FindFirstChild("Buttons")
             if btnF and Running then
                 local locked = {} 
                 repeat
-                    if not Running or not Env.AutoFarmCash or trialIsRunning or ritualIsActive then break end
+                    if not Running or not Env.AutoFarmCash or trialIsRunning or trialExiting or ritualIsActive then break end
                     local vis = btnF:GetChildren() 
                     local att = false
                     for i = 1, #vis do
@@ -2825,7 +2831,7 @@ task.spawn(function()
     end 
 end)
 
--- CHEST OPENING LOOP (100 CHESTS)
+-- CHEST OPENING LOOP (T2 PATH FIXED & 100 CHESTS)
 task.spawn(function() 
     while Running do 
         task.wait(1.2) 
@@ -2839,7 +2845,7 @@ task.spawn(function()
             if Env.AutoOpenT2Chest then 
                 pcall(function() 
                     local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
@@ -2870,4 +2876,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.88 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.90 Stable Loaded Successfully!")
