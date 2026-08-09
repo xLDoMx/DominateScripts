@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.92 - EXACT DROP COORD & TOGGLE RESTORE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.93 - UI SYNC & POST-TRIAL KICKSTART)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -29,6 +29,7 @@ local player = Players.LocalPlayer
 local vu = VirtualUser
 
 local UI = {}
+Env._UIElements = {}
 
 -- FORWARD HELPER FUNCTIONS
 local function GetWorldRoot() 
@@ -440,6 +441,9 @@ local function createToggleRow(parent, txt, vKey)
     local thumbCorner = Instance.new("UICorner")
     thumbCorner.CornerRadius = UDim.new(1, 0)
     thumbCorner.Parent = switchThumb
+
+    -- Register UI Elements for programmatic synchronization
+    Env._UIElements[vKey] = {Track = switchTrack, Stroke = trackStroke, Thumb = switchThumb}
 
     row.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
@@ -1875,12 +1879,30 @@ local function restoreToggles()
     if not cachedStates then return end
     if Env.TrialDiagnostics then print("[DominateHub Diag] Restoring background toggles...") end
     showToast("Trials: Restoring background automation toggles...")
+    
     for flagName, state in pairs(cachedStates) do
         Env[flagName] = state
+        -- Programmatically update UI toggle states and visual elements
+        if Env._UIElements and Env._UIElements[flagName] then
+            local ui = Env._UIElements[flagName]
+            local active = state
+            pcall(function()
+                TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = active and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)}):Play()
+                TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = active and 0.2 or 0.7}):Play()
+                TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = active and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)}):Play()
+            end)
+        end
     end
+    
     cachedStates = nil
     trialIsRunning = false
     trialExiting = false
+    
+    -- Post-trial kickstart: Clear stale targets to force immediate scanner pickup
+    currentTargetPanel = nil
+    currentTargetMob = nil
+    MiningTargetVector = nil
+    MobTargetVector = nil
 end
 
 -- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE (PRE-PAUSE & RITUAL CLEANUP AT :58:50 / :28:50)
@@ -2867,4 +2889,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.92 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.93 Stable Loaded Successfully!")
