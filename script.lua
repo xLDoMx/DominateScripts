@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.90 - PRE-EXIT LOCKOUT & 2S DELAY)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.92 - EXACT DROP COORD & TOGGLE RESTORE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -73,7 +73,8 @@ local Dest = {
     RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
     AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388),
-    PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512)
+    PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512),
+    TrialDropOut = Vector3.new(879.040, 11.531, 13443.085)
 }
 
 -- STATS TRACKING VARIABLES FOR HUD
@@ -1890,7 +1891,7 @@ task.spawn(function()
     while Running do
         task.wait(0.2)
         local hrp = GetWorldRoot()
-        local inLobby = hrp and hrp.Position.Z < 13000 or true
+        local inLobby = hrp and (hrp.Position - Dest.TrialDropOut).Magnitude > 50 or true
         
         local trialEnabled = (Env.AutoEasyTrial or Env.AutoMediumTrial or Env.AutoHardTrial)
         
@@ -2000,20 +2001,16 @@ task.spawn(function()
                         showToast("Trials: Entry timeout. Resetting state.")
                     end
                     
-                    -- WAIT UNTIL SAFELY BACK IN CASTLE, THEN TELEPORT TO POST-TRIAL LANDING
+                    -- DETECT EXACT DROP COORD & RELOCATE TO FARM SPOT, THEN RESTORE TOGGLES
                     showToast("Trials: Exited trial. Relocating to farm spot...")
-                    local lobbyWait = tick()
-                    while Running and (tick() - lobbyWait < 15) do
-                        task.wait(0.5)
-                        local curHrp = GetWorldRoot()
-                        if curHrp and curHrp.Position.Z < 13000 then
-                            curHrp.Anchored = false
-                            curHrp.CFrame = CFrame.new(Dest.PostTrialLanding)
-                            curHrp.AssemblyLinearVelocity = Vector3.zero
-                            curHrp.AssemblyAngularVelocity = Vector3.zero
-                            task.wait(1.0)
-                            break
-                        end
+                    task.wait(1.5) -- Allow server to place character at drop-out point
+                    
+                    local hrpDrop = GetWorldRoot()
+                    if hrpDrop then
+                        hrpDrop.Anchored = false
+                        hrpDrop.CFrame = CFrame.new(Dest.PostTrialLanding)
+                        hrpDrop.AssemblyLinearVelocity = Vector3.zero
+                        hrpDrop.AssemblyAngularVelocity = Vector3.zero
                     end
                     
                     trialIsRunning = false
@@ -2021,12 +2018,6 @@ task.spawn(function()
                     currentTargetMob = nil
                     lastTrackedMobPart = nil
                     trialExitCooldown = tick()
-                    
-                    local hrpFinal = GetWorldRoot()
-                    if hrpFinal then
-                        hrpFinal.Anchored = false
-                        hrpFinal.AssemblyLinearVelocity = Vector3.zero
-                    end
                     
                     task.wait(0.5)
                     if Env.TrialDiagnostics then print("[DominateHub Diag] Step 5: Relocated and stable. Restoring background toggles.") end
@@ -2180,7 +2171,7 @@ task.spawn(function()
                                                     if desc:IsA("TextLabel") and desc.Text then
                                                         local txt = desc.Text:gsub(",", "")
                                                         if txt:find("^0%s*/") or txt == "0" then
-                                                            isActuallyDead = true
+                                                            isDead = true
                                                             break
                                                         end
                                                     end
@@ -2831,7 +2822,7 @@ task.spawn(function()
     end 
 end)
 
--- CHEST OPENING LOOP (T2 PATH FIXED & 100 CHESTS)
+-- CHEST OPENING LOOP (100 CHESTS)
 task.spawn(function() 
     while Running do 
         task.wait(1.2) 
@@ -2845,7 +2836,7 @@ task.spawn(function()
             if Env.AutoOpenT2Chest then 
                 pcall(function() 
                     local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
@@ -2876,4 +2867,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.90 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.92 Stable Loaded Successfully!")
