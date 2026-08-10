@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.102 - SMOOTH GLIDE STAR COLLECTOR)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1770,7 +1770,7 @@ task.spawn(function()
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 elseif StarTargetVector then
-                    -- SMOOTH GLIDE SWEEP FOR STARS TO PREVENT SPINNING
+                    -- SMOOTH SWEEP GLIDE FOR STARS (NO SPINNING)
                     if (hrp.Position - act).Magnitude > 2.0 then
                         hrp.Anchored = false
                         hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.4)
@@ -1798,7 +1798,8 @@ task.spawn(function()
     end
 end)
 
--- SMOOTH SWEEP STAR COLLECTION LOOP
+-- SMOOTH SWEEP STAR COLLECTION LOOP WITH BLACKLISTING & COOLDOWN
+local starCooldowns = {}
 task.spawn(function()
     while Running do
         task.wait(0.1)
@@ -1809,14 +1810,26 @@ task.spawn(function()
                     local foundStarPart = nil
                     local shortestDist = math.huge
                     local hrp = GetWorldRoot()
+                    local now = tick()
+                    
+                    -- Clear expired cooldowns
+                    for starModel, expiry in pairs(starCooldowns) do
+                        if now >= expiry or not starModel.Parent then
+                            starCooldowns[starModel] = nil
+                        end
+                    end
                     
                     for _, starModel in ipairs(clientStars:GetChildren()) do
-                        local hitbox = starModel:FindFirstChild("Hitbox") or starModel:FindFirstChild("StarPart") or starModel:FindFirstChildWhichIsA("BasePart")
-                        if hitbox and hrp then
-                            local dist = (hitbox.Position - hrp.Position).Magnitude
-                            if dist < shortestDist then
-                                shortestDist = dist
-                                foundStarPart = hitbox
+                        if not starCooldowns[starModel] then
+                            local hitbox = starModel:FindFirstChild("Hitbox") or starModel:FindFirstChild("StarPart") or starModel:FindFirstChildWhichIsA("BasePart")
+                            if hitbox and hrp then
+                                local dist = (hitbox.Position - hrp.Position).Magnitude
+                                if dist < shortestDist then
+                                    shortestDist = dist
+                                    foundStarPart = hitbox
+                                    -- Blacklist this star for 3 seconds so we sweep past it to the next one
+                                    starCooldowns[starModel] = now + 3.0
+                                end
                             end
                         end
                     end
@@ -2283,7 +2296,7 @@ task.spawn(function()
                                                     if desc:IsA("TextLabel") and desc.Text then
                                                         local txt = desc.Text:gsub(",", "")
                                                         if txt:find("^0%s*/") or txt == "0" then
-                                                            isDead = true
+                                                            isActuallyDead = true
                                                             break
                                                         end
                                                     end
@@ -2893,8 +2906,8 @@ task.spawn(function()
             end 
             if Env.AutoDepositWood then 
                 pcall(function() 
-                    local sandRemote = { [1] = "DepositWood" } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(sandRemote)) 
+                    local args = { [1] = "DepositWood" } 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
@@ -2928,8 +2941,8 @@ task.spawn(function()
             end 
             if Env.AutoBlazeMoreOofs then 
                 pcall(function() 
-                    partArgs = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(partArgs)) 
+                    local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
                 task.wait(0.25) 
             end 
@@ -2966,7 +2979,6 @@ task.spawn(function()
 end)
 
 task.spawn(function() 
-    whileRunner = function() end
     while Running do 
         task.wait(5.0) 
         if Env.AutoPrestige and Running then 
@@ -2990,4 +3002,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.102 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully!")
