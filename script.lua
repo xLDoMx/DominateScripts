@@ -2899,7 +2899,7 @@ task.spawn(function()
             if Env.AutoOpenT2Chest then 
                 pcall(function() 
                     local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
