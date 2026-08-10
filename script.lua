@@ -2533,10 +2533,11 @@ task.spawn(function()
                         local dir = (hrp.Position - orePos)
                         dir = Vector3.new(dir.X, 0, dir.Z)
                         if dir.Magnitude > 0.1 then
-                            -- Stand 2.5 studs away from the ore center on the ground to prevent sinking
-                            MiningTargetVector = orePos + (dir.Unit * 2.5)
+                            -- Stand 2.5 studs away from the ore center, locking vertical height to player's current floor level to prevent sinking
+                            local targetXZ = orePos + (dir.Unit * 2.5)
+                            MiningTargetVector = Vector3.new(targetXZ.X, hrp.Position.Y, targetXZ.Z)
                         else
-                            MiningTargetVector = orePos
+                            MiningTargetVector = Vector3.new(orePos.X, hrp.Position.Y, orePos.Z)
                         end
                     else
                         MiningTargetVector = orePos
