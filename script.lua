@@ -2440,7 +2440,7 @@ task.spawn(function()
     end
 end)
 
-local currentOreIndex = 1
+local oreCooldowns = {}
 
 task.spawn(function()
     while Running do
@@ -2456,37 +2456,49 @@ task.spawn(function()
             end
 
             if hasAnyEnabled then
-                local needsNewTarget = false
-                if not currentTargetPanel or not currentTargetPanel.Parent or not currentTargetPanel:IsDescendantOf(workspace) then 
-                    needsNewTarget = true
-                elseif currentTargetPanel.Parent and isOreRespawning(currentTargetPanel.Parent) then 
-                    needsNewTarget = true
+                local hrp = GetWorldRoot()
+                local now = tick()
+                
+                -- Clear expired cooldowns
+                for oreModel, expiry in pairs(oreCooldowns) do
+                    if now >= expiry or not oreModel.Parent then
+                        oreCooldowns[oreModel] = nil
+                    end
                 end
-
-                if needsNewTarget then
-                    local freshList = {} 
-                    local gc = workspace:FindFirstChild("__GAME_CONTENT") 
-                    local oresFolder = gc and gc:FindFirstChild("Ores")
-                    if oresFolder then
-                        for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
-                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                                if part then table.insert(freshList, part) end
+                
+                local foundOrePart = nil
+                local shortestDist = math.huge
+                local gc = workspace:FindFirstChild("__GAME_CONTENT") 
+                local oresFolder = gc and gc:FindFirstChild("Ores")
+                
+                if oresFolder and hrp then
+                    for _, obj in ipairs(oresFolder:GetChildren()) do
+                        if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) and not oreCooldowns[obj] then
+                            local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                            if part then
+                                local dist = (part.Position - hrp.Position).Magnitude
+                                if dist < shortestDist then
+                                    shortestDist = dist
+                                    foundOrePart = part
+                                end
                             end
                         end
                     end
-                    if #freshList > 0 then
-                        table.sort(freshList, function(a, b) return a.Position.X < b.Position.X end)
-                        currentOreIndex = currentOreIndex + 1 
-                        if currentOreIndex > #freshList then currentOreIndex = 1 end
-                        currentTargetPanel = freshList[currentOreIndex] 
-                        
-                        if currentTargetPanel and currentTargetPanel ~= lastTrackedPart then
-                            lastTrackedPart = currentTargetPanel
-                            oresMined = oresMined + 1
-                        end
-                    else 
-                        currentTargetPanel = nil 
+                end
+                
+                if foundOrePart then
+                    currentTargetPanel = foundOrePart
+                    -- Blacklist this ore model for 4 seconds so it moves to the next nearest one
+                    oreCooldowns[foundOrePart.Parent] = now + 4.0
+                    
+                    if currentTargetPanel ~= lastTrackedPart then
+                        lastTrackedPart = currentTargetPanel
+                        oresMined = oresMined + 1
+                    end
+                else
+                    -- If all ores are on cooldown, clear the table to resume mining
+                    if next(oreCooldowns) then
+                        oreCooldowns = {}
                     end
                 end
                 
