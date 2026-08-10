@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - LOCKED MINING & HUMANIZED)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - FIXED ORE RESPAWN LOCK)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -31,18 +31,15 @@ local vu = VirtualUser
 local UI = {}
 Env._UIElements = {}
 
--- FORWARD HELPER FUNCTIONS
 local function GetWorldRoot() 
     return player.Character and player.Character:FindFirstChild("HumanoidRootPart") 
 end
 
--- HUMANIZED JITTER HELPER
 local function jitterWait(baseSeconds)
     local jitter = math.random(1, 8) / 100
     task.wait(baseSeconds + jitter)
 end
 
--- SMOOTH TELEPORT HELPER
 local function smoothTeleport(targetVector, duration)
     local hrp = GetWorldRoot()
     if not hrp then return end
@@ -76,13 +73,17 @@ local function isMobRespawning(mobModel)
     return false
 end
 
+-- FIXED ORE RESPAWNING CHECK (ROBUST DESENDANT LOOP)
 local function isOreRespawning(oreModel)
-    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
-    if desc and desc.Text:lower():find("respawning") then return true end
+    if not oreModel then return true end
+    for _, desc in ipairs(oreModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
+            return true
+        end
+    end
     return false
 end
 
--- DESTINATION VECTORS DECLARED EARLY
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), 
     Super = Vector3.new(1082.093, 16.661, -782.021), 
@@ -2383,7 +2384,7 @@ task.spawn(function()
     end
 end)
 
--- FIXED MINING ENGINE (LOCKS ONTO TARGET ORE UNTIL DESTROYED OR RESPAWNING)
+-- MINING ENGINE (USING ROBUST ISORERESPAWNING CHECK)
 task.spawn(function()
     while Running do
         jitterWait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -2942,4 +2943,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Locked Mining Edition)!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Fixed Ore Lock Edition)!")
