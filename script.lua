@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - FIXED MINING HEIGHT OFFSET)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 5S ANTI-STUCK & ACTIVE ORE LOCK)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -2383,7 +2383,10 @@ task.spawn(function()
     end
 end)
 
--- MINING ENGINE (WITH VERTICAL OFFSET TO PREVENT MAP CLIPPING)
+-- MINING ENGINE (WITH 5S ANTI-STUCK TIMER, INSTANT DROP & ACTIVE-ONLY FILTERING)
+local oreLockStartTime = 0
+local oreBlacklist = {}
+
 task.spawn(function()
     while Running do
         jitterWait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -2398,11 +2401,24 @@ task.spawn(function()
             end
 
             if hasAnyEnabled then
+                local now = tick()
+                -- Clean up expired blacklist entries
+                for orePart, expiry in pairs(oreBlacklist) do
+                    if now >= expiry or not orePart.Parent then
+                        oreBlacklist[orePart] = nil
+                    end
+                end
+
                 local needsNewTarget = false
                 if not currentTargetPanel or not currentTargetPanel.Parent or not currentTargetPanel:IsDescendantOf(workspace) then 
                     needsNewTarget = true
                 elseif currentTargetPanel.Parent and isOreRespawning(currentTargetPanel.Parent) then 
                     needsNewTarget = true
+                elseif (now - oreLockStartTime) > 5.0 then -- 5 second anti-stuck timeout!
+                    needsNewTarget = true
+                    if currentTargetPanel then
+                        oreBlacklist[currentTargetPanel] = now + 5.0
+                    end
                 end
 
                 if needsNewTarget then
@@ -2413,7 +2429,22 @@ task.spawn(function()
                         for _, obj in ipairs(oresFolder:GetChildren()) do
                             if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                                if part then table.insert(freshList, part) end
+                                if part and not oreBlacklist[part] then 
+                                    -- Verify health / depletion status strictly
+                                    local isDepleted = false
+                                    for _, desc in ipairs(obj:GetDescendants()) do
+                                        if desc:IsA("TextLabel") and desc.Text then
+                                            local txt = desc.Text:gsub(",", "")
+                                            if txt:find("^0%s*/") or txt == "0" or txt:lower():find("respawning") then
+                                                isDepleted = true
+                                                break
+                                            end
+                                        end
+                                    end
+                                    if not isDepleted then
+                                        table.insert(freshList, part) 
+                                    end
+                                end
                             end
                         end
                     end
@@ -2425,7 +2456,12 @@ task.spawn(function()
                                 return (a.Position - hrp.Position).Magnitude < (b.Position - hrp.Position).Magnitude
                             end)
                         end
+                        local oldTarget = currentTargetPanel
                         currentTargetPanel = freshList[1]
+                        
+                        if currentTargetPanel ~= oldTarget then
+                            oreLockStartTime = tick() -- Reset timer for new target
+                        end
                         
                         if currentTargetPanel and currentTargetPanel ~= lastTrackedPart then
                             lastTrackedPart = currentTargetPanel
@@ -2942,4 +2978,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Height Offset Edition)!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (5s Anti-Stuck Edition)!")
