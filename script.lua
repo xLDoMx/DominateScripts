@@ -2437,7 +2437,7 @@ task.spawn(function()
                 task.wait(6.0)
                 local args = { [1] = "ExchangeAllMinerals" }
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                task.wait(1.0)
+                task.wait(3.0)
                 MasterTargetVector = nil
             end)
             showToast("Gem Shop Pitstop Completed!")
