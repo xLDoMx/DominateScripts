@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)dsd
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -2534,7 +2534,7 @@ task.spawn(function()
                         dir = Vector3.new(dir.X, 0, dir.Z)
                         if dir.Magnitude > 0.1 then
                             -- Stand 2.5 studs away from the ore center, locking vertical height to player's current floor level to prevent sinking
-                            local targetXZ = orePos + (dir.Unit * 2.5)
+                            local targetXZ = orePos + (dir.Unit * 1.0)
                             MiningTargetVector = Vector3.new(targetXZ.X, hrp.Position.Y, targetXZ.Z)
                         else
                             MiningTargetVector = Vector3.new(orePos.X, hrp.Position.Y, orePos.Z)
