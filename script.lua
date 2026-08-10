@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - FIXED ORE RESPAWN LOCK)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - FIXED MINING HEIGHT OFFSET)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -73,7 +73,6 @@ local function isMobRespawning(mobModel)
     return false
 end
 
--- FIXED ORE RESPAWNING CHECK (ROBUST DESENDANT LOOP)
 local function isOreRespawning(oreModel)
     if not oreModel then return true end
     for _, desc in ipairs(oreModel:GetDescendants()) do
@@ -2384,7 +2383,7 @@ task.spawn(function()
     end
 end)
 
--- MINING ENGINE (USING ROBUST ISORERESPAWNING CHECK)
+-- MINING ENGINE (WITH VERTICAL OFFSET TO PREVENT MAP CLIPPING)
 task.spawn(function()
     while Running do
         jitterWait(Env.CPUSaverMode and 0.25 or 0.1)
@@ -2438,7 +2437,7 @@ task.spawn(function()
                 end
                 
                 if currentTargetPanel and currentTargetPanel.Parent then 
-                    MiningTargetVector = currentTargetPanel.Position 
+                    MiningTargetVector = currentTargetPanel.Position + Vector3.new(0, 3, 0)
                 else 
                     MiningTargetVector = nil 
                 end
@@ -2508,7 +2507,7 @@ task.spawn(function()
                             local tb = bM:FindFirstChild("BuyingButtonPart", true)
                             if tb and tb:IsA("BasePart") and Running then
                                 att = true 
-                                MasterTargetVector = tb.Position 
+                                MasterTargetVector = tb.Position + Vector3.new(0, 3, 0)
                                 jitterWait(0.4)
                                 if not Running then break end
                                 if bM:IsDescendantOf(btnF) then 
@@ -2943,4 +2942,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Fixed Ore Lock Edition)!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Height Offset Edition)!")
