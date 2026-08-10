@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - LOCKED COMPLETION MINING ENGINE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 0.5S HIT DELAY MINING ENGINE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -2448,12 +2448,12 @@ task.spawn(function()
     end
 end)
 
--- REVAMPED MINING ENGINE (STRICT COMPLETION LOCK WITH 30S SAFETY TIMEOUT & CLOSEST-FIRST SORTING)
+-- REVAMPED MINING ENGINE (STRICT COMPLETION LOCK WITH 0.5S HIT DELAY & CLOSEST-FIRST SORTING)
 local oreLockStartTime = 0
 
 task.spawn(function()
     while Running do
-        task.wait(0.01)
+        task.wait(0.5) -- 0.5 second delay between hits/evaluations
         if Running and not trialIsRunning and not trialExiting and not ritualIsActive then
             local enabledOreNames = {} 
             local hasAnyOreEnabled = false
@@ -3034,3 +3034,4 @@ task.spawn(function()
 end)
 
 print("[Dominate Hub] V16.9.103 Stable Loaded Successfully!")
+```[cite: 1]
