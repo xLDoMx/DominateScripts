@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 5S ANTI-STUCK & OPTIMIZED HEIGHT)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - REVAMPED MOB-STYLE MINING ENGINE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -73,9 +73,17 @@ local function isMobRespawning(mobModel)
     return false
 end
 
+-- ROBUST ORE RESPAWNING CHECK (EXACTLY MATCHING MOB LOGIC)
 local function isOreRespawning(oreModel)
-    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
-    if desc and desc.Text:lower():find("respawning") then return true end
+    if not oreModel then return true end
+    for _, desc in ipairs(oreModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text then
+            local txt = desc.Text:lower()
+            if txt:find("respawning") or txt:find("^0%s*/") or txt == "0" then
+                return true
+            end
+        end
+    end
     return false
 end
 
@@ -2379,74 +2387,66 @@ task.spawn(function()
     end
 end)
 
--- MINING ENGINE (WITH 5S ANTI-STUCK TIMEOUT & OPTIMIZED 1-STUD HEIGHT OFFSET)
-local oreLockStartTime = 0
-
+-- REVAMPED MINING ENGINE (EXACTLY MATCHING THE STABLE MOB ENGINE LOGIC)
 task.spawn(function()
     while Running do
-        jitterWait(Env.CPUSaverMode and 0.25 or 0.1)
+        task.wait(0.01)
         if Running and not trialIsRunning and not trialExiting and not ritualIsActive then
             local enabledOreNames = {} 
-            local hasAnyEnabled = false
+            local hasAnyOreEnabled = false
+
             for i = 1, #OrePriorityList do 
                 if Env[OrePriorityList[i].F] then 
                     enabledOreNames[OrePriorityList[i].N] = true 
-                    hasAnyEnabled = true 
+                    hasAnyOreEnabled = true 
                 end 
             end
 
-            if hasAnyEnabled then
-                local now = tick()
-                local needsNewTarget = false
+            if hasAnyOreEnabled then
+                local foundOrePart = nil
+                local currentValid = false
 
-                if not currentTargetPanel or not currentTargetPanel.Parent or not currentTargetPanel:IsDescendantOf(workspace) then 
-                    needsNewTarget = true
-                elseif currentTargetPanel.Parent and isOreRespawning(currentTargetPanel.Parent) then 
-                    needsNewTarget = true
-                elseif (now - oreLockStartTime) > 5.0 then -- 5 second anti-stuck timeout fallback
-                    needsNewTarget = true
+                -- Check if current target ore is still valid and NOT respawning
+                if currentTargetPanel and currentTargetPanel.Parent then
+                    local oreModel = currentTargetPanel.Parent
+                    if oreModel:IsA("Model") and not isOreRespawning(oreModel) then
+                        currentValid = true
+                        foundOrePart = currentTargetPanel
+                    end
                 end
 
-                if needsNewTarget then
-                    local freshList = {} 
+                -- If current ore is dead/respawning, scan for the highest priority active ore (matching mob loop traversal)
+                if not currentValid then
                     local gc = workspace:FindFirstChild("__GAME_CONTENT") 
                     local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
-                        for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
-                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                                if part then 
-                                    table.insert(freshList, part) 
+                        for i = #OrePriorityList, 1, -1 do
+                            local targetOreName = OrePriorityList[i].N
+                            if enabledOreNames[targetOreName] then
+                                for _, oreObj in ipairs(oresFolder:GetChildren()) do
+                                    if oreObj:IsA("Model") and oreObj.Name == targetOreName and not isOreRespawning(oreObj) then
+                                        local part = oreObj.PrimaryPart or oreObj:FindFirstChildWhichIsA("BasePart")
+                                        if part then
+                                            foundOrePart = part
+                                            break
+                                        end
+                                    end
                                 end
                             end
+                            if foundOrePart then break end
                         end
                     end
-                    
-                    if #freshList > 0 then
-                        local hrp = GetWorldRoot()
-                        if hrp then
-                            table.sort(freshList, function(a, b)
-                                return (a.Position - hrp.Position).Magnitude < (b.Position - hrp.Position).Magnitude
-                            end)
-                        end
-                        local oldTarget = currentTargetPanel
-                        currentTargetPanel = freshList[1]
-                        
-                        if currentTargetPanel ~= oldTarget then
-                            oreLockStartTime = tick()
-                        end
-                        
-                        if currentTargetPanel and currentTargetPanel ~= lastTrackedPart then
-                            lastTrackedPart = currentTargetPanel
-                            oresMined = oresMined + 1
-                        end
-                    else 
-                        currentTargetPanel = nil 
+                end
+                
+                currentTargetPanel = foundOrePart
+                if currentTargetPanel then
+                    if currentTargetPanel ~= lastTrackedPart then
+                        lastTrackedPart = currentTargetPanel
+                        oresMined = oresMined + 1
                     end
                 end
                 
                 if currentTargetPanel and currentTargetPanel.Parent then 
-                    -- Reduced height offset to 1 stud so native touch/mining registers properly without sinking
                     MiningTargetVector = currentTargetPanel.Position + Vector3.new(0, 1, 0)
                 else 
                     MiningTargetVector = nil 
@@ -2952,4 +2952,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Optimized Height & 5S Anti-Stuck Edition)!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Revamped Mob-Style Mining Edition)!")
