@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)1
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -46,9 +46,14 @@ local function isMobRespawning(mobModel)
     return false
 end
 
+-- ROBUST ORE RESPAWN CHECK (SCANS ALL TEXT LABELS IN THE MODEL)
 local function isOreRespawning(oreModel)
-    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
-    if desc and desc.Text:lower():find("respawning") then return true end
+    if not oreModel then return true end
+    for _, desc in ipairs(oreModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
+            return true
+        end
+    end
     return false
 end
 
@@ -2463,7 +2468,7 @@ task.spawn(function()
                 local dwellTime = Env.MiningJumpSpeed or 0.8
                 local keepCurrent = false
                 
-                -- Check if current target is still valid and within dwell time
+                -- Check if current target is still valid, not respawning, and within dwell time
                 if currentTargetPanel and currentTargetPanel.Parent and currentTargetPanel:IsDescendantOf(workspace) then
                     if not isOreRespawning(currentTargetPanel.Parent) then
                         if (now - oreLockStartTime) < dwellTime then
@@ -2473,9 +2478,9 @@ task.spawn(function()
                 end
                 
                 if not keepCurrent then
-                    -- Blacklist the completed/current ore temporarily so we shift to the next available one
+                    -- Blacklist the completed/respawning ore temporarily so we shift to another available one
                     if currentTargetPanel and currentTargetPanel.Parent then
-                        oreCooldowns[currentTargetPanel.Parent] = now + 2.5
+                        oreCooldowns[currentTargetPanel.Parent] = now + 4.0
                     end
                     
                     -- Clear expired cooldowns
@@ -2485,7 +2490,7 @@ task.spawn(function()
                         end
                     end
                     
-                    -- Gather all valid ores matching ANY of the enabled types
+                    -- Gather all valid ores matching ANY of the enabled types and NOT respawning
                     local freshList = {} 
                     local gc = workspace:FindFirstChild("__GAME_CONTENT") 
                     local oresFolder = gc and gc:FindFirstChild("Ores")
@@ -2502,7 +2507,7 @@ task.spawn(function()
                     end
                     
                     if #freshList > 0 then
-                        -- Sort by distance so it intelligently picks the best targets across multiple enabled types
+                        -- Sort by distance so it picks the closest active ore
                         table.sort(freshList, function(a, b) return a.Dist < b.Dist end)
                         
                         currentOreIndex = currentOreIndex + 1 
@@ -2516,7 +2521,7 @@ task.spawn(function()
                             oresMined = oresMined + 1
                         end
                     else 
-                        -- Fallback if everything is on cooldown: clear cooldowns and look for nearest
+                        -- Fallback if everything is on cooldown/respawning: clear cooldowns and look for nearest non-respawning
                         oreCooldowns = {}
                         currentTargetPanel = nil
                     end
