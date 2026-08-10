@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)1
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -2528,7 +2528,19 @@ task.spawn(function()
                 end
                 
                 if currentTargetPanel and currentTargetPanel.Parent then 
-                    MiningTargetVector = currentTargetPanel.Position 
+                    local orePos = currentTargetPanel.Position
+                    if hrp then
+                        local dir = (hrp.Position - orePos)
+                        dir = Vector3.new(dir.X, 0, dir.Z)
+                        if dir.Magnitude > 0.1 then
+                            -- Stand 2.5 studs away from the ore center on the ground to prevent sinking
+                            MiningTargetVector = orePos + (dir.Unit * 2.5)
+                        else
+                            MiningTargetVector = orePos
+                        end
+                    else
+                        MiningTargetVector = orePos
+                    end
                 else 
                     MiningTargetVector = nil 
                 end
