@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 5S ANTI-STUCK & ACTIVE ORE LOCK)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - INSTANT HEALTH PARSING & 5S ANTI-STUCK)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -73,11 +73,22 @@ local function isMobRespawning(mobModel)
     return false
 end
 
-local function isOreRespawning(oreModel)
+-- ENHANCED ORE DEPLETED CHECK (INSTANT 0-HEALTH PARSING + RESPAWN DETECTION)
+local function isOreDepleted(oreModel)
     if not oreModel then return true end
     for _, desc in ipairs(oreModel:GetDescendants()) do
-        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
-            return true
+        if desc:IsA("TextLabel") and desc.Text then
+            local txt = desc.Text:lower():gsub(",", "")
+            if txt:find("respawning") then
+                return true
+            end
+            -- Check for numeric health format like "0/50" or "0 / 15m"
+            if txt:find("/") then
+                local current, max = txt:match("(%d+)%s*/%s*(%d+)")
+                if current and tonumber(current) == 0 then
+                    return true
+                end
+            end
         end
     end
     return false
@@ -2383,7 +2394,7 @@ task.spawn(function()
     end
 end)
 
--- MINING ENGINE (WITH 5S ANTI-STUCK TIMER, INSTANT DROP & ACTIVE-ONLY FILTERING)
+-- MINING ENGINE (WITH INSTANT HEALTH-PARSING & 5S ANTI-STUCK TIMEOUT)
 local oreLockStartTime = 0
 local oreBlacklist = {}
 
@@ -2402,7 +2413,6 @@ task.spawn(function()
 
             if hasAnyEnabled then
                 local now = tick()
-                -- Clean up expired blacklist entries
                 for orePart, expiry in pairs(oreBlacklist) do
                     if now >= expiry or not orePart.Parent then
                         oreBlacklist[orePart] = nil
@@ -2412,9 +2422,9 @@ task.spawn(function()
                 local needsNewTarget = false
                 if not currentTargetPanel or not currentTargetPanel.Parent or not currentTargetPanel:IsDescendantOf(workspace) then 
                     needsNewTarget = true
-                elseif currentTargetPanel.Parent and isOreRespawning(currentTargetPanel.Parent) then 
+                elseif currentTargetPanel.Parent and isOreDepleted(currentTargetPanel.Parent) then 
                     needsNewTarget = true
-                elseif (now - oreLockStartTime) > 5.0 then -- 5 second anti-stuck timeout!
+                elseif (now - oreLockStartTime) > 5.0 then 
                     needsNewTarget = true
                     if currentTargetPanel then
                         oreBlacklist[currentTargetPanel] = now + 5.0
@@ -2427,23 +2437,10 @@ task.spawn(function()
                     local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreDepleted(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part and not oreBlacklist[part] then 
-                                    -- Verify health / depletion status strictly
-                                    local isDepleted = false
-                                    for _, desc in ipairs(obj:GetDescendants()) do
-                                        if desc:IsA("TextLabel") and desc.Text then
-                                            local txt = desc.Text:gsub(",", "")
-                                            if txt:find("^0%s*/") or txt == "0" or txt:lower():find("respawning") then
-                                                isDepleted = true
-                                                break
-                                            end
-                                        end
-                                    end
-                                    if not isDepleted then
-                                        table.insert(freshList, part) 
-                                    end
+                                    table.insert(freshList, part) 
                                 end
                             end
                         end
@@ -2460,7 +2457,7 @@ task.spawn(function()
                         currentTargetPanel = freshList[1]
                         
                         if currentTargetPanel ~= oldTarget then
-                            oreLockStartTime = tick() -- Reset timer for new target
+                            oreLockStartTime = tick()
                         end
                         
                         if currentTargetPanel and currentTargetPanel ~= lastTrackedPart then
@@ -2978,4 +2975,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (5s Anti-Stuck Edition)!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Instant Health-Parsing Edition)!")
