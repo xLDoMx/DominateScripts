@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.100 - FLAT LAYOUT & ALL FEATURES)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.101 - REALM 4 SPACE & STARS + SAFE COLLECTOR)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -113,6 +113,20 @@ Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
 Env.TargetSandLayer = 3
+
+-- REALM 4 CONFIG FLAGS
+Env.AutoSpaceMultiStar = false
+Env.AutoSpaceMoreSpacePoints = false
+Env.AutoSpaceBlackholes = false
+Env.AutoSpaceBoostRadius = false
+
+Env.AutoStarsMoreStars = false
+Env.AutoStarsEvenMoreStars = false
+Env.AutoStarsFasterRespawn = false
+Env.AutoStarsMoreSpacePoints = false
+Env.AutoStarsOof = false
+Env.AutoStarsBoostLuck = false
+Env.AutoCollectStars = false
 
 -- TRIAL CONFIG
 Env.AutoLeaveByTime = true
@@ -1071,7 +1085,7 @@ headerTitle.BackgroundTransparency = 1
 headerTitle.TextColor3 = Color3.fromRGB(216, 180, 254)
 headerTitle.TextSize = 15 
 headerTitle.Font = Enum.Font.GothamBold 
-headerTitle.Text = "Dominate Hub v1.6 (Pro Edition)" 
+headerTitle.Text = "Dominate Hub v1.7 (Pro Edition)" 
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left 
 headerTitle.Parent = mainFrame
 
@@ -1279,6 +1293,11 @@ createToggleRow(upScroll, "Auto Shovel Level Up", "AutoShovelLevelUp")
 createToggleRow(upScroll, "Auto Excavation Rank Up", "AutoExcavationRankUp")
 createToggleRow(upScroll, "Auto Regenerate Sand Layers", "AutoRegenSandLayers")
 createTextBoxRow(upScroll, "Target Sand Layer (1-250)", "TargetSandLayer")
+
+createSectionHeader(upScroll, "Realm 4 Upgrades & Features")
+masterToggleGroup("SpacePoints Upgrades", {"AutoSpaceMultiStar", "AutoSpaceMoreSpacePoints", "AutoSpaceBlackholes", "AutoSpaceBoostRadius"}, upScroll)
+masterToggleGroup("Stars Upgrades", {"AutoStarsMoreStars", "AutoStarsEvenMoreStars", "AutoStarsFasterRespawn", "AutoStarsMoreSpacePoints", "AutoStarsOof", "AutoStarsBoostLuck"}, upScroll)
+createToggleRow(upScroll, "Auto Collect Stars (ClientStars)", "AutoCollectStars")
 
 -- NOOBS PAGE BUILD
 local noobsScroll = makeVerticalScroll(noobsPage)
@@ -1592,7 +1611,7 @@ aboutLbl.Font = Enum.Font.GothamBold
 aboutLbl.TextXAlignment = Enum.TextXAlignment.Left
 aboutLbl.TextYAlignment = Enum.TextYAlignment.Center
 aboutLbl.TextWrapped = true
-aboutLbl.Text = "Dominate Hub v1.6 (Pro Edition)\nDiscord: discord.gg/dominatehub\nKey Status: Active / Unlimited\nHotkey: Press [Insert] to Toggle UI"
+aboutLbl.Text = "Dominate Hub v1.7 (Pro Edition)\nDiscord: discord.gg/dominatehub\nKey Status: Active / Unlimited\nHotkey: Press [Insert] to Toggle UI"
 aboutLbl.Parent = aboutFrame
 
 createSectionHeader(settingsScroll, "General Settings")
@@ -1701,13 +1720,14 @@ local MobTargetVector = nil
 local TrialTargetVector = nil
 local RitualTargetVector = nil
 local SandTargetVector = nil
+local StarTargetVector = nil
 
 local lastGlidingState = false
 RunService.Stepped:Connect(function()
     if not Running then return end
     local char = player.Character
     if char then
-        local isGliding = (MasterTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or Env.AutoRollSunfireRune or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
+        local isGliding = (MasterTargetVector ~= nil or MobTargetVector ~= nil or MiningTargetVector ~= nil or RitualTargetVector ~= nil or SandTargetVector ~= nil or StarTargetVector ~= nil or Env.AutoRollSunfireRune or Env.AutoRollDunesRune or Env.AutoRollFootballRune or Env.AutoRollSnowyRune or Env.AutoRollCosmicRune or Env.AutoRollAdvancedRune or Env.AutoRollSuperRune or Env.AutoRollBasicRune)
         
         if isGliding ~= lastGlidingState then
             lastGlidingState = isGliding
@@ -1732,6 +1752,7 @@ task.spawn(function()
             elseif MobTargetVector then act = MobTargetVector
             elseif MiningTargetVector then act = MiningTargetVector
             elseif SandTargetVector then act = SandTargetVector
+            elseif StarTargetVector then act = StarTargetVector
             elseif Env.AutoRollSunfireRune then act = Dest.Sunfire
             elseif Env.AutoRollDunesRune then act = Dest.Dunes
             elseif Env.AutoRollFootballRune then act = Dest.Football 
@@ -1743,7 +1764,7 @@ task.spawn(function()
             
             if act then
                 local targetCF = CFrame.new(act)
-                if trialIsRunning or MobTargetVector then
+                if trialIsRunning or MobTargetVector or StarTargetVector then
                     hrp.Anchored = false
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
@@ -1763,6 +1784,44 @@ task.spawn(function()
             else
                 hrp.Anchored = false
             end
+        end
+    end
+end)
+
+-- SAFE STAR AUTO-COLLECTION LOOP (THROTTLED)
+task.spawn(function()
+    while Running do
+        task.wait(0.25)
+        if Running and Env.AutoCollectStars and not trialIsRunning and not trialExiting and not ritualIsActive then
+            pcall(function()
+                local clientStars = workspace:FindFirstChild("ClientStars")
+                if clientStars then
+                    local foundStarPart = nil
+                    local shortestDist = math.huge
+                    local hrp = GetWorldRoot()
+                    
+                    for _, starModel in ipairs(clientStars:GetChildren()) do
+                        local hitbox = starModel:FindFirstChild("Hitbox") or starModel:FindFirstChild("StarPart") or starModel:FindFirstChildWhichIsA("BasePart")
+                        if hitbox and hrp then
+                            local dist = (hitbox.Position - hrp.Position).Magnitude
+                            if dist < shortestDist then
+                                shortestDist = dist
+                                foundStarPart = hitbox
+                            end
+                        end
+                    end
+                    
+                    if foundStarPart then
+                        StarTargetVector = foundStarPart.Position
+                    else
+                        StarTargetVector = nil
+                    end
+                else
+                    StarTargetVector = nil
+                end
+            end)
+        else
+            StarTargetVector = nil
         end
     end
 end)
@@ -1922,7 +1981,6 @@ local function restoreToggles()
     
     for flagName, state in pairs(cachedStates) do
         Env[flagName] = state
-        -- Programmatically update UI toggle states and visual elements
         if Env._UIElements and Env._UIElements[flagName] then
             local ui = Env._UIElements[flagName]
             local active = state
@@ -1938,14 +1996,13 @@ local function restoreToggles()
     trialIsRunning = false
     trialExiting = false
     
-    -- Post-trial kickstart: Clear stale targets to force immediate scanner pickup
     currentTargetPanel = nil
     currentTargetMob = nil
     MiningTargetVector = nil
     MobTargetVector = nil
 end
 
--- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE (PRE-PAUSE & RITUAL CLEANUP AT :58:50 / :28:50)
+-- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
@@ -1963,7 +2020,6 @@ task.spawn(function()
             local sec = timeTable.sec
             local hour = timeTable.hour
             
-            -- Trigger 10 seconds early at 28:50 or 58:50
             local isTriggerTime = ((min == 28 or min == 58) and sec >= 50) or (min == 29 or min == 59)
             
             if isTriggerTime then
@@ -1974,10 +2030,8 @@ task.spawn(function()
                     if Env.TrialDiagnostics then print("[DominateHub Diag] Step 1: Pre-pause, Ritual Kill & Staging hit at " .. min .. ":" .. sec) end
                     showToast("Trials: Stopping rituals & preparing for trial...")
                     
-                    -- 1. TAKE SNAPSHOT *BEFORE* MUTING RITUAL/AUTO FLAGS
                     cacheAndPauseToggles()
                     
-                    -- 2. FORCE STOP RITUALS TO PREVENT CONFLICTS
                     Env.AutoStartRitual = false
                     ritualIsActive = false
                     ritualSuppressMobs = false
@@ -1988,8 +2042,9 @@ task.spawn(function()
                     MobTargetVector = nil
                     RitualTargetVector = nil
                     SandTargetVector = nil
+                    StarTargetVector = nil
                     
-                    task.wait(1.0) -- Buffer delay to ensure ritual state fully clears
+                    task.wait(1.0)
                     
                     trialIsRunning = true
                     
@@ -2006,8 +2061,6 @@ task.spawn(function()
                         hrpStaging.AssemblyAngularVelocity = Vector3.zero
                     end
                     
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 2: Teleported to exact trial pad. Waiting for arena entry (Z > 13000)...") end
-                    
                     local entryWaitStart = tick()
                     local enteredArena = false
                     while Running and trialIsRunning and not trialExiting and (tick() - entryWaitStart < 45) do
@@ -2020,9 +2073,7 @@ task.spawn(function()
                     end
                     
                     if enteredArena then
-                        if Env.TrialDiagnostics then print("[DominateHub Diag] Step 3: Entered arena successfully! Starting time limit timer.") end
                         showToast("Trials: Entered arena! Timer started.")
-                        
                         local trialStartTick = tick()
                         local limitMins = tonumber(Env.TrialTimeLimit) or 15
                         local limitSecs = limitMins * 60
@@ -2032,26 +2083,19 @@ task.spawn(function()
                             local checkHrp = GetWorldRoot()
                             
                             if (tick() - trialStartTick) >= limitSecs then
-                                if Env.TrialDiagnostics then print("[DominateHub Diag] Step 4: Time limit reached (" .. limitMins .. "m). Firing LeaveTrial...") end
                                 showToast("Trials: Time limit reached (" .. limitMins .. "m). Leaving trial...")
-                                
                                 trialExitCooldown = tick()
-                                
-                                -- 1. ENGAGE PRE-EXIT LOCKOUT TO SILENCE LOOPS BEFORE LEAVING
                                 trialExiting = true
                                 trialIsRunning = false
                                 MobTargetVector = nil
                                 currentTargetMob = nil
                                 lastTrackedMobPart = nil
                                 
-                                -- 2. 2-SECOND STABILIZATION DELAY BEFORE FIRING REMOTE
                                 task.wait(2.0)
-                                
                                 pcall(function()
                                     local args = { [1] = "LeaveTrial" }
                                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                                 end)
-                                
                                 break
                             end
                             
@@ -2060,13 +2104,11 @@ task.spawn(function()
                             end
                         end
                     else
-                        if Env.TrialDiagnostics then print("[DominateHub Diag] Warning: Arena entry timeout (did not step through gate in time).") end
                         showToast("Trials: Entry timeout. Resetting state.")
                     end
                     
-                    -- DETECT EXACT DROP COORD & RELOCATE TO FARM SPOT, THEN RESTORE TOGGLES
                     showToast("Trials: Exited trial. Relocating to farm spot...")
-                    task.wait(1.5) -- Allow server to place character at drop-out point
+                    task.wait(1.5)
                     
                     local hrpDrop = GetWorldRoot()
                     if hrpDrop then
@@ -2083,7 +2125,6 @@ task.spawn(function()
                     trialExitCooldown = tick()
                     
                     task.wait(0.5)
-                    if Env.TrialDiagnostics then print("[DominateHub Diag] Step 5: Relocated and stable. Restoring background toggles.") end
                     restoreToggles()
                 end
             end
@@ -2132,7 +2173,7 @@ end)
 task.spawn(function()
     while Running do
         task.wait(0.01)
-        if Running and not trialExiting and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil then
+        if Running and not trialExiting and not ritualIsActive and not ritualSuppressMobs and RitualTargetVector == nil and SandTargetVector == nil and StarTargetVector == nil then
             local enabledMobNames = {} 
             local hasAnyMobEnabled = false
 
@@ -2156,7 +2197,6 @@ task.spawn(function()
 
             if hasAnyMobEnabled then
                 local foundMobPart = nil
-                
                 local currentValid = false
                 if currentTargetMob and currentTargetMob.Parent then
                     local mobModel = currentTargetMob.Parent
@@ -2192,7 +2232,6 @@ task.spawn(function()
                                         if mobObj:IsA("Model") and not isMobRespawning(mobObj) then
                                             local hum = mobObj:FindFirstChildOfClass("Humanoid")
                                             local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
-                                            
                                             if part and (not hum or hum.Health > 0) then
                                                 local isActuallyDead = false
                                                 for _, desc in ipairs(mobObj:GetDescendants()) do
@@ -2204,7 +2243,6 @@ task.spawn(function()
                                                         end
                                                     end
                                                 end
-                                                
                                                 if not isActuallyDead and hrp then
                                                     local dist = (part.Position - hrp.Position).Magnitude
                                                     if dist < shortestDist then
@@ -2558,7 +2596,17 @@ local PrimaryUpgradeQueue = {
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","AlotSand"}},
     {F="AutoSandUpgrades",T="UpgradeUpgradeMax",A={"Sand","MoreOof"}},
     {F="AutoShovelLevelUp",T="ShovelLevelUp",A={}},
-    {F="AutoExcavationRankUp",T="ExcavationRankUp",A={}}
+    {F="AutoExcavationRankUp",T="ExcavationRankUp",A={}},
+    {F="AutoSpaceMultiStar",T="UpgradeUpgradeMax",A={"SpacePoints","MultiStar"}},
+    {F="AutoSpaceMoreSpacePoints",T="UpgradeUpgradeMax",A={"SpacePoints","MoreSpacePoints"}},
+    {F="AutoSpaceBlackholes",T="UpgradeUpgradeMax",A={"SpacePoints","Blackholes"}},
+    {F="AutoSpaceBoostRadius",T="UpgradeUpgradeMax",A={"SpacePoints","BoostStarsCollectRadius"}},
+    {F="AutoStarsMoreStars",T="UpgradeUpgradeMax",A={"Stars","MoreStars"}},
+    {F="AutoStarsEvenMoreStars",T="UpgradeUpgradeMax",A={"Stars","EvenMoreStars"}},
+    {F="AutoStarsFasterRespawn",T="UpgradeUpgradeMax",A={"Stars","FasterRespawn"}},
+    {F="AutoStarsMoreSpacePoints",T="UpgradeUpgradeMax",A={"Stars","MoreSpacePoints"}},
+    {F="AutoStarsOof",T="UpgradeUpgradeMax",A={"Stars","Oof"}},
+    {F="AutoStarsBoostLuck",T="UpgradeUpgradeMax",A={"Stars","BoostStarsMutationLuck"}}
 }
 
 task.spawn(function()
@@ -2930,4 +2978,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.100 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.101 Stable Loaded Successfully!")
