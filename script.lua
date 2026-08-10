@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - CLOSEST-FIRST ACTIVE ORE ENGINE)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - LOCKED COMPLETION MINING ENGINE)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -31,36 +31,9 @@ local vu = VirtualUser
 local UI = {}
 Env._UIElements = {}
 
+-- FORWARD HELPER FUNCTIONS
 local function GetWorldRoot() 
     return player.Character and player.Character:FindFirstChild("HumanoidRootPart") 
-end
-
-local function jitterWait(baseSeconds)
-    local jitter = math.random(1, 8) / 100
-    task.wait(baseSeconds + jitter)
-end
-
-local function smoothTeleport(targetVector, duration)
-    local hrp = GetWorldRoot()
-    if not hrp then return end
-    duration = duration or 0.4
-    
-    local startCF = hrp.CFrame
-    local targetCF = CFrame.new(targetVector)
-    local startTime = tick()
-    
-    hrp.Anchored = true
-    while tick() - startTime < duration do
-        if not Running then break end
-        local alpha = math.clamp((tick() - startTime) / duration, 0, 1)
-        alpha = alpha * (2 - alpha)
-        hrp.CFrame = startCF:Lerp(targetCF, alpha)
-        RunService.RenderStepped:Wait()
-    end
-    hrp.CFrame = targetCF
-    hrp.Anchored = false
-    hrp.AssemblyLinearVelocity = Vector3.zero
-    hrp.AssemblyAngularVelocity = Vector3.zero
 end
 
 local function isMobRespawning(mobModel)
@@ -73,6 +46,7 @@ local function isMobRespawning(mobModel)
     return false
 end
 
+-- ROBUST ORE RESPAWNING / COMPLETION CHECK
 local function isOreRespawning(oreModel)
     if not oreModel then return true end
     for _, desc in ipairs(oreModel:GetDescendants()) do
@@ -86,6 +60,7 @@ local function isOreRespawning(oreModel)
     return false
 end
 
+-- DESTINATION VECTORS DECLARED EARLY TO PREVENT NIL-INDEX ERRORS
 local Dest = {
     Basic = Vector3.new(1114.753, 10.310, -644.151), 
     Super = Vector3.new(1082.093, 16.661, -782.021), 
@@ -111,6 +86,7 @@ local Dest = {
     TrialDropOut = Vector3.new(879.040, 11.531, 13443.085)
 }
 
+-- STATS TRACKING VARIABLES FOR HUD & EFFICIENCY TRACKER
 local oresMined = 0
 local mobsKilled = 0
 local sessionStartTime = tick()
@@ -120,15 +96,21 @@ local currentTargetPanel = nil
 local currentTargetMob = nil
 local gemExchangeCountdown = 60
 
+-- RITUAL HUD TIMER VARIABLES
 local ritualTimer = 0
 local ritualInCooldown = false
 
+-- RUNTIME STATE LOCKS
 local trialIsRunning = false
 local trialExiting = false
 local ritualIsActive = false
 local ritualSuppressMobs = false
 local cachedStates = nil
 
+-- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING
+local deadMobs = {}
+
+-- RITUAL PRE-SELECTED MOBS & SAND CONFIG
 Env.RitualSelectedMobs = {
     ["Dark Knight"] = true,
     ["Dark Commander"] = true
@@ -140,6 +122,7 @@ Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
 Env.TargetSandLayer = 3
 
+-- REALM 4 CONFIG FLAGS
 Env.AutoSpaceMultiStar = false
 Env.AutoSpaceMoreSpacePoints = false
 Env.AutoSpaceBlackholes = false
@@ -153,10 +136,12 @@ Env.AutoStarsOof = false
 Env.AutoStarsBoostLuck = false
 Env.AutoCollectStars = false
 
+-- TRIAL CONFIG
 Env.AutoLeaveByTime = true
 Env.TrialTimeLimit = 15
 Env.TrialDiagnostics = false
 
+-- ENCHANTS AUTOMATION CONFIG
 Env.AutoRerollEnchants = false
 Env.EnchantStopAtAlmighty = false
 Env.SelectedEnchantNoob = "Farmer"
@@ -164,11 +149,13 @@ Env.EnchantNoobsList = {
     "Starter", "Cooker", "Farmer", "Archer", "Soldier", "Fisherman", "Knight", "Explorer", "Magician"
 }
 
+-- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
 
+-- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
     while Running do
-        jitterWait(1.0)
+        task.wait(1.0)
         if Env.AutoGemExchange or Env.AutoGemShopTeleport then
             gemExchangeCountdown = gemExchangeCountdown - 1
             if gemExchangeCountdown < 0 then
@@ -180,6 +167,7 @@ task.spawn(function()
     end
 end)
 
+-- ADD SUBTLE FROSTED BLUR EFFECT TO LIGHTING
 pcall(function()
     local blur = Instance.new("BlurEffect")
     blur.Name = "DominateHubBlur"
@@ -187,6 +175,7 @@ pcall(function()
     blur.Parent = Lighting
 end)
 
+-- TOAST NOTIFICATION HELPER
 local function showToast(msg)
     task.spawn(function()
         local toast = Instance.new("Frame")
@@ -227,8 +216,11 @@ end
 Env.AntiAFK = true
 Env.AutoPrestige = false
 Env.CPUSaverMode = false
+
+-- SAFE ZONE VECTOR FOR COMBAT BREAK
 Env.SafeZoneVector = Vector3.new(919.1552, 4.8658, 7905.8755)
 
+-- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
 Env.AutoUpgradeStarter = false
 Env.AutoUpgradeCooker = false
 Env.AutoUpgradeFarmer = false
@@ -258,6 +250,7 @@ Env.AutoBlazeMoreOofs = false
 Env.AutoBlazeMoreBulk = false
 Env.AutoBlazeConvert = false
 
+-- SOULS & RITUAL FLAGS
 Env.AutoSoulsMoreSouls = false
 Env.AutoSoulsLuckierSwords = false
 Env.AutoSoulsMoreOof = false
@@ -265,6 +258,7 @@ Env.AutoSoulsMoreBones = false
 Env.AutoSoulsRuneBulk = false
 Env.AutoStartRitual = false
 
+-- MEAT / BONES UPGRADE FLAGS
 Env.AutoMeatMoreMeat = false
 Env.AutoMeatStrongerSwords = false
 Env.AutoMeatMoreOof = false
@@ -277,6 +271,7 @@ Env.AutoBonesBiggerMeatDeposit = false
 Env.AutoBonesFasterMeatConversion = false
 Env.AutoBonesEvenMoreBones = false
 
+-- TRIALS FLAGS
 Env.AutoEasyTrial = false
 Env.AutoMediumTrial = false
 Env.AutoHardTrial = false
@@ -338,6 +333,7 @@ Env.AutoMineVoidsteel = false
 Env.AutoMineCelestium = false
 Env.MiningJumpSpeed = 0.8 
 
+-- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST)
 Env.AutoMobGoblin = false
 Env.AutoMobSkeleton = false
 Env.AutoMobOrc = false
@@ -351,6 +347,7 @@ Env.AutoMobSamuraiMaster = false
 Env.AutoMobDarkKnight = false
 Env.AutoMobDarkCommander = false
 
+-- COMBAT UPGRADE BREAK FLAG
 Env.AutoCombatBreak = false
 
 Env.AutoUpgradeHacker1 = false
@@ -416,6 +413,7 @@ Env.AutoOpenAncientCapsule = false
 Env.FPSBoostMode = false
 Env.ShowStatsHUD = true
 
+-- TOGGLE & UI HELPERS
 local function createToggleRow(parent, txt, vKey)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -10, 0, 42)
@@ -467,6 +465,7 @@ local function createToggleRow(parent, txt, vKey)
     thumbCorner.CornerRadius = UDim.new(1, 0)
     thumbCorner.Parent = switchThumb
 
+    -- Register UI Elements for programmatic synchronization
     Env._UIElements[vKey] = {Track = switchTrack, Stroke = trackStroke, Thumb = switchThumb}
 
     row.InputBegan:Connect(function(input)
@@ -880,12 +879,14 @@ player.Idled:Connect(function()
     end
 end)
 
+-- UI MASTER ALLOCATION
 local parentTarget = (gethui and gethui()) or player:WaitForChild("PlayerGui")
 local sg = Instance.new("ScreenGui")
 sg.Name = "DominateHubMirror"
 sg.ResetOnSpawn = false
 sg.Parent = parentTarget
 
+-- FPS & PING TRACKING UTILS
 local fps = 60
 local frameCount = 0
 local lastFpsUpdate = tick()
@@ -898,6 +899,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- INSERT KEY HOTKEY TO TOGGLE UI VISIBILITY
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if input.KeyCode == Enum.KeyCode.Insert then
         local isVisible = mainFrame.Visible
@@ -906,6 +908,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
+-- FORWARD DECLARATIONS FOR HUD CHECKS
 local OrePriorityList = {
     {F = "AutoMineCelestium", N = "Celestium"}, {F = "AutoMineVoidsteel", N = "Voidsteel"}, {F = "AutoMineRuby", N = "Ruby"},
     {F = "AutoMineAetherite", N = "Aetherite"}, {F = "AutoMinePalladium", N = "Palladium"}, {F = "AutoMineUranium", N = "Uranium"},
@@ -929,6 +932,7 @@ local MobPriorityList = {
     {F = "AutoMobDarkCommander", N = "Dark Commander"}
 }
 
+-- PERFORMANCE HUD OVERLAY (TOP LEFT WITH EFFICIENCY TRACKER)
 local statsHud = Instance.new("Frame")
 statsHud.Size = UDim2.new(0, 210, 0, 60)
 statsHud.Position = UDim2.new(0, 15, 0, 15) 
@@ -971,7 +975,7 @@ hudText.Parent = statsHud
 
 task.spawn(function()
     while Running do
-        jitterWait(1.0)
+        task.wait(1.0)
         if Env.ShowStatsHUD then
             statsHud.Visible = true
             local elapsed = math.floor(tick() - sessionStartTime)
@@ -1045,6 +1049,7 @@ task.spawn(function()
     end
 end)
 
+-- MAIN WINDOW CONTAINER
 local mainFrame = Instance.new("Frame") 
 mainFrame.Size = UDim2.new(0, 620, 0, 410)
 mainFrame.Position = UDim2.new(0.5, -310, 0.5, -205)
@@ -1116,7 +1121,7 @@ headerTelemetry.Parent = mainFrame
 
 task.spawn(function()
     while Running do
-        jitterWait(1.0)
+        task.wait(1.0)
         pcall(function()
             local pingVal = math.floor((player:GetNetworkPing() or 0) * 1000)
             headerTelemetry.Text = string.format("FPS: %d | %dms", fps, pingVal)
@@ -1155,6 +1160,7 @@ minBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- PAGES CREATED FIRST TO FIX SCOPING/VISIBILITY REFERENCE
 local pageArea = Instance.new("Frame")
 pageArea.Size = UDim2.new(1, -165, 1, -55)
 pageArea.Position = UDim2.new(0, 155, 0, 50)
@@ -1173,6 +1179,7 @@ end
 local upgradesPage, noobsPage, minesPage, mobsPage, trialsPage, footballPage, miscPage, settingsPage = makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage(), makePage()
 upgradesPage.Visible = true
 
+-- SIDEBAR
 local sidebarFrame = Instance.new("ScrollingFrame")
 sidebarFrame.Size = UDim2.new(0, 135, 1, -55)
 sidebarFrame.Position = UDim2.new(0, 12, 0, 50)
@@ -1255,6 +1262,7 @@ local function makeVerticalScroll(parent)
     return s 
 end
 
+-- UPGRADES PAGE BUILD (FLAT LAYOUT)
 local upScroll = makeVerticalScroll(upgradesPage)
 upScroll.Visible = true
 createSectionHeader(upScroll, "Realm 1 Upgrades")
@@ -1299,6 +1307,7 @@ masterToggleGroup("SpacePoints Upgrades", {"AutoSpaceMultiStar", "AutoSpaceMoreS
 masterToggleGroup("Stars Upgrades", {"AutoStarsMoreStars", "AutoStarsEvenMoreStars", "AutoStarsFasterRespawn", "AutoStarsMoreSpacePoints", "AutoStarsOof", "AutoStarsBoostLuck"}, upScroll)
 createToggleRow(upScroll, "Auto Collect Stars (ClientStars)", "AutoCollectStars")
 
+-- NOOBS PAGE BUILD
 local noobsScroll = makeVerticalScroll(noobsPage)
 createSectionHeader(noobsScroll, "Realm 1 Noobs")
 createToggleRow(noobsScroll, "Starter Auto Upgrade", "AutoUpgradeStarter")
@@ -1319,6 +1328,7 @@ createToggleRow(noobsScroll, "Auto Upgrade Merchant", "AutoUpgradeMerchantNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Mummy", "AutoUpgradeMummyNoob")
 createToggleRow(noobsScroll, "Auto Upgrade Pharaoh", "AutoUpgradePharaoh")
 
+-- TRIALS PAGE BUILD
 local trialsScroll = makeVerticalScroll(trialsPage)
 createSectionHeader(trialsScroll, "Realm 3 Trials Automation (Scheduled :29 / :59)")
 createToggleRow(trialsScroll, "Auto Easy Trial", "AutoEasyTrial")
@@ -1335,8 +1345,8 @@ createButtonRow(trialsScroll, "Test Trial Staging Teleport", function()
     elseif Env.AutoMediumTrial then testPad = Dest.MediumTrial
     elseif Env.AutoHardTrial then testPad = Dest.HardTrial end
 
-    showToast("Trials: Smoothly moving to trial pad...")
-    print("[DominateHub Diag] Manual Staging Smooth Teleport Triggered. Pad:", tostring(testPad))
+    showToast("Trials: Teleporting to trial pad...")
+    print("[DominateHub Diag] Manual Staging Teleport Triggered. Pad:", tostring(testPad))
     
     MasterTargetVector = nil
     MiningTargetVector = nil
@@ -1344,10 +1354,19 @@ createButtonRow(trialsScroll, "Test Trial Staging Teleport", function()
     RitualTargetVector = nil
     SandTargetVector = nil
     
-    smoothTeleport(testPad, 0.6)
-    print("[DominateHub Diag] Reached trial pad successfully.")
+    local hrp = GetWorldRoot()
+    if hrp then
+        hrp.Anchored = false
+        hrp.CFrame = CFrame.new(testPad)
+        hrp.AssemblyLinearVelocity = Vector3.zero
+        hrp.AssemblyAngularVelocity = Vector3.zero
+        print("[DominateHub Diag] Teleported to trial pad successfully.")
+    else
+        print("[DominateHub Diag] ERROR: HumanoidRootPart is nil during manual test!")
+    end
 end)
 
+-- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
 createSectionHeader(minesScroll, "Mining Configuration")
 local bestTierActive = false
@@ -1474,6 +1493,7 @@ createToggleRow(minesScroll, "Aetherite", "AutoMineAetherite")
 createToggleRow(minesScroll, "Celestium", "AutoMineCelestium")
 createToggleRow(minesScroll, "Voidsteel", "AutoMineVoidsteel")
 
+-- MOBS PAGE BUILD
 local mobsScroll = makeVerticalScroll(mobsPage)
 createSectionHeader(mobsScroll, "Realm 3 Mobs (Worst to Best)")
 local bestMobTierActive = false
@@ -1527,6 +1547,7 @@ createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
 createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
 createRitualMobDropdown(mobsScroll, "Ritual Target Mobs", MobPriorityList)
 
+-- FOOTBALL PAGE BUILD
 local footballScroll = makeVerticalScroll(footballPage)
 createSectionHeader(footballScroll, "Football Noobs")
 createToggleRow(footballScroll, "Goalkeeper", "AutoUpgradeGoalkeeper")
@@ -1549,6 +1570,7 @@ createToggleRow(footballScroll, "Goals Rune Luck", "AutoGoalsRuneLuck")
 createToggleRow(footballScroll, "Auto Football Tree", "AutoFootballTree")
 createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
+-- MISC PAGE BUILD
 local miscScroll = makeVerticalScroll(miscPage)
 createSectionHeader(miscScroll, "Enchants Automation Settings")
 createToggleRow(miscScroll, "Auto Reroll Enchants", "AutoRerollEnchants")
@@ -1571,8 +1593,10 @@ createToggleRow(miscScroll, "Hatch Football Capsule", "AutoOpenFootballCapsule")
 createToggleRow(miscScroll, "Hatch Super Capsule", "AutoOpenSuperCapsule")
 createToggleRow(miscScroll, "Hatch Ancient Capsule", "AutoOpenAncientCapsule")
 
+-- SETTINGS PAGE BUILD
 local settingsScroll = makeVerticalScroll(settingsPage)
 
+-- ABOUT & LICENSE AT TOP
 createSectionHeader(settingsScroll, "About & License")
 local aboutFrame = Instance.new("Frame")
 aboutFrame.Size = UDim2.new(1, -10, 0, 95)
@@ -1697,6 +1721,7 @@ tabFootball.MouseButton1Click:Connect(function() mainRoute(footballPage, tabFoot
 tabMisc.MouseButton1Click:Connect(function() mainRoute(miscPage, tabMisc) end)
 tabSettings.MouseButton1Click:Connect(function() mainRoute(settingsPage, tabSettings) end)
 
+-- LOCOMOTION & AUTOMATION ENGINES
 local MasterTargetVector = nil  
 local MiningTargetVector = nil
 local MobTargetVector = nil
@@ -1723,6 +1748,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
+-- UNIFIED SMOOTH GLIDE MOVEMENT LOOP (PREVENTS SPINNING & PHYSICS GLITCHES)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1752,6 +1778,7 @@ task.spawn(function()
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 elseif StarTargetVector then
+                    -- SMOOTH SWEEP GLIDE FOR STARS (NO SPINNING)
                     if (hrp.Position - act).Magnitude > 2.0 then
                         hrp.Anchored = false
                         hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.4)
@@ -1779,10 +1806,11 @@ task.spawn(function()
     end
 end)
 
+-- SMOOTH SWEEP STAR COLLECTION LOOP WITH BLACKLISTING & COOLDOWN
 local starCooldowns = {}
 task.spawn(function()
     while Running do
-        jitterWait(0.1)
+        task.wait(0.1)
         if Running and Env.AutoCollectStars and not trialIsRunning and not trialExiting and not ritualIsActive then
             pcall(function()
                 local clientStars = workspace:FindFirstChild("ClientStars")
@@ -1792,6 +1820,7 @@ task.spawn(function()
                     local hrp = GetWorldRoot()
                     local now = tick()
                     
+                    -- Clear expired cooldowns
                     for starModel, expiry in pairs(starCooldowns) do
                         if now >= expiry or not starModel.Parent then
                             starCooldowns[starModel] = nil
@@ -1806,6 +1835,7 @@ task.spawn(function()
                                 if dist < shortestDist then
                                     shortestDist = dist
                                     foundStarPart = hitbox
+                                    -- Blacklist this star for 3 seconds so we sweep past it to the next one
                                     starCooldowns[starModel] = now + 3.0
                                 end
                             end
@@ -1827,9 +1857,10 @@ task.spawn(function()
     end
 end)
 
+-- ANCIENT BOSS SPAWN & AUTO-NAVIGATE LOOP
 task.spawn(function()
     while Running do
-        jitterWait(2.0)
+        task.wait(2.0)
         if Running and Env.AutoAncientBossFarm and not trialIsRunning and not trialExiting and not ritualIsActive then
             pcall(function()
                 local bossExists = false
@@ -1845,32 +1876,36 @@ task.spawn(function()
                 
                 if not bossExists then
                     MasterTargetVector = Dest.AncientBossSpawn
-                    jitterWait(1.5)
+                    task.wait(1.5)
                     
                     local args = {
                         [1] = "SpawnAncientMob",
                         [2] = "Supreme Shadow Lord"
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                    jitterWait(1.5)
+                    task.wait(1.5)
                     MasterTargetVector = nil
-                    jitterWait(3.0)
+                    task.wait(3.0)
                 end
             end)
         end
     end
 end)
 
+-- RITUAL LOOP
 task.spawn(function()
     while Running do
-        jitterWait(1.0)
+        task.wait(1.0)
         if Running and Env.AutoStartRitual and not trialIsRunning and not trialExiting then
             local hrp = GetWorldRoot()
             if hrp then
-                smoothTeleport(Dest.RitualChamber, 0.4)
+                hrp.Anchored = false
+                hrp.CFrame = CFrame.new(Dest.RitualChamber)
+                hrp.AssemblyLinearVelocity = Vector3.zero
+                hrp.AssemblyAngularVelocity = Vector3.zero
             end
-            showToast("Ritual Chamber: Smoothly moved to chamber!")
-            jitterWait(2.0)
+            showToast("Ritual Chamber: Teleported to chamber!")
+            task.wait(2.0)
             
             ritualTimer = 180
             ritualInCooldown = false
@@ -1884,7 +1919,7 @@ task.spawn(function()
                     local args = { [1] = "StartRitual" }
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                 end)
-                jitterWait(1.0)
+                task.wait(1.0)
                 ritualTimer = math.max(0, ritualTimer - 1)
             end
             
@@ -1895,7 +1930,7 @@ task.spawn(function()
             MobTargetVector = nil
             
             while ritualTimer > 0 and Running and Env.AutoStartRitual and not trialIsRunning and not trialExiting do
-                jitterWait(1.0)
+                task.wait(1.0)
                 ritualTimer = ritualTimer - 1
                 ritualInCooldown = ritualTimer <= 60
             end
@@ -1911,9 +1946,10 @@ task.spawn(function()
     end
 end)
 
+-- ENCHANTS AUTOMATION & PROMPT HANDLER LOOP
 task.spawn(function()
     while Running do
-        jitterWait(0.35)
+        task.wait(0.35)
         if Running and Env.AutoRerollEnchants then
             pcall(function()
                 local pGui = player:FindFirstChild("PlayerGui")
@@ -1951,6 +1987,7 @@ task.spawn(function()
     end
 end)
 
+-- DYNAMIC ENV SNAPSHOT & SAFETY RELEASE FUNCTIONS
 local function cacheAndPauseToggles()
     if cachedStates then return end
     cachedStates = {}
@@ -1997,12 +2034,13 @@ local function restoreToggles()
     StarTargetVector = nil
 end
 
+-- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE
 local lastTrialTriggeredSlot = ""
 local trialExitCooldown = 0
 
 task.spawn(function()
     while Running do
-        jitterWait(0.2)
+        task.wait(0.2)
         local hrp = GetWorldRoot()
         local inLobby = hrp and (hrp.Position - Dest.TrialDropOut).Magnitude > 50 or true
         
@@ -2038,7 +2076,7 @@ task.spawn(function()
                     SandTargetVector = nil
                     StarTargetVector = nil
                     
-                    jitterWait(1.0)
+                    task.wait(1.0)
                     
                     trialIsRunning = true
                     
@@ -2047,12 +2085,18 @@ task.spawn(function()
                     elseif Env.AutoMediumTrial then targetPad = Dest.MediumTrial
                     elseif Env.AutoHardTrial then targetPad = Dest.HardTrial end
                     
-                    smoothTeleport(targetPad, 0.5)
+                    local hrpStaging = GetWorldRoot()
+                    if hrpStaging then
+                        hrpStaging.Anchored = false
+                        hrpStaging.CFrame = CFrame.new(targetPad)
+                        hrpStaging.AssemblyLinearVelocity = Vector3.zero
+                        hrpStaging.AssemblyAngularVelocity = Vector3.zero
+                    end
                     
                     local entryWaitStart = tick()
                     local enteredArena = false
                     while Running and trialIsRunning and not trialExiting and (tick() - entryWaitStart < 45) do
-                        jitterWait(0.5)
+                        task.wait(0.5)
                         local checkHrp = GetWorldRoot()
                         if checkHrp and checkHrp.Position.Z > 13000 then
                             enteredArena = true
@@ -2067,7 +2111,7 @@ task.spawn(function()
                         local limitSecs = limitMins * 60
                         
                         while Running and trialIsRunning and not trialExiting do
-                            jitterWait(1.0)
+                            task.wait(1.0)
                             local checkHrp = GetWorldRoot()
                             
                             if (tick() - trialStartTick) >= limitSecs then
@@ -2079,7 +2123,7 @@ task.spawn(function()
                                 currentTargetMob = nil
                                 lastTrackedMobPart = nil
                                 
-                                jitterWait(2.0)
+                                task.wait(2.0)
                                 pcall(function()
                                     local args = { [1] = "LeaveTrial" }
                                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
@@ -2096,9 +2140,15 @@ task.spawn(function()
                     end
                     
                     showToast("Trials: Exited trial. Relocating to farm spot...")
-                    jitterWait(1.5)
+                    task.wait(1.5)
                     
-                    smoothTeleport(Dest.PostTrialLanding, 0.5)
+                    local hrpDrop = GetWorldRoot()
+                    if hrpDrop then
+                        hrpDrop.Anchored = false
+                        hrpDrop.CFrame = CFrame.new(Dest.PostTrialLanding)
+                        hrpDrop.AssemblyLinearVelocity = Vector3.zero
+                        hrpDrop.AssemblyAngularVelocity = Vector3.zero
+                    end
                     
                     trialIsRunning = false
                     MobTargetVector = nil
@@ -2106,7 +2156,7 @@ task.spawn(function()
                     lastTrackedMobPart = nil
                     trialExitCooldown = tick()
                     
-                    jitterWait(0.5)
+                    task.wait(0.5)
                     restoreToggles()
                 end
             end
@@ -2114,9 +2164,10 @@ task.spawn(function()
     end
 end)
 
+-- COMBAT SAFE SPOT BREAK
 task.spawn(function()
     while Running do
-        jitterWait(40.0)
+        task.wait(40.0)
         if Running and Env.AutoCombatBreak and not trialIsRunning and not trialExiting and not ritualIsActive then
             local activeMobStates = {}
             local anyActive = false
@@ -2133,7 +2184,7 @@ task.spawn(function()
                 currentTargetMob = nil
                 MasterTargetVector = Vector3.new(919.1552, 4.8658, 7905.8755)
                 showToast("Safe Spot Break...")
-                jitterWait(0.5)
+                task.wait(0.5)
                 MasterTargetVector = nil
                 
                 pcall(function()
@@ -2141,7 +2192,7 @@ task.spawn(function()
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                 end)
                 
-                jitterWait(1.5)
+                task.wait(1.5)
                 for flag, state in pairs(activeMobStates) do
                     Env[flag] = state
                 end
@@ -2150,6 +2201,7 @@ task.spawn(function()
     end
 end)
 
+-- STABILIZED MOB FARMING ENGINE
 task.spawn(function()
     while Running do
         task.wait(0.01)
@@ -2242,7 +2294,7 @@ task.spawn(function()
                         if mobsFolder then
                             for i = #MobPriorityList, 1, -1 do
                                 local targetMobName = MobPriorityList[i].N
-                                if enabledMobNames[targetMobName] then
+                                if enabledMobNames[targetOreName] or enabledMobNames[targetMobName] then
                                     for _, mobObj in ipairs(mobsFolder:GetChildren()) do
                                         if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
                                             local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
@@ -2252,7 +2304,7 @@ task.spawn(function()
                                                     if desc:IsA("TextLabel") and desc.Text then
                                                         local txt = desc.Text:gsub(",", "")
                                                         if txt:find("^0%s*/") or txt == "0" then
-                                                            isDead = true
+                                                            isActuallyDead = true
                                                             break
                                                         end
                                                     end
@@ -2294,19 +2346,28 @@ task.spawn(function()
     end
 end)
 
+-- SAND REGENERATION LOOP
 task.spawn(function()
     while Running do
-        jitterWait(1.0)
+        task.wait(1.0)
         if Running and Env.AutoRegenSandLayers and not trialIsRunning and not trialExiting and not ritualIsActive then
-            showToast("Sand Regen: Smoothly moving to pit...")
-            smoothTeleport(Dest.SandPit, 0.6)
-            jitterWait(1.0)
+            showToast("Sand Regen: Teleporting to pit...")
+            pcall(function()
+                local hrp = GetWorldRoot()
+                if hrp then
+                    hrp.Anchored = false
+                    hrp.CFrame = CFrame.new(Dest.SandPit)
+                    hrp.AssemblyLinearVelocity = Vector3.zero
+                    hrp.AssemblyAngularVelocity = Vector3.zero
+                end
+            end)
+            task.wait(1.0)
             
             local reachedTarget = false
             local targetLayer = tonumber(Env.TargetSandLayer) or 3
             
             while Running and Env.AutoRegenSandLayers and not trialIsRunning and not trialExiting and not ritualIsActive and not reachedTarget do
-                jitterWait(1.0)
+                task.wait(1.0)
                 pcall(function()
                     local layersFolder = workspace:FindFirstChild("GeneratedSandLayers", true)
                     if layersFolder then
@@ -2337,17 +2398,18 @@ task.spawn(function()
             if reachedTarget and Running and Env.AutoRegenSandLayers then
                 showToast("Sand Regen: Target layer reached! Regen pad...")
                 SandTargetVector = Dest.SandRegenPad
-                jitterWait(2.5)
+                task.wait(2.5)
                 SandTargetVector = nil
-                jitterWait(1.5)
+                task.wait(1.5)
             end
         end
     end
 end)
 
+-- GEM LOOPS
 task.spawn(function()
     while Running do
-        jitterWait(60.0)
+        task.wait(60.0)
         if Running and Env.AutoGemExchange and not Env.AutoGemShopTeleport then
             pcall(function()
                 local args = { [1] = "ExchangeAllMinerals" }
@@ -2360,7 +2422,7 @@ end)
 
 task.spawn(function()
     while Running do
-        jitterWait(0.5)
+        task.wait(0.5)
         if Running and Env.AutoGemShopTeleport and not Env.AutoGemExchange then
             MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
         elseif MasterTargetVector == Vector3.new(623.851, 8.781, 3210.993) and not Env.AutoGemShopTeleport then
@@ -2371,14 +2433,14 @@ end)
 
 task.spawn(function()
     while Running do
-        jitterWait(60.0)
+        task.wait(60.0)
         if Running and Env.AutoGemExchange and Env.AutoGemShopTeleport then
             pcall(function()
                 MasterTargetVector = Vector3.new(623.851, 8.781, 3210.993)
-                jitterWait(6.0)
+                task.wait(6.0)
                 local args = { [1] = "ExchangeAllMinerals" }
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                jitterWait(1.0)
+                task.wait(1.0)
                 MasterTargetVector = nil
             end)
             showToast("Gem Shop Pitstop Completed!")
@@ -2386,7 +2448,9 @@ task.spawn(function()
     end
 end)
 
--- MINING ENGINE (COMBINING PRIORITY TIERING WITH PROPER CLOSEST-FIRST DISTANCE SORTING)
+-- REVAMPED MINING ENGINE (STRICT COMPLETION LOCK WITH 30S SAFETY TIMEOUT & CLOSEST-FIRST SORTING)
+local oreLockStartTime = 0
+
 task.spawn(function()
     while Running do
         task.wait(0.01)
@@ -2402,12 +2466,14 @@ task.spawn(function()
             end
 
             if hasAnyOreEnabled then
+                local now = tick()
                 local foundOrePart = nil
                 local currentValid = false
 
+                -- Keep lock on current ore UNLESS it is fully respawning/depleted OR stuck past 30 seconds
                 if currentTargetPanel and currentTargetPanel.Parent then
                     local oreModel = currentTargetPanel.Parent
-                    if oreModel:IsA("Model") and not isOreRespawning(oreModel) then
+                    if oreModel:IsA("Model") and not isOreRespawning(oreModel) and (now - oreLockStartTime) <= 30.0 then
                         currentValid = true
                         foundOrePart = currentTargetPanel
                     end
@@ -2417,7 +2483,6 @@ task.spawn(function()
                     local gc = workspace:FindFirstChild("__GAME_CONTENT") 
                     local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
-                        -- Check tiers from highest to lowest priority, but find all valid ones of that highest active tier and pick the closest!
                         for i = #OrePriorityList, 1, -1 do
                             local targetOreName = OrePriorityList[i].N
                             if enabledOreNames[targetOreName] then
@@ -2446,7 +2511,13 @@ task.spawn(function()
                     end
                 end
                 
+                local oldTarget = currentTargetPanel
                 currentTargetPanel = foundOrePart
+                
+                if currentTargetPanel ~= oldTarget then
+                    oreLockStartTime = tick() -- Reset lock timer when switching to a new ore
+                end
+
                 if currentTargetPanel then
                     if currentTargetPanel ~= lastTrackedPart then
                         lastTrackedPart = currentTargetPanel
@@ -2469,32 +2540,33 @@ task.spawn(function()
     end
 end)
 
+-- CAPSULE LOOP
 task.spawn(function()
     while Running do
-        jitterWait(Env.CPUSaverMode and 0.25 or 0.12)
+        task.wait(Env.CPUSaverMode and 0.25 or 0.12)
         if Running then
             local hrp = GetWorldRoot()
             if hrp then
                 if Env.AutoOpenClassicCapsule then 
-                    if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then smoothTeleport(Dest.ClassicCap, 0.3) end 
+                    if (hrp.Position - Dest.ClassicCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.ClassicCap) end 
                     pcall(function() 
                         local args = { [1] = "ToggleMinionAutoOpen", [2] = "Classic" } 
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end)
                 elseif Env.AutoOpenFootballCapsule then 
-                    if (hrp.Position - Dest.FootballCap).Magnitude > 10 then smoothTeleport(Dest.FootballCap, 0.3) end 
+                    if (hrp.Position - Dest.FootballCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.FootballCap) end 
                     pcall(function() 
                         local args = { [1] = "ToggleMinionAutoOpen", [2] = "Football" } 
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end)
                 elseif Env.AutoOpenSuperCapsule then 
-                    if (hrp.Position - Dest.SuperCap).Magnitude > 10 then smoothTeleport(Dest.SuperCap, 0.3) end 
+                    if (hrp.Position - Dest.SuperCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.SuperCap) end 
                     pcall(function() 
                         local args = { [1] = "ToggleMinionAutoOpen", [2] = "Super" } 
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end)
                 elseif Env.AutoOpenAncientCapsule then 
-                    if (hrp.Position - Dest.AncientCap).Magnitude > 10 then smoothTeleport(Dest.AncientCap, 0.3) end 
+                    if (hrp.Position - Dest.AncientCap).Magnitude > 10 then hrp.CFrame = CFrame.new(Dest.AncientCap) end 
                     pcall(function() 
                         local args = { [1] = "ToggleMinionAutoOpen", [2] = "Ancient" } 
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
@@ -2507,7 +2579,7 @@ end)
 
 task.spawn(function()
     while Running do
-        jitterWait(0.5)
+        task.wait(0.5)
         if Env.AutoFarmCash and Running and not trialIsRunning and not trialExiting and not ritualIsActive then
             local gc = workspace:FindFirstChild("__GAME_CONTENT") 
             local ty = gc and gc:FindFirstChild("Tycoon") 
@@ -2526,35 +2598,35 @@ task.spawn(function()
                             if tb and tb:IsA("BasePart") and Running then
                                 att = true 
                                 MasterTargetVector = tb.Position + Vector3.new(0, 1, 0)
-                                jitterWait(0.4)
+                                task.wait(0.4)
                                 if not Running then break end
                                 if bM:IsDescendantOf(btnF) then 
                                     locked[bM.Name] = true 
                                     MasterTargetVector = nil 
-                                    jitterWait(0.05) 
+                                    task.wait(0.05) 
                                 else 
                                     MasterTargetVector = nil 
-                                    jitterWait(0.1) 
+                                    task.wait(0.1) 
                                     break 
                                 end
                             end
                         end
                     end
                     if not att or not Env.AutoFarmCash or not Running then break end 
-                    jitterWait(0.1)
+                    task.wait(0.1)
                 until false
                 if Running then 
                     MasterTargetVector = nil 
                     local sE = tick() + math.random(120, 180) 
-                    repeat jitterWait(1) until tick() >= sE or not Env.AutoFarmCash or not Running 
+                    repeat task.wait(1) until tick() >= sE or not Env.AutoFarmCash or not Running 
                 end
             else 
                 MasterTargetVector = nil 
-                jitterWait(2) 
+                task.wait(2) 
             end
         else 
             MasterTargetVector = nil 
-            jitterWait(1) 
+            task.wait(1) 
         end
     end
 end)
@@ -2594,7 +2666,7 @@ local PrimaryUpgradeQueue = {
 
 task.spawn(function()
     while Running do
-        jitterWait(Env.CPUSaverMode and 2.0 or 1.0)
+        task.wait(Env.CPUSaverMode and 2.0 or 1.0)
         if Running then
             for i = 1, #PrimaryUpgradeQueue do
                 if not Running then break end 
@@ -2606,7 +2678,7 @@ task.spawn(function()
                         for _, aVal in ipairs(item.A) do table.insert(args, aVal) end
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end) 
-                    jitterWait(0.25) 
+                    task.wait(0.25) 
                 end
             end
         end
@@ -2623,7 +2695,7 @@ local MeatUpgradeList = {
 task.spawn(function()
     local mIdx = 1
     while Running do
-        jitterWait(0.35)
+        task.wait(0.35)
         if Running then
             local att = 0
             repeat
@@ -2653,7 +2725,7 @@ local BonesUpgradeList = {
 task.spawn(function()
     local bIdx = 1
     while Running do
-        jitterWait(0.45)
+        task.wait(0.45)
         if Running then
             local att = 0
             repeat
@@ -2683,7 +2755,7 @@ local SoulsUpgradeList = {
 task.spawn(function()
     local sIdx = 1
     while Running do
-        jitterWait(0.55)
+        task.wait(0.55)
         if Running then
             local att = 0
             repeat
@@ -2711,7 +2783,7 @@ local GemUpgradeList = {
 task.spawn(function()
     local gIdx = 1
     while Running do
-        jitterWait(0.65)
+        task.wait(0.65)
         if Running then
             local att = 0
             repeat
@@ -2732,7 +2804,7 @@ end)
 
 task.spawn(function() 
     while Running do 
-        jitterWait(0.5) 
+        task.wait(0.5) 
         if Running then 
             for i = 1, 11 do 
                 if Env["AutoFillBucket" .. i] then 
@@ -2740,7 +2812,7 @@ task.spawn(function()
                         local args = { [1] = "FillWaterBucket", [2] = i } 
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                     end) 
-                    jitterWait(0.2) 
+                    task.wait(0.2) 
                 end 
             end 
         end 
@@ -2749,19 +2821,19 @@ end)
 
 task.spawn(function() 
     while Running do 
-        jitterWait(0.2) 
+        task.wait(0.2) 
         if Running and Env.AutoScoreGoal then 
             pcall(function() 
                 local args = { [1] = "RegisterFootballKick" } 
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
             end) 
-            jitterWait(1.5) 
+            task.wait(1.5) 
             if not Running or not Env.AutoScoreGoal then break end 
             pcall(function() 
                 local args = { [1] = "ScoreGoal" } 
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
             end) 
-            jitterWait(1.5) 
+            task.wait(1.5) 
         end 
     end 
 end)
@@ -2779,18 +2851,18 @@ task.spawn(function()
                             local args = { [1] = "BuyFootballUITreeNode", [2] = obj.Name }
                             game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                         end) 
-                        jitterWait(0.5) 
+                        task.wait(0.5) 
                     end
                 end
             end
         end
-        jitterWait(5.0)
+        task.wait(5.0)
     end
 end)
 
 task.spawn(function() 
     while Running do 
-        jitterWait(3.0) 
+        task.wait(3.0) 
         if Running and Env.AutoClaimTrophies then 
             for i = 1, 10 do 
                 if not Running or not Env.AutoClaimTrophies then break end 
@@ -2798,7 +2870,7 @@ task.spawn(function()
                     local args = { [1] = "BuyTrophy", [2] = i } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
-                jitterWait(0.2) 
+                task.wait(0.2) 
             end 
         end 
     end 
@@ -2822,7 +2894,7 @@ local BreadUpgradeList = {
 task.spawn(function() 
     local bIdx = 1 
     while Running do 
-        jitterWait(1.2) 
+        task.wait(1.2) 
         if Running then 
             local att = 0 
             repeat 
@@ -2843,7 +2915,7 @@ end)
 
 task.spawn(function() 
     while Running do 
-        jitterWait(60.0) 
+        task.wait(60.0) 
         if Running then 
             pcall(function() 
                 local args = { [1] = "DepositMeat" }
@@ -2855,7 +2927,7 @@ end)
 
 task.spawn(function() 
     while Running do 
-        jitterWait(30.0) 
+        task.wait(30.0) 
         if Running then 
             if Env.AutoDepositWheat then 
                 pcall(function() 
@@ -2875,50 +2947,51 @@ end)
 
 task.spawn(function() 
     while Running do 
-        jitterWait(1.0) 
+        task.wait(1.0) 
         if Running then 
             if Env.AutoBlazeMoreBlaze then 
                 pcall(function() 
                     local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBlaze" } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
-                jitterWait(0.25) 
+                task.wait(0.25) 
             end 
             if Env.AutoBlazeMoreFire then 
                 pcall(function() 
                     local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
-                jitterWait(0.25) 
+                task.wait(0.25) 
             end 
             if Env.AutoBlazeMoreOof then 
                 pcall(function() 
                     local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOof" } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
-                jitterWait(0.25) 
+                task.wait(0.25) 
             end 
             if Env.AutoBlazeMoreOofs then 
                 pcall(function() 
                     local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
-                jitterWait(0.25) 
+                task.wait(0.25) 
             end 
             if Env.AutoBlazeMoreBulk then 
                 pcall(function() 
                     local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreBulk" } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
-                jitterWait(0.25) 
+                task.wait(0.25) 
             end 
         end 
     end 
 end)
 
+-- CHEST OPENING LOOP (100 CHESTS)
 task.spawn(function() 
     while Running do 
-        jitterWait(1.2) 
+        task.wait(1.2) 
         if Running then 
             if Env.AutoOpenT1Chest then 
                 pcall(function() 
@@ -2938,7 +3011,7 @@ end)
 
 task.spawn(function() 
     while Running do 
-        jitterWait(5.0) 
+        task.wait(5.0) 
         if Env.AutoPrestige and Running then 
             pcall(function() 
                 local args = { [1] = "Prestige" } 
@@ -2950,7 +3023,7 @@ end)
 
 task.spawn(function()
     while Running do
-        jitterWait(60.0)
+        task.wait(60.0)
         if Running and Env.AutoBlazeConvert then
             pcall(function()
                 local args = { [1] = "Blaze" }
@@ -2960,4 +3033,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Mob-Style Closest Ore Engine)!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully!")
