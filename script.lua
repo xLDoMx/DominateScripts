@@ -1599,7 +1599,7 @@ aboutFrame.Parent = settingsScroll
 
 local afCorner = Instance.new("UICorner")
 afCorner.CornerRadius = UDim.new(0, 8)
-afCorner.Parent = aboutFrame
+aboutFrame.Parent = settingsScroll
 
 local aboutLbl = Instance.new("TextLabel")
 aboutLbl.Size = UDim2.new(1, -20, 1, 0)
@@ -2047,7 +2047,7 @@ task.spawn(function()
             local isTriggerTime = ((min == 28 or min == 58) and sec >= 50) or (min == 29 or min == 59)
             
             if isTriggerTime then
-                local currentSlot = hour "_" min
+                local currentSlot = hour .. "_" .. min
                 if currentSlot ~= lastTrialTriggeredSlot then
                     lastTrialTriggeredSlot = currentSlot
                     
