@@ -2440,6 +2440,7 @@ task.spawn(function()
     end
 end)
 
+local oreLockStartTime = 0
 local oreCooldowns = {}
 
 task.spawn(function()
@@ -2459,32 +2460,81 @@ task.spawn(function()
                 local hrp = GetWorldRoot()
                 local now = tick()
                 
-                -- Clear expired cooldowns
-                for oreModel, expiry in pairs(oreCooldowns) do
-                    if now >= expiry or not oreModel.Parent then
-                        oreCooldowns[oreModel] = nil
+                -- Use MiningJumpSpeed as the dwell time to stay on the current ore
+                local dwellTime = Env.MiningJumpSpeed or 0.8
+                local keepCurrent = false
+                
+                if currentTargetPanel and currentTargetPanel.Parent and currentTargetPanel:IsDescendantOf(workspace) then
+                    if not isOreRespawning(currentTargetPanel.Parent) then
+                        if (now - oreLockStartTime) < dwellTime then
+                            keepCurrent = true
+                        end
                     end
                 end
                 
-                local foundOrePart = nil
-                local shortestDist = math.huge
-                local gc = workspace:FindFirstChild("__GAME_CONTENT") 
-                local oresFolder = gc and gc:FindFirstChild("Ores")
-                
-                if oresFolder and hrp then
-                    for _, obj in ipairs(oresFolder:GetChildren()) do
-                        if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) and not oreCooldowns[obj] then
-                            local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
-                            if part then
-                                local dist = (part.Position - hrp.Position).Magnitude
-                                if dist < shortestDist then
-                                    shortestDist = dist
-                                    foundOrePart = part
+                if not keepCurrent then
+                    -- Blacklist the finished ore briefly so we move to a different one
+                    if currentTargetPanel and currentTargetPanel.Parent then
+                        oreCooldowns[currentTargetPanel.Parent] = now + 3.0
+                    end
+                    
+                    -- Clear expired cooldowns
+                    for oreModel, expiry in pairs(oreCooldowns) do
+                        if now >= expiry or not oreModel.Parent then
+                            oreCooldowns[oreModel] = nil
+                        end
+                    end
+                    
+                    -- Find the nearest available ore not on cooldown
+                    local foundOrePart = nil
+                    local shortestDist = math.huge
+                    local gc = workspace:FindFirstChild("__GAME_CONTENT") 
+                    local oresFolder = gc and gc:FindFirstChild("Ores")
+                    
+                    if oresFolder and hrp then
+                        for _, obj in ipairs(oresFolder:GetChildren()) do
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) and not oreCooldowns[obj] then
+                                local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+                                if part then
+                                    local dist = (part.Position - hrp.Position).Magnitude
+                                    if dist < shortestDist then
+                                        shortestDist = dist
+                                        foundOrePart = part
+                                    end
                                 end
                             end
                         end
                     end
+                    
+                    if foundOrePart then
+                        currentTargetPanel = foundOrePart
+                        oreLockStartTime = now
+                        
+                        if currentTargetPanel ~= lastTrackedPart then
+                            lastTrackedPart = currentTargetPanel
+                            oresMined = oresMined + 1
+                        end
+                    else
+                        -- Reset cooldowns if all ores are temporarily locked
+                        oreCooldowns = {}
+                        currentTargetPanel = nil
+                    end
                 end
+                
+                if currentTargetPanel and currentTargetPanel.Parent then 
+                    MiningTargetVector = currentTargetPanel.Position 
+                else 
+                    MiningTargetVector = nil 
+                end
+            else 
+                currentTargetPanel = nil 
+                MiningTargetVector = nil 
+                oresMined = 0
+                lastTrackedPart = nil
+            end
+        end
+    end
+end)
                 
                 if foundOrePart then
                     currentTargetPanel = foundOrePart
