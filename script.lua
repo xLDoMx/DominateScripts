@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.101 - REALM 4 SPACE & STARS + SAFE COLLECTOR)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.102 - SMOOTH GLIDE STAR COLLECTOR)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1085,7 +1085,7 @@ headerTitle.BackgroundTransparency = 1
 headerTitle.TextColor3 = Color3.fromRGB(216, 180, 254)
 headerTitle.TextSize = 15 
 headerTitle.Font = Enum.Font.GothamBold 
-headerTitle.Text = "Dominate Hub v1.7 (Pro Edition)" 
+headerTitle.Text = "Dominate Hub v1.8 (Pro Edition)" 
 headerTitle.TextXAlignment = Enum.TextXAlignment.Left 
 headerTitle.Parent = mainFrame
 
@@ -1611,7 +1611,7 @@ aboutLbl.Font = Enum.Font.GothamBold
 aboutLbl.TextXAlignment = Enum.TextXAlignment.Left
 aboutLbl.TextYAlignment = Enum.TextYAlignment.Center
 aboutLbl.TextWrapped = true
-aboutLbl.Text = "Dominate Hub v1.7 (Pro Edition)\nDiscord: discord.gg/dominatehub\nKey Status: Active / Unlimited\nHotkey: Press [Insert] to Toggle UI"
+aboutLbl.Text = "Dominate Hub v1.8 (Pro Edition)\nDiscord: discord.gg/dominatehub\nKey Status: Active / Unlimited\nHotkey: Press [Insert] to Toggle UI"
 aboutLbl.Parent = aboutFrame
 
 createSectionHeader(settingsScroll, "General Settings")
@@ -1740,7 +1740,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- UNIFIED ZERO-DELAY INSTANT-SNAP MOVEMENT LOOP
+-- UNIFIED SMOOTH GLIDE MOVEMENT LOOP (PREVENTS SPINNING & PHYSICS GLITCHES)
 task.spawn(function()
     while Running do
         RunService.RenderStepped:Wait()
@@ -1764,11 +1764,21 @@ task.spawn(function()
             
             if act then
                 local targetCF = CFrame.new(act)
-                if trialIsRunning or MobTargetVector or StarTargetVector then
+                if trialIsRunning or MobTargetVector then
                     hrp.Anchored = false
                     hrp.CFrame = targetCF
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
+                elseif StarTargetVector then
+                    -- SMOOTH GLIDE SWEEP FOR STARS TO PREVENT SPINNING
+                    if (hrp.Position - act).Magnitude > 2.0 then
+                        hrp.Anchored = false
+                        hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.4)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                    else
+                        hrp.CFrame = targetCF
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                    end
                 else
                     if (hrp.Position - act).Magnitude > 0.3 then
                         hrp.Anchored = false
@@ -1788,10 +1798,10 @@ task.spawn(function()
     end
 end)
 
--- SAFE STAR AUTO-COLLECTION LOOP (THROTTLED)
+-- SMOOTH SWEEP STAR COLLECTION LOOP
 task.spawn(function()
     while Running do
-        task.wait(0.25)
+        task.wait(0.1)
         if Running and Env.AutoCollectStars and not trialIsRunning and not trialExiting and not ritualIsActive then
             pcall(function()
                 local clientStars = workspace:FindFirstChild("ClientStars")
@@ -2000,6 +2010,7 @@ local function restoreToggles()
     currentTargetMob = nil
     MiningTargetVector = nil
     MobTargetVector = nil
+    StarTargetVector = nil
 end
 
 -- STRICT STEP-BY-STEP TRIAL AUTOMATION SEQUENCE
@@ -2882,8 +2893,8 @@ task.spawn(function()
             end 
             if Env.AutoDepositWood then 
                 pcall(function() 
-                    local args = { [1] = "DepositWood" } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    local sandRemote = { [1] = "DepositWood" } 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(sandRemote)) 
                 end) 
             end 
         end 
@@ -2917,8 +2928,8 @@ task.spawn(function()
             end 
             if Env.AutoBlazeMoreOofs then 
                 pcall(function() 
-                    local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
+                    partArgs = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(partArgs)) 
                 end) 
                 task.wait(0.25) 
             end 
@@ -2955,6 +2966,7 @@ task.spawn(function()
 end)
 
 task.spawn(function() 
+    whileRunner = function() end
     while Running do 
         task.wait(5.0) 
         if Env.AutoPrestige and Running then 
@@ -2978,4 +2990,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.101 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.102 Stable Loaded Successfully!")
