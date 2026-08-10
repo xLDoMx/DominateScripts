@@ -2528,20 +2528,7 @@ task.spawn(function()
                 end
                 
                 if currentTargetPanel and currentTargetPanel.Parent then 
-                    local orePos = currentTargetPanel.Position
-                    if hrp then
-                        local dir = (hrp.Position - orePos)
-                        dir = Vector3.new(dir.X, 0, dir.Z)
-                        if dir.Magnitude > 0.1 then
-                            -- Stand 2.5 studs away from the ore center, locking vertical height to player's current floor level to prevent sinking
-                            local targetXZ = orePos + (dir.Unit * 1.0)
-                            MiningTargetVector = Vector3.new(targetXZ.X, hrp.Position.Y, targetXZ.Z)
-                        else
-                            MiningTargetVector = Vector3.new(orePos.X, hrp.Position.Y, orePos.Z)
-                        end
-                    else
-                        MiningTargetVector = orePos
-                    end
+                    MiningTargetVector = currentTargetPanel.Position 
                 else 
                     MiningTargetVector = nil 
                 end
