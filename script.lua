@@ -2294,7 +2294,7 @@ task.spawn(function()
                         if mobsFolder then
                             for i = #MobPriorityList, 1, -1 do
                                 local targetMobName = MobPriorityList[i].N
-                                if enabledMobNames[targetOreName] or enabledMobNames[targetMobName] then
+                                if enabledMobNames[targetMobName] then
                                     for _, mobObj in ipairs(mobsFolder:GetChildren()) do
                                         if mobObj:IsA("Model") and mobObj.Name == targetMobName and not isMobRespawning(mobObj) then
                                             local part = mobObj.PrimaryPart or mobObj:FindFirstChildWhichIsA("BasePart")
@@ -2304,7 +2304,7 @@ task.spawn(function()
                                                     if desc:IsA("TextLabel") and desc.Text then
                                                         local txt = desc.Text:gsub(",", "")
                                                         if txt:find("^0%s*/") or txt == "0" then
-                                                            isActuallyDead = true
+                                                            isDead = true
                                                             break
                                                         end
                                                     end
