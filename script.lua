@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - NEW 2s
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1599,7 +1599,7 @@ aboutFrame.Parent = settingsScroll
 
 local afCorner = Instance.new("UICorner")
 afCorner.CornerRadius = UDim.new(0, 8)
-aboutFrame.Parent = settingsScroll
+afCorner.Parent = aboutFrame
 
 local aboutLbl = Instance.new("TextLabel")
 aboutLbl.Size = UDim2.new(1, -20, 1, 0)
@@ -2518,37 +2518,6 @@ task.spawn(function()
                         -- Reset cooldowns if all ores are temporarily locked
                         oreCooldowns = {}
                         currentTargetPanel = nil
-                    end
-                end
-                
-                if currentTargetPanel and currentTargetPanel.Parent then 
-                    MiningTargetVector = currentTargetPanel.Position 
-                else 
-                    MiningTargetVector = nil 
-                end
-            else 
-                currentTargetPanel = nil 
-                MiningTargetVector = nil 
-                oresMined = 0
-                lastTrackedPart = nil
-            end
-        end
-    end
-end)
-                
-                if foundOrePart then
-                    currentTargetPanel = foundOrePart
-                    -- Blacklist this ore model for 4 seconds so it moves to the next nearest one
-                    oreCooldowns[foundOrePart.Parent] = now + 4.0
-                    
-                    if currentTargetPanel ~= lastTrackedPart then
-                        lastTrackedPart = currentTargetPanel
-                        oresMined = oresMined + 1
-                    end
-                else
-                    -- If all ores are on cooldown, clear the table to resume mining
-                    if next(oreCooldowns) then
-                        oreCooldowns = {}
                     end
                 end
                 
