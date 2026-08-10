@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 15S RECENT ORE COOLDOWN EDITION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 5S ANTI-STUCK & OPTIMIZED HEIGHT)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -73,22 +73,9 @@ local function isMobRespawning(mobModel)
     return false
 end
 
-local function isOreDepleted(oreModel)
-    if not oreModel then return true end
-    for _, desc in ipairs(oreModel:GetDescendants()) do
-        if desc:IsA("TextLabel") and desc.Text then
-            local txt = desc.Text:lower():gsub(",", "")
-            if txt:find("respawning") then
-                return true
-            end
-            if txt:find("/") then
-                local current, max = txt:match("(%d+)%s*/%s*(%d+)")
-                if current and tonumber(current) == 0 then
-                    return true
-                end
-            end
-        end
-    end
+local function isOreRespawning(oreModel)
+    local desc = oreModel:FindFirstChildWhichIsA("TextLabel", true)
+    if desc and desc.Text:lower():find("respawning") then return true end
     return false
 end
 
@@ -2392,9 +2379,8 @@ task.spawn(function()
     end
 end)
 
--- MINING ENGINE (WITH 15-SECOND RECENT ORE COOLDOWN FILTER)
+-- MINING ENGINE (WITH 5S ANTI-STUCK TIMEOUT & OPTIMIZED 1-STUD HEIGHT OFFSET)
 local oreLockStartTime = 0
-local recentlyMinedOres = {}
 
 task.spawn(function()
     while Running do
@@ -2411,30 +2397,14 @@ task.spawn(function()
 
             if hasAnyEnabled then
                 local now = tick()
-                
-                -- Clean up expired cooldowns
-                for oreModel, expiry in pairs(recentlyMinedOres) do
-                    if now >= expiry or not oreModel.Parent then
-                        recentlyMinedOres[oreModel] = nil
-                    end
-                end
-
-                -- Check if current target is depleted
-                if currentTargetPanel and currentTargetPanel.Parent then
-                    if isOreDepleted(currentTargetPanel.Parent) then
-                        recentlyMinedOres[currentTargetPanel.Parent] = now + 15.0 -- 15 second cooldown on this model
-                        currentTargetPanel = nil
-                    end
-                end
-
                 local needsNewTarget = false
+
                 if not currentTargetPanel or not currentTargetPanel.Parent or not currentTargetPanel:IsDescendantOf(workspace) then 
                     needsNewTarget = true
-                elseif (now - oreLockStartTime) > 5.0 then 
+                elseif currentTargetPanel.Parent and isOreRespawning(currentTargetPanel.Parent) then 
                     needsNewTarget = true
-                    if currentTargetPanel and currentTargetPanel.Parent then
-                        recentlyMinedOres[currentTargetPanel.Parent] = now + 15.0
-                    end
+                elseif (now - oreLockStartTime) > 5.0 then -- 5 second anti-stuck timeout fallback
+                    needsNewTarget = true
                 end
 
                 if needsNewTarget then
@@ -2443,8 +2413,7 @@ task.spawn(function()
                     local oresFolder = gc and gc:FindFirstChild("Ores")
                     if oresFolder then
                         for _, obj in ipairs(oresFolder:GetChildren()) do
-                            -- Skip if enabled name doesn't match, or if it's currently depleted, OR if it's on the 15s recent cooldown list
-                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not recentlyMinedOres[obj] and not isOreDepleted(obj) then
+                            if enabledOreNames[obj.Name] and obj:IsA("Model") and not isOreRespawning(obj) then
                                 local part = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
                                 if part then 
                                     table.insert(freshList, part) 
@@ -2472,14 +2441,13 @@ task.spawn(function()
                             oresMined = oresMined + 1
                         end
                     else 
-                        -- If all available ores are on cooldown, clear cooldowns so we don't get permanently stuck
-                        recentlyMinedOres = {}
                         currentTargetPanel = nil 
                     end
                 end
                 
                 if currentTargetPanel and currentTargetPanel.Parent then 
-                    MiningTargetVector = currentTargetPanel.Position + Vector3.new(0, 3, 0)
+                    -- Reduced height offset to 1 stud so native touch/mining registers properly without sinking
+                    MiningTargetVector = currentTargetPanel.Position + Vector3.new(0, 1, 0)
                 else 
                     MiningTargetVector = nil 
                 end
@@ -2549,7 +2517,7 @@ task.spawn(function()
                             local tb = bM:FindFirstChild("BuyingButtonPart", true)
                             if tb and tb:IsA("BasePart") and Running then
                                 att = true 
-                                MasterTargetVector = tb.Position + Vector3.new(0, 3, 0)
+                                MasterTargetVector = tb.Position + Vector3.new(0, 1, 0)
                                 jitterWait(0.4)
                                 if not Running then break end
                                 if bM:IsDescendantOf(btnF) then 
@@ -2910,7 +2878,7 @@ task.spawn(function()
             end 
             if Env.AutoBlazeMoreFire then 
                 pcall(function() 
-                    1local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } 
+                    local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreFire" } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
                 jitterWait(0.25) 
@@ -2922,7 +2890,7 @@ task.spawn(function()
                 end) 
                 jitterWait(0.25) 
             end 
-            if Env.AllBlazeMoreOofs then 
+            if Env.AutoBlazeMoreOofs then 
                 pcall(function() 
                     local args = { [1] = "UpgradeUpgradeMax", [2] = "Blaze", [3] = "MoreOofs" } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
@@ -2946,14 +2914,14 @@ task.spawn(function()
         if Running then 
             if Env.AutoOpenT1Chest then 
                 pcall(function() 
-                    local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 100` } 
+                    local args = { [1] = "OpenChest", [2] = "T1TrialChest", [3] = 100 } 
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
             if Env.AutoOpenT2Chest then 
                 pcall(function() 
-                    modelArg = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(modelArg)) 
+                    local args = { [1] = "OpenChest", [2] = "T2TrialChest", [3] = 100 } 
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args)) 
                 end) 
             end 
         end 
@@ -2984,4 +2952,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Permanent Ore History Edition)!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully (Optimized Height & 5S Anti-Stuck Edition)!")
