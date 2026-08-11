@@ -1943,13 +1943,13 @@ task.spawn(function()
     end
 end)
 
--- REVAMPED DATA-DRIVEN ENCHANTS AUTOMATION LOOP
+-- TRANSPARENT DATA-DRIVEN ENCHANTS LOOP
 task.spawn(function()
     while Running do
-        task.wait(0.35)
+        task.wait(0.4)
         if Running and Env.AutoRerollEnchants then
             pcall(function()
-                local targetNoob = Env.SelectedEnchantNoob
+                local targetNoob = Env.SelectedEnchantNoob or "Farmer"
                 local features = player:FindFirstChild("FEATURES")
                 local noobs = features and features:FindFirstChild("NOOBS")
                 local noobFolder = noobs and noobs:FindFirstChild(targetNoob)
@@ -1959,9 +1959,14 @@ task.spawn(function()
                     local foundTarget = false
                     local hasAlmighty = false
                     
+                    -- Debug print to console so you see exactly what noob is being checked
+                    -- print("[Enchant Data Check] Checking Noob:", targetNoob)
+                    
                     for _, slotVal in ipairs(enchantsFolder:GetChildren()) do
                         if slotVal:IsA("ValueBase") and slotVal.Value then
                             local valLower = tostring(slotVal.Value):lower()
+                            -- print("   -> Slot:", slotVal.Name, "Value:", slotVal.Value)
+                            
                             if valLower:find("transcendent") then
                                 foundTarget = true
                                 break
@@ -1970,6 +1975,47 @@ task.spawn(function()
                             end
                         end
                     end
+                    
+                    if foundTarget then
+                        Env.AutoRerollEnchants = false
+                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
+                            local ui = Env._UIElements["AutoRerollEnchants"]
+                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                        end
+                        showToast("Enchants: Transcendent reached! Stopped.")
+                    elseif hasAlmighty then
+                        if Env.EnchantStopAtAlmighty then
+                            Env.AutoRerollEnchants = false
+                            if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
+                                local ui = Env._UIElements["AutoRerollEnchants"]
+                                TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                                TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                                TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                            end
+                            showToast("Enchants: Almighty reached & kept! Stopped.")
+                        else
+                            -- Skip Almighty and continue rolling for Transcendent
+                            local args = {
+                                [1] = "RollNoobEnchant",
+                                [2] = targetNoob
+                            }
+                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                            showToast("Enchants: Almighty skipped, rolling...")
+                        end
+                    else
+                        local args = {
+                            [1] = "RollNoobEnchant",
+                            [2] = targetNoob
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                    end
+                end
+            end)
+        end
+    end
+end)
                     
                     if foundTarget then
                         Env.AutoRerollEnchants = false
