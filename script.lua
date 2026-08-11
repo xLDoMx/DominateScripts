@@ -3065,5 +3065,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully!")
-```[cite: 1]
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully!")[cite: 1]
