@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - Updatex666)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - Updatex66426)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1943,39 +1943,76 @@ task.spawn(function()
     end
 end)
 
--- REVAMPED ENCHANTS AUTOMATION & CONSOLE DEBUG LOOP
+-- DIRECT DEBUG ENCHANTS AUTOMATION LOOP
 task.spawn(function()
+    print("[DominateHub Debug] Enchants thread started successfully!")
     while Running do
-        task.wait(0.5)
-        if Running and Env.AutoRerollEnchants then
-            pcall(function()
-                local pGui = player:FindFirstChild("PlayerGui")
-                local foundTier = nil -- "almighty" or "transcendent"
+        task.wait(1.0)
+        
+        -- Safe player and GUI retrieval
+        local lp = game:GetService("Players").LocalPlayer
+        if lp then
+            local pGui = lp:FindFirstChild("PlayerGui")
+            if pGui then
+                -- Print status every second so we know the loop is running
+                print("[Enchant Loop Tick] AutoRerollEnchants status:", tostring(Env.AutoRerollEnchants))
                 
-                if pGui then
+                if Env.AutoRerollEnchants then
+                    print("[Enchant Loop] Reroll is active! Scanning UI...")
+                    
+                    local foundTier = nil
                     for _, desc in ipairs(pGui:GetDescendants()) do
                         if desc:IsA("TextLabel") and desc.Text and desc.Visible then
                             local txt = desc.Text
                             local textLower = txt:lower()
                             
-                            -- Debug print to F9 console so you can see every text label being read
-                            print("[Enchant Scan] Text:", txt, "| Parent:", desc.Parent.Name)
+                            -- Print every visible text label found during roll
+                            print(" -> Found TextLabel:", txt, "(Parent:", desc.Parent.Name, ")")
                             
-                            -- Filter out progress bars, pity metrics, stats, and index elements
-                            if not textLower:find("/") and not textLower:find("pity") and not textLower:find("pty") and not textLower:find("index") and not textLower:find("catalog") and not textLower:find("discord") and not textLower:find("fps") and not textLower:find("oof") and not textLower:find("speed") then
-                                if textLower:find("transcendent") then
-                                    foundTier = "transcendent"
-                                    print("[Enchant Match] Transcendent detected!")
-                                    break
-                                elseif textLower:find("almighty") then
-                                    foundTier = "almighty"
-                                    print("[Enchant Match] Almighty detected!")
-                                    break
-                                end
+                            if textLower:find("transcendent") then
+                                foundTier = "transcendent"
+                                break
+                            elseif textLower:find("almighty") and not textLower:find("pity") and not textLower:find("pty") then
+                                foundTier = "almighty"
+                                break
                             end
                         end
                     end
+                    
+                    if foundTier == "transcendent" then
+                        Env.AutoRerollEnchants = false
+                        showToast("Enchants: Transcendent reached! Stopped.")
+                        print("[Enchant Match] Stopped at Transcendent.")
+                    elseif foundTier == "almighty" then
+                        if Env.EnchantStopAtAlmighty then
+                            Env.AutoRerollEnchants = false
+                            showToast("Enchants: Almighty reached & kept! Stopped.")
+                            print("[Enchant Match] Stopped at Almighty.")
+                        else
+                            print("[Enchant Match] Almighty found, skipping to Transcendent...")
+                            local args = {
+                                [1] = "RollNoobEnchant",
+                                [2] = Env.SelectedEnchantNoob
+                            }
+                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                        end
+                    else
+                        print("[Enchant Action] Rolling for target:", tostring(Env.SelectedEnchantNoob))
+                        local args = {
+                            [1] = "RollNoobEnchant",
+                            [2] = Env.SelectedEnchantNoob
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                    end
                 end
+            else
+                print("[Enchant Debug Warning] PlayerGui not found yet.")
+            end
+        else
+            print("[Enchant Debug Warning] LocalPlayer not found yet.")
+        end
+    end
+end)
                 
                 if foundTier == "transcendent" then
                     Env.AutoRerollEnchants = false
