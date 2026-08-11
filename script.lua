@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - Enchant update)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -140,7 +140,7 @@ Env.TrialDiagnostics = false
 
 -- ENCHANTS AUTOMATION CONFIG
 Env.AutoRerollEnchants = false
-Env.EnchantStopAtAlmighty = true
+Env.EnchantStopAtAlmighty = false
 Env.SelectedEnchantNoob = "Farmer"
 Env.EnchantNoobsList = {
     "Starter", "Cooker", "Farmer", "Archer", "Soldier", "Fisherman", "Knight", "Explorer", "Magician"
@@ -1943,7 +1943,7 @@ task.spawn(function()
     end
 end)
 
--- REVAMPED ENCHANTS AUTOMATION & PROMPT HANDLER LOOP
+-- REVAMPED ENCHANTS AUTOMATION & PROMPT HANDLER LOOP (FILTERED AGAINST STATIC HUD PROGRESS BARS)
 task.spawn(function()
     while Running do
         task.wait(0.35)
@@ -1956,12 +1956,15 @@ task.spawn(function()
                     for _, gui in ipairs(pGui:GetDescendants()) do
                         if gui:IsA("TextLabel") and gui.Text then
                             local textLower = gui.Text:lower()
-                            if textLower:find("transcendent") then
-                                foundTier = "transcendent"
-                                break
-                            elseif textLower:find("almighty") then
-                                foundTier = "almighty"
-                                break
+                            -- Ignore static HUD progress bars containing slashes or "pty"
+                            if not textLower:find("/") and not textLower:find("pty") then
+                                if textLower:find("transcendent") then
+                                    foundTier = "transcendent"
+                                    break
+                                elseif textLower:find("almighty") then
+                                    foundTier = "almighty"
+                                    break
+                                end
                             end
                         end
                     end
@@ -3063,3 +3066,4 @@ task.spawn(function()
 end)
 
 print("[Dominate Hub] V16.9.103 Stable Loaded Successfully!")
+```[cite: 1]
