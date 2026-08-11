@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 4534)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 3456545443f)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1943,32 +1943,74 @@ task.spawn(function()
     end
 end)
 
--- DIRECT ENCHANT SLOT TARGETING LOOP (NO GLOBAL TEXT SCANNING)
+-- REVAMPED DATA-DRIVEN ENCHANTS AUTOMATION LOOP
 task.spawn(function()
     while Running do
-        task.wait(0.5)
+        task.wait(0.35)
         if Running and Env.AutoRerollEnchants then
             pcall(function()
-                local pGui = player:FindFirstChild("PlayerGui")
-                if not pGui then return end
+                local targetNoob = Env.SelectedEnchantNoob
+                local features = player:FindFirstChild("FEATURES")
+                local noobs = features and features:FindFirstChild("NOOBS")
+                local noobFolder = noobs and noobs:FindFirstChild(targetNoob)
+                local enchantsFolder = noobFolder and noobFolder:FindFirstChild("Enchants")
                 
-                -- Find the active roll result text label directly by looking for the card/slot container
-                local rollTextLabel = nil
-                for _, desc in ipairs(pGui:GetDescendants()) do
-                    -- Look for text labels inside the active roll frame (avoiding index/pity)
-                    if desc:IsA("TextLabel") and desc.Text and desc.Visible then
-                        local parentName = desc.Parent.Name:lower()
-                        -- Exclude pity bars, index, and headers explicitly by container name
-                        if not parentName:find("pity") and not parentName:find("index") and not parentName:find("bar") and not parentName:find("header") then
-                            local txt = desc.Text:lower()
-                            -- Check if this label is currently displaying an enchant result
-                            if txt == "transcendent" or txt == "almighty" or txt:find("speed") or txt:find("oof") or txt:find("balanced") or txt:find("powerful") then
-                                rollTextLabel = desc
+                if enchantsFolder then
+                    local foundTarget = false
+                    local hasAlmighty = false
+                    
+                    for _, slotVal in ipairs(enchantsFolder:GetChildren()) do
+                        if slotVal:IsA("ValueBase") and slotVal.Value then
+                            local valLower = tostring(slotVal.Value):lower()
+                            if valLower:find("transcendent") then
+                                foundTarget = true
                                 break
+                            elseif valLower:find("almighty") then
+                                hasAlmighty = true
                             end
                         end
                     end
+                    
+                    if foundTarget then
+                        Env.AutoRerollEnchants = false
+                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
+                            local ui = Env._UIElements["AutoRerollEnchants"]
+                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                        end
+                        showToast("Enchants: Transcendent reached! Stopped.")
+                    elseif hasAlmighty then
+                        if Env.EnchantStopAtAlmighty then
+                            Env.AutoRerollEnchants = false
+                            if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
+                                local ui = Env._UIElements["AutoRerollEnchants"]
+                                TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                                TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                                TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                            end
+                            showToast("Enchants: Almighty reached & kept! Stopped.")
+                        else
+                            -- Skip Almighty and continue rolling for Transcendent
+                            local args = {
+                                [1] = "RollNoobEnchant",
+                                [2] = targetNoob
+                            }
+                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                            showToast("Enchants: Almighty skipped, rolling...")
+                        end
+                    else
+                        local args = {
+                            [1] = "RollNoobEnchant",
+                            [2] = targetNoob
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                    end
                 end
+            end)
+        end
+    end
+end)
                 
                 local currentRoll = rollTextLabel and rollTextLabel.Text:lower() or ""
                 
