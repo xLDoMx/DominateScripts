@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)12
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - Enchant update)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -140,7 +140,7 @@ Env.TrialDiagnostics = false
 
 -- ENCHANTS AUTOMATION CONFIG
 Env.AutoRerollEnchants = false
-Env.EnchantStopAtAlmighty = false
+Env.EnchantStopAtAlmighty = true
 Env.SelectedEnchantNoob = "Farmer"
 Env.EnchantNoobsList = {
     "Starter", "Cooker", "Farmer", "Archer", "Soldier", "Fisherman", "Knight", "Explorer", "Magician"
@@ -1943,28 +1943,41 @@ task.spawn(function()
     end
 end)
 
--- ENCHANTS AUTOMATION & PROMPT HANDLER LOOP
+-- REVAMPED ENCHANTS AUTOMATION & PROMPT HANDLER LOOP
 task.spawn(function()
     while Running do
         task.wait(0.35)
         if Running and Env.AutoRerollEnchants then
             pcall(function()
                 local pGui = player:FindFirstChild("PlayerGui")
-                local promptFound = false
+                local foundTier = nil -- "almighty" or "transcendent"
+                
                 if pGui then
                     for _, gui in ipairs(pGui:GetDescendants()) do
-                        if gui:IsA("TextLabel") and gui.Text and (gui.Text:lower():find("almighty") or gui.Text:lower():find("reroll")) then
-                            promptFound = true
-                            break
+                        if gui:IsA("TextLabel") and gui.Text then
+                            local textLower = gui.Text:lower()
+                            if textLower:find("transcendent") then
+                                foundTier = "transcendent"
+                                break
+                            elseif textLower:find("almighty") then
+                                foundTier = "almighty"
+                                break
+                            end
                         end
                     end
                 end
                 
-                if promptFound then
+                if foundTier == "transcendent" then
+                    -- Always stop and keep Transcendent
+                    Env.AutoRerollEnchants = false
+                    showToast("Enchants: Transcendent reached! Auto-reroll stopped.")
+                elseif foundTier == "almighty" then
                     if Env.EnchantStopAtAlmighty then
+                        -- Stop and keep Almighty
                         Env.AutoRerollEnchants = false
-                        showToast("Enchants: Almighty reached! Auto-reroll paused to keep it.")
+                        showToast("Enchants: Almighty reached! Auto-reroll stopped.")
                     else
+                        -- Skip Almighty to chase Transcendent
                         local args = {
                             [1] = "ConfirmRollEnchant",
                             [2] = Env.SelectedEnchantNoob
@@ -1973,6 +1986,7 @@ task.spawn(function()
                         showToast("Enchants: Almighty skipped, rolling for Transcendent...")
                     end
                 else
+                    -- Normal rolling loop
                     local args = {
                         [1] = "RollNoobEnchant",
                         [2] = Env.SelectedEnchantNoob
@@ -2437,7 +2451,7 @@ task.spawn(function()
                 task.wait(6.0)
                 local args = { [1] = "ExchangeAllMinerals" }
                 game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                task.wait(3.0)
+                task.wait(1.0)
                 MasterTargetVector = nil
             end)
             showToast("Gem Shop Pitstop Completed!")
@@ -2528,7 +2542,20 @@ task.spawn(function()
                 end
                 
                 if currentTargetPanel and currentTargetPanel.Parent then 
-                    MiningTargetVector = currentTargetPanel.Position 
+                    local orePos = currentTargetPanel.Position
+                    if hrp then
+                        local dir = (hrp.Position - orePos)
+                        dir = Vector3.new(dir.X, 0, dir.Z)
+                        if dir.Magnitude > 0.1 then
+                            -- Stand 1.0 stud away from the ore center, locking vertical height to player's current floor level to prevent sinking
+                            local targetXZ = orePos + (dir.Unit * 1.0)
+                            MiningTargetVector = Vector3.new(targetXZ.X, hrp.Position.Y, targetXZ.Z)
+                        else
+                            MiningTargetVector = Vector3.new(orePos.X, hrp.Position.Y, orePos.Z)
+                        end
+                    else
+                        MiningTargetVector = orePos
+                    end
                 else 
                     MiningTargetVector = nil 
                 end
