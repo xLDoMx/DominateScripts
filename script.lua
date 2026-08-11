@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 3dasdsdf)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - adfgh)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1943,44 +1943,94 @@ task.spawn(function()
     end
 end)
 
--- DEBUG-ENABLED DATA ENCHANTS LOOP
+-- FINAL DATA-DRIVEN ENCHANTS LOOP (FIXED SCOPE)
 task.spawn(function()
-    while Running do
-        task.wait(0.5)
-        if Running and Env.AutoRerollEnchants then
-            pcall(function()
-                local targetNoob = Env.SelectedEnchantNoob or "Farmer"
-                local features = player:FindFirstChild("FEATURES")
-                local noobs = features and features:FindFirstChild("NOOBS")
-                local noobFolder = noobs and noobs:FindFirstChild(targetNoob)
-                local enchantsFolder = noobFolder and noobFolder:FindFirstChild("Enchants")
-                
-                if enchantsFolder then
-                    local slot1 = enchantsFolder:FindFirstChild("1")
-                    local rawVal = slot1 and slot1:IsA("ValueBase") and slot1.Value or "N/A"
+    while true do
+        task.wait(0.4)
+        local runningCheck = getgenv().Running ~= false
+        if runningCheck then
+            -- Safely retrieve toggle states from global scope
+            local autoReroll = false
+            local stopAlmighty = false
+            
+            if _UIElements then
+                if _UIElements["AutoRerollEnchants"] and type(_UIElements["AutoRerollEnchants"].Value) == "boolean" then
+                    autoReroll = _UIElements["AutoRerollEnchants"].Value
+                end
+                if _UIElements["EnchantStopAtAlmighty"] and type(_UIElements["EnchantStopAtAlmighty"].Value) == "boolean" then
+                    stopAlmighty = _UIElements["EnchantStopAtAlmighty"].Value
+                end
+            end
+            
+            -- Fallback to global variables if available
+            if not autoReroll and getgenv().AutoRerollEnchants ~= nil then
+                autoReroll = getgenv().AutoRerollEnchants
+            end
+            if not stopAlmighty and getgenv().EnchantStopAtAlmighty ~= nil then
+                stopAlmighty = getgenv().EnchantStopAtAlmighty
+            end
+            
+            if autoReroll then
+                pcall(function()
+                    local player = game:GetService("Players").LocalPlayer
+                    local targetNoob = getgenv().SelectedEnchantNoob or "Farmer"
+                    local features = player:FindFirstChild("FEATURES")
+                    local noobs = features and features:FindFirstChild("NOOBS")
+                    
+                    if not noobs then return end
+                    
+                    local noobFolder = nil
+                    for _, child in ipairs(noobs:GetChildren()) do
+                        if child.Name:lower() == targetNoob:lower() or child.Name:lower() == (targetNoob .. "noob"):lower() then
+                            noobFolder = child
+                            break
+                        end
+                    end
+                    
+                    if not noobFolder then return end
+                    
+                    local enchantsFolder = noobFolder:FindFirstChild("Enchants")
+                    if not enchantsFolder then return end
+                    
+                    local slot1 = enchantsFolder:FindFirstChild("1") or enchantsFolder:GetChildren()[1]
+                    local rawVal = slot1 and slot1:IsA("ValueBase") and slot1.Value or ""
                     local slot1Val = tostring(rawVal):lower()
                     
-                    -- PRINT TO CONSOLE EVERY TICK SO WE SEE THE EXACT DATA
-                    print("[Enchant Data Debug] Noob:", targetNoob, "| Slot 1 Raw:", tostring(rawVal), "| Lower:", slot1Val)
+                    print("[Enchant Roller] Noob:", noobFolder.Name, "| Slot 1 Value:", tostring(rawVal), "| StopAlmighty:", tostring(stopAlmighty))
                     
-                    local foundTarget = slot1Val:find("transcendent")
-                    local hasAlmighty = slot1Val:find("almighty")
+                    local foundTranscendent = slot1Val:find("transcendent")
+                    local foundAlmighty = slot1Val:find("almighty")
                     
-                    if foundTarget then
-                        Env.AutoRerollEnchants = false
-                        showToast("Enchants: Transcendent reached! Stopped.")
-                    elseif hasAlmighty then
-                        if Env.EnchantStopAtAlmighty then
-                            Env.AutoRerollEnchants = false
-                            showToast("Enchants: Almighty reached & kept! Stopped.")
-                            print("[Enchant Debug] Stopped because Almighty was detected in Slot 1 data!")
+                    if foundTranscendent then
+                        getgenv().AutoRerollEnchants = false
+                        if _UIElements and _UIElements["AutoRerollEnchants"] then
+                            local ui = _UIElements["AutoRerollEnchants"]
+                            if ui.Track and ui.Stroke and ui.Thumb then
+                                game:GetService("TweenService"):Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                                game:GetService("TweenService"):Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                                game:GetService("TweenService"):Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                            end
+                        end
+                        if showToast then showToast("Enchants: Transcendent reached! Stopped.") end
+                    elseif foundAlmighty then
+                        if stopAlmighty then
+                            getgenv().AutoRerollEnchants = false
+                            if _UIElements and _UIElements["AutoRerollEnchants"] then
+                                local ui = _UIElements["AutoRerollEnchants"]
+                                if ui.Track and ui.Stroke and ui.Thumb then
+                                    game:GetService("TweenService"):Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                                    game:GetService("TweenService"):Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                                    game:GetService("TweenService"):Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                                end
+                            end
+                            if showToast then showToast("Enchants: Almighty reached & kept! Stopped.") end
                         else
                             local args = {
                                 [1] = "RollNoobEnchant",
                                 [2] = targetNoob
                             }
                             game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                            showToast("Enchants: Almighty skipped, rolling...")
+                            if showToast then showToast("Enchants: Almighty skipped, rolling...") end
                         end
                     else
                         local args = {
@@ -1989,8 +2039,8 @@ task.spawn(function()
                         }
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                     end
-                end
-            end)
+                end)
+            end
         end
     end
 end)
