@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - Updatex66426)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - Updatex6sasd6426)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1943,41 +1943,94 @@ task.spawn(function()
     end
 end)
 
--- DIRECT DEBUG ENCHANTS AUTOMATION LOOP
+-- TARGETED ENCHANTS AUTOMATION LOOP (WINDOW-LOCKED)
 task.spawn(function()
-    print("[DominateHub Debug] Enchants thread started successfully!")
     while Running do
-        task.wait(1.0)
-        
-        -- Safe player and GUI retrieval
-        local lp = game:GetService("Players").LocalPlayer
-        if lp then
-            local pGui = lp:FindFirstChild("PlayerGui")
-            if pGui then
-                -- Print status every second so we know the loop is running
-                print("[Enchant Loop Tick] AutoRerollEnchants status:", tostring(Env.AutoRerollEnchants))
+        task.wait(0.4)
+        if Running and Env.AutoRerollEnchants then
+            pcall(function()
+                local pGui = player:FindFirstChild("PlayerGui")
+                local foundTier = nil -- "almighty" or "transcendent"
                 
-                if Env.AutoRerollEnchants then
-                    print("[Enchant Loop] Reroll is active! Scanning UI...")
-                    
-                    local foundTier = nil
-                    for _, desc in ipairs(pGui:GetDescendants()) do
-                        if desc:IsA("TextLabel") and desc.Text and desc.Visible then
-                            local txt = desc.Text
-                            local textLower = txt:lower()
-                            
-                            -- Print every visible text label found during roll
-                            print(" -> Found TextLabel:", txt, "(Parent:", desc.Parent.Name, ")")
-                            
-                            if textLower:find("transcendent") then
-                                foundTier = "transcendent"
-                                break
-                            elseif textLower:find("almighty") and not textLower:find("pity") and not textLower:find("pty") then
-                                foundTier = "almighty"
-                                break
+                if pGui then
+                    -- Search specifically for the Enchants UI container frame
+                    for _, gui in ipairs(pGui:GetDescendants()) do
+                        if gui:IsA("Frame") and (gui.Name:lower():find("enchant") or gui.Name:lower():find("roll")) then
+                            -- Make sure we are not scanning a pity or index container inside it
+                            for _, desc in ipairs(gui:GetDescendants()) do
+                                if desc:IsA("TextLabel") and desc.Text and desc.Visible then
+                                    local txt = desc.Text
+                                    local textLower = txt:lower()
+                                    
+                                    -- Check ancestors to ensure this label isn't part of a pity bar or index
+                                    local skip = false
+                                    local p = desc.Parent
+                                    while p and p ~= gui do
+                                        local pn = p.Name:lower()
+                                        if pn:find("pity") or pn:find("pty") or pn:find("index") or pn:find("bar") or pn:find("progress") then
+                                            skip = true
+                                            break
+                                        end
+                                        p = p.Parent
+                                    end
+                                    
+                                    -- Ignore pity header text or numbers
+                                    if not skip and not textLower:find("/") and not textLower:find("pity") and not textLower:find("pty") then
+                                        if textLower:find("transcendent") then
+                                            foundTier = "transcendent"
+                                            break
+                                        elseif textLower:find("almighty") and textLower ~= "almighty" then 
+                                            -- Ensures it catches roll text rather than a standalone title header
+                                            foundTier = "almighty"
+                                            break
+                                        end
+                                    end
+                                end
                             end
                         end
+                        if foundTier then break end
                     end
+                end
+                
+                if foundTier == "transcendent" then
+                    Env.AutoRerollEnchants = false
+                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
+                        local ui = Env._UIElements["AutoRerollEnchants"]
+                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                    end
+                    showToast("Enchants: Transcendent reached! Stopped.")
+                elseif foundTier == "almighty" then
+                    if Env.EnchantStopAtAlmighty then
+                        Env.AutoRerollEnchants = false
+                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
+                            local ui = Env._UIElements["AutoRerollEnchants"]
+                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
+                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
+                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
+                        end
+                        showToast("Enchants: Almighty reached & kept! Stopped.")
+                    else
+                        -- Skip Almighty and continue rolling for Transcendent
+                        local args = {
+                            [1] = "RollNoobEnchant",
+                            [2] = Env.SelectedEnchantNoob
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                        showToast("Enchants: Almighty skipped, rolling...")
+                    end
+                else
+                    local args = {
+                        [1] = "RollNoobEnchant",
+                        [2] = Env.SelectedEnchantNoob
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                end
+            end)
+        end
+    end
+end)
                     
                     if foundTier == "transcendent" then
                         Env.AutoRerollEnchants = false
