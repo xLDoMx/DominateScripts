@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 3d)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - 3dasdsdf)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -1943,10 +1943,10 @@ task.spawn(function()
     end
 end)
 
--- TRANSPARENT DATA-DRIVEN ENCHANTS LOOP
+-- DEBUG-ENABLED DATA ENCHANTS LOOP
 task.spawn(function()
     while Running do
-        task.wait(0.4)
+        task.wait(0.5)
         if Running and Env.AutoRerollEnchants then
             pcall(function()
                 local targetNoob = Env.SelectedEnchantNoob or "Farmer"
@@ -1956,25 +1956,44 @@ task.spawn(function()
                 local enchantsFolder = noobFolder and noobFolder:FindFirstChild("Enchants")
                 
                 if enchantsFolder then
-                    local foundTarget = false
-                    local hasAlmighty = false
+                    local slot1 = enchantsFolder:FindFirstChild("1")
+                    local rawVal = slot1 and slot1:IsA("ValueBase") and slot1.Value or "N/A"
+                    local slot1Val = tostring(rawVal):lower()
                     
-                    -- Debug print to console so you see exactly what noob is being checked
-                    -- print("[Enchant Data Check] Checking Noob:", targetNoob)
+                    -- PRINT TO CONSOLE EVERY TICK SO WE SEE THE EXACT DATA
+                    print("[Enchant Data Debug] Noob:", targetNoob, "| Slot 1 Raw:", tostring(rawVal), "| Lower:", slot1Val)
                     
-                    for _, slotVal in ipairs(enchantsFolder:GetChildren()) do
-                        if slotVal:IsA("ValueBase") and slotVal.Value then
-                            local valLower = tostring(slotVal.Value):lower()
-                            -- print("   -> Slot:", slotVal.Name, "Value:", slotVal.Value)
-                            
-                            if valLower:find("transcendent") then
-                                foundTarget = true
-                                break
-                            elseif valLower:find("almighty") then
-                                hasAlmighty = true
-                            end
+                    local foundTarget = slot1Val:find("transcendent")
+                    local hasAlmighty = slot1Val:find("almighty")
+                    
+                    if foundTarget then
+                        Env.AutoRerollEnchants = false
+                        showToast("Enchants: Transcendent reached! Stopped.")
+                    elseif hasAlmighty then
+                        if Env.EnchantStopAtAlmighty then
+                            Env.AutoRerollEnchants = false
+                            showToast("Enchants: Almighty reached & kept! Stopped.")
+                            print("[Enchant Debug] Stopped because Almighty was detected in Slot 1 data!")
+                        else
+                            local args = {
+                                [1] = "RollNoobEnchant",
+                                [2] = targetNoob
+                            }
+                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
+                            showToast("Enchants: Almighty skipped, rolling...")
                         end
+                    else
+                        local args = {
+                            [1] = "RollNoobEnchant",
+                            [2] = targetNoob
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                     end
+                end
+            end)
+        end
+    end
+end)
                     
                     if foundTarget then
                         Env.AutoRerollEnchants = false
