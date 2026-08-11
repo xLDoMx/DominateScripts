@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - STAR BLACKLIST & SWEEP)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - Update 1)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
