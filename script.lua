@@ -1381,12 +1381,13 @@ end)
 local minesScroll = makeVerticalScroll(minesPage)
 createSectionHeader(minesScroll, "Mining Configuration")
 
--- Deepcore Rune 5-Minute Teleport Toggle Added under Auto Mining
+-- MAKE SURE THIS LINE IS RIGHT HERE:
 createToggleRow(minesScroll, "Deepcore Rune 5m Teleport", "DeepcoreRuneInterval")
 
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
 bestTierBtn.Size = UDim2.new(1, -10, 0, 48)
+-- ...
 bestTierBtn.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
 bestTierBtn.BackgroundTransparency = 0.5
 bestTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
