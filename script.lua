@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - h + DEEPCORE INTEGRATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - hsa + DEEPCORE INTEGRATION)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
