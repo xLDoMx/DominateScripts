@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - h)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - h + DEEPCORE INTEGRATION)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -80,7 +80,8 @@ local Dest = {
     SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
     AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388),
     PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512),
-    TrialDropOut = Vector3.new(879.040, 11.531, 13443.085)
+    TrialDropOut = Vector3.new(879.040, 11.531, 13443.085),
+    DeepcoreRune = Vector3.new(691.268432, 12.532532, 3161.888916) -- Configured with height offset
 }
 
 -- STATS TRACKING VARIABLES FOR HUD & EFFICIENCY TRACKER
@@ -92,6 +93,9 @@ local lastTrackedMobPart = nil
 local currentTargetPanel = nil
 local currentTargetMob = nil
 local gemExchangeCountdown = 60
+
+-- DEEPCORE RUNE COUNTDOWN TIMER VARIABLE
+local deepcoreTimer = 300
 
 -- RITUAL HUD TIMER VARIABLES
 local ritualTimer = 0
@@ -118,6 +122,9 @@ Env.AutoShovelLevelUp = false
 Env.AutoExcavationRankUp = false
 Env.AutoRegenSandLayers = false
 Env.TargetSandLayer = 3
+
+-- DEEPCORE RUNE CONFIG
+Env.DeepcoreRuneInterval = false
 
 -- REALM 4 CONFIG FLAGS
 Env.AutoSpaceMultiStar = false
@@ -1002,6 +1009,13 @@ task.spawn(function()
             
             local extraLines = {trialCountdownStr}
             
+            -- Add Deepcore Rune countdown info to HUD when enabled
+            if Env.DeepcoreRuneInterval then
+                local dcMin = math.floor(deepcoreTimer / 60)
+                local dcSec = deepcoreTimer % 60
+                table.insert(extraLines, string.format("Deepcore: %02d:%02d", dcMin, dcSec))
+            end
+            
             local elapsedHours = math.max((tick() - sessionStartTime) / 3600, 0.0001)
             
             local miningActive = false
@@ -1366,6 +1380,10 @@ end)
 -- MINES PAGE BUILD
 local minesScroll = makeVerticalScroll(minesPage)
 createSectionHeader(minesScroll, "Mining Configuration")
+
+-- Deepcore Rune 5-Minute Teleport Toggle Added under Auto Mining
+createToggleRow(minesScroll, "Deepcore Rune 5m Teleport", "DeepcoreRuneInterval")
+
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
 bestTierBtn.Size = UDim2.new(1, -10, 0, 48)
@@ -1854,6 +1872,54 @@ task.spawn(function()
     end
 end)
 
+-- DEEPCORE RUNE 5-MINUTE AUTO-TELEPORT ROUTINE & COUNTDOWN TICKER
+task.spawn(function()
+    while Running do
+        task.wait(1.0)
+        local isEnabled = Env.DeepcoreRuneInterval
+        if isEnabled and not trialIsRunning and not trialExiting and not ritualIsActive then
+            deepcoreTimer = deepcoreTimer - 1
+            if deepcoreTimer <= 0 then
+                deepcoreTimer = 300
+                pcall(function()
+                    local hrp = GetWorldRoot()
+                    if hrp then
+                        print("[DominateHub] Pausing auto-mining for Deepcore Rune teleport...")
+                        showToast("Deepcore Rune: Pausing auto-mining to teleport...")
+                        
+                        -- Save active ore states and temporarily pause mining flags
+                        local activeOres = {}
+                        for _, oreInfo in ipairs(OrePriorityList) do
+                            if Env[oreInfo.F] then
+                                activeOres[oreInfo.F] = true
+                                Env[oreInfo.F] = false
+                            end
+                        end
+                        
+                        MiningTargetVector = nil
+                        hrp.Anchored = false
+                        hrp.CFrame = CFrame.new(Dest.DeepcoreRune)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                        hrp.AssemblyAngularVelocity = Vector3.zero
+                        
+                        showToast("Deepcore Rune: Teleported! Waiting 5s...")
+                        task.wait(5.0)
+                        
+                        -- Restore active ore states
+                        for flagName, _ in pairs(activeOres) do
+                            Env[flagName] = true
+                        end
+                        print("[DominateHub] Resuming auto-mining.")
+                        showToast("Deepcore Rune: Resumed auto-mining!")
+                    end
+                end)
+            end
+        else
+            deepcoreTimer = 300
+        end
+    end
+end)
+
 -- ANCIENT BOSS SPAWN & AUTO-NAVIGATE LOOP
 task.spawn(function()
     while Running do
@@ -2044,516 +2110,6 @@ task.spawn(function()
                     local args = {
                         [1] = "RollNoobEnchant",
                         [2] = validNoobName
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                    
-                    if foundTarget then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Transcendent reached! Stopped.")
-                    elseif hasAlmighty then
-                        if Env.EnchantStopAtAlmighty then
-                            Env.AutoRerollEnchants = false
-                            if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                                local ui = Env._UIElements["AutoRerollEnchants"]
-                                TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                                TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                                TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                            end
-                            showToast("Enchants: Almighty reached & kept! Stopped.")
-                        else
-                            -- Skip Almighty and continue rolling for Transcendent
-                            local args = {
-                                [1] = "RollNoobEnchant",
-                                [2] = targetNoob
-                            }
-                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                            showToast("Enchants: Almighty skipped, rolling...")
-                        end
-                    else
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = targetNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                    end
-                end
-            end)
-        end
-    end
-end)
-                    
-                    if foundTarget then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Transcendent reached! Stopped.")
-                    elseif hasAlmighty then
-                        if Env.EnchantStopAtAlmighty then
-                            Env.AutoRerollEnchants = false
-                            if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                                local ui = Env._UIElements["AutoRerollEnchants"]
-                                TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                                TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                                TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                            end
-                            showToast("Enchants: Almighty reached & kept! Stopped.")
-                        else
-                            -- Skip Almighty and continue rolling for Transcendent
-                            local args = {
-                                [1] = "RollNoobEnchant",
-                                [2] = targetNoob
-                            }
-                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                            showToast("Enchants: Almighty skipped, rolling...")
-                        end
-                    else
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = targetNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                    end
-                end
-            end)
-        end
-    end
-end)
-                
-                local currentRoll = rollTextLabel and rollTextLabel.Text:lower() or ""
-                
-                if currentRoll:find("transcendent") then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif currentRoll:find("almighty") then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                    
-                    if foundTier == "transcendent" then
-                        Env.AutoRerollEnchants = false
-                        showToast("Enchants: Transcendent reached! Stopped.")
-                        print("[Enchant Match] Stopped at Transcendent.")
-                    elseif foundTier == "almighty" then
-                        if Env.EnchantStopAtAlmighty then
-                            Env.AutoRerollEnchants = false
-                            showToast("Enchants: Almighty reached & kept! Stopped.")
-                            print("[Enchant Match] Stopped at Almighty.")
-                        else
-                            print("[Enchant Match] Almighty found, skipping to Transcendent...")
-                            local args = {
-                                [1] = "RollNoobEnchant",
-                                [2] = Env.SelectedEnchantNoob
-                            }
-                            game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        end
-                    else
-                        print("[Enchant Action] Rolling for target:", tostring(Env.SelectedEnchantNoob))
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                    end
-                end
-            else
-                print("[Enchant Debug Warning] PlayerGui not found yet.")
-            end
-        else
-            print("[Enchant Debug Warning] LocalPlayer not found yet.")
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    Env.AutoRerollEnchants = false
-                    if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                        local ui = Env._UIElements["AutoRerollEnchants"]
-                        TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                        TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                        TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                    end
-                    showToast("Enchants: Transcendent reached! Stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        Env.AutoRerollEnchants = false
-                        if Env._UIElements and Env._UIElements["AutoRerollEnchants"] then
-                            local ui = Env._UIElements["AutoRerollEnchants"]
-                            TweenService:Create(ui.Track, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(42, 28, 65)}):Play()
-                            TweenService:Create(ui.Stroke, TweenInfo.new(0.2), {Transparency = 0.7}):Play()
-                            TweenService:Create(ui.Thumb, TweenInfo.new(0.2), {Position = UDim2.new(0, 2, 0.5, -9)}):Play()
-                        end
-                        showToast("Enchants: Almighty reached & kept! Stopped.")
-                    else
-                        -- Skip Almighty and continue rolling for Transcendent
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling...")
-                    end
-                else
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-                
-                if foundTier == "transcendent" then
-                    -- Always stop and keep Transcendent
-                    Env.AutoRerollEnchants = false
-                    showToast("Enchants: Transcendent reached! Auto-reroll stopped.")
-                elseif foundTier == "almighty" then
-                    if Env.EnchantStopAtAlmighty then
-                        -- Stop and keep Almighty
-                        Env.AutoRerollEnchants = false
-                        showToast("Enchants: Almighty reached! Auto-reroll stopped.")
-                    else
-                        -- Skip Almighty to chase Transcendent
-                        local args = {
-                            [1] = "ConfirmRollEnchant",
-                            [2] = Env.SelectedEnchantNoob
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        showToast("Enchants: Almighty skipped, rolling for Transcendent...")
-                    end
-                else
-                    -- Normal rolling loop
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = Env.SelectedEnchantNoob
                     }
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                 end
@@ -3625,4 +3181,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully with Deepcore Integration!")
