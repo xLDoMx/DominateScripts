@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - hsa + DEEPCORE INTEGRATION)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.103 - sdsaM)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -81,7 +81,7 @@ local Dest = {
     AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388),
     PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512),
     TrialDropOut = Vector3.new(879.040, 11.531, 13443.085),
-    DeepcoreRune = Vector3.new(691.268432, 12.532532, 3161.888916) -- Configured with height offset
+    DeepcoreRune = Vector3.new(691.268432, 12.532532, 3161.888916)
 }
 
 -- STATS TRACKING VARIABLES FOR HUD & EFFICIENCY TRACKER
@@ -1009,7 +1009,6 @@ task.spawn(function()
             
             local extraLines = {trialCountdownStr}
             
-            -- Add Deepcore Rune countdown info to HUD when enabled
             if Env.DeepcoreRuneInterval then
                 local dcMin = math.floor(deepcoreTimer / 60)
                 local dcSec = deepcoreTimer % 60
@@ -1381,13 +1380,12 @@ end)
 local minesScroll = makeVerticalScroll(minesPage)
 createSectionHeader(minesScroll, "Mining Configuration")
 
--- MAKE SURE THIS LINE IS RIGHT HERE:
+-- Deepcore Rune 5-Minute Teleport Toggle
 createToggleRow(minesScroll, "Deepcore Rune 5m Teleport", "DeepcoreRuneInterval")
 
 local bestTierActive = false
 local bestTierBtn = Instance.new("TextButton")
 bestTierBtn.Size = UDim2.new(1, -10, 0, 48)
--- ...
 bestTierBtn.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
 bestTierBtn.BackgroundTransparency = 0.5
 bestTierBtn.TextColor3 = Color3.fromRGB(240, 235, 250)
@@ -1794,7 +1792,6 @@ task.spawn(function()
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 elseif StarTargetVector then
-                    -- SMOOTH SWEEP GLIDE FOR STARS (NO SPINNING)
                     if (hrp.Position - act).Magnitude > 2.0 then
                         hrp.Anchored = false
                         hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.4)
@@ -1836,7 +1833,6 @@ task.spawn(function()
                     local hrp = GetWorldRoot()
                     local now = tick()
                     
-                    -- Clear expired cooldowns
                     for starModel, expiry in pairs(starCooldowns) do
                         if now >= expiry or not starModel.Parent then
                             starCooldowns[starModel] = nil
@@ -1851,7 +1847,6 @@ task.spawn(function()
                                 if dist < shortestDist then
                                     shortestDist = dist
                                     foundStarPart = hitbox
-                                    -- Blacklist this star for 3 seconds so we sweep past it to the next one
                                     starCooldowns[starModel] = now + 3.0
                                 end
                             end
@@ -1873,49 +1868,63 @@ task.spawn(function()
     end
 end)
 
--- DEEPCORE RUNE 5-MINUTE AUTO-TELEPORT ROUTINE & COUNTDOWN TICKER
+-- FIXED TICK-BASED DEEPCORE RUNE 5-MINUTE AUTO-TELEPORT ROUTINE
 task.spawn(function()
+    print("[DominateHub] Deepcore Rune loop initialized.")
+    local nextTeleportTick = tick() + 300
+    
     while Running do
         task.wait(1.0)
         local isEnabled = Env.DeepcoreRuneInterval
-        if isEnabled and not trialIsRunning and not trialExiting and not ritualIsActive then
-            deepcoreTimer = deepcoreTimer - 1
-            if deepcoreTimer <= 0 then
+        
+        if isEnabled then
+            if trialIsRunning or trialExiting or ritualIsActive then
+                nextTeleportTick = tick() + 300
                 deepcoreTimer = 300
-                pcall(function()
-                    local hrp = GetWorldRoot()
-                    if hrp then
-                        print("[DominateHub] Pausing auto-mining for Deepcore Rune teleport...")
-                        showToast("Deepcore Rune: Pausing auto-mining to teleport...")
+            else
+                local remaining = nextTeleportTick - tick()
+                deepcoreTimer = math.max(0, math.ceil(remaining))
+                
+                if remaining <= 0 then
+                    nextTeleportTick = tick() + 300
+                    deepcoreTimer = 300
+                    
+                    pcall(function()
+                        local char = player.Character
+                        local hrp = char and char:FindFirstChild("HumanoidRootPart")
                         
-                        -- Save active ore states and temporarily pause mining flags
-                        local activeOres = {}
-                        for _, oreInfo in ipairs(OrePriorityList) do
-                            if Env[oreInfo.F] then
-                                activeOres[oreInfo.F] = true
-                                Env[oreInfo.F] = false
+                        if hrp then
+                            print("[DominateHub] Pausing auto-mining for Deepcore Rune teleport...")
+                            showToast("Deepcore Rune: Pausing to teleport...")
+                            
+                            local activeOres = {}
+                            for _, oreInfo in ipairs(OrePriorityList) do
+                                if Env[oreInfo.F] then
+                                    activeOres[oreInfo.F] = true
+                                    Env[oreInfo.F] = false
+                                end
                             end
+                            
+                            MiningTargetVector = nil
+                            hrp.Anchored = false
+                            hrp.CFrame = CFrame.new(Dest.DeepcoreRune)
+                            hrp.AssemblyLinearVelocity = Vector3.zero
+                            hrp.AssemblyAngularVelocity = Vector3.zero
+                            
+                            showToast("Deepcore Rune: Waiting 5s...")
+                            task.wait(5.0)
+                            
+                            for flagName, _ in pairs(activeOres) do
+                                Env[flagName] = true
+                            end
+                            print("[DominateHub] Resuming auto-mining.")
+                            showToast("Deepcore Rune: Resumed auto-mining!")
                         end
-                        
-                        MiningTargetVector = nil
-                        hrp.Anchored = false
-                        hrp.CFrame = CFrame.new(Dest.DeepcoreRune)
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                        hrp.AssemblyAngularVelocity = Vector3.zero
-                        
-                        showToast("Deepcore Rune: Teleported! Waiting 5s...")
-                        task.wait(5.0)
-                        
-                        -- Restore active ore states
-                        for flagName, _ in pairs(activeOres) do
-                            Env[flagName] = true
-                        end
-                        print("[DominateHub] Resuming auto-mining.")
-                        showToast("Deepcore Rune: Resumed auto-mining!")
-                    end
-                end)
+                    end)
+                end
             end
         else
+            nextTeleportTick = tick() + 300
             deepcoreTimer = 300
         end
     end
@@ -2019,12 +2028,10 @@ task.spawn(function()
     while true do
         task.wait(0.4)
         
-        -- Global running check
         local isRunning = getgenv().Running
         if isRunning == nil then isRunning = true end
         if not isRunning then continue end
         
-        -- Robust UI Toggle State Retriever
         local autoReroll = false
         local stopAlmighty = false
         
@@ -2042,7 +2049,6 @@ task.spawn(function()
             end
         end
         
-        -- Fallback to global env flags if UI elements aren't indexed yet
         if not autoReroll and getgenv().AutoRerollEnchants == true then autoReroll = true end
         if stopAlmighty == false and getgenv().EnchantStopAtAlmighty == true then stopAlmighty = true end
         
@@ -2055,7 +2061,6 @@ task.spawn(function()
                 local noobs = features and features:FindFirstChild("NOOBS")
                 if not noobs then return end
                 
-                -- Dynamically find the exact case-sensitive noob folder name in data memory
                 local validNoobName = nil
                 local noobFolder = nil
                 for _, child in ipairs(noobs:GetChildren()) do
@@ -2071,17 +2076,14 @@ task.spawn(function()
                 local enchantsFolder = noobFolder:FindFirstChild("Enchants")
                 if not enchantsFolder then return end
                 
-                -- Read Slot 1 value directly from memory
                 local slot1 = enchantsFolder:FindFirstChild("1") or enchantsFolder:GetChildren()[1]
                 local rawVal = slot1 and slot1:IsA("ValueBase") and slot1.Value or ""
                 local slot1Val = tostring(rawVal):lower()
                 
-                -- Check roll tiers
                 local hasTranscendent = slot1Val:find("transcendent")
                 local hasAlmighty = slot1Val:find("almighty")
                 
                 if hasTranscendent then
-                    -- Turn off auto reroll when Transcendent is hit
                     getgenv().AutoRerollEnchants = false
                     if getgenv()._UIElements and getgenv()._UIElements["AutoRerollEnchants"] then
                         getgenv()._UIElements["AutoRerollEnchants"].Value = false
@@ -2091,7 +2093,6 @@ task.spawn(function()
                     
                 elseif hasAlmighty then
                     if stopAlmighty then
-                        -- Keep Almighty and stop
                         getgenv().AutoRerollEnchants = false
                         if getgenv()._UIElements and getgenv()._UIElements["AutoRerollEnchants"] then
                             getgenv()._UIElements["AutoRerollEnchants"].Value = false
@@ -2099,7 +2100,6 @@ task.spawn(function()
                         if showToast then showToast("Enchants: Almighty reached & kept! Stopped.") end
                         print("[DominateHub] Almighty kept on " .. validNoobName .. "! Stopping.")
                     else
-                        -- Stop at Almighty is OFF -> Skip Almighty and keep rolling for Transcendent
                         local args = {
                             [1] = "RollNoobEnchant",
                             [2] = validNoobName
@@ -2107,7 +2107,6 @@ task.spawn(function()
                         game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                     end
                 else
-                    -- Standard roll for any other tier
                     local args = {
                         [1] = "RollNoobEnchant",
                         [2] = validNoobName
@@ -2603,7 +2602,6 @@ task.spawn(function()
                 local dwellTime = Env.MiningJumpSpeed or 0.8
                 local keepCurrent = false
                 
-                -- Check if current target is still valid, not respawning, and within dwell time
                 if currentTargetPanel and currentTargetPanel.Parent and currentTargetPanel:IsDescendantOf(workspace) then
                     if not isOreRespawning(currentTargetPanel.Parent) then
                         if (now - oreLockStartTime) < dwellTime then
@@ -2613,19 +2611,16 @@ task.spawn(function()
                 end
                 
                 if not keepCurrent then
-                    -- Blacklist the completed/respawning ore temporarily so we shift to another available one
                     if currentTargetPanel and currentTargetPanel.Parent then
                         oreCooldowns[currentTargetPanel.Parent] = now + 4.0
                     end
                     
-                    -- Clear expired cooldowns
                     for oreModel, expiry in pairs(oreCooldowns) do
                         if now >= expiry or not oreModel.Parent then
                             oreCooldowns[oreModel] = nil
                         end
                     end
                     
-                    -- Gather all valid ores matching ANY of the enabled types and NOT respawning
                     local freshList = {} 
                     local gc = workspace:FindFirstChild("__GAME_CONTENT") 
                     local oresFolder = gc and gc:FindFirstChild("Ores")
@@ -2642,7 +2637,6 @@ task.spawn(function()
                     end
                     
                     if #freshList > 0 then
-                        -- Sort by distance so it picks the closest active ore
                         table.sort(freshList, function(a, b) return a.Dist < b.Dist end)
                         
                         currentOreIndex = currentOreIndex + 1 
@@ -2656,7 +2650,6 @@ task.spawn(function()
                             oresMined = oresMined + 1
                         end
                     else 
-                        -- Fallback if everything is on cooldown/respawning: clear cooldowns and look for nearest non-respawning
                         oreCooldowns = {}
                         currentTargetPanel = nil
                     end
@@ -2668,7 +2661,6 @@ task.spawn(function()
                         local dir = (hrp.Position - orePos)
                         dir = Vector3.new(dir.X, 0, dir.Z)
                         if dir.Magnitude > 0.1 then
-                            -- Stand 1.0 stud away from the ore center, locking vertical height to player's current floor level to prevent sinking
                             MiningTargetVector = orePos
                         else
                             MiningTargetVector = Vector3.new(orePos.X, hrp.Position.Y, orePos.Z)
@@ -3182,4 +3174,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.103 Stable Loaded Successfully with Deepcore Integration!")
+print("[Dominate Hub] V16.9.103 Stable Loaded Successfully with Fixed Deepcore Integration!")
