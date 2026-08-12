@@ -1557,7 +1557,7 @@ createToggleRow(mobsScroll, "Dark Commander", "AutoMobDarkCommander")
 
 createSectionHeader(mobsScroll, "Combat Utilities")
 createToggleRow(mobsScroll, "Ancient Boss Farm (Supreme Shadow Lord)", "AutoAncientBossFarm")
-createToggleRow(mobsScroll, "Combat Safe Spot Break (2s)", "AutoCombatBreak")
+createToggleRow(mobsScroll, "Combat Safe Spot Break (4s)", "AutoCombatBreak")
 createToggleRow(mobsScroll, "Auto Start Ritual (Infinite Multi-Fire Loop)", "AutoStartRitual")
 createRitualMobDropdown(mobsScroll, "Ritual Target Mobs", MobPriorityList)
 
@@ -2323,7 +2323,7 @@ task.spawn(function()
                     game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
                 end)
                 
-                task.wait(1.5)
+                task.wait(3.5)
                 for flag, state in pairs(activeMobStates) do
                     Env[flag] = state
                 end
