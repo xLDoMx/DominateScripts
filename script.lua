@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.107 - sdsaM)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.108 - dsM)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -2020,13 +2020,13 @@ task.spawn(function()
 end)
 
 -- ==========================================
--- DOMINATE HUB: REVAMPED DATA-DRIVEN ENCHANTS SYSTEM (SKIP ALMIGHTY & TRANSCENDENT STOP)
+-- DOMINATE HUB: FAST & SAFE GUI-AWARE ENCHANTS AUTOMATION
 -- ==========================================
 task.spawn(function()
-    print("[DominateHub] Revamped Enchants Automation Initialized.")
+    print("[DominateHub] Fast Enchants Automation Initialized.")
     
     while true do
-        task.wait(0.4)
+        task.wait(0.15) -- Increased speed from 0.4 to 0.15
         
         local isRunning = getgenv().Running
         if isRunning == nil then isRunning = true end
@@ -2055,8 +2055,60 @@ task.spawn(function()
         if autoReroll then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
+                local playerGui = player:FindFirstChild("PlayerGui")
                 local selectedTarget = getgenv().SelectedEnchantNoob or "Farmer"
                 
+                -- 1. Check if the Almighty confirmation popup is blocking the screen
+                local foundAlmightyPrompt = false
+                local cancelBtn, confirmRerollBtn = nil, nil
+                
+                if playerGui then
+                    for _, desc in ipairs(playerGui:GetDescendants()) do
+                        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("almighty") then
+                            foundAlmightyPrompt = true
+                        end
+                        if desc:IsA("TextButton") or desc:IsA("ImageButton") then
+                            local textContent = desc.Name:lower()
+                            for _, sub in ipairs(desc:GetDescendants()) do
+                                if sub:IsA("TextLabel") and sub.Text then
+                                    textContent = textContent .. " " .. sub.Text:lower()
+                                end
+                            end
+                            if textContent:find("cancel") then
+                                cancelBtn = desc
+                            elseif textContent:find("reroll") and desc.Visible then
+                                confirmRerollBtn = desc
+                            end
+                        end
+                    end
+                end
+                
+                if foundAlmightyPrompt then
+                    if skipAlmighty then
+                        -- SKIP ALMIGHTY: Click Reroll Confirmation safely via UI connections
+                        if confirmRerollBtn then
+                            for _, conn in ipairs(getconnections(confirmRerollBtn.MouseButton1Click)) do conn:Fire() end
+                            for _, conn in ipairs(getconnections(confirmRerollBtn.Activated)) do conn:Fire() end
+                        end
+                        if showToast then showToast("Enchants: Almighty skipped, rolling...") end
+                        print("[DominateHub] Almighty skipped, continuing to roll for Transcendent...")
+                    else
+                        -- KEEP ALMIGHTY: Click Cancel safely via UI connections
+                        if cancelBtn then
+                            for _, conn in ipairs(getconnections(cancelBtn.MouseButton1Click)) do conn:Fire() end
+                            for _, conn in ipairs(getconnections(cancelBtn.Activated)) do conn:Fire() end
+                        end
+                        getgenv().AutoRerollEnchants = false
+                        if getgenv()._UIElements and getgenv()._UIElements["AutoRerollEnchants"] then
+                            getgenv()._UIElements["AutoRerollEnchants"].Value = false
+                        end
+                        if showToast then showToast("Enchants: Almighty kept! Stopped.") end
+                        print("[DominateHub] Almighty kept! Auto-reroll stopped.")
+                    end
+                    return
+                end
+                
+                -- 2. Data Memory Check for Transcendent (Always Stop) & Standard Rolling
                 local features = player:FindFirstChild("FEATURES")
                 local noobs = features and features:FindFirstChild("NOOBS")
                 if not noobs then return end
@@ -2072,7 +2124,6 @@ task.spawn(function()
                 end
                 
                 if not noobFolder then return end
-                
                 local enchantsFolder = noobFolder:FindFirstChild("Enchants")
                 if not enchantsFolder then return end
                 
@@ -2080,35 +2131,16 @@ task.spawn(function()
                 local rawVal = slot1 and slot1:IsA("ValueBase") and slot1.Value or ""
                 local slot1Val = tostring(rawVal):lower()
                 
-                local hasTranscendent = slot1Val:find("transcendent")
-                local hasAlmighty = slot1Val:find("almighty")
-                
-                if hasTranscendent then
+                if slot1Val:find("transcendent") then
+                    -- ALWAYS STOP AT TRANSCENDENT PERMANENTLY
                     getgenv().AutoRerollEnchants = false
                     if getgenv()._UIElements and getgenv()._UIElements["AutoRerollEnchants"] then
                         getgenv()._UIElements["AutoRerollEnchants"].Value = false
                     end
                     if showToast then showToast("Enchants: Transcendent reached! Stopped.") end
-                    print("[DominateHub] Transcendent hit on " .. validNoobName .. "! Stopping.")
-                    
-                elseif hasAlmighty then
-                    if skipAlmighty then
-                        local args = {
-                            [1] = "RollNoobEnchant",
-                            [2] = validNoobName
-                        }
-                        game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                        if showToast then showToast("Enchants: Almighty skipped, rolling...") end
-                        print("[DominateHub] Almighty skipped on " .. validNoobName .. ", rolling for Transcendent...")
-                    else
-                        getgenv().AutoRerollEnchants = false
-                        if getgenv()._UIElements and getgenv()._UIElements["AutoRerollEnchants"] then
-                            getgenv()._UIElements["AutoRerollEnchants"].Value = false
-                        end
-                        if showToast then showToast("Enchants: Almighty reached & kept! Stopped.") end
-                        print("[DominateHub] Almighty kept on " .. validNoobName .. "! Stopping.")
-                    end
+                    print("[DominateHub] Transcendent hit on " .. validNoobName .. "! Auto-reroll stopped permanently.")
                 else
+                    -- Standard roll remote request
                     local args = {
                         [1] = "RollNoobEnchant",
                         [2] = validNoobName
@@ -3176,4 +3208,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.107 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.108 Stable Loaded Successfully!")
