@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.105 - sdsaM)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.106 - Update)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -3176,4 +3176,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.105 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.106 Stable Loaded Successfully!")
