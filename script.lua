@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.106 - Update)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.107 - sdsaM)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -2045,7 +2045,7 @@ task.spawn(function()
             local sEl = getgenv()._UIElements["EnchantSkipAlmighty"]
             if sEl then
                 if type(sEl.Value) == "boolean" then skipAlmighty = sEl.Value
-                elseif sEl.State ~= nil then sEl.State end
+                elseif sEl.State ~= nil then skipAlmighty = sEl.State end
             end
         end
         
@@ -3176,4 +3176,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.106 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.107 Stable Loaded Successfully!")
