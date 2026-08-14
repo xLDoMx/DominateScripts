@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.108 - dsM)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.110 - sdsaM)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -144,14 +144,6 @@ Env.AutoCollectStars = false
 Env.AutoLeaveByTime = true
 Env.TrialTimeLimit = 15
 Env.TrialDiagnostics = false
-
--- ENCHANTS AUTOMATION CONFIG
-Env.AutoRerollEnchants = false
-Env.EnchantSkipAlmighty = false
-Env.SelectedEnchantNoob = "Farmer"
-Env.EnchantNoobsList = {
-    "Starter", "Cooker", "Farmer", "Archer", "Soldier", "Fisherman", "Knight", "Explorer", "Magician"
-}
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -469,7 +461,6 @@ local function createToggleRow(parent, txt, vKey)
     thumbCorner.CornerRadius = UDim.new(1, 0)
     thumbCorner.Parent = switchThumb
 
-    -- Register UI Elements for programmatic synchronization
     Env._UIElements[vKey] = {Track = switchTrack, Stroke = trackStroke, Thumb = switchThumb}
 
     row.InputBegan:Connect(function(input)
@@ -583,114 +574,6 @@ local function createSectionHeader(parent, txt)
     header.TextXAlignment = Enum.TextXAlignment.Left
     header.Parent = parent
     return header
-end
-
-local function createEnchantNoobDropdown(parent, title, noobList)
-    local dropFrame = Instance.new("Frame")
-    dropFrame.Size = UDim2.new(1, -10, 0, 42)
-    dropFrame.BackgroundColor3 = Color3.fromRGB(35, 20, 55)
-    dropFrame.BackgroundTransparency = 0.5
-    dropFrame.BorderSizePixel = 0
-    dropFrame.ClipsDescendants = true
-    dropFrame.Parent = parent
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = dropFrame
-
-    local headerBtn = Instance.new("TextButton")
-    headerBtn.Size = UDim2.new(1, 0, 0, 42)
-    headerBtn.BackgroundTransparency = 1
-    headerBtn.Text = ""
-    headerBtn.Parent = dropFrame
-
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0.75, 0, 1, 0)
-    lbl.Position = UDim2.new(0, 16, 0, 0)
-    lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(240, 235, 250)
-    lbl.TextSize = 12
-    lbl.Font = Enum.Font.GothamBold
-    lbl.Text = title .. ": " .. tostring(Env.SelectedEnchantNoob)
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = headerBtn
-
-    local arrow = Instance.new("TextLabel")
-    arrow.Size = UDim2.new(0, 30, 0, 42)
-    arrow.Position = UDim2.new(1, -38, 0, 0)
-    arrow.BackgroundTransparency = 1
-    arrow.TextColor3 = Color3.fromRGB(216, 180, 254)
-    arrow.TextSize = 12
-    arrow.Font = Enum.Font.GothamBold
-    arrow.Text = "▼"
-    arrow.Parent = headerBtn
-
-    local container = Instance.new("ScrollingFrame")
-    container.Size = UDim2.new(1, -16, 0, 150)
-    container.Position = UDim2.new(0, 8, 0, 46)
-    container.BackgroundTransparency = 1
-    container.BorderSizePixel = 0
-    container.ScrollBarThickness = 3
-    container.ScrollingEnabled = true
-    container.Parent = dropFrame
-
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.Padding = UDim.new(0, 4)
-    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.Parent = container
-
-    listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        container.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
-    end)
-
-    for _, noobName in ipairs(noobList) do
-        local noobRow = Instance.new("TextButton")
-        noobRow.Size = UDim2.new(1, -4, 0, 30)
-        noobRow.BackgroundColor3 = (Env.SelectedEnchantNoob == noobName) and Color3.fromRGB(168, 85, 247) or Color3.fromRGB(42, 28, 65)
-        noobRow.BackgroundTransparency = (Env.SelectedEnchantNoob == noobName) and 0.2 or 0.6
-        noobRow.Text = ""
-        noobRow.AutoButtonColor = false
-        noobRow.Parent = container
-
-        local rc = Instance.new("UICorner")
-        rc.CornerRadius = UDim.new(0, 6)
-        rc.Parent = noobRow
-
-        local rLbl = Instance.new("TextLabel")
-        rLbl.Size = UDim2.new(1, -12, 1, 0)
-        rLbl.Position = UDim2.new(0, 10, 0, 0)
-        rLbl.BackgroundTransparency = 1
-        rLbl.TextColor3 = Color3.fromRGB(240, 235, 250)
-        rLbl.TextSize = 11
-        rLbl.Font = Enum.Font.GothamBold
-        rLbl.Text = ((Env.SelectedEnchantNoob == noobName) and "[✔] " or "[   ] ") .. noobName
-        rLbl.TextXAlignment = Enum.TextXAlignment.Left
-        rLbl.Parent = noobRow
-
-        noobRow.MouseButton1Click:Connect(function()
-            Env.SelectedEnchantNoob = noobName
-            lbl.Text = title .. ": " .. noobName
-            showToast("Enchants: Target Noob set to " .. noobName)
-            
-            for _, child in ipairs(container:GetChildren()) do
-                if child:IsA("TextButton") then
-                    child.BackgroundColor3 = Color3.fromRGB(42, 28, 65)
-                    child.BackgroundTransparency = 0.6
-                end
-            end
-            noobRow.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
-            noobRow.BackgroundTransparency = 0.2
-        end)
-    end
-
-    local isOpen = false
-    headerBtn.MouseButton1Click:Connect(function()
-        isOpen = not isOpen
-        arrow.Text = isOpen and "▲" or "▼"
-        TweenService:Create(dropFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = isOpen and UDim2.new(1, -10, 0, 204) or UDim2.new(1, -10, 0, 42)}):Play()
-    end)
-
-    return dropFrame
 end
 
 local function createRitualMobDropdown(parent, title, mobList)
@@ -1586,11 +1469,6 @@ createToggleRow(footballScroll, "Auto Buy Trophies", "AutoClaimTrophies")
 
 -- MISC PAGE BUILD
 local miscScroll = makeVerticalScroll(miscPage)
-createSectionHeader(miscScroll, "Enchants Automation Settings")
-createToggleRow(miscScroll, "Auto Reroll Enchants", "AutoRerollEnchants")
-createToggleRow(miscScroll, "Skip Almighty", "EnchantSkipAlmighty")
-createEnchantNoobDropdown(miscScroll, "Target Noob", Env.EnchantNoobsList)
-
 createSectionHeader(miscScroll, "Runes")
 createToggleRow(miscScroll, "Auto Basic Rune Circle", "AutoRollBasicRune")
 createToggleRow(miscScroll, "Auto Super Rune Circle", "AutoRollSuperRune")
@@ -1792,12 +1670,21 @@ task.spawn(function()
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 elseif StarTargetVector then
-                    if (hrp.Position - act).Magnitude > 2.0 then
+                    -- ANTI-CHEAT SAFE CONSTANT-SPEED GLIDE FOR STARS
+                    local currentPos = hrp.Position
+                    local targetPos = StarTargetVector
+                    local distance = (currentPos - targetPos).Magnitude
+                    
+                    if distance > 1.5 then
                         hrp.Anchored = false
-                        hrp.CFrame = hrp.CFrame:Lerp(targetCF, 0.4)
+                        local speed = 55 
+                        local step = math.min(1.0, (speed * 0.016) / distance)
+                        local newPos = currentPos:Lerp(targetPos, step)
+                        
+                        hrp.CFrame = CFrame.new(newPos, targetPos)
                         hrp.AssemblyLinearVelocity = Vector3.zero
                     else
-                        hrp.CFrame = targetCF
+                        hrp.CFrame = CFrame.new(targetPos)
                         hrp.AssemblyLinearVelocity = Vector3.zero
                     end
                 else
@@ -1819,11 +1706,11 @@ task.spawn(function()
     end
 end)
 
--- SMOOTH SWEEP STAR COLLECTION LOOP WITH BLACKLISTING & COOLDOWN
+-- SMOOTH SWEEP STAR COLLECTION LOOP WITH HUMAN-LIKE DELAYS & SAFE COOLDOWNS
 local starCooldowns = {}
 task.spawn(function()
     while Running do
-        task.wait(0.1)
+        task.wait(math.random(15, 30) / 100) -- Natural human-like reaction window (0.15s - 0.30s)
         if Running and Env.AutoCollectStars and not trialIsRunning and not trialExiting and not ritualIsActive then
             pcall(function()
                 local clientStars = workspace:FindFirstChild("ClientStars")
@@ -1847,7 +1734,7 @@ task.spawn(function()
                                 if dist < shortestDist then
                                     shortestDist = dist
                                     foundStarPart = hitbox
-                                    starCooldowns[starModel] = now + 3.0
+                                    starCooldowns[starModel] = now + 4.0
                                 end
                             end
                         end
@@ -2019,146 +1906,13 @@ task.spawn(function()
     end
 end)
 
--- ==========================================
--- DOMINATE HUB: FAST & SAFE GUI-AWARE ENCHANTS AUTOMATION
--- ==========================================
-task.spawn(function()
-    print("[DominateHub] Fast Enchants Automation Initialized.")
-    
-    while true do
-        task.wait(0.15) -- Increased speed from 0.4 to 0.15
-        
-        local isRunning = getgenv().Running
-        if isRunning == nil then isRunning = true end
-        if not isRunning then continue end
-        
-        local autoReroll = false
-        local skipAlmighty = false
-        
-        if getgenv()._UIElements then
-            local rEl = getgenv()._UIElements["AutoRerollEnchants"]
-            if rEl then
-                if type(rEl.Value) == "boolean" then autoReroll = rEl.Value
-                elseif rEl.State ~= nil then autoReroll = rEl.State end
-            end
-            
-            local sEl = getgenv()._UIElements["EnchantSkipAlmighty"]
-            if sEl then
-                if type(sEl.Value) == "boolean" then skipAlmighty = sEl.Value
-                elseif sEl.State ~= nil then skipAlmighty = sEl.State end
-            end
-        end
-        
-        if not autoReroll and getgenv().AutoRerollEnchants == true then autoReroll = true end
-        if skipAlmighty == false and getgenv().EnchantSkipAlmighty == true then skipAlmighty = true end
-        
-        if autoReroll then
-            pcall(function()
-                local player = game:GetService("Players").LocalPlayer
-                local playerGui = player:FindFirstChild("PlayerGui")
-                local selectedTarget = getgenv().SelectedEnchantNoob or "Farmer"
-                
-                -- 1. Check if the Almighty confirmation popup is blocking the screen
-                local foundAlmightyPrompt = false
-                local cancelBtn, confirmRerollBtn = nil, nil
-                
-                if playerGui then
-                    for _, desc in ipairs(playerGui:GetDescendants()) do
-                        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("almighty") then
-                            foundAlmightyPrompt = true
-                        end
-                        if desc:IsA("TextButton") or desc:IsA("ImageButton") then
-                            local textContent = desc.Name:lower()
-                            for _, sub in ipairs(desc:GetDescendants()) do
-                                if sub:IsA("TextLabel") and sub.Text then
-                                    textContent = textContent .. " " .. sub.Text:lower()
-                                end
-                            end
-                            if textContent:find("cancel") then
-                                cancelBtn = desc
-                            elseif textContent:find("reroll") and desc.Visible then
-                                confirmRerollBtn = desc
-                            end
-                        end
-                    end
-                end
-                
-                if foundAlmightyPrompt then
-                    if skipAlmighty then
-                        -- SKIP ALMIGHTY: Click Reroll Confirmation safely via UI connections
-                        if confirmRerollBtn then
-                            for _, conn in ipairs(getconnections(confirmRerollBtn.MouseButton1Click)) do conn:Fire() end
-                            for _, conn in ipairs(getconnections(confirmRerollBtn.Activated)) do conn:Fire() end
-                        end
-                        if showToast then showToast("Enchants: Almighty skipped, rolling...") end
-                        print("[DominateHub] Almighty skipped, continuing to roll for Transcendent...")
-                    else
-                        -- KEEP ALMIGHTY: Click Cancel safely via UI connections
-                        if cancelBtn then
-                            for _, conn in ipairs(getconnections(cancelBtn.MouseButton1Click)) do conn:Fire() end
-                            for _, conn in ipairs(getconnections(cancelBtn.Activated)) do conn:Fire() end
-                        end
-                        getgenv().AutoRerollEnchants = false
-                        if getgenv()._UIElements and getgenv()._UIElements["AutoRerollEnchants"] then
-                            getgenv()._UIElements["AutoRerollEnchants"].Value = false
-                        end
-                        if showToast then showToast("Enchants: Almighty kept! Stopped.") end
-                        print("[DominateHub] Almighty kept! Auto-reroll stopped.")
-                    end
-                    return
-                end
-                
-                -- 2. Data Memory Check for Transcendent (Always Stop) & Standard Rolling
-                local features = player:FindFirstChild("FEATURES")
-                local noobs = features and features:FindFirstChild("NOOBS")
-                if not noobs then return end
-                
-                local validNoobName = nil
-                local noobFolder = nil
-                for _, child in ipairs(noobs:GetChildren()) do
-                    if child.Name:lower() == selectedTarget:lower() or child.Name:lower() == (selectedTarget .. "noob"):lower() then
-                        validNoobName = child.Name
-                        noobFolder = child
-                        break
-                    end
-                end
-                
-                if not noobFolder then return end
-                local enchantsFolder = noobFolder:FindFirstChild("Enchants")
-                if not enchantsFolder then return end
-                
-                local slot1 = enchantsFolder:FindFirstChild("1") or enchantsFolder:GetChildren()[1]
-                local rawVal = slot1 and slot1:IsA("ValueBase") and slot1.Value or ""
-                local slot1Val = tostring(rawVal):lower()
-                
-                if slot1Val:find("transcendent") then
-                    -- ALWAYS STOP AT TRANSCENDENT PERMANENTLY
-                    getgenv().AutoRerollEnchants = false
-                    if getgenv()._UIElements and getgenv()._UIElements["AutoRerollEnchants"] then
-                        getgenv()._UIElements["AutoRerollEnchants"].Value = false
-                    end
-                    if showToast then showToast("Enchants: Transcendent reached! Stopped.") end
-                    print("[DominateHub] Transcendent hit on " .. validNoobName .. "! Auto-reroll stopped permanently.")
-                else
-                    -- Standard roll remote request
-                    local args = {
-                        [1] = "RollNoobEnchant",
-                        [2] = validNoobName
-                    }
-                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-
 -- DYNAMIC ENV SNAPSHOT & SAFETY RELEASE FUNCTIONS
 local function cacheAndPauseToggles()
     if cachedStates then return end
     cachedStates = {}
     for k, v in pairs(Env) do
         if type(k) == "string" and k:sub(1, 4) == "Auto" then
-            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" and k ~= "TrialDiagnostics" and k ~= "AutoRerollEnchants" then
+            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" and k ~= "TrialDiagnostics" then
                 if v == true then
                     cachedStates[k] = true
                     Env[k] = false
@@ -3208,4 +2962,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.108 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.110 Stable Loaded Successfully with Safe Anti-Cheat Star Glide!")
