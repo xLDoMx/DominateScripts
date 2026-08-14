@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.111 - staaaaaaaares)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.112 - asdfggghdfg)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -32,121 +32,121 @@ local UI = {}
 Env._UIElements = {}
 
 -- FORWARD HELPER FUNCTIONS
-local function GetWorldRoot()[cite: 1]
-    return player.Character and player.Character:FindFirstChild("HumanoidRootPart")[cite: 1]
+local function GetWorldRoot() 
+    return player.Character and player.Character:FindFirstChild("HumanoidRootPart") 
 end
 
-local function isMobRespawning(mobModel)[cite: 1]
-    if not mobModel then return true end[cite: 1]
-    for _, desc in ipairs(mobModel:GetDescendants()) do[cite: 1]
-        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then[cite: 1]
-            return true[cite: 1]
+local function isMobRespawning(mobModel)
+    if not mobModel then return true end
+    for _, desc in ipairs(mobModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
+            return true
         end
     end
-    return false[cite: 1]
+    return false
 end
 
 -- ROBUST ORE RESPAWN CHECK (SCANS ALL TEXT LABELS IN THE MODEL)
-local function isOreRespawning(oreModel)[cite: 1]
-    if not oreModel then return true end[cite: 1]
-    for _, desc in ipairs(oreModel:GetDescendants()) do[cite: 1]
-        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then[cite: 1]
-            return true[cite: 1]
+local function isOreRespawning(oreModel)
+    if not oreModel then return true end
+    for _, desc in ipairs(oreModel:GetDescendants()) do
+        if desc:IsA("TextLabel") and desc.Text and desc.Text:lower():find("respawning") then
+            return true
         end
     end
-    return false[cite: 1]
+    return false
 end
 
 -- DESTINATION VECTORS DECLARED EARLY TO PREVENT NIL-INDEX ERRORS
-local Dest = {[cite: 1]
-    Basic = Vector3.new(1114.753, 10.310, -644.151),[cite: 1]
-    Super = Vector3.new(1082.093, 16.661, -782.021),[cite: 1]
-    Advanced = Vector3.new(1293.495, 16.515, -883.312),[cite: 1]
-    Cosmic = Vector3.new(783.450, 16.655, -855.972),[cite: 1]
-    Football = Vector3.new(-2713.261, 36.861, -15.832),[cite: 1]
-    Snowy = Vector3.new(1017.366, 5.866, 3262.671),[cite: 1]
-    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105),[cite: 1]
-    FootballCap = Vector3.new(-2603.007, 36.295, -31.061),[cite: 1]
-    SuperCap = Vector3.new(618.032, 9.653, 3172.149),[cite: 1]
-    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),[cite: 1]
-    Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),[cite: 1]
-    SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),[cite: 1]
-    Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),[cite: 1]
-    EasyTrial = Vector3.new(850.21044921875, 11.162318229675293, 13444.673828125),    [cite: 1]
-    MediumTrial = Vector3.new(879.9605712890625, 11.17810344696045, 13418.396484375),[cite: 1]
-    HardTrial = Vector3.new(909.3944702148438, 11.162318229675293, 13441.96875),  [cite: 1]
-    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),[cite: 1]
-    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),[cite: 1]
-    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),[cite: 1]
-    AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388),[cite: 1]
-    PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512),[cite: 1]
-    TrialDropOut = Vector3.new(879.040, 11.531, 13443.085),[cite: 1]
-    DeepcoreRune = Vector3.new(691.268432, 12.532532, 3161.888916)[cite: 1]
+local Dest = {
+    Basic = Vector3.new(1114.753, 10.310, -644.151), 
+    Super = Vector3.new(1082.093, 16.661, -782.021), 
+    Advanced = Vector3.new(1293.495, 16.515, -883.312),
+    Cosmic = Vector3.new(783.450, 16.655, -855.972), 
+    Football = Vector3.new(-2713.261, 36.861, -15.832), 
+    Snowy = Vector3.new(1017.366, 5.866, 3262.671),
+    ClassicCap = Vector3.new(-2586.923, 43.317, -659.105), 
+    FootballCap = Vector3.new(-2603.007, 36.295, -31.061), 
+    SuperCap = Vector3.new(618.032, 9.653, 3172.149),
+    AncientCap = Vector3.new(714.6417236328125, 4.870510101318359, 7814.7265625),
+    Dunes = Vector3.new(981.1582, 4.5862, 7767.3315),
+    SandPit = Vector3.new(552.6134, 3.9798, 7827.5971),
+    Sunfire = Vector3.new(692.3831176757812, 4.754001617431641, 7735.392578125),
+    EasyTrial = Vector3.new(850.21044921875, 11.162318229675293, 13444.673828125),     
+    MediumTrial = Vector3.new(879.9605712890625, 11.17810344696045, 13418.396484375), 
+    HardTrial = Vector3.new(909.3944702148438, 11.162318229675293, 13441.96875),   
+    CastleEntrance = Vector3.new(834.7246, 4.8552, 7622.6528),
+    RitualChamber = Vector3.new(837.1246, 3.9983, 7904.0763),
+    SandRegenPad = Vector3.new(557.1278076171875, 5.08376932144165, 7820.8671875),
+    AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388),
+    PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512),
+    TrialDropOut = Vector3.new(879.040, 11.531, 13443.085),
+    DeepcoreRune = Vector3.new(691.268432, 12.532532, 3161.888916)
 }
 
 -- STATS TRACKING VARIABLES FOR HUD & EFFICIENCY TRACKER
-local oresMined = 0[cite: 1]
-local mobsKilled = 0[cite: 1]
-local sessionStartTime = tick()[cite: 1]
-local lastTrackedPart = nil[cite: 1]
-local lastTrackedMobPart = nil[cite: 1]
-local currentTargetPanel = nil[cite: 1]
-local currentTargetMob = nil[cite: 1]
-local gemExchangeCountdown = 60[cite: 1]
+local oresMined = 0
+local mobsKilled = 0
+local sessionStartTime = tick()
+local lastTrackedPart = nil
+local lastTrackedMobPart = nil
+local currentTargetPanel = nil
+local currentTargetMob = nil
+local gemExchangeCountdown = 60
 
 -- DEEPCORE RUNE COUNTDOWN TIMER VARIABLE
-local deepcoreTimer = 300[cite: 1]
+local deepcoreTimer = 300
 
 -- RITUAL HUD TIMER VARIABLES
-local ritualTimer = 0[cite: 1]
-local ritualInCooldown = false[cite: 1]
+local ritualTimer = 0
+local ritualInCooldown = false
 
 -- RUNTIME STATE LOCKS
-local trialIsRunning = false[cite: 1]
-local trialExiting = false[cite: 1]
-local ritualIsActive = false[cite: 1]
-local ritualSuppressMobs = false[cite: 1]
-local cachedStates = nil[cite: 1]
+local trialIsRunning = false
+local trialExiting = false
+local ritualIsActive = false
+local ritualSuppressMobs = false
+local cachedStates = nil
 
 -- CORPSE CACHE FOR INSTANT TRIAL MOB SKIPPING
-local deadMobs = {}[cite: 1]
+local deadMobs = {}
 
 -- RITUAL PRE-SELECTED MOBS & SAND CONFIG
-Env.RitualSelectedMobs = {[cite: 1]
-    ["Dark Knight"] = true,[cite: 1]
-    ["Dark Commander"] = true[cite: 1]
+Env.RitualSelectedMobs = {
+    ["Dark Knight"] = true,
+    ["Dark Commander"] = true
 }
 
-Env.AutoSandUpgrades = false[cite: 1]
-Env.AutoShovelLevelUp = false[cite: 1]
-Env.AutoExcavationRankUp = false[cite: 1]
-Env.AutoRegenSandLayers = false[cite: 1]
-Env.TargetSandLayer = 3[cite: 1]
+Env.AutoSandUpgrades = false
+Env.AutoShovelLevelUp = false
+Env.AutoExcavationRankUp = false
+Env.AutoRegenSandLayers = false
+Env.TargetSandLayer = 3
 
 -- DEEPCORE RUNE CONFIG
-Env.DeepcoreRuneInterval = false[cite: 1]
+Env.DeepcoreRuneInterval = false
 
 -- REALM 4 CONFIG FLAGS
-Env.AutoSpaceMultiStar = false[cite: 1]
-Env.AutoSpaceMoreSpacePoints = false[cite: 1]
-Env.AutoSpaceBlackholes = false[cite: 1]
-Env.AutoSpaceBoostRadius = false[cite: 1]
+Env.AutoSpaceMultiStar = false
+Env.AutoSpaceMoreSpacePoints = false
+Env.AutoSpaceBlackholes = false
+Env.AutoSpaceBoostRadius = false
 
-Env.AutoStarsMoreStars = false[cite: 1]
-Env.AutoStarsEvenMoreStars = false[cite: 1]
-Env.AutoStarsFasterRespawn = false[cite: 1]
-Env.AutoStarsMoreSpacePoints = false[cite: 1]
-Env.AutoStarsOof = false[cite: 1]
-Env.AutoStarsBoostLuck = false[cite: 1]
-Env.AutoCollectStars = false[cite: 1]
+Env.AutoStarsMoreStars = false
+Env.AutoStarsEvenMoreStars = false
+Env.AutoStarsFasterRespawn = false
+Env.AutoStarsMoreSpacePoints = false
+Env.AutoStarsOof = false
+Env.AutoStarsBoostLuck = false
+Env.AutoCollectStars = false
 
 -- TRIAL CONFIG
-Env.AutoLeaveByTime = true[cite: 1]
-Env.TrialTimeLimit = 15[cite: 1]
-Env.TrialDiagnostics = false[cite: 1]
+Env.AutoLeaveByTime = true
+Env.TrialTimeLimit = 15
+Env.TrialDiagnostics = false
 
 -- ANCIENT BOSS FARM CONFIG
-Env.AutoAncientBossFarm = false[cite: 1]
+Env.AutoAncientBossFarm = false
 
 -- LIVE GEM EXCHANGE COUNTDOWN TICKER
 task.spawn(function()
@@ -209,205 +209,205 @@ local function showToast(msg)
     end)
 end
 
-Env.AntiAFK = true[cite: 1]
-Env.AutoPrestige = false[cite: 1]
-Env.CPUSaverMode = false[cite: 1]
+Env.AntiAFK = true
+Env.AutoPrestige = false
+Env.CPUSaverMode = false
 
 -- SAFE ZONE VECTOR FOR COMBAT BREAK
-Env.SafeZoneVector = Vector3.new(919.1552, 4.8658, 7905.8755)[cite: 1]
+Env.SafeZoneVector = Vector3.new(919.1552, 4.8658, 7905.8755)
 
 -- ALL AUTOMATION FLAGS INITIALIZED IN GETGENV
-Env.AutoUpgradeStarter = false[cite: 1]
-Env.AutoUpgradeCooker = false[cite: 1]
-Env.AutoUpgradeFarmer = false[cite: 1]
-Env.AutoUpgradeMagician = false[cite: 1]
-Env.AutoUpgradeArcher = false[cite: 1]
-Env.AutoUpgradeSoldier = false[cite: 1]
-Env.AutoUpgradeMoreOof = false[cite: 1]
-Env.AutoUpgradeFasterNoobs = false[cite: 1]
+Env.AutoUpgradeStarter = false
+Env.AutoUpgradeCooker = false
+Env.AutoUpgradeFarmer = false
+Env.AutoUpgradeMagician = false
+Env.AutoUpgradeArcher = false
+Env.AutoUpgradeSoldier = false
+Env.AutoUpgradeMoreOof = false
+Env.AutoUpgradeFasterNoobs = false
 
-Env.AutoRebirthMoreOof = false[cite: 1]
-Env.AutoRebirthMoreRebirth = false[cite: 1]
-Env.AutoRebirthMoreFire = false[cite: 1]
+Env.AutoRebirthMoreOof = false
+Env.AutoRebirthMoreRebirth = false
+Env.AutoRebirthMoreFire = false
 
-Env.AutoFireMoreFire = false[cite: 1]
-Env.AutoFireMoreBulk = false[cite: 1]
-Env.AutoFireMoreOof = false[cite: 1]
-Env.AutoFireMoreRebirth = false[cite: 1]
-Env.AutoFireMoreTierLuck = false[cite: 1]
-Env.AutoFireMoreCashBonus = false[cite: 1]
+Env.AutoFireMoreFire = false
+Env.AutoFireMoreBulk = false
+Env.AutoFireMoreOof = false
+Env.AutoFireMoreRebirth = false
+Env.AutoFireMoreTierLuck = false
+Env.AutoFireMoreCashBonus = false
 
-Env.AutoRebirthTimer = false[cite: 1]
+Env.AutoRebirthTimer = false
 
-Env.AutoBlazeMoreBlaze = false[cite: 1]
-Env.AutoBlazeMoreFire = false[cite: 1]
-Env.AutoBlazeMoreOof = false[cite: 1]
-Env.AutoBlazeMoreOofs = false[cite: 1]
-Env.AutoBlazeMoreBulk = false[cite: 1]
-Env.AutoBlazeConvert = false[cite: 1]
+Env.AutoBlazeMoreBlaze = false
+Env.AutoBlazeMoreFire = false
+Env.AutoBlazeMoreOof = false
+Env.AutoBlazeMoreOofs = false
+Env.AutoBlazeMoreBulk = false
+Env.AutoBlazeConvert = false
 
 -- SOULS & RITUAL FLAGS
-Env.AutoSoulsMoreSouls = false[cite: 1]
-Env.AutoSoulsLuckierSwords = false[cite: 1]
-Env.AutoSoulsMoreOof = false[cite: 1]
-Env.AutoSoulsMoreBones = false[cite: 1]
-Env.AutoSoulsRuneBulk = false[cite: 1]
-Env.AutoStartRitual = false[cite: 1]
+Env.AutoSoulsMoreSouls = false
+Env.AutoSoulsLuckierSwords = false
+Env.AutoSoulsMoreOof = false
+Env.AutoSoulsMoreBones = false
+Env.AutoSoulsRuneBulk = false
+Env.AutoStartRitual = false
 
 -- MEAT / BONES UPGRADE FLAGS
-Env.AutoMeatMoreMeat = false[cite: 1]
-Env.AutoMeatStrongerSwords = false[cite: 1]
-Env.AutoMeatMoreOof = false[cite: 1]
-Env.AutoMeatMoreBones = false[cite: 1]
-Env.AutoDepositMeat = false[cite: 1]
+Env.AutoMeatMoreMeat = false
+Env.AutoMeatStrongerSwords = false
+Env.AutoMeatMoreOof = false
+Env.AutoMeatMoreBones = false
+Env.AutoDepositMeat = false
 
-Env.AutoBonesMoreBones = false[cite: 1]
-Env.AutoBonesFasterSwords = false[cite: 1]
-Env.AutoBonesBiggerMeatDeposit = false[cite: 1]
-Env.AutoBonesFasterMeatConversion = false[cite: 1]
-Env.AutoBonesEvenMoreBones = false[cite: 1]
+Env.AutoBonesMoreBones = false
+Env.AutoBonesFasterSwords = false
+Env.AutoBonesBiggerMeatDeposit = false
+Env.AutoBonesFasterMeatConversion = false
+Env.AutoBonesEvenMoreBones = false
 
 -- TRIALS FLAGS
-Env.AutoEasyTrial = false[cite: 1]
-Env.AutoMediumTrial = false[cite: 1]
-Env.AutoHardTrial = false[cite: 1]
+Env.AutoEasyTrial = false
+Env.AutoMediumTrial = false
+Env.AutoHardTrial = false
 
-Env.AutoUpgradeFishermanNoob = false[cite: 1]
-Env.AutoUpgradeKnightNoob = false[cite: 1]
-Env.AutoUpgradeExplorerNoob = false[cite: 1]
-Env.AutoUpgradeMagicianNoob = false[cite: 1]
-Env.AutoUpgradeMerchantNoob = false[cite: 1]
-Env.AutoUpgradeMummyNoob = false[cite: 1]
-Env.AutoUpgradePharaoh = false[cite: 1]
+Env.AutoUpgradeFishermanNoob = false
+Env.AutoUpgradeKnightNoob = false
+Env.AutoUpgradeExplorerNoob = false
+Env.AutoUpgradeMagicianNoob = false
+Env.AutoUpgradeMerchantNoob = false
+Env.AutoUpgradeMummyNoob = false
+Env.AutoUpgradePharaoh = false
 
-Env.AutoRealm2MoreWalkSpeed = false[cite: 1]
-Env.AutoRealm2MoreWater = false[cite: 1]
-Env.AutoRealm2MoreOofWater = false[cite: 1]
-Env.AutoRealm2MorePlanks = false[cite: 1]
-Env.AutoRealm2MoreIce = false[cite: 1]
-Env.AutoRealm2WaterPump1 = false[cite: 1]
-Env.AutoRealm2WaterPump2 = false[cite: 1]
-Env.AutoRealm2MoreOofIce = false[cite: 1]
+Env.AutoRealm2MoreWalkSpeed = false
+Env.AutoRealm2MoreWater = false
+Env.AutoRealm2MoreOofWater = false
+Env.AutoRealm2MorePlanks = false
+Env.AutoRealm2MoreIce = false
+Env.AutoRealm2WaterPump1 = false
+Env.AutoRealm2WaterPump2 = false
+Env.AutoRealm2MoreOofIce = false
 
 for i = 1, 11 do
-    Env["AutoFillBucket" .. i] = false[cite: 1]
+    Env["AutoFillBucket" .. i] = false
 end
 
-Env.AutoWoodRankUp = false[cite: 1]
-Env.AutoWoodMoreWood = false[cite: 1]
-Env.AutoWoodSharperAxes = false[cite: 1]
-Env.AutoWoodBiggerDeposit = false[cite: 1]
-Env.AutoWoodFasterConversion = false[cite: 1]
-Env.AutoWoodMorePlanks = false[cite: 1]
-Env.AutoDepositWood = false[cite: 1]
+Env.AutoWoodRankUp = false
+Env.AutoWoodMoreWood = false
+Env.AutoWoodSharperAxes = false
+Env.AutoWoodBiggerDeposit = false
+Env.AutoWoodFasterConversion = false
+Env.AutoWoodMorePlanks = false
+Env.AutoDepositWood = false
 
-Env.AutoPlanksMorePlanks = false[cite: 1]
-Env.AutoPlanksMoreWood = false[cite: 1]
-Env.AutoPlanksWaterFromPlanks = false[cite: 1]
+Env.AutoPlanksMorePlanks = false
+Env.AutoPlanksMoreWood = false
+Env.AutoPlanksWaterFromPlanks = false
 
-Env.AutoGemMoreOof = false[cite: 1]
-Env.AutoGemMoreGems = false[cite: 1]
-Env.AutoGemStrongerPickaxes = false[cite: 1]
-Env.AutoGemMoreOreStats = false[cite: 1]
-Env.AutoGemExchange = false[cite: 1]
-Env.AutoGemShopTeleport = false[cite: 1]
+Env.AutoGemMoreOof = false
+Env.AutoGemMoreGems = false
+Env.AutoGemStrongerPickaxes = false
+Env.AutoGemMoreOreStats = false
+Env.AutoGemExchange = false
+Env.AutoGemShopTeleport = false
 
-Env.AutoMineStone = false[cite: 1]
-Env.AutoMineCoal = false[cite: 1]
-Env.AutoMineSilver = false[cite: 1]
-Env.AutoMineIron = false[cite: 1]
-Env.AutoMineCopper = false[cite: 1]
-Env.AutoMineGold = false[cite: 1]
-Env.AutoMinePlatinum = false[cite: 1]
-Env.AutoMineTitanium = false[cite: 1]
-Env.AutoMineCobalt = false[cite: 1]
-Env.AutoMineUranium = false[cite: 1]
-Env.AutoMinePalladium = false[cite: 1]
-Env.AutoMineAetherite = false[cite: 1]
-Env.AutoMineRuby = false[cite: 1]
-Env.AutoMineVoidsteel = false[cite: 1]
-Env.AutoMineCelestium = false[cite: 1]
-Env.MiningJumpSpeed = 0.8[cite: 1]
+Env.AutoMineStone = false
+Env.AutoMineCoal = false
+Env.AutoMineSilver = false
+Env.AutoMineIron = false
+Env.AutoMineCopper = false
+Env.AutoMineGold = false
+Env.AutoMinePlatinum = false
+Env.AutoMineTitanium = false
+Env.AutoMineCobalt = false
+Env.AutoMineUranium = false
+Env.AutoMinePalladium = false
+Env.AutoMineAetherite = false
+Env.AutoMineRuby = false
+Env.AutoMineVoidsteel = false
+Env.AutoMineCelestium = false
+Env.MiningJumpSpeed = 0.8 
 
 -- INDIVIDUAL MOB FARMING FLAGS (WORST TO BEST)
-Env.AutoMobGoblin = false[cite: 1]
-Env.AutoMobSkeleton = false[cite: 1]
-Env.AutoMobOrc = false[cite: 1]
-Env.AutoMobPirate = false[cite: 1]
-Env.AutoMobNinja = false[cite: 1]
-Env.AutoMobWarrior = false[cite: 1]
-Env.AutoMobPirateCaptain = false[cite: 1]
-Env.AutoMobSamurai = false[cite: 1]
-Env.AutoMobPirateAdmiral = false[cite: 1]
-Env.AutoMobSamuraiMaster = false[cite: 1]
-Env.AutoMobDarkKnight = false[cite: 1]
-Env.AutoMobDarkCommander = false[cite: 1]
+Env.AutoMobGoblin = false
+Env.AutoMobSkeleton = false
+Env.AutoMobOrc = false
+Env.AutoMobPirate = false
+Env.AutoMobNinja = false
+Env.AutoMobWarrior = false
+Env.AutoMobPirateCaptain = false
+Env.AutoMobSamurai = false
+Env.AutoMobPirateAdmiral = false
+Env.AutoMobSamuraiMaster = false
+Env.AutoMobDarkKnight = false
+Env.AutoMobDarkCommander = false
 
 -- COMBAT UPGRADE BREAK FLAG
-Env.AutoCombatBreak = false[cite: 1]
+Env.AutoCombatBreak = false
 
-Env.AutoUpgradeHacker1 = false[cite: 1]
-Env.AutoUpgradeHacker2 = false[cite: 1]
-Env.AutoUpgradeHacker3 = false[cite: 1]
-Env.AutoUpgradeHacker4 = false[cite: 1]
+Env.AutoUpgradeHacker1 = false
+Env.AutoUpgradeHacker2 = false
+Env.AutoUpgradeHacker3 = false
+Env.AutoUpgradeHacker4 = false
 
-Env.AutoScoreGoal = false[cite: 1]
-Env.AutoGoalsMoreGoals = false[cite: 1]
-Env.AutoGoalsRuneBulk = false[cite: 1]
-Env.AutoGoalsRuneLuck = false[cite: 1]
-Env.AutoBuyAutoKick = false[cite: 1]
-Env.AutoFootballTree = false[cite: 1]
-Env.AutoClaimTrophies = false[cite: 1]
+Env.AutoScoreGoal = false
+Env.AutoGoalsMoreGoals = false
+Env.AutoGoalsRuneBulk = false
+Env.AutoGoalsRuneLuck = false
+Env.AutoBuyAutoKick = false
+Env.AutoFootballTree = false
+Env.AutoClaimTrophies = false
 
-Env.AutoUpgradeGoalkeeper = false[cite: 1]
-Env.AutoUpgradeLeftBack = false[cite: 1]
-Env.AutoUpgradeLeftCenterBack = false[cite: 1]
-Env.AutoUpgradeRightCenterBack = false[cite: 1]
-Env.AutoUpgradeRightBack = false[cite: 1]
-Env.AutoUpgradeLeftDefensiveMid = false[cite: 1]
-Env.AutoUpgradeRightDefensiveMid = false[cite: 1]
-Env.AutoUpgradeAttackingMid = false[cite: 1]
-Env.AutoUpgradeLeftWing = false[cite: 1]
-Env.AutoUpgradeRightWing = false[cite: 1]
-Env.AutoUpgradeStriker = false[cite: 1]
+Env.AutoUpgradeGoalkeeper = false
+Env.AutoUpgradeLeftBack = false
+Env.AutoUpgradeLeftCenterBack = false
+Env.AutoUpgradeRightCenterBack = false
+Env.AutoUpgradeRightBack = false
+Env.AutoUpgradeLeftDefensiveMid = false
+Env.AutoUpgradeRightDefensiveMid = false
+Env.AutoUpgradeAttackingMid = false
+Env.AutoUpgradeLeftWing = false
+Env.AutoUpgradeRightWing = false
+Env.AutoUpgradeStriker = false
 
-Env.AutoBreadMoreBread = false[cite: 1]
-Env.AutoBreadMoreBread2 = false[cite: 1]
-Env.AutoBreadMoreWheat = false[cite: 1]
-Env.AutoBreadBiggerWheatDeposit = false[cite: 1]
-Env.AutoDepositWheat = false[cite: 1]
-Env.AutoBreadFasterWheatConversion = false[cite: 1]
-Env.AutoBreadMoreConsumption = false[cite: 1]
-Env.AutoBreadMoreRuneLuck = false[cite: 1]
-Env.AutoBreadMoreTierLuck = false[cite: 1]
-Env.AutoUpgradeCow = false[cite: 1]
-Env.AutoUpgradeChicken = false[cite: 1]
-Env.AutoBuyCow = false[cite: 1]
-Env.AutoBuyChicken = false[cite: 1]
+Env.AutoBreadMoreBread = false
+Env.AutoBreadMoreBread2 = false
+Env.AutoBreadMoreWheat = false
+Env.AutoBreadBiggerWheatDeposit = false
+Env.AutoDepositWheat = false
+Env.AutoBreadFasterWheatConversion = false
+Env.AutoBreadMoreConsumption = false
+Env.AutoBreadMoreRuneLuck = false
+Env.AutoBreadMoreTierLuck = false
+Env.AutoUpgradeCow = false
+Env.AutoUpgradeChicken = false
+Env.AutoBuyCow = false
+Env.AutoBuyChicken = false
 
-Env.AutoFarmCash = false[cite: 1]
-Env.AutoUpgradeMoreCash = false[cite: 1]
-Env.AutoUpgradeFasterDropper = false[cite: 1]
-Env.AutoUpgradeMoreRuneLuck = false[cite: 1]
+Env.AutoFarmCash = false
+Env.AutoUpgradeMoreCash = false
+Env.AutoUpgradeFasterDropper = false
+Env.AutoUpgradeMoreRuneLuck = false
 
-Env.AutoRollBasicRune = false[cite: 1]
-Env.AutoRollSuperRune = false[cite: 1]
-Env.AutoRollAdvancedRune = false[cite: 1]
-Env.AutoRollCosmicRune = false[cite: 1]
-Env.AutoRollSnowyRune = false[cite: 1]
-Env.AutoRollFootballRune = false[cite: 1]
-Env.AutoRollDunesRune = false[cite: 1]
-Env.AutoRollSunfireRune = false[cite: 1]
+Env.AutoRollBasicRune = false
+Env.AutoRollSuperRune = false
+Env.AutoRollAdvancedRune = false
+Env.AutoRollCosmicRune = false
+Env.AutoRollSnowyRune = false
+Env.AutoRollFootballRune = false
+Env.AutoRollDunesRune = false
+Env.AutoRollSunfireRune = false
 
-Env.AutoOpenT1Chest = false[cite: 1]
-Env.AutoOpenT2Chest = false[cite: 1]
-Env.AutoOpenClassicCapsule = false[cite: 1]
-Env.AutoOpenFootballCapsule = false[cite: 1]
-Env.AutoOpenSuperCapsule = false[cite: 1]
-Env.AutoOpenAncientCapsule = false[cite: 1]
+Env.AutoOpenT1Chest = false
+Env.AutoOpenT2Chest = false
+Env.AutoOpenClassicCapsule = false
+Env.AutoOpenFootballCapsule = false
+Env.AutoOpenSuperCapsule = false
+Env.AutoOpenAncientCapsule = false
 
-Env.FPSBoostMode = false[cite: 1]
-Env.ShowStatsHUD = true[cite: 1]
+Env.FPSBoostMode = false
+Env.ShowStatsHUD = true
 
 -- TOGGLE & UI HELPERS
 local function createToggleRow(parent, txt, vKey)
@@ -2968,4 +2968,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.111 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.112 Stable Loaded Successfully!")
