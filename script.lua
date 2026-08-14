@@ -1706,39 +1706,65 @@ task.spawn(function()
     end
 end)
 
--- SMOOTH SWEEP STAR COLLECTION LOOP WITH HUMAN-LIKE DELAYS & SAFE COOLDOWNS
+-- OPTIMIZED & SMARTER STAR COLLECTION LOOP
 local starCooldowns = {}
 task.spawn(function()
     while Running do
-        task.wait(math.random(15, 30) / 100) -- Natural human-like reaction window (0.15s - 0.30s)
+        task.wait(0.1) -- Fast and responsive polling for new spawns
         if Running and Env.AutoCollectStars and not trialIsRunning and not trialExiting and not ritualIsActive then
             pcall(function()
                 local clientStars = workspace:FindFirstChild("ClientStars")
                 if clientStars then
-                    local foundStarPart = nil
-                    local shortestDist = math.huge
                     local hrp = GetWorldRoot()
-                    local now = tick()
+                    if not hrp then return end
                     
+                    local now = tick()
+                    local availableStars = {}
+                    
+                    -- Clean expired cooldowns
                     for starModel, expiry in pairs(starCooldowns) do
                         if now >= expiry or not starModel.Parent then
                             starCooldowns[starModel] = nil
                         end
                     end
                     
+                    -- Gather all valid, un-cooldown-locked stars into a table
                     for _, starModel in ipairs(clientStars:GetChildren()) do
                         if not starCooldowns[starModel] then
                             local hitbox = starModel:FindFirstChild("Hitbox") or starModel:FindFirstChild("StarPart") or starModel:FindFirstChildWhichIsA("BasePart")
-                            if hitbox and hrp then
+                            if hitbox then
                                 local dist = (hitbox.Position - hrp.Position).Magnitude
-                                if dist < shortestDist then
-                                    shortestDist = dist
-                                    foundStarPart = hitbox
-                                    starCooldowns[starModel] = now + 4.0
-                                end
+                                table.insert(availableStars, {Model = starModel, Part = hitbox, Dist = dist})
                             end
                         end
                     end
+                    
+                    -- Sort available stars by closest distance to the player
+                    if #availableStars > 0 then
+                        table.sort(availableStars, function(a, b)
+                            return a.Dist < b.Dist
+                        end)
+                        
+                        -- Target the absolute closest star
+                        local closest = availableStars[1]
+                        StarTargetVector = closest.Part.Position
+                        
+                        -- Apply a short cooldown if we are right on top of it to prevent stuttering
+                        if closest.Dist < 3.5 then
+                            starCooldowns[closest.Model] = now + 2.0
+                        end
+                    else
+                        StarTargetVector = nil
+                    end
+                else
+                    StarTargetVector = nil
+                end
+            end)
+        else
+            StarTargetVector = nil
+        end
+    end
+end)
                     
                     if foundStarPart then
                         StarTargetVector = foundStarPart.Position
