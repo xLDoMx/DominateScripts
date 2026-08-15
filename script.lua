@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.113 - new trial r4)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.114 - trialstoggle)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -145,6 +145,7 @@ Env.AutoCollectStars = false
 Env.AutoLeaveByTime = true
 Env.TrialTimeLimit = 15
 Env.TrialDiagnostics = false
+Env.Realm4ReturnAfterTrial = false
 
 -- ANCIENT BOSS FARM CONFIG
 Env.AutoAncientBossFarm = false
@@ -1231,6 +1232,7 @@ createToggleRow(trialsScroll, "Auto Hard Trial", "AutoHardTrial")
 createToggleRow(trialsScroll, "Auto Leave By Time Limit", "AutoLeaveByTime")
 createTextBoxRow(trialsScroll, "Trial Time Limit (min)", "TrialTimeLimit")
 createToggleRow(trialsScroll, "Trial Diagnostics Mode", "TrialDiagnostics")
+createToggleRow(trialsScroll, "Return to Realm 4 After Trial", "Realm4ReturnAfterTrial")
 
 createSectionHeader(trialsScroll, "Manual Testing")
 createButtonRow(trialsScroll, "Test Trial Staging Teleport", function()
@@ -1671,14 +1673,14 @@ task.spawn(function()
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 elseif StarTargetVector then
-                    -- ANTI-CHEAT SAFE CONSTANT-SPEED GLIDE FOR STARS (SPEED 70)
+                    -- ANTI-CHEAT SAFE CONSTANT-SPEED GLIDE FOR STARS (SPEED 55)
                     local currentPos = hrp.Position
                     local targetPos = StarTargetVector
                     local distance = (currentPos - targetPos).Magnitude
                     
                     if distance > 1.5 then
                         hrp.Anchored = false
-                        local speed = 70 
+                        local speed = 55 
                         local step = math.min(1.0, (speed * 0.016) / distance)
                         local newPos = currentPos:Lerp(targetPos, step)
                         
@@ -1948,7 +1950,7 @@ local function cacheAndPauseToggles()
     cachedStates = {}
     for k, v in pairs(Env) do
         if type(k) == "string" and k:sub(1, 4) == "Auto" then
-            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" and k ~= "TrialDiagnostics" then
+            if k ~= "AutoEasyTrial" and k ~= "AutoMediumTrial" and k ~= "AutoHardTrial" and k ~= "AutoLeaveByTime" and k ~= "TrialDiagnostics" and k ~= "Realm4ReturnAfterTrial" then
                 if v == true then
                     cachedStates[k] = true
                     Env[k] = false
@@ -2094,15 +2096,19 @@ task.spawn(function()
                         showToast("Trials: Entry timeout. Resetting state.")
                     end
                     
-                    showToast("Trials: Exited trial. Relocating to farm spot...")
+                    showToast("Trials: Exited trial. Relocating...")
                     task.wait(1.5)
                     
                     local hrpDrop = GetWorldRoot()
                     if hrpDrop then
                         hrpDrop.Anchored = false
-                        hrpDrop.CFrame = CFrame.new(Dest.PostTrialLanding)
+                        local landingDest = Env.Realm4ReturnAfterTrial and Dest.StarResetSpot or Dest.PostTrialLanding
+                        hrpDrop.CFrame = CFrame.new(landingDest)
                         hrpDrop.AssemblyLinearVelocity = Vector3.zero
                         hrpDrop.AssemblyAngularVelocity = Vector3.zero
+                        if Env.Realm4ReturnAfterTrial then
+                            showToast("Trials: Teleported back to Realm 4!")
+                        end
                     end
                     
                     trialIsRunning = false
@@ -2998,4 +3004,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.113 Stable Loaded Successfully with 5s Failsafe Reset!")
+print("[Dominate Hub] V16.9.114 Stable Loaded Successfully with Realm 4 Return & Safe Glide!")
