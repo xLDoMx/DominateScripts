@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.116 - v2r4)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.116 - r4 updates auto collect)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
