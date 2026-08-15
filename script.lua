@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.112 - Star Logic Working WELL)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.113 - Safe )
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -81,7 +81,8 @@ local Dest = {
     AncientBossSpawn = Vector3.new(627.4028, 4.8705, 7854.8388),
     PostTrialLanding = Vector3.new(1011.821, 4.8705, 7799.512),
     TrialDropOut = Vector3.new(879.040, 11.531, 13443.085),
-    DeepcoreRune = Vector3.new(691.268432, 12.532532, 3161.888916)
+    DeepcoreRune = Vector3.new(691.268432, 12.532532, 3161.888916),
+    StarResetSpot = Vector3.new(-4577.63623046875, 4.3952222663879395, 18833.4609375)
 }
 
 -- STATS TRACKING VARIABLES FOR HUD & EFFICIENCY TRACKER
@@ -1670,7 +1671,7 @@ task.spawn(function()
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 elseif StarTargetVector then
-                    -- ANTI-CHEAT SAFE CONSTANT-SPEED GLIDE FOR STARS
+                    -- ANTI-CHEAT SAFE CONSTANT-SPEED GLIDE FOR STARS (SPEED 70)
                     local currentPos = hrp.Position
                     local targetPos = StarTargetVector
                     local distance = (currentPos - targetPos).Magnitude
@@ -1706,8 +1707,11 @@ task.spawn(function()
     end
 end)
 
--- SMARTER & ACCURATE STAR TARGETING LOOP (PROXIMITY SORTING)
+-- SMARTER & ACCURATE STAR TARGETING LOOP + 5-SECOND STUCK FAILSAFE RESET
 local starCooldowns = {}
+local lastPositionCheck = Vector3.new()
+local stuckTimer = 0
+
 task.spawn(function()
     while Running do
         task.wait(0.1)
@@ -1717,6 +1721,31 @@ task.spawn(function()
                 if clientStars then
                     local hrp = GetWorldRoot()
                     if not hrp then return end
+                    
+                    -- STUCK FAILSAFE CHECK
+                    local currentPos = hrp.Position
+                    if StarTargetVector then
+                        local movedDist = (currentPos - lastPositionCheck).Magnitude
+                        if movedDist < 1.0 then
+                            stuckTimer = stuckTimer + 0.1
+                            if stuckTimer >= 5.0 then
+                                showToast("Star Failsafe: Stuck on terrain, resetting position!")
+                                hrp.Anchored = false
+                                hrp.CFrame = CFrame.new(Dest.StarResetSpot)
+                                hrp.AssemblyLinearVelocity = Vector3.zero
+                                hrp.AssemblyAngularVelocity = Vector3.zero
+                                StarTargetVector = nil
+                                starCooldowns = {}
+                                stuckTimer = 0
+                                task.wait(1.0)
+                            end
+                        else
+                            stuckTimer = 0
+                        end
+                    else
+                        stuckTimer = 0
+                    end
+                    lastPositionCheck = currentPos
                     
                     local now = tick()
                     local availableStars = {}
@@ -1757,6 +1786,7 @@ task.spawn(function()
             end)
         else
             StarTargetVector = nil
+            stuckTimer = 0
         end
     end
 end)
@@ -2968,4 +2998,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.112 Stable Loaded Successfully!")
+print("[Dominate Hub] V16.9.113 Stable Loaded Successfully with 5s Failsafe Reset!")
