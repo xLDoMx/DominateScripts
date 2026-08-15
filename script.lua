@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.112 - asdfggghdfg)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.112 - Star Logic Working WELL)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
