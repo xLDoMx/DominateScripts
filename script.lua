@@ -1678,7 +1678,7 @@ task.spawn(function()
                     
                     if distance > 1.5 then
                         hrp.Anchored = false
-                        local speed = 70 
+                        local speed = 65 
                         local step = math.min(1.0, (speed * 0.016) / distance)
                         local newPos = currentPos:Lerp(targetPos, step)
                         
