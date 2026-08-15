@@ -1,5 +1,5 @@
 --======================================================================================
--- DOMINATE HUB | PRO EDITION (STABLE V16.9.115 - Realm4updates)
+-- DOMINATE HUB | PRO EDITION (STABLE V16.9.116 - v2r4)
 --======================================================================================
 local Env = (getgenv and getgenv()) or _G
 
@@ -141,6 +141,7 @@ Env.AutoStarsOof = false
 Env.AutoStarsBoostLuck = false
 Env.AutoCollectStars = false
 Env.AutoPlanets = false
+Env.AutoResetMoon = false
 
 -- TRIAL CONFIG
 Env.AutoLeaveByTime = true
@@ -1204,6 +1205,7 @@ masterToggleGroup("SpacePoints Upgrades", {"AutoSpaceMultiStar", "AutoSpaceMoreS
 masterToggleGroup("Stars Upgrades", {"AutoStarsMoreStars", "AutoStarsEvenMoreStars", "AutoStarsFasterRespawn", "AutoStarsMoreSpacePoints", "AutoStarsOof", "AutoStarsBoostLuck"}, upScroll)
 createToggleRow(upScroll, "Auto Collect Stars (ClientStars)", "AutoCollectStars")
 createToggleRow(upScroll, "Auto Planets & Upgrades", "AutoPlanets")
+createToggleRow(upScroll, "Auto Reset Moon (5m)", "AutoResetMoon")
 
 -- NOOBS PAGE BUILD
 local noobsScroll = makeVerticalScroll(noobsPage)
@@ -1799,7 +1801,7 @@ task.spawn(function()
     end
 end)
 
--- PLANETS & UPGRADES AUTOMATION LOOP
+-- PLANETS & MOON AUTOMATION LOOP
 task.spawn(function()
     while Running do
         task.wait(1.5)
@@ -1822,6 +1824,26 @@ task.spawn(function()
                 end)
                 task.wait(0.2)
             end
+            local moonUpgrades = {"MoreMoon", "MorePlanets", "EvenMoreStars"}
+            for _, upgrade in ipairs(moonUpgrades) do
+                pcall(function()
+                    game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer("UpgradeUpgradeMax", "Moon", upgrade)
+                end)
+                task.wait(0.2)
+            end
+        end
+    end
+end)
+
+-- AUTO RESET MOON LOOP (EVERY 5 MINUTES)
+task.spawn(function()
+    while Running do
+        task.wait(300.0)
+        if Running and Env.AutoResetMoon then
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("__Net"):WaitForChild("MainRemote"):FireServer("Moon")
+            end)
+            showToast("Auto Reset Moon: Reset triggered!")
         end
     end
 end)
@@ -2636,7 +2658,7 @@ task.spawn(function()
 end)
 
 local PrimaryUpgradeQueue = {
-    {F="AutoUpgradeStarter",T="UpgradeNoob",A={"Starter"}}, {F="AutoUpgradeCooker",T="UpgradeNoobMax",A={"Cooker"}}, {F="AutoUpgradeFarmer",T="UpgradeNoobMax",A={"Farmer"}}, {F="AutoUpgradeMagician",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeArcher",T="UpgradeNoobMax",A={"Archer"}}, {F="AutoUpgradeSoldier",T="UpgradeNoobMax",A={"Soldier"}}, {F="AutoUpgradePharaoh",T="UpgradeNoobMax",A={"Pharaoh"}}, {F="AutoUpgradeAlienNoob",T="UpgradeNoobMax",A={"Alien Noob"}},
+    {F="AutoUpgradeStarter",T="UpgradeNoob",A={"Starter"}}, {F="AutoUpgradeCooker",T="UpgradeNoobMax",A={"Cooker"}}, {F="AutoUpgradeFarmer",T="UpgradeNoobMax",A={"Farmer"}}, {F="AutoUpgradeMagician",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeArcher",T="UpgradeNoobMax",A={"Archer"}}, {F="AutoUpgradeSoldier",T="UpgradeNoobMax",A={"Soldier"}}, {F="AutoUpgradePharaoh",T="UpgradeNoobMax",A={"Pharaoh"}}, {F="AutoUpgradeAlienNoob",T="UpgradeNoobMax",A={"Alien"}},
     {F="AutoUpgradeHacker1",T="UpgradeNoobMax",A={"Hacker 1"}}, {F="AutoUpgradeHacker2",T="UpgradeNoobMax",A={"Hacker 2"}}, {F="AutoUpgradeHacker3",T="UpgradeNoobMax",A={"Hacker 3"}}, {F="AutoUpgradeHacker4",T="UpgradeNoobMax",A={"Hacker 4"}},
     {F="AutoUpgradeFishermanNoob",T="UpgradeNoobMax",A={"Fisherman"}}, {F="AutoUpgradeKnightNoob",T="UpgradeNoobMax",A={"Knight"}}, {F="AutoUpgradeExplorerNoob",T="UpgradeNoobMax",A={"Explorer"}}, {F="AutoUpgradeMagicianNoob",T="UpgradeNoobMax",A={"Magician"}}, {F="AutoUpgradeMerchantNoob",T="UpgradeNoobMax",A={"Merchant"}}, {F="AutoUpgradeMummyNoob",T="UpgradeNoobMax",A={"Mummy"}},
     {F="AutoUpgradeGoalkeeper",T="UpgradeNoobMax",A={"Goalkeeper"}}, {F="AutoUpgradeLeftBack",T="UpgradeNoobMax",A={"LeftBack"}}, {F="AutoUpgradeLeftCenterBack",T="UpgradeNoobMax",A={"LeftCenterBack"}}, {F="AutoUpgradeRightCenterBack",T="UpgradeNoobMax",A={"RightCenterBack"}}, {F="AutoUpgradeRightBack",T="UpgradeNoobMax",A={"RightBack"}}, {F="AutoUpgradeLeftDefensiveMid",T="UpgradeNoobMax",A={"LeftDefensiveMid"}}, {F="AutoUpgradeRightDefensiveMid",T="UpgradeNoobMax",A={"RightDefensiveMid"}}, {F="AutoUpgradeAttackingMid",T="UpgradeNoobMax",A={"AttackingMid"}}, {F="AutoUpgradeLeftWing",T="UpgradeNoobMax",A={"LeftWing"}}, {F="AutoUpgradeRightWing",T="UpgradeNoobMax",A={"RightWing"}}, {F="AutoUpgradeStriker",T="UpgradeNoobMax",A={"Striker"}},
@@ -3037,4 +3059,4 @@ task.spawn(function()
     end
 end)
 
-print("[Dominate Hub] V16.9.115 Stable Loaded Successfully with Realm 4 Noobs & Planets Automation!")
+print("[Dominate Hub] V16.9.116 Stable Loaded Successfully with Moon Updates & Alien Noob Fix!")
